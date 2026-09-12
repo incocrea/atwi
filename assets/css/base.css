@@ -25,7 +25,13 @@ h3 { font-size: var(--t-h3); }
 p  { margin: 0; }
 img, svg { max-width: 100%; display: block; }
 
-a { color: var(--lavanda-oscuro); text-decoration-thickness: 2px; text-underline-offset: 2px; }
+/* SIN SUBRAYADOS. Los enlaces se distinguen por color, forma y sitio —son
+   botones, títulos de sección o el logotipo—, no por una raya debajo. En una
+   tipografía redondeada como esta el subrayado ensucia y, en los enlaces que
+   además son botones, se veía una raya dentro de la pastilla.
+   Se mantiene en el foco de teclado, que sí necesita marcarse. */
+a { color: var(--lavanda-oscuro); text-decoration: none; }
+a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 :focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; border-radius: 6px; }
 

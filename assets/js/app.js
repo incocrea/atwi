@@ -33,6 +33,11 @@
 
   function irA(nombre) {
     if (VISTAS.indexOf(nombre) === -1) return;
+    /* Salir de la portada cuesta una entrada de historial: así el atrás del
+       teléfono devuelve a la portada en vez de cerrar la app. Saltar entre las
+       otras pestañas no apila más, porque desde cualquiera de ellas el atrás
+       lleva al mismo sitio. */
+    if (vistaActual === 'jugar' && nombre !== 'jugar') entrar();
     vistaActual = nombre;
     $$('.vista').forEach(function (v) {
       if (v.id === 'v-' + nombre) v.setAttribute('data-activa', '');
@@ -64,10 +69,79 @@
   }
 
   /* ======================================================================
-     Modales a pantalla completa
+     EL ATRÁS DEL TELÉFONO
+     Instalada como PWA, el botón atrás de Android sacaba de la app de golpe,
+     tuviera lo que tuviera abierto: un modal a pantalla completa, el catálogo
+     dentro de una categoría o una partida a medias. Es la queja más razonable
+     que puede tener alguien con un juego instalado.
+
+     Cómo se arregla: cada vez que se abre algo se mete una entrada en el
+     historial, y cuando el teléfono va atrás se deshace UN nivel. La cuenta la
+     lleva `profundidad`; si llega a cero, ya no hay a dónde volver y el atrás
+     sale de la app, que es lo que la gente espera en la portada.
+
+     `retroceder()` no reimplementa nada: pulsa el mismo control de salida que
+     ya hay en pantalla. Así el atrás del teléfono hace EXACTAMENTE lo mismo que
+     el aspa, incluida la pregunta de «¿seguro que sales de la partida?».
      ====================================================================== */
   var pilaModales = [];
+  var profundidad = 0;      // entradas de historial nuestras, sin consumir
+  var restaurando = false;  // dentro de retroceder(): no se apila nada
 
+  function apilarPaso() {
+    profundidad++;
+    try { history.pushState({ atwi: profundidad }, ''); } catch (e) { /* file:// */ }
+  }
+
+  function entrar() {
+    if (restaurando) return;
+    apilarPaso();
+  }
+
+  /** Deshace un nivel. Devuelve false si ya no quedaba nada que deshacer. */
+  function retroceder() {
+    restaurando = true;
+    var hecho = true;
+    var desglose = $('.revelacion:not([hidden]) [data-accion="ver-desglose"]');
+    var sala = $('#m-partida');
+
+    if (desglose) {
+      /* En el veredicto, atrás es el mismo botón: así se guarda la partida en
+         vez de tirarla por la ventana. */
+      desglose.click();
+    } else if (sala && !sala.hidden) {
+      $('#m-partida [data-accion="p-salir"]').click();
+      /* Si dice que no quiere salir, se le devuelve su entrada: la partida
+         sigue abierta y el siguiente atrás tiene que volver a preguntar. */
+      if (!sala.hidden) apilarPaso();
+    } else if (pilaModales.length) {
+      ocultarModal(pilaModales[pilaModales.length - 1]);
+    } else if (vistaActual === 'catalogo' && categoriaAbierta) {
+      categoriaAbierta = null; pintarCatalogo();
+    } else if (vistaActual === 'catalogo' && modoPublico) {
+      modoPublico = null; categoriaAbierta = null; pintarCatalogo();
+    } else if (vistaActual !== 'jugar') {
+      irA('jugar');
+    } else {
+      hecho = false;
+    }
+
+    restaurando = false;
+    return hecho;
+  }
+
+  window.addEventListener('popstate', function () {
+    if (profundidad > 0) profundidad--;
+    if (!retroceder() && profundidad > 0) {
+      /* Quedaban entradas de más —pasa al abrir la sala, que cierra tres
+         modales de una vez—. Se consumen solas en vez de tragarse un toque. */
+      history.back();
+    }
+  });
+
+  /* ======================================================================
+     Modales a pantalla completa
+     ====================================================================== */
   function abrirModal(id) {
     var m = document.getElementById(id);
     if (!m) return;
@@ -75,14 +149,32 @@
     pilaModales.push(id);
     var foco = $('.modal__cuerpo', m) || m;
     foco.scrollTop = 0;
+    entrar();
   }
 
-  function cerrarModal(id) {
-    var objetivo = id || pilaModales[pilaModales.length - 1];
-    var m = document.getElementById(objetivo);
+  /** Cierra de verdad. Solo lo llama retroceder(), que es quien manda. */
+  function ocultarModal(id) {
+    var m = document.getElementById(id);
     if (!m) return;
     m.hidden = true;
-    pilaModales = pilaModales.filter(function (x) { return x !== objetivo; });
+    pilaModales = pilaModales.filter(function (x) { return x !== id; });
+  }
+
+  /**
+   * Cerrar DESDE LA INTERFAZ. No oculta: va atrás en el historial, y es el
+   * popstate el que cierra. Si no pasara por aquí, la cuenta de entradas se
+   * desajustaría y el atrás del teléfono empezaría a tragarse toques.
+   */
+  function cerrarModal(id) {
+    var objetivo = id || pilaModales[pilaModales.length - 1];
+    if (!objetivo) return;
+    if (profundidad > 0) history.back();
+    else ocultarModal(objetivo);
+  }
+
+  /** Cierra varios de golpe, como al entrar a la sala. */
+  function cerrarModales(ids) {
+    ids.forEach(ocultarModal);
   }
 
   document.addEventListener('keydown', function (e) {
@@ -164,6 +256,14 @@
   var modoPublico = null;   // 'pareja' | 'amigos'; null = todavia no ha elegido
   var busqueda = '';        // texto del buscador
   var filtro = 'todos';     // 'todos' | 'sin' | 'con'
+
+  /** Deja el catálogo como recién abierto: en la pregunta de con quién juegas. */
+  function reiniciarCatalogo() {
+    modoPublico = null;
+    categoriaAbierta = null;
+    busqueda = '';
+    filtro = 'todos';
+  }
 
   function pintarCatalogo() {
     var caja = $('#v-catalogo');
@@ -267,7 +367,6 @@
           'Llevas ' + datos.perfil().temasJugados.length + ' debatidos.' +
         '</p>' +
         barraBusqueda() +
-        '<div style="height:var(--e-3)"></div>' +
 
         /* El catálogo es una plantilla: lo que no está, se escribe. Va ARRIBA
            y no al final de 12 categorías, porque escribir el tema propio es lo
@@ -277,12 +376,11 @@
           '<span><span class="categoria__nombre">' + esc(datos.MIS_TEMAS) + '</span>' +
           '<span class="categoria__que">' +
             (propios
-              ? 'Los que escribieron ustedes.'
-              : 'Lo que discuten y no está en la lista, escríbanlo aquí.') +
+              ? 'Los temas que escribiste.'
+              : 'Lo que discutes y no está en la lista, escríbelo aquí.') +
           '</span></span>' +
           '<span class="categoria__n">' + (propios || '+') + '</span>' +
         '</button>' +
-        '<div style="height:var(--e-3)"></div>' +
 
         '<div class="categorias">' +
           cat.categorias.map(function (c) {
@@ -349,7 +447,24 @@
     var caja = $('#v-perfil');
     var insignias = ['🦷', '🍽️', '🐕', '🎬', '💶', '⏰', '😄', '🛋️'];
 
-    var dentro = window.ATWI.auth && window.ATWI.auth.dentro();
+    /* LA TARJETA DE LA CUENTA NO DESAPARECE NUNCA cuando hay servidor. Antes
+       dependía de que `dentro()` dijera que sí, y si la sesión se torcía —o si
+       el correo aún no había llegado del servidor— la fila entera se esfumaba
+       y no había por dónde cerrar sesión ni saber con qué cuenta se estaba.
+       Ahora siempre está: con sesión enseña el correo y «Salir», y sin ella lo
+       dice y ofrece entrar. */
+    var auth = window.ATWI.auth;
+    var hayServidor = Boolean(auth && auth.hayServidor());
+    var dentro = Boolean(auth && auth.dentro());
+    var correo = dentro ? auth.correo() : '';
+
+    /* El correo vive dentro de la sesión y a veces llega después —al volver del
+       enlace del correo la sesión no lo trae—. Se pregunta y se repinta. */
+    if (dentro && !correo && !pintarPerfil.preguntando) {
+      pintarPerfil.preguntando = true;
+      auth.quienSoy().then(function () { pintarPerfil.preguntando = false; pintarPerfil(); })
+                     .catch(function () { pintarPerfil.preguntando = false; });
+    }
 
     caja.innerHTML =
       /* Toda la ficha es un botón: el nombre y el dibujo se cambian desde
@@ -366,14 +481,18 @@
 
       /* La cuenta va ARRIBA, no enterrada bajo las insignias: quien busca
          cambiar de cuenta no debería tener que hacer scroll para encontrarlo. */
-      (dentro
+      (hayServidor
         ? '<div class="cuenta">' +
             '<span class="cuenta__quien">' +
-              '<span class="cuenta__eti">Sesión iniciada</span>' +
-              '<span class="cuenta__correo">' + esc(window.ATWI.auth.correo()) + '</span>' +
+              '<span class="cuenta__eti">' + (dentro ? 'Sesión iniciada' : 'Sin sesión') + '</span>' +
+              '<span class="cuenta__correo">' +
+                (dentro ? esc(correo || 'Tu cuenta') : 'Entra para jugar con otra persona') +
+              '</span>' +
             '</span>' +
-            '<button class="boton boton--suave cuenta__salir" data-accion="salir">' +
-              window.ATWI.iconoSVG('salir', 18) + 'Salir</button>' +
+            (dentro
+              ? '<button class="boton boton--suave cuenta__salir" data-accion="salir">' +
+                  window.ATWI.iconoSVG('salir', 18) + 'Salir</button>'
+              : '<button class="boton boton--suave cuenta__salir" data-accion="entrar">Entrar</button>') +
           '</div>'
         : '') +
 
@@ -1031,9 +1150,7 @@
     var porPostura = propuesta.miPostura === 'a' ? [fichaMia, fichaSuya] : [fichaSuya, fichaMia];
     var abre = Math.random() < 0.5 ? 0 : 1;
 
-    cerrarModal('m-preparar');
-    cerrarModal('m-modo');
-    cerrarModal('m-tema');
+    cerrarModales(['m-preparar', 'm-modo', 'm-tema']);
     window.ATWI.partida.empezar({
       tema: t,
       modo: propuesta.modo,
@@ -1065,8 +1182,7 @@
         '</p>' +
       '</div>';
 
-    cerrarModal('m-modo');
-    cerrarModal('m-tema');
+    cerrarModales(['m-modo', 'm-tema']);
     abrirModal('m-invitar');
   }
 
@@ -1083,19 +1199,30 @@
   /* Para quien llegue de fuera con datos nuevos: la puerta, cuando se trae el
      perfil del servidor después de arrancar. */
   window.ATWI.repintar = function () { pintar(vistaActual); };
+  /* Para quien abra algo a pantalla completa desde fuera de este archivo —el
+     veredicto— y necesite que el atrás del teléfono lo cierre a él y no la app. */
+  window.ATWI.pasoAtras = apilarPaso;
 
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-vista]');
-    if (b) { irA(b.dataset.vista); return; }
+    if (b) {
+      /* La pestaña del catálogo SIEMPRE devuelve al principio. Si guardara por
+         dónde iba, quien vuelve al rato se encuentra una lista de temas sin
+         recordar que entró por una categoría, y no tiene cómo saber que hay que
+         retroceder para cambiar de pareja a amigos. */
+      if (b.dataset.vista === 'catalogo') reiniciarCatalogo();
+      irA(b.dataset.vista);
+      return;
+    }
 
     var fil = e.target.closest('[data-filtro]');
     if (fil) { filtro = fil.dataset.filtro; pintarCatalogo(); return; }
 
     var pub = e.target.closest('[data-publico]');
-    if (pub) { modoPublico = pub.dataset.publico; categoriaAbierta = null; pintarCatalogo(); return; }
+    if (pub) { modoPublico = pub.dataset.publico; categoriaAbierta = null; entrar(); pintarCatalogo(); return; }
 
     var cat = e.target.closest('[data-categoria]');
-    if (cat) { categoriaAbierta = cat.dataset.categoria; pintarCatalogo(); return; }
+    if (cat) { categoriaAbierta = cat.dataset.categoria; entrar(); pintarCatalogo(); return; }
 
     var tema = e.target.closest('[data-tema]');
     if (tema) { abrirTema(tema.dataset.tema); return; }
@@ -1176,7 +1303,7 @@
     var a = acc.dataset.accion;
 
     if (a === 'buzon') { abrirBuzon(); }
-    else if (a === 'nuevo') { irA('catalogo'); }
+    else if (a === 'nuevo') { reiniciarCatalogo(); irA('catalogo'); }
     else if (a === 'demo-debate') {
       window.ATWI.veredicto.revelar({
         modo: 'debate', publico: 'pareja',
@@ -1195,8 +1322,13 @@
         modo: 'negociacion', publico: 'pareja', tema: 'los platos', acuerdo: null
       });
     }
-    else if (a === 'catalogo-atras') { categoriaAbierta = null; pintarCatalogo(); }
-    else if (a === 'cambiar-publico') { modoPublico = null; categoriaAbierta = null; pintarCatalogo(); }
+    else if (a === 'catalogo-atras' || a === 'cambiar-publico') {
+      /* Las flechas de dentro del catálogo hacen lo mismo que el atrás del
+         teléfono, y por el mismo camino: si cambiaran el estado por su cuenta,
+         la cuenta de entradas del historial se descuadraría. */
+      if (profundidad > 0) history.back();
+      else retroceder();
+    }
     else if (a === 'elegir-modo') { abrirModo(); }
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
@@ -1216,11 +1348,11 @@
     else if (a === 'borrar-tema') {
       if (confirm('Se borra este tema de la lista de ustedes. Lo ya debatido sigue en el historial.')) {
         datos.borrarTemaPropio(escribiendo.id);
-        cerrarModal('m-escribir');
-        cerrarModal('m-tema');
+        cerrarModales(['m-escribir', 'm-tema']);
         pintarCatalogo();
       }
     }
+    else if (a === 'entrar') { location.href = location.pathname; }
     else if (a === 'salir') {
       /* Se cierra la sesión Y se borra lo que quedó en el aparato: si no, el
          siguiente en entrar vería el nombre y los contadores del anterior. */

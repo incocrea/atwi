@@ -546,11 +546,17 @@ body.app {
 .categoria__n { align-self: center; }
 
 /* --- Buscador del catálogo ----------------------------------------------------
-   El hueco es el MISMO que hay entre tarjeta y tarjeta (--e-3). Estaba en
-   --e-2 y la primera píldora de filtro quedaba pegada al campo de búsqueda,
-   rompiendo el ritmo de la columna: campo · filtros · tarjeta · tarjeta, todos
-   al mismo aire. */
-.buscador { display: grid; gap: var(--e-3); }
+   El hueco es el MISMO que hay entre tarjeta y tarjeta (--e-3), tanto DENTRO
+   del buscador —entre el campo y las píldoras— como DEBAJO, hasta lo que venga
+   después. Así la columna entera respira igual: campo · filtros · tarjeta ·
+   tarjeta.
+
+   El margen de abajo va AQUÍ y no en cada pantalla a propósito. Estaba puesto
+   con un separador a mano en la lista de categorías y no en la de temas, así
+   que la primera tarjeta quedaba pegada a los filtros; se arregló una vez y
+   volvió a perderse al tocar la otra pantalla. Siendo propiedad del componente,
+   no hay dónde olvidarlo. */
+.buscador { display: grid; gap: var(--e-3); margin-bottom: var(--e-3); }
 .buscador .campo { background: var(--superficie); }
 .filtros { display: flex; gap: var(--e-2); flex-wrap: wrap; }
 
@@ -690,7 +696,12 @@ body.app {
 }
 .reescrito svg { flex: none; }
 
-.categoria--propia { border: 2px dashed var(--linea-fuerte); background: transparent; box-shadow: none; }
+/* «Mis temas» va suelto encima de la rejilla de categorías, así que se separa
+   solo. Igual que el buscador: el hueco es del componente, no de la pantalla. */
+.categoria--propia {
+  border: 2px dashed var(--linea-fuerte); background: transparent; box-shadow: none;
+  margin-bottom: var(--e-3);
+}
 .categoria--propia .categoria__emoji { background: var(--premio-tinte); }
 .categoria--propia .categoria__n { color: var(--premio-hondo); font-size: var(--t-h3); }
 

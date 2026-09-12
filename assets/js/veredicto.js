@@ -181,6 +181,9 @@ window.ATWI = window.ATWI || {};
 
       p.hidden = false;
       p.className = 'revelacion revelacion--' + (r.modo === 'negociacion' ? 'negociacion' : 'debate');
+      /* Una entrada de historial para el veredicto: si no, el atrás del
+         teléfono cerraría la app con el resultado en pantalla. */
+      if (window.ATWI.pasoAtras) window.ATWI.pasoAtras();
       /* Tres filas fijas: la frase arriba, lo que cambia en medio y el botón
          abajo. La frase NO se vuelve a pintar al revelar el resultado, así que
          no se mueve ni cambia de tamaño: donde aterrizan los tramos es ya su
