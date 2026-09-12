@@ -324,7 +324,7 @@ body.app {
 #m-explicar .modal__cuerpo { display: flex; flex-direction: column; }
 .explica {
   display: grid; justify-items: center; text-align: center;
-  gap: var(--e-3); padding-top: var(--e-5);
+  gap: var(--e-3); padding-top: var(--e-5); padding-bottom: var(--e-6);
   flex: 1; align-content: space-between;
 }
 /* El nombre del modo va dibujado y manda solo: aquí es el titular de la
