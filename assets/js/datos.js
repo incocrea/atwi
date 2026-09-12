@@ -41,7 +41,10 @@ window.ATWI = window.ATWI || {};
        entonces se normaliza al cargar, porque un perfil viejo traería un emoji
        aquí y la sala intentaría pintarlo como si fuera una cara. */
     avatar: 'kai',
-    avatarFondo: '#6EC6FF',   // el color del personaje, ya no se elige aparte
+    /* El color YA NO ES EL FONDO: el fondo lo pone el tinte del personaje. Esto
+       es el aro que lo rodea, y sí se elige, porque es lo que distingue mi ficha
+       de la del otro sin obligarnos a ser personajes distintos. */
+    avatarBorde: '#7A6AD8',
     nivel: 1,
     puntos: 0,
     puntosNivel: 100,
@@ -67,8 +70,11 @@ window.ATWI = window.ATWI || {};
     if (!window.ATWI.esPersonaje || !window.ATWI.esPersonaje(perfil.avatar)) {
       perfil.avatar = PERFIL_NUEVO.avatar;
     }
-    perfil.avatarFondo = window.ATWI.colorPersonaje
-      ? window.ATWI.colorPersonaje(perfil.avatar) : PERFIL_NUEVO.avatarFondo;
+    /* `avatarFondo` fue el color de relleno hasta el 2026-09-12. Se hereda como
+       color de borde en vez de tirarlo: quien ya habia elegido el suyo se lo
+       encuentra donde toca y no de vuelta en el de por defecto. */
+    if (!perfil.avatarBorde) perfil.avatarBorde = perfil.avatarFondo || PERFIL_NUEVO.avatarBorde;
+    delete perfil.avatarFondo;
     return perfil;
   }
 

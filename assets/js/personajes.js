@@ -131,11 +131,17 @@ window.ATWI = window.ATWI || {};
    */
   window.ATWI.otroPersonaje = function (quien) { return quien === 'luna' ? 'kai' : 'luna'; };
 
-  /** La ficha redonda: la cara dentro de su disco de color. */
-  window.ATWI.fichaHTML = function (quien, clase, estilo) {
+  /**
+   * La ficha redonda: la cara dentro de su disco, con un aro de color alrededor.
+   * El color NO es el fondo —el fondo es el tinte del personaje y no se toca—
+   * sino el borde: es lo que cada quien elige para distinguir su ficha de la
+   * del otro sin tener que cambiar de personaje.
+   */
+  window.ATWI.fichaHTML = function (quien, clase, borde) {
     if (!window.ATWI.esPersonaje(quien)) quien = 'kai';
     return '<span class="avatar avatar--pj ' + (clase || '') + '"' +
-        (estilo ? ' style="' + estilo + '"' : '') + ' data-quien="' + quien + '">' +
+        (borde ? ' style="--borde-ficha:' + esc(borde) + '"' : '') +
+        ' data-quien="' + quien + '">' +
         window.ATWI.fondoPersonaje(quien, 'disco') +
         '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-frente.png" ' +
           'alt="' + esc(GENTE[quien].nombre) + '" loading="lazy" decoding="async">' +

@@ -639,11 +639,21 @@
      diez. Ahora son Kai y Luna, y con ellos se va la elección de color: el color
      es del personaje, y dejar elegirlo aparte permitía a Kai salir en rosa y a
      Luna en azul, que es romperles la identidad. */
-  var personajeElegido = 'kai';
+  var COLORES_FICHA = ['#7A6AD8', '#B063D6', '#EE7FA8', '#F07F55', '#F0B429',
+                       '#9CC93F', '#34B79B', '#3FB6D0', '#5A9BEF', '#C09A6B'];
 
-  /** El círculo del avatar: la cara del personaje en su disco. */
-  function avatarHTML(p, clase, estilo) {
-    return window.ATWI.fichaHTML(p.avatar, clase, estilo);
+  var personajeElegido = 'kai';
+  var colorElegido = COLORES_FICHA[0];
+
+  /** El círculo del avatar: la cara del personaje, con su aro de color. */
+  function avatarHTML(p, clase) {
+    return window.ATWI.fichaHTML(p.avatar, clase, p.avatarBorde);
+  }
+
+  /** La muestra en vivo de la ficha que se está editando. */
+  function muestraFicha() {
+    return window.ATWI.fichaHTML(personajeElegido, 'avatar--retrato', colorElegido)
+      .replace('class="avatar', 'id="f-muestra" class="avatar');
   }
 
   /* La misma pantalla sirve para mi ficha y para la del invitado. Lo único que
@@ -659,6 +669,8 @@
     var g = deInvitado ? fichaDelInvitado(($('#p-otro') && $('#p-otro').value || '').trim()) : null;
 
     personajeElegido = deInvitado ? g.avatar : p.avatar;
+    colorElegido = deInvitado ? g.color : (p.avatarBorde || COLORES_FICHA[0]);
+    var vetado = deInvitado ? (p.avatarBorde || '').toLowerCase() : '';
 
     $('#m-perfil .modal__titulo').textContent = deInvitado
       ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
@@ -675,16 +687,14 @@
           /* También en fila, por lo mismo: centrado y con tres renglones de
              explicación debajo, esta pantalla pedía scroll. */
           ? '<div class="con-ficha">' +
-              window.ATWI.fichaHTML(personajeElegido, 'avatar--retrato', null)
-                .replace('class="avatar', 'id="f-muestra" class="avatar') +
+              muestraFicha() +
               '<span class="chico suave">Solo para jugar aquí: no es una cuenta ni tiene ' +
                 'historial. Se recuerda en este teléfono.</span>' +
             '</div>'
           : '<label style="display:block">' +
               '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
               '<span class="con-ficha" style="margin-top:6px">' +
-                window.ATWI.fichaHTML(personajeElegido, 'avatar--retrato', null)
-                  .replace('class="avatar', 'id="f-muestra" class="avatar') +
+                muestraFicha() +
                 '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
                   'placeholder="Tu nombre" value="' + esc(p.nombre) + '">' +
               '</span>' +
@@ -713,6 +723,30 @@
               '</div>' +
             '</div>') +
 
+        /* El aro vuelve a elegirse. El personaje dice quién eres; el aro, cuál
+           de las dos fichas es la tuya cuando las dos están en la misma sala. */
+        '<div>' +
+          '<span class="chico" style="font-weight:700">' +
+            (deInvitado ? 'El aro de su ficha' : 'El aro de tu ficha') + '</span>' +
+          /* El punto va en un <i> dentro del botón: así el color puede ser
+             pequeño —caben los diez en una fila— mientras el área que se toca
+             sigue siendo alta y cómoda. */
+          '<div class="colores" style="margin-top:var(--e-2)">' +
+            COLORES_FICHA.map(function (c, i) {
+              var esMio = c.toLowerCase() === vetado;
+              return '<button class="color' + (esMio ? ' color--tomado' : '') + '" data-color="' + c + '"' +
+                (esMio ? ' disabled' : '') +
+                (c.toLowerCase() === colorElegido.toLowerCase() ? ' aria-pressed="true"' : '') +
+                ' aria-label="' + (esMio ? 'Ese aro ya es el tuyo' : 'Color ' + (i + 1)) + '">' +
+                '<i style="background:' + c + '"></i></button>';
+            }).join('') +
+          '</div>' +
+          (deInvitado
+            ? '<p class="chico tenue" style="margin-top:6px">El tuyo está apartado: ' +
+              'dos aros del mismo color no se distinguen en la sala.</p>'
+            : '') +
+        '</div>' +
+
         '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
       '</div>';
 
@@ -723,27 +757,26 @@
 
   function refrescarMuestra() {
     var m = $('#f-muestra');
-    if (!m) return;
-    m.outerHTML = window.ATWI.fichaHTML(personajeElegido, 'avatar--retrato')
-      .replace('class="avatar', 'id="f-muestra" class="avatar');
+    if (m) m.outerHTML = muestraFicha();
   }
 
   function guardarFicha() {
     /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
        se recuerda al empezar la partida, cuando ya se sabe su nombre. */
     if (editandoFicha === 'invitado') {
+      propuesta.otroColor = colorElegido;
       cerrarModal('m-perfil');
+      var bf0 = $('#p-ficha-otro');
+      if (bf0) bf0.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', colorElegido)
+        .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
       return;
     }
 
     var nombre = ($('#f-nombre').value || '').trim();
     if (nombre.length < 2) { $('#f-error').textContent = 'Escribe un nombre de al menos dos letras.'; return; }
 
-    /* El color deja de elegirse y pasa a salir del personaje. Se sigue
-       guardando porque la sala lo usa para marcar cada voz. */
-    var colorElegido = window.ATWI.colorPersonaje(personajeElegido);
     var fichaElegida = personajeElegido;
-    datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarFondo: colorElegido });
+    datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarBorde: colorElegido });
     cerrarModal('m-perfil');
     pintarPerfil();
     refrescarFichaCabecera();
@@ -1096,12 +1129,23 @@
    * cambio de personaje, el invitado tiene que moverse conmigo.
    */
   function fichaDelInvitado(nombre) {
-    var otro = window.ATWI.otroPersonaje(datos.perfil().avatar);
+    var g = nombre ? datos.invitado(nombre) : null;
     return {
-      nombre: (nombre && datos.invitado(nombre) ? datos.invitado(nombre).nombre : nombre) || '',
-      avatar: otro,
-      color: window.ATWI.colorPersonaje(otro)
+      nombre: (g ? g.nombre : nombre) || '',
+      /* El personaje NO se elige: es el que no soy yo. El aro sí, y si ya jugó
+         aquí se le devuelve el suyo. */
+      avatar: window.ATWI.otroPersonaje(datos.perfil().avatar),
+      color: (g && g.color) || propuesta.otroColor || colorLibre()
     };
+  }
+
+  /** Un aro que no sea el mío: dos iguales no se distinguen en la sala. */
+  function colorLibre() {
+    var mio = (datos.perfil().avatarBorde || '').toLowerCase();
+    for (var i = 0; i < COLORES_FICHA.length; i++) {
+      if (COLORES_FICHA[i].toLowerCase() !== mio) return COLORES_FICHA[i];
+    }
+    return COLORES_FICHA[0];
   }
 
   /**
@@ -1170,20 +1214,23 @@
          suyo dos veces. «Nombre de invitado» no admite esa lectura. */
       '<span class="chico" style="font-weight:700;display:block">Nombre de invitado</span>' +
       '<div class="con-ficha" style="margin-top:6px">' +
-        window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico')
-          .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
+        '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
+          'aria-label="Elegir el aro de su ficha">' +
+          window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
+            .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
+        '</button>' +
         '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
           'placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
       '</div>' +
       '<span class="chico tenue" style="display:block;margin-top:6px">' +
         'Van a jugar los dos en este teléfono, por turnos. Juega con el personaje que ' +
-        'no eres tú, para que las dos voces se distingan en la sala.</span>' +
+        'no eres tú; toca el círculo para darle su aro de color.</span>' +
 
       (invitadosPrevios().length
         ? '<div class="invitados" style="margin-top:var(--e-3)">' +
             invitadosPrevios().map(function (g) {
               return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
-                  window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--mini') + esc(g.nombre) +
+                  window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--mini', g.color) + esc(g.nombre) +
                 '</button>';
             }).join('') +
           '</div>'
@@ -1259,7 +1306,7 @@
     /* La ficha del invitado se recuerda AQUÍ, que es cuando por fin se sabe su
        nombre. No crea cuenta ni historial: es memoria de este teléfono para no
        volver a preguntárselo. */
-    datos.recordarInvitado({ nombre: otro });
+    datos.recordarInvitado({ nombre: otro, color: propuesta.otroColor });
     propuesta.otro = otro;
 
     /* Cada jugador viaja con su ficha entera —nombre, dibujo y color—, porque
@@ -1267,8 +1314,7 @@
        una inicial. El primero defiende la postura A y el segundo la B: eso lo
        fija quien elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
     var p = datos.perfil();
-    var fichaMia = { nombre: yo, avatar: p.avatar,
-                     color: window.ATWI.colorPersonaje(p.avatar) };
+    var fichaMia = { nombre: yo, avatar: p.avatar, color: p.avatarBorde };
     var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar, color: propuesta.otroColor };
     var porPostura = propuesta.miPostura === 'a' ? [fichaMia, fichaSuya] : [fichaSuya, fichaMia];
     var abre = Math.random() < 0.5 ? 0 : 1;
@@ -1394,7 +1440,7 @@
         propuesta.otroColor = g.color;
         $('#p-otro').value = g.nombre;
         var bf = $('#p-ficha-otro');
-        if (bf) bf.outerHTML = window.ATWI.fichaHTML(g.avatar, 'avatar--chico')
+        if (bf) bf.outerHTML = window.ATWI.fichaHTML(g.avatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
         $$('#m-preparar [data-invitado]').forEach(function (x) {
           if (x.dataset.invitado === g.nombre) x.setAttribute('aria-pressed', 'true');
@@ -1402,6 +1448,17 @@
         });
         revisarPreparar();
       }
+      return;
+    }
+
+    var col = e.target.closest('[data-color]');
+    if (col) {
+      colorElegido = col.dataset.color;
+      $$('#m-perfil [data-color]').forEach(function (x) {
+        if (x.dataset.color === colorElegido) x.setAttribute('aria-pressed', 'true');
+        else x.removeAttribute('aria-pressed');
+      });
+      refrescarMuestra();
       return;
     }
 
@@ -1458,6 +1515,7 @@
       cerrarModal('m-explicar');
       irA('catalogo');
     }
+    else if (a === 'ficha-invitado') { abrirFicha('invitado'); }
     else if (a === 'cambiar-modo') {
       /* Solo hay dos modos, así que «cambiar» es alternar. Mandar de vuelta a
          la portada para elegir entre dos era pedir tres toques donde basta uno,
@@ -1520,7 +1578,7 @@
         propuesta.otroAvatar = g.avatar;
         propuesta.otroColor = g.color;
         var bf = $('#p-ficha-otro');
-        if (bf) bf.outerHTML = window.ATWI.fichaHTML(g.avatar, 'avatar--chico')
+        if (bf) bf.outerHTML = window.ATWI.fichaHTML(g.avatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
       }
       revisarPreparar();

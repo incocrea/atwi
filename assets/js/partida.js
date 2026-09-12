@@ -240,7 +240,7 @@ window.ATWI = window.ATWI || {};
                    ' style="--voz:' + esc(j.color) + '"' +
                    ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
                    ' aria-label="Escuchar a ' + esc(j.nombre) + ', turno ' + v.turno + '">' +
-                window.ATWI.fichaHTML(j.avatar, 'rueda__cara') +
+                window.ATWI.fichaHTML(j.avatar, 'rueda__cara', j.color) +
                 '<span class="rueda__n">' + v.turno + '</span>' +
               '</button>';
           }).join('') +
@@ -248,7 +248,7 @@ window.ATWI = window.ATWI || {};
         '<p class="dicho__leyenda">' +
           P.jugadores.map(function (j) {
             return '<span class="leyenda">' +
-              window.ATWI.fichaHTML(j.avatar, 'avatar--mini') +
+              window.ATWI.fichaHTML(j.avatar, 'avatar--mini', j.color) +
               esc(j.nombre) + ' · ' + j.letra + '</span>';
           }).join('') +
         '</p>' +
@@ -425,7 +425,7 @@ window.ATWI = window.ATWI || {};
         '<div class="sala__posturas">' +
           P.jugadores.map(function (j, i) {
             return '<p class="chico voz">' +
-              window.ATWI.fichaHTML(j.avatar, 'voz__cara') +
+              window.ATWI.fichaHTML(j.avatar, 'voz__cara', j.color) +
               '<span><strong>' + esc(j.nombre) + '</strong> defiende la ' + j.letra + ': ' +
               esc(j.texto) + '</span></p>';
           }).join('') +
@@ -473,7 +473,7 @@ window.ATWI = window.ATWI || {};
 
     function pinta(i) {
       var j = P.jugadores[i];
-      ficha.innerHTML = window.ATWI.fichaHTML(j.avatar, 'sorteo__cara');
+      ficha.innerHTML = window.ATWI.fichaHTML(j.avatar, 'sorteo__cara', j.color);
       quien.textContent = j.nombre;
     }
     pinta(inicio);

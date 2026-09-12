@@ -1379,7 +1379,19 @@ body.app {
    quedaba a la misma especificidad que `.voz__cara` o `.rueda__cara` y ganaba el
    último escrito, que es una forma frágil de decidir quién manda. Doblada gana
    por peso y deja de depender del orden del archivo. */
-.avatar--pj.avatar--pj { display: block; background: none; padding: 0; overflow: hidden; }
+.avatar--pj.avatar--pj {
+  display: block; background: none; padding: 0; overflow: hidden;
+  /* El color de cada quien pasó de RELLENO a ARO. El relleno ya lo ocupa el
+     tinte del personaje —Kai azul, Luna rosa— y pintarlo encima le quitaba a la
+     figura justo el aire que la hace suya. El aro distingue las dos fichas sin
+     tocar el dibujo. */
+  border: var(--grosor-aro, 3px) solid var(--borde-ficha, transparent);
+  box-sizing: border-box;
+  box-shadow: var(--sombra-1);
+}
+/* En las chicas 3 px se comen el círculo: el grosor baja con el tamaño. */
+.avatar--mini.avatar--pj { --grosor-aro: 2px; }
+.avatar--retrato.avatar--pj, .personaje__cara.avatar--pj { --grosor-aro: 4px; }
 
 /* Las que van DENTRO de otro círculo lo llenan entero, porque quien trae el
    tamaño es el de fuera. Sin `overflow: hidden` en el contenedor: la rueda lleva
