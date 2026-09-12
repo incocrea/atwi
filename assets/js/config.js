@@ -42,7 +42,13 @@ window.ATWI.config = {
      aplica el servidor; estas son solo para no enseñar botones imposibles.
      Vienen de docs/02-modos-y-catalogo.md. */
   reglas: {
-    turnosPorPersona: 3,
+    /* El turno único está PROHIBIDO en los dos modos (docs/03 §14). En Juicio,
+       porque sin réplica el criterio de escucha no tiene sobre qué puntuarse;
+       en Pacto, porque dos turnos son el bucle completo de la mediación. */
+    turnosMin: 2,
+    turnosMax: 5,
+    turnosPorDefecto: 3,
+    turnosConCupo: [4, 5],       // fuera del nivel gratuito
     segundosPorTurno: 60,
     revanchasPorTema: 2,
     revanchasPorTemporada: 4,
