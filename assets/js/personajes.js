@@ -34,7 +34,14 @@ window.ATWI = window.ATWI || {};
   var POSES = {
     frente: 'de frente',      // retrato: avatar del perfil y pantalla de versus
     plante: 'en guardia',     // cuerpo entero, listo para el turno
-    hablando: 'hablando'      // mientras graba: la mano y la boca, sin globo
+    hablando: 'hablando',     // mientras graba: la mano y la boca, sin globo
+    ganar: 'festejando',      // el resultado, para quien gana
+    /* El puño va de UNO EN UNO y no los dos juntos a propósito: en Negociación
+       no hay versus sino equipo, y cada uno entra desde su lado hasta chocar en
+       el centro. La animación necesita las dos piezas sueltas. Kai mira a la
+       derecha y Luna a la izquierda, que es como se encuentran. */
+    puno: 'ofreciendo el puño',
+    derrota: 'encajándolo'    // sentado, sin lágrimas: se pierde de buen humor
   };
 
   function esc(s) {
