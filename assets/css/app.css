@@ -244,14 +244,12 @@ body.app {
 .cartas-modo { display: grid; gap: var(--e-4); }
 
 .carta-modo {
-  display: grid; justify-items: start; gap: var(--e-2);
-  width: 100%; padding: var(--e-5) var(--e-4) var(--e-4);
+  display: grid; justify-items: start; gap: var(--e-3);
+  width: 100%; padding: var(--e-4);
   border: 0; border-radius: var(--radio-modal);
-  text-align: left; font: inherit; color: var(--tinta); cursor: pointer;
+  text-align: left; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
-  transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave);
 }
-.carta-modo:active { transform: scale(.985); box-shadow: var(--sombra-1); }
 .carta-modo--debate { background: var(--debate-tinte); }
 .carta-modo--negociacion { background: var(--negociacion-tinte); }
 
@@ -270,27 +268,37 @@ body.app {
   font-family: var(--display); font-weight: 800; font-size: var(--t-h2);
   line-height: 1.1; min-width: 0;
 }
-.carta-modo__que {
-  font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.45;
+/* Las dos salidas, centradas abajo y del mismo tamaño: una lleva a entender y
+   la otra a jugar, y ninguna de las dos es la equivocada. */
+.carta-modo__salidas {
+  display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-2);
+  width: 100%; margin-top: var(--e-2);
 }
+.carta-modo__salidas .boton { padding: var(--e-3) var(--e-2); gap: 6px; font-size: var(--t-chico); }
+.carta-modo__explica { background: var(--superficie); }
+
 /* Lo que de verdad hay que entender de cada modo, resaltado dentro del texto:
    en Controversia, que no se juzga quién tiene razón; en Negociación, que no
    estar de acuerdo también es un final válido. Va en el tono hondo del modo
-   —no en otro color— para que destaque sin salirse de la carta. */
+   —no en otro color— para que destaque sin salirse de la tarjeta. */
 .resalte { font-weight: 800; }
-.carta-modo--debate .resalte { color: #A8431F; }
-.carta-modo--negociacion .resalte { color: #176450; }
-/* La pastilla de abajo lleva el color del modo y dice lo mismo en las dos:
-   lo que cambia entre una carta y otra es el modo, no la acción. */
-.carta-modo__ir {
-  display: inline-flex; align-items: center; gap: 6px;
-  margin-top: var(--e-2); padding: var(--e-2) var(--e-5);
-  border-radius: var(--radio-pastilla);
-  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
-  color: var(--blanco);
+.explica--debate .resalte { color: #A8431F; }
+.explica--negociacion .resalte { color: #176450; }
+
+/* --- La explicación de un modo ------------------------------------------------
+   Hace juego con su carta: mismo disco blanco, mismo nombre, mismo color de
+   fondo, que lo pone `modal--<modo>`. Es la misma cosa, en grande. */
+.explica { display: grid; justify-items: center; text-align: center; gap: var(--e-3); padding-top: var(--e-5); }
+.explica__disco {
+  width: 104px; height: 104px; border-radius: var(--radio-pastilla);
+  display: grid; place-items: center;
+  background: var(--superficie); box-shadow: var(--sombra-2);
 }
-.carta-modo--debate .carta-modo__ir { background: var(--debate-oscuro); }
-.carta-modo--negociacion .carta-modo__ir { background: var(--negociacion-oscuro); }
+.explica__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-h1); line-height: 1.1; }
+.explica__que {
+  font-size: var(--t-base); color: var(--tinta-suave); line-height: 1.55;
+  max-width: 26rem;
+}
 
 /* EL JUEGO DE PALABRAS. Las dos palabras esconden «IA»: negoc·IA·ción y
    controvers·IA. Va en el lavanda de la marca en los dos modos, no en el color

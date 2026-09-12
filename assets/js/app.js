@@ -245,23 +245,52 @@
       '</div>';
   }
 
-  /* La tarjeta de un modo: explica y empieza, que antes eran dos cosas.
-     El nombre y el icono comparten renglón, uno en cada extremo, para que las
-     dos cartas se lean como dos fichas iguales y no como dos bloques de texto
-     con un dibujo encima. */
+  /* La carta de un modo: nombre, icono y dos salidas. NADA MÁS.
+     La explicación se fue a su propio modal. En la carta ocupaba cinco
+     renglones de letra pequeña que hay que leer para decidir, y quien ya sabe
+     de qué va —o sea, a partir de la segunda partida— tenía que saltárselos
+     cada vez para llegar al botón. Ahora la portada se lee de un vistazo y la
+     explicación está a un toque de quien la necesite. */
   function cartaModo(clave) {
-    var m = cfg.modos[clave];
-    return '<button class="carta-modo carta-modo--' + clave + '" data-crear="' + clave + '">' +
-        '<span class="carta-modo__alto">' +
+    return '<div class="carta-modo carta-modo--' + clave + '">' +
+        '<div class="carta-modo__alto">' +
           '<span class="carta-modo__nombre">' + nombreModo(clave) + '</span>' +
-          '<span class="carta-modo__disco">' + icono(clave, 31) + '</span>' +
-        '</span>' +
-        /* `que` lleva HTML a propósito —el resalte de la frase que importa—
-           y por eso NO se escapa. Es texto nuestro, de config.js, no de nadie
-           de fuera: si algún día saliera de la base, hay que escaparlo. */
-        '<span class="carta-modo__que">' + m.que + '</span>' +
-        '<span class="carta-modo__ir">' + window.ATWI.iconoSVG('play', 16) + 'Jugar</span>' +
-      '</button>';
+          '<span class="carta-modo__disco">' + icono(clave, 34) + '</span>' +
+        '</div>' +
+        '<div class="carta-modo__salidas">' +
+          '<button class="boton boton--suave carta-modo__explica" data-explicar="' + clave + '">' +
+            window.ATWI.iconoSVG('aviso', 16) + 'Explícame</button>' +
+          '<button class="boton carta-modo__jugar boton--' + clave + '" data-crear="' + clave + '">' +
+            window.ATWI.iconoSVG('play', 16) + 'Jugar</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  /* El modal de la explicación hace juego con su carta: mismo color de fondo,
+     mismo disco blanco con el icono, mismo nombre. Termina en «Jugar», porque
+     quien acaba de entender un modo suele querer probarlo ahí mismo. */
+  var explicando = null;
+
+  function abrirExplicar(clave) {
+    var m = cfg.modos[clave];
+    if (!m) return;
+    explicando = clave;
+
+    $('#m-explicar').className = 'modal modal--' + clave;
+    $('#m-explicar .modal__titulo').textContent = 'Cómo se juega';
+    $('#m-explicar .modal__cuerpo').innerHTML =
+      '<div class="explica explica--' + clave + '">' +
+        '<span class="explica__disco">' + icono(clave, 62) + '</span>' +
+        '<h2 class="explica__nombre">' + nombreModo(clave) + '</h2>' +
+        /* `que` lleva HTML a propósito —el resalte de la frase que importa— y
+           por eso NO se escapa. Es texto nuestro, de config.js, no de nadie de
+           fuera: si algún día saliera de la base, hay que escaparlo. */
+        '<p class="explica__que">' + m.que + '</p>' +
+      '</div>';
+
+    $('#m-explicar .modal__pie button').className =
+      'boton boton--bloque boton--grande boton--' + clave;
+    abrirModal('m-explicar');
   }
 
   /* La tarjeta NO es un botón: dentro lleva otro —personalizar— y un botón
@@ -1260,6 +1289,9 @@
     var cat = e.target.closest('[data-categoria]');
     if (cat) { categoriaAbierta = cat.dataset.categoria; entrar(); pintarCatalogo(); return; }
 
+    var expli = e.target.closest('[data-explicar]');
+    if (expli) { abrirExplicar(expli.dataset.explicar); return; }
+
     /* Empezar por el modo: se guarda y se va a buscar tema con él puesto. */
     var crear = e.target.closest('[data-crear]');
     if (crear) {
@@ -1376,6 +1408,14 @@
          la cuenta de entradas del historial se descuadraría. */
       if (profundidad > 0) history.back();
       else retroceder();
+    }
+    else if (a === 'jugar-explicado') {
+      /* Del modal de la explicación directo a jugar ese mismo modo. */
+      propuesta.modo = explicando;
+      propuesta.turnos = cfg.reglas.turnosPorDefecto;
+      reiniciarCatalogo();
+      cerrarModal('m-explicar');
+      irA('catalogo');
     }
     else if (a === 'cambiar-modo') {
       /* Solo hay dos modos, así que «cambiar» es alternar. Mandar de vuelta a
