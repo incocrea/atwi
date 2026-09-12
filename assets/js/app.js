@@ -205,14 +205,15 @@
           '<h1 style="font-size:var(--t-h2)">Con mi pareja</h1>' +
         '</div>' +
         '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
-          cat.total + ' temas sobre los que discuten las parejas de verdad. ' +
-          'Para cuando no tienen nada por lo que discutir.' +
+          cat.total + ' temas, ordenados por dónde y cuándo suele salir la discusión.' +
         '</p>' +
         '<div class="categorias">' +
           cat.categorias.map(function (c) {
             return '<button class="categoria" data-categoria="' + esc(c.nombre) + '">' +
                 '<span class="categoria__emoji">' + c.emoji + '</span>' +
-                '<span><span style="font-weight:800;font-family:var(--display)">' + esc(c.corto) + '</span></span>' +
+                '<span><span class="categoria__nombre">' + esc(c.nombre) + '</span>' +
+                (c.descripcion ? '<span class="categoria__que">' + esc(c.descripcion) + '</span>' : '') +
+                '</span>' +
                 '<span class="categoria__n">' + c.total + '</span>' +
               '</button>';
           }).join('') +
