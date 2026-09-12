@@ -1,7 +1,7 @@
 {
   "name": "ATWI",
   "short_name": "ATWI",
-  "description": "Juego de debate. De uno a cinco turnos, y una IA da el resultado.",
+  "description": "Arréglenlo como adultos… Jugando. De uno a cinco turnos, y una IA da el resultado.",
   "start_url": "./app/",
   "scope": "./",
   "display": "standalone",

@@ -24,17 +24,17 @@ window.ATWI.config = {
       nombre: 'Controversia',
       partido: ['Controvers', 'IA', ''],
       que: '¿No se ponen de acuerdo? ¡Que la ciencia decida! Un juez IA escucha sus ' +
-           'argumentos, consulta qué dice la ciencia al respecto y evalúa quién defiende ' +
-           'mejor su posición. 100% neutral: no va de quién tiene la razón, sino de quién ' +
-           'defiende mejor su punto de vista.'
+           'argumentos, consulta qué dicen los expertos al respecto y evalúa quién ' +
+           'defiende mejor su posición. 100% neutral: <b class="resalte">no va de quién ' +
+           'tiene la razón, sino de quién defiende mejor su punto de vista.</b>'
     },
     negociacion: {
       nombre: 'Negociación',
       partido: ['Negoc', 'IA', 'ción'],
-      que: 'Un mediador IA experto escucha ambas posiciones, consulta qué dicen los ' +
-           'expertos sobre el tema y propone 3 posibles acuerdos. Si ninguno satisface a ' +
-           'las dos partes, se vale seguir en desacuerdo y reintentar la negociación más ' +
-           'adelante.'
+      que: 'Un mediador IA escucha ambas posiciones, consulta qué dicen los expertos ' +
+           'sobre el tema y propone 3 posibles acuerdos. Si ninguno satisface a las dos ' +
+           'partes, <b class="resalte">se vale seguir en desacuerdo</b> y reintentar la ' +
+           'negociación más adelante.'
     }
   },
 
@@ -58,7 +58,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'c024738',
+  version: '83b4b01',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

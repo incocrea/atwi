@@ -86,7 +86,15 @@ body.app {
   transition: background var(--dur-media) var(--suave);
 }
 .cabecera__titulo { font-family: var(--display); font-size: var(--t-h2); font-weight: 800; }
-.cabecera__sub { font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; }
+/* EL ESLOGAN. No describe el producto —«juego de debate» ya lo dice el
+   logotipo— sino lo que promete: que se puede arreglar algo sin dejar de
+   pasarlo bien. «Jugando» va aparte, en lavanda, porque es el giro de la
+   frase. */
+.cabecera__sub {
+  font-family: var(--display); font-weight: 700;
+  font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px;
+}
+.cabecera__sub b { color: var(--lavanda-oscuro); font-weight: 800; }
 
 .monedero { display: flex; gap: var(--e-2); align-items: center; }
 /* Los contadores de la cabecera son premio: van en cálido. */
@@ -262,6 +270,13 @@ body.app {
 .carta-modo__que {
   font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.45;
 }
+/* Lo que de verdad hay que entender de cada modo, resaltado dentro del texto:
+   en Controversia, que no se juzga quién tiene razón; en Negociación, que no
+   estar de acuerdo también es un final válido. Va en el tono hondo del modo
+   —no en otro color— para que destaque sin salirse de la carta. */
+.resalte { font-weight: 800; }
+.carta-modo--debate .resalte { color: #A8431F; }
+.carta-modo--negociacion .resalte { color: #176450; }
 /* La pastilla de abajo lleva el color del modo y dice lo mismo en las dos:
    lo que cambia entre una carta y otra es el modo, no la acción. */
 .carta-modo__ir {
@@ -299,8 +314,10 @@ body.app {
 }
 .cinta-modo__que .ia { font-size: 1.15em; }
 .cinta-modo__cambiar {
-  flex: none; font-size: var(--t-mini); font-weight: 800;
-  color: var(--tinta-suave); text-transform: uppercase; letter-spacing: .04em;
+  flex: none; display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: var(--radio-pastilla);
+  background: var(--superficie); box-shadow: var(--sombra-1);
+  font-size: var(--t-mini); font-weight: 800; color: var(--tinta-suave);
 }
 .cinta-modo .ico { width: 24px; height: 24px; flex: none; }
 

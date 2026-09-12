@@ -250,7 +250,10 @@
           '<span class="carta-modo__nombre">' + nombreModo(clave) + '</span>' +
           '<span class="carta-modo__disco">' + icono(clave, 31) + '</span>' +
         '</span>' +
-        '<span class="carta-modo__que">' + esc(m.que) + '</span>' +
+        /* `que` lleva HTML a propósito —el resalte de la frase que importa—
+           y por eso NO se escapa. Es texto nuestro, de config.js, no de nadie
+           de fuera: si algún día saliera de la base, hay que escaparlo. */
+        '<span class="carta-modo__que">' + m.que + '</span>' +
         '<span class="carta-modo__ir">' + window.ATWI.iconoSVG('play', 16) + 'Jugar</span>' +
       '</button>';
   }
@@ -294,7 +297,12 @@
     return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" data-accion="cambiar-modo">' +
         icono(propuesta.modo, 24) +
         '<span class="cinta-modo__que">Van a jugar ' + nombreModo(propuesta.modo) + '</span>' +
-        '<span class="cinta-modo__cambiar">Cambiar</span>' +
+        /* No dice «cambiar» a secas: dice a QUÉ se cambia. Con dos modos, un
+           toque lleva al otro, y saberlo de antemano ahorra el viaje. */
+        '<span class="cinta-modo__cambiar">' +
+          window.ATWI.iconoSVG('volver', 14) +
+          (propuesta.modo === 'debate' ? 'Negociar' : 'Debatir') +
+        '</span>' +
       '</button>';
   }
 
@@ -1326,7 +1334,13 @@
       if (profundidad > 0) history.back();
       else retroceder();
     }
-    else if (a === 'cambiar-modo') { irA('jugar'); }
+    else if (a === 'cambiar-modo') {
+      /* Solo hay dos modos, así que «cambiar» es alternar. Mandar de vuelta a
+         la portada para elegir entre dos era pedir tres toques donde basta uno,
+         y encima perdía el sitio del catálogo. */
+      propuesta.modo = propuesta.modo === 'debate' ? 'negociacion' : 'debate';
+      pintarCatalogo();
+    }
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { sortearYJugar(); }
