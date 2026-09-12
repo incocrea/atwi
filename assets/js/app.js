@@ -383,10 +383,13 @@
         contador(p.semanasActivas, 'Semanas', 'premio') +
       '</div>' +
 
+      /* La regla sigue en pie —contadores separados, nunca lado a lado— pero el
+         texto daba por hecho que enfrente hay una pareja, y ya no siempre la
+         hay: también se juega con amigos. Se dice sin nombrar con quién. */
       '<div class="tarjeta" style="margin-top:var(--e-4);background:var(--negociacion-tinte);box-shadow:none">' +
         '<p class="chico" style="color:var(--negociacion-oscuro);font-weight:700">' +
-          'Aquí no hay marcador entre ustedes dos. Cada quien ve sus propios contadores, ' +
-          'y nunca se comparan lado a lado. Es a propósito.' +
+          'Estos contadores son tuyos y de nadie más. Aquí no hay tabla de posiciones ' +
+          'ni se comparan con los de nadie, juegues con quien juegues. Es a propósito.' +
         '</p>' +
       '</div>' +
 

@@ -89,13 +89,6 @@ body.app {
 .cabecera__sub { font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; }
 
 .monedero { display: flex; gap: var(--e-2); align-items: center; }
-.avatar--cabecera {
-  width: 38px; height: 38px; font-size: 1.1rem; border: 0; padding: 0; cursor: pointer;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55), var(--sombra-1);
-}
-.avatar--cabecera[hidden] { display: none; }
-.avatar-boton { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
-.avatar-boton:active .avatar { transform: scale(.95); }
 /* Los contadores de la cabecera son premio: van en cálido. */
 .monedero__dato {
   display: inline-flex;
@@ -194,6 +187,23 @@ body.app {
   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .5), var(--sombra-2);
   font-size: 2.2rem;
 }
+
+/* Los tamaños del avatar van SIEMPRE detrás de `.avatar`: comparten
+   especificidad, así que el que gana es el último escrito. Estaban antes y por
+   eso el de la cabecera salía con los 76 px de la base. */
+
+/* En la cabecera es un botón más, del tamaño exacto del buzón que tiene al
+   lado: dos botones juntos que no miden lo mismo se leen como dos cosas de
+   distinta importancia, y aquí son lo mismo. */
+.avatar--cabecera {
+  width: 38px; height: 38px; font-size: 1.1rem; border: 0; padding: 0; cursor: pointer;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55), var(--sombra-1);
+}
+.avatar--cabecera[hidden] { display: none; }
+.avatar--cabecera:active { transform: scale(.94); }
+
+.avatar-boton { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
+.avatar-boton:active .avatar { transform: scale(.95); }
 
 .nivel-barra {
   height: 10px;
