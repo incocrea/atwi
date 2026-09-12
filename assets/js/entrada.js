@@ -98,8 +98,10 @@ window.ATWI = window.ATWI || {};
 
   var AVISO_IA =
     '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
-      '<span>ATWI es un juego y los resultados los genera una inteligencia artificial. ' +
-      'No es terapia ni asesoramiento profesional.</span>' +
+      '<span>ATWI es un juego que se apoya en IA para facilitar la resolución de ' +
+      'conflictos o promover el ejercicio de la argumentación respetuosa. Aunque puede ' +
+      'ayudar a mediar diferencias y lograr acuerdos, no reemplaza la terapia ni ' +
+      'asesoramiento profesional.</span>' +
     '</div>';
 
   var ERROR = '<p class="chico" id="c-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
