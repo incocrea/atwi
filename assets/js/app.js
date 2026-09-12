@@ -281,6 +281,11 @@
   var busqueda = '';        // texto del buscador
   var filtro = 'todos';     // 'todos' | 'sin' | 'con'
 
+  /* La CLAVE de la categoría sigue siendo «Mis temas»: es lo que llevan
+     guardados los temas ya escritos, y cambiarla obligaría a migrarlos. Lo que
+     cambia es cómo se llama en pantalla. */
+  var ETIQUETA_MIS = 'Mis propios temas';
+
   /** Deja el catálogo como recién abierto: en la pregunta de con quién juegas. */
   function reiniciarCatalogo() {
     modoPublico = null;
@@ -362,7 +367,8 @@
         caja.innerHTML = cinta +
           '<div class="fila" style="margin-bottom:var(--e-3)">' +
             '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver a las categorías">' + icono('atras', 22) + '</button>' +
-            '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.emoji || '') + ' ' + esc(categoriaAbierta) + '</h1>' +
+            '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.emoji || '') + ' ' +
+              esc(esMia ? ETIQUETA_MIS : categoriaAbierta) + '</h1>' +
             '<p class="chico suave">' + temas.length + ' de ' + (meta.total || 0) + '</p></div>' +
           '</div>' +
 
@@ -417,11 +423,11 @@
            que hace que la pareja vuelva cuando el catálogo se acaba. */
         '<button class="categoria categoria--propia" data-categoria="' + esc(datos.MIS_TEMAS) + '">' +
           '<span class="categoria__emoji">✍️</span>' +
-          '<span><span class="categoria__nombre">' + esc(datos.MIS_TEMAS) + '</span>' +
+          '<span><span class="categoria__nombre">' + ETIQUETA_MIS + '</span>' +
           '<span class="categoria__que">' +
             (propios
-              ? 'Los temas que escribiste.'
-              : 'Lo que discutes y no está en la lista, escríbelo aquí.') +
+              ? 'Los temas que escribiste, para debatir o negociar.'
+              : 'Lo que discutes y no está en la lista, escríbelo aquí para debatir o negociar.') +
           '</span></span>' +
           '<span class="categoria__n">' + (propios || '+') + '</span>' +
         '</button>' +

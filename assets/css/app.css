@@ -813,14 +813,26 @@ body.app {
 }
 .reescrito svg { flex: none; }
 
-/* «Mis temas» va suelto encima de la rejilla de categorías, así que se separa
-   solo. Igual que el buscador: el hueco es del componente, no de la pantalla. */
+/* «Mis propios temas» va suelto encima de la rejilla de categorías, así que se
+   separa solo —igual que el buscador: el hueco es del componente, no de la
+   pantalla— y va en el lavanda de la marca.
+
+   No es una categoría más: las otras doce son la plantilla que trae el juego y
+   esta es la de ustedes, así que se distingue por color y no solo por el borde
+   de puntos, que sobre el arena del catálogo casi no se veía. El lavanda
+   además contrasta con ese arena, que el dorado de premio no hacía. */
 .categoria--propia {
-  border: 2px dashed var(--linea-fuerte); background: transparent; box-shadow: none;
+  border: 2px dashed var(--lavanda-claro);
+  background: var(--lavanda-tinte);
+  box-shadow: none;
   margin-bottom: var(--e-3);
 }
-.categoria--propia .categoria__emoji { background: var(--premio-tinte); }
-.categoria--propia .categoria__n { color: var(--premio-hondo); font-size: var(--t-h3); }
+.categoria--propia .categoria__emoji { background: var(--superficie); }
+.categoria--propia .categoria__nombre { color: var(--lavanda-oscuro); }
+.categoria--propia .categoria__que { color: var(--lavanda-oscuro); opacity: .82; }
+.categoria--propia .categoria__n {
+  color: var(--lavanda-oscuro); font-family: var(--display); font-size: var(--t-h3);
+}
 
 .fila--entre { justify-content: space-between; align-items: center; }
 .boton--chico { padding: var(--e-2) var(--e-3); font-size: var(--t-chico); gap: 6px; }
