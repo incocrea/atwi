@@ -56,6 +56,13 @@ window.ATWI = window.ATWI || {};
     });
   }
   function alAzar(l) { return l[Math.floor(Math.random() * l.length)]; }
+
+  /* El nombre del modo con el «IA» resaltado: negoc·IA·ción, controvers·IA. */
+  function nombreModo(clave) {
+    var m = (cfg.modos || {})[clave];
+    if (!m) return '';
+    return esc(m.partido[0]) + '<b class="ia">' + esc(m.partido[1]) + '</b>' + esc(m.partido[2]);
+  }
   function relojTexto(s) {
     return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
   }
@@ -394,12 +401,12 @@ window.ATWI = window.ATWI || {};
           '<p class="sala__enunciado">' + esc(P.tema.enunciado) + '</p>' +
           '<div class="sala__chips">' +
             '<span class="chip chip--' + P.modo + '">' +
-              (P.modo === 'debate' ? 'Debate' : 'Negociación') + '</span>' +
+              nombreModo(P.modo) + '</span>' +
             '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>' +
           '</div>' +
         '</div>' +
         '<div class="sorteo">' +
-          '<p class="sorteo__que">Abre ' + (P.modo === 'debate' ? 'el debate' : 'la negociación') + '</p>' +
+          '<p class="sorteo__que">Abre ' + (P.modo === 'debate' ? 'la controversia' : 'la negociación') + '</p>' +
           '<p class="sorteo__quien">' + esc(P.jugadores[P.orden[0]].nombre) + '</p>' +
           /* La revancha es cosa del modo Debate. En Negociación lo equivalente
              no revierte un resultado: encadena otra ronda. */

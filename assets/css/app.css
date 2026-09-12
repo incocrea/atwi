@@ -221,7 +221,85 @@ body.app {
   box-shadow: 0 0 10px rgba(245, 194, 67, .5);
 }
 
-/* --- Tarjetas de modo ------------------------------------------------------ */
+/* --- LAS DOS CARTAS DE MODO -------------------------------------------------
+   El botón de empezar y la explicación del modo eran dos cosas separadas: un
+   botón genérico arriba y, más abajo, dos tarjetas de adorno que nadie
+   relacionaba con él. Ahora es una sola: la carta explica y la carta empieza.
+
+   Se parecen a una carta de juego a propósito —fondo del color del modo, disco
+   blanco con el icono ilustrado, nombre grande y una pastilla abajo que dice
+   qué va a pasar al tocarla—, porque esto es lo primero que se ve al abrir y
+   tiene que parecer un juego, no un formulario. */
+.cartas-modo { display: grid; gap: var(--e-4); }
+
+.carta-modo {
+  display: grid; justify-items: start; gap: var(--e-2);
+  width: 100%; padding: var(--e-5) var(--e-4) var(--e-4);
+  border: 0; border-radius: var(--radio-modal);
+  text-align: left; font: inherit; color: var(--tinta); cursor: pointer;
+  box-shadow: var(--sombra-2);
+  transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave);
+}
+.carta-modo:active { transform: scale(.985); box-shadow: var(--sombra-1); }
+.carta-modo--debate { background: var(--debate-tinte); }
+.carta-modo--negociacion { background: var(--negociacion-tinte); }
+
+.carta-modo__disco {
+  width: 76px; height: 76px; border-radius: var(--radio-pastilla);
+  display: grid; place-items: center;
+  background: var(--superficie); box-shadow: var(--sombra-1);
+  margin-bottom: var(--e-2);
+}
+.carta-modo__nombre {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h2);
+  line-height: 1.1;
+}
+.carta-modo__que {
+  font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4;
+}
+/* La pastilla de abajo dice qué pasa al tocar, y lleva el color del modo. */
+.carta-modo__ir {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: var(--e-3); padding: var(--e-2) var(--e-4);
+  border-radius: var(--radio-pastilla);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  color: var(--blanco);
+}
+.carta-modo--debate .carta-modo__ir { background: var(--debate-oscuro); }
+.carta-modo--negociacion .carta-modo__ir { background: var(--negociacion-oscuro); }
+.carta-modo__ir .ico { width: 18px; height: 18px; filter: brightness(0) invert(1); }
+
+/* EL JUEGO DE PALABRAS. Las dos palabras esconden «IA»: negoc·IA·ción y
+   controvers·IA. Va en el lavanda de la marca en los dos modos, no en el color
+   del modo, porque la IA es la misma en los dos lados de la mesa. */
+.ia {
+  font-size: 1.22em; font-weight: 800; color: var(--lavanda-oscuro);
+  letter-spacing: .005em;
+}
+
+/* --- La cinta que recuerda el modo elegido ---------------------------------- */
+.cinta-modo {
+  display: flex; align-items: center; gap: var(--e-3);
+  width: 100%; margin-bottom: var(--e-4);
+  padding: var(--e-2) var(--e-3);
+  border: 0; border-radius: var(--radio-pastilla);
+  font: inherit; text-align: left; cursor: pointer; color: var(--tinta);
+  box-shadow: var(--sombra-1);
+}
+.cinta-modo--debate { background: var(--debate-tinte); }
+.cinta-modo--negociacion { background: var(--negociacion-tinte); }
+.cinta-modo__que {
+  flex: 1; min-width: 0; font-family: var(--display); font-weight: 800;
+  font-size: var(--t-chico);
+}
+.cinta-modo__que .ia { font-size: 1.15em; }
+.cinta-modo__cambiar {
+  flex: none; font-size: var(--t-mini); font-weight: 800;
+  color: var(--tinta-suave); text-transform: uppercase; letter-spacing: .04em;
+}
+.cinta-modo .ico { width: 24px; height: 24px; flex: none; }
+
+/* --- Tarjetas de modo (las de «con quién juegas») --------------------------- */
 .modos { display: grid; gap: var(--e-3); }
 
 .modo {

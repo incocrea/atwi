@@ -11,10 +11,10 @@
 <title>ATWI</title>
 <meta name="description" content="Juego de debate para parejas. Modo Debate y modo Negociación.">
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=980bd57">
-<link rel="stylesheet" href="../assets/css/base.css?v=980bd57">
-<link rel="stylesheet" href="../assets/css/app.css?v=980bd57">
-<link rel="stylesheet" href="../assets/css/modal.css?v=980bd57">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=80f4774">
+<link rel="stylesheet" href="../assets/css/base.css?v=80f4774">
+<link rel="stylesheet" href="../assets/css/app.css?v=80f4774">
+<link rel="stylesheet" href="../assets/css/modal.css?v=80f4774">
 </head>
 
 <body class="app">
@@ -93,7 +93,8 @@
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
-      <button class="boton boton--bloque boton--grande" data-accion="elegir-modo">Jugar este tema</button>
+      <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui">Jugar este tema aquí</button>
+      <button class="boton boton--suave boton--bloque" data-accion="proponer">Proponérselo por invitación</button>
     </div>
   </div>
 
@@ -118,19 +119,6 @@
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
       <button class="boton boton--bloque boton--grande" data-accion="guardar-tema">Guardar el tema</button>
-    </div>
-  </div>
-
-  <!-- Elegir el modo (es una propuesta, no una imposición) -->
-  <div class="modal" id="m-modo" hidden role="dialog" aria-modal="true" aria-labelledby="t-modo">
-    <div class="modal__cabecera">
-      <button class="boton-icono" data-cerrar="m-modo" aria-label="Volver" data-icono="atras"></button>
-      <span class="modal__titulo" id="t-modo">¿Cómo lo jugamos?</span>
-    </div>
-    <div class="modal__cuerpo"></div>
-    <div class="modal__pie">
-      <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui" disabled>Jugar aquí, por turnos</button>
-      <button class="boton boton--suave boton--bloque" data-accion="proponer" disabled>Proponérselo por invitación</button>
     </div>
   </div>
 
@@ -162,15 +150,15 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=980bd57"></script>
-<script src="../assets/js/iconos.js?v=980bd57"></script>
-<script src="../assets/js/datos.js?v=980bd57"></script>
-<script src="../assets/js/sonido.js?v=980bd57"></script>
-<script src="../assets/js/veredicto.js?v=980bd57"></script>
-<script src="../assets/js/grabadora.js?v=980bd57"></script>
-<script src="../assets/js/partida.js?v=980bd57"></script>
-<script src="../assets/js/auth.js?v=980bd57"></script>
-<script src="../assets/js/entrada.js?v=980bd57"></script>
-<script src="../assets/js/app.js?v=980bd57"></script>
+<script src="../assets/js/config.js?v=80f4774"></script>
+<script src="../assets/js/iconos.js?v=80f4774"></script>
+<script src="../assets/js/datos.js?v=80f4774"></script>
+<script src="../assets/js/sonido.js?v=80f4774"></script>
+<script src="../assets/js/veredicto.js?v=80f4774"></script>
+<script src="../assets/js/grabadora.js?v=80f4774"></script>
+<script src="../assets/js/partida.js?v=80f4774"></script>
+<script src="../assets/js/auth.js?v=80f4774"></script>
+<script src="../assets/js/entrada.js?v=80f4774"></script>
+<script src="../assets/js/app.js?v=80f4774"></script>
 </body>
 </html>

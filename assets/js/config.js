@@ -11,6 +11,31 @@
 window.ATWI = window.ATWI || {};
 
 window.ATWI.config = {
+  /* LOS DOS MODOS, CON SU JUEGO DE PALABRAS.
+     Las dos palabras esconden «IA» y se resalta: negoc·IA·ción y controvers·IA.
+     El resalte lleva el lavanda de la marca en los dos, no el color del modo, y
+     es a propósito: la IA es la misma en los dos lados de la mesa.
+
+     La CLAVE interna sigue siendo `debate`. Cambiarla arrastraría el enum
+     `modo_juego` de la base, diez migraciones y los tokens de color; lo que
+     cambia es cómo se llama de cara a quien juega. */
+  modos: {
+    debate: {
+      nombre: 'Controversia',
+      partido: ['Controvers', 'IA', ''],
+      que: 'Dos partes compiten por quién argumenta mejor. Un juez imparcial evalúa, ' +
+           'declara ganador y explica por qué.',
+      invita: 'Proponer una controversia'
+    },
+    negociacion: {
+      nombre: 'Negociación',
+      partido: ['Negoc', 'IA', 'ción'],
+      que: 'Un negociador propone tres acuerdos, votan, y el elegido lo firman los dos. ' +
+           'También vale seguir en desacuerdo.',
+      invita: 'Proponer una negociación'
+    }
+  },
+
   /* EL DESCARGO, EN UN SOLO SITIO. Sale en la portada del juego y en la puerta,
      y tener dos redacciones distintas según por dónde se entre sería peor que no
      tener ninguna. Vive aquí, y no en app.js, porque entrada.js se carga antes
@@ -31,7 +56,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '980bd57',
+  version: '80f4774',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

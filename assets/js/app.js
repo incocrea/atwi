@@ -27,6 +27,15 @@
 
   var DESCARGO = cfg.descargo;
 
+  /* El nombre del modo con el «IA» resaltado: negoc·IA·ción, controvers·IA. */
+  function nombreModo(clave) {
+    var m = cfg.modos[clave];
+    if (!m) return '';
+    return esc(m.partido[0]) + '<b class="ia">' + esc(m.partido[1]) + '</b>' + esc(m.partido[2]);
+  }
+
+  function modoLlano(clave) { return (cfg.modos[clave] || {}).nombre || ''; }
+
   /* ======================================================================
      Navegación entre vistas
      ====================================================================== */
@@ -203,14 +212,16 @@
         '</div>' +
       '</div>' +
 
-      '<button class="boton boton--bloque boton--grande" data-accion="nuevo" style="margin-bottom:var(--e-4)">' +
-        icono('mas', 22) + 'Proponer un debate' +
-      '</button>' +
-
-      '<h2 style="margin:var(--e-5) 0 var(--e-3)">Los dos modos</h2>' +
-      '<div class="modos">' +
-        fichaModo('debate', 'Debate', 'Dos partes compiten por quién argumenta mejor. Un juez imparcial evalúa, declara ganador y explica por qué.') +
-        fichaModo('negociacion', 'Negociación', 'Un negociador de IA propone tres acuerdos, votan, y el elegido lo firman los dos. También vale seguir en desacuerdo.') +
+      /* EL MODO SE ELIGE AQUÍ, AL PRINCIPIO. Antes se elegía al final, justo
+         antes de grabar, después de haber buscado el tema: para entonces ya
+         tenías medio pie dentro y la elección llegaba como un trámite. Y la
+         explicación de cada modo vivía en otra tarjeta, de adorno, que nadie
+         relacionaba con el botón. Ahora es una sola cosa: la tarjeta explica y
+         la tarjeta empieza. */
+      '<h2 style="margin:0 0 var(--e-3)">¿Qué quieren jugar?</h2>' +
+      '<div class="cartas-modo">' +
+        cartaModo('debate') +
+        cartaModo('negociacion') +
       '</div>' +
 
       '<div class="aviso-ia" style="margin-top:var(--e-5)">' +
@@ -228,12 +239,15 @@
       '</div>';
   }
 
-  function fichaModo(clave, nombre, que) {
-    return '<div class="modo modo--' + clave + '">' +
-        '<span class="modo__icono">' + icono(clave, 30) + '</span>' +
-        '<span><span class="modo__nombre">' + nombre + '</span>' +
-        '<span class="modo__que">' + que + '</span></span>' +
-      '</div>';
+  /* La tarjeta de un modo: explica y empieza, que antes eran dos cosas. */
+  function cartaModo(clave) {
+    var m = cfg.modos[clave];
+    return '<button class="carta-modo carta-modo--' + clave + '" data-crear="' + clave + '">' +
+        '<span class="carta-modo__disco">' + icono(clave, 44) + '</span>' +
+        '<span class="carta-modo__nombre">' + nombreModo(clave) + '</span>' +
+        '<span class="carta-modo__que">' + esc(m.que) + '</span>' +
+        '<span class="carta-modo__ir">' + icono('mas', 18) + esc(m.invita) + '</span>' +
+      '</button>';
   }
 
   function tarjetaTema(t) {
@@ -267,12 +281,25 @@
     filtro = 'todos';
   }
 
+  /* Elegido el modo en la portada, hay que poder verlo —y cambiarlo— sin
+     llegar hasta el final. La cinta va arriba de todas las pantallas del
+     catálogo, con el color del modo. */
+  function cintaModo() {
+    if (!propuesta.modo) return '';
+    return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" data-accion="cambiar-modo">' +
+        icono(propuesta.modo, 24) +
+        '<span class="cinta-modo__que">Van a jugar ' + nombreModo(propuesta.modo) + '</span>' +
+        '<span class="cinta-modo__cambiar">Cambiar</span>' +
+      '</button>';
+  }
+
   function pintarCatalogo() {
     var caja = $('#v-catalogo');
+    var cinta = cintaModo();
 
     // Paso 0: con quien se juega. De eso depende que temas tienen sentido.
     if (!modoPublico) {
-      caja.innerHTML =
+      caja.innerHTML = cinta +
         '<h1 style="margin-bottom:var(--e-2)">¿Con quién juegas?</h1>' +
         '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
           'Los temas cambian según con quién estés debatiendo.</p>' +
@@ -293,9 +320,9 @@
     }
 
     if (modoPublico === 'amigos') {
-      caja.innerHTML =
+      caja.innerHTML = cinta +
         '<div class="fila" style="margin-bottom:var(--e-4)">' +
-          '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Cambiar de modo">' + icono('atras', 22) + '</button>' +
+          '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
           '<h1 style="font-size:var(--t-h2)">Con amigos</h1>' +
         '</div>' +
         estadoVacio('🚧', 'Todavía no hay temas de amigos',
@@ -317,7 +344,7 @@
           ? { emoji: '✍️', total: enCategoria.length }
           : (cat.categorias.filter(function (c) { return c.nombre === categoriaAbierta; })[0] || {});
 
-        caja.innerHTML =
+        caja.innerHTML = cinta +
           '<div class="fila" style="margin-bottom:var(--e-3)">' +
             '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver a las categorías">' + icono('atras', 22) + '</button>' +
             '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.emoji || '') + ' ' + esc(categoriaAbierta) + '</h1>' +
@@ -345,7 +372,7 @@
          carpeta donde vive. */
       if (buscando) {
         var hallados = datos.buscar(busqueda, filtro);
-        caja.innerHTML =
+        caja.innerHTML = cinta +
           '<h1 style="margin-bottom:var(--e-3)">Catálogo</h1>' +
           barraBusqueda() +
           '<p class="chico suave" style="margin:var(--e-3) 0">' +
@@ -359,9 +386,9 @@
 
       var propios = datos.cuantosPropios();
 
-      caja.innerHTML =
+      caja.innerHTML = cinta +
         '<div class="fila" style="margin-bottom:var(--e-2)">' +
-          '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Cambiar de modo">' + icono('atras', 22) + '</button>' +
+          '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
           '<h1 style="font-size:var(--t-h2)">Con mi pareja</h1>' +
         '</div>' +
         '<p class="chico suave" style="margin-bottom:var(--e-3)">' +
@@ -755,11 +782,19 @@
     var t = datos.tema(id);
     if (!t) return;
     propuesta.temaId = id;
-    propuesta.modo = null;
-    propuesta.turnos = cfg.reglas.turnosPorDefecto;
+    /* El modo NO se toca aquí: viene elegido desde la portada. Antes se ponía a
+       null y se preguntaba después; ahora llegar hasta un tema sin modo sería
+       llegar por un camino que ya no existe, pero se cubre por si acaso. */
+    if (!propuesta.modo) propuesta.modo = 'debate';
+    if (!propuesta.turnos) propuesta.turnos = cfg.reglas.turnosPorDefecto;
 
     var tocado = t.propio || datos.estaReescrito(id);
 
+    /* El tema ya lleva el color del modo: desde que se elige, el flujo entero
+       va teñido y no hay que recordarlo de memoria. */
+    $('#m-tema').className = 'modal modal--' + propuesta.modo;
+    $('#m-tema .modal__pie button').className =
+      'boton boton--bloque boton--grande boton--' + propuesta.modo;
     $('#m-tema .modal__titulo').textContent = t.titulo;
     $('#m-tema .modal__cuerpo').innerHTML =
       '<div class="tarjeta tarjeta--aire" style="margin-bottom:var(--e-3)">' +
@@ -922,71 +957,6 @@
     if (propuesta.temaId === guardado.id || !$('#m-tema').hidden) abrirTema(guardado.id);
   }
 
-  function abrirModo() {
-    var t = datos.tema(propuesta.temaId);
-    if (!t) return;
-
-    $('#m-modo .modal__cuerpo').innerHTML =
-      '<p class="suave chico" style="margin-bottom:var(--e-4)">' +
-        'Eliges cómo quieres jugar <strong>' + esc(t.titulo) + '</strong>. ' +
-        'Es una propuesta: la otra persona tiene que aceptarla antes de empezar.' +
-      '</p>' +
-      '<div class="apilado">' +
-        opcionModo('debate', 'Debate', 'Compiten por quién argumenta mejor. El juez declara ganador y explica por qué. Queda en tu historial.') +
-        opcionModo('negociacion', 'Negociación', 'Sin ganador. El negociador propone tres acuerdos, votan y firman el que les convenza. Pueden seguir en desacuerdo.') +
-      '</div>' +
-
-      '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Cuántos turnos?</h3>' +
-      '<div class="turnos-fila">' +
-        [1, 2, 3, 4, 5].map(function (n) {
-          var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
-          return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
-            'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
-            '<span class="turno-ficha__n">' + n + '</span>' +
-            '<span class="turno-ficha__min">' + MINUTOS[n] + ' min</span>' +
-          '</button>';
-        }).join('') +
-      '</div>' +
-      '<p class="chico tenue" style="margin-top:var(--e-2)">4 y 5 turnos necesitan cupo.</p>' +
-      '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
-        '<span>Si no se ponen de acuerdo en el modo, el debate no se juega. Nadie puede imponerle un Debate al otro.</span>' +
-      '</div>';
-
-    $('#m-modo').className = 'modal';
-    $$('#m-modo .modal__pie button').forEach(function (b, i) {
-      b.disabled = true;
-      if (i === 0) b.className = 'boton boton--bloque boton--grande';
-    });
-    abrirModal('m-modo');
-  }
-
-  function opcionModo(clave, nombre, que) {
-    return '<button class="opcion" data-modo="' + clave + '" aria-pressed="false">' +
-        '<span style="display:grid;grid-template-columns:44px 1fr;gap:var(--e-3);align-items:center">' +
-          '<span class="modo__icono" style="width:44px;height:44px;border-radius:14px;' +
-            'background:var(--' + clave + '-tinte);color:var(--' + clave + '-oscuro)">' + icono(clave, 24) + '</span>' +
-          '<span><span class="modo__nombre">' + nombre + '</span>' +
-          '<span class="modo__que">' + que + '</span></span>' +
-        '</span>' +
-        '<span class="opcion__marca">' + icono('listo', 16) + '</span>' +
-      '</button>';
-  }
-
-  function elegirModo(clave) {
-    propuesta.modo = clave;
-    $$('#m-modo .opcion').forEach(function (o) {
-      o.setAttribute('aria-pressed', String(o.dataset.modo === clave));
-    });
-    /* Desde que se elige el modo, el flujo entero lleva SU color. Antes seguía
-       en lavanda de marca hasta entrar a la sala, y el lavanda es la identidad,
-       no el modo: un color por modo y no se mezclan. */
-    $('#m-modo').className = 'modal modal--' + clave;
-    $$('#m-modo .modal__pie button').forEach(function (b, i) {
-      b.disabled = false;
-      if (i === 0) b.className = 'boton boton--bloque boton--grande boton--' + clave;
-    });
-  }
-
   /* ======================================================================
      Antes de empezar: quién defiende qué, y con quién se juega
      Sin esto la partida arrancaba con «Tú» contra «La otra parte» y sin decir
@@ -1031,6 +1001,19 @@
     $('#m-preparar .modal__cuerpo').innerHTML =
       '<p class="sala__enunciado" style="color:var(--tinta);margin-bottom:var(--e-4)">' +
         esc(t.enunciado) + '</p>' +
+
+      '<h3 style="margin-bottom:var(--e-2)">¿Cuántos turnos?</h3>' +
+      '<div class="turnos-fila">' +
+        [1, 2, 3, 4, 5].map(function (n) {
+          var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
+          return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
+            'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
+            '<span class="turno-ficha__n">' + n + '</span>' +
+            '<span class="turno-ficha__min">' + MINUTOS[n] + ' min</span>' +
+          '</button>';
+        }).join('') +
+      '</div>' +
+      '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">4 y 5 turnos necesitan cupo.</p>' +
 
       '<h3 style="margin-bottom:var(--e-2)">¿Cuál defiendes tú?</h3>' +
       '<div class="apilado" style="margin-bottom:var(--e-5)">' +
@@ -1152,7 +1135,7 @@
     var porPostura = propuesta.miPostura === 'a' ? [fichaMia, fichaSuya] : [fichaSuya, fichaMia];
     var abre = Math.random() < 0.5 ? 0 : 1;
 
-    cerrarModales(['m-preparar', 'm-modo', 'm-tema']);
+    cerrarModales(['m-preparar', 'm-tema']);
     window.ATWI.partida.empezar({
       tema: t,
       modo: propuesta.modo,
@@ -1184,7 +1167,7 @@
         '</p>' +
       '</div>';
 
-    cerrarModales(['m-modo', 'm-tema']);
+    cerrarModales(['m-tema']);
     abrirModal('m-invitar');
   }
 
@@ -1226,21 +1209,28 @@
     var cat = e.target.closest('[data-categoria]');
     if (cat) { categoriaAbierta = cat.dataset.categoria; entrar(); pintarCatalogo(); return; }
 
+    /* Empezar por el modo: se guarda y se va a buscar tema con él puesto. */
+    var crear = e.target.closest('[data-crear]');
+    if (crear) {
+      propuesta.modo = crear.dataset.crear;
+      propuesta.turnos = cfg.reglas.turnosPorDefecto;
+      reiniciarCatalogo();
+      irA('catalogo');
+      return;
+    }
+
     var tema = e.target.closest('[data-tema]');
     if (tema) { abrirTema(tema.dataset.tema); return; }
 
     var tn = e.target.closest('[data-turnos]');
     if (tn) {
       propuesta.turnos = Number(tn.dataset.turnos);
-      $$('#m-modo [data-turnos]').forEach(function (x) {
+      $$('#m-preparar [data-turnos]').forEach(function (x) {
         if (Number(x.dataset.turnos) === propuesta.turnos) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
       return;
     }
-
-    var modo = e.target.closest('[data-modo]');
-    if (modo) { elegirModo(modo.dataset.modo); return; }
 
     var post = e.target.closest('[data-postura]');
     if (post) { elegirPostura(post.dataset.postura); return; }
@@ -1331,7 +1321,7 @@
       if (profundidad > 0) history.back();
       else retroceder();
     }
-    else if (a === 'elegir-modo') { abrirModo(); }
+    else if (a === 'cambiar-modo') { irA('jugar'); }
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { sortearYJugar(); }
