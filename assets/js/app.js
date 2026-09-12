@@ -296,12 +296,14 @@
     if (!propuesta.modo) return '';
     return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" data-accion="cambiar-modo">' +
         icono(propuesta.modo, 24) +
-        '<span class="cinta-modo__que">Van a jugar ' + nombreModo(propuesta.modo) + '</span>' +
-        /* No dice «cambiar» a secas: dice a QUÉ se cambia. Con dos modos, un
-           toque lleva al otro, y saberlo de antemano ahorra el viaje. */
+        /* Solo el nombre: el icono y el color ya dicen que esto es el modo, y
+           «Van a jugar» delante partía la cinta en dos renglones. */
+        '<span class="cinta-modo__que">' + nombreModo(propuesta.modo) + '</span>' +
+        /* Dice siempre lo mismo. Nombrar el destino —«Negociar», «Debatir»—
+           obligaba a leer dos veces para separar en qué modo estás de a cuál
+           irías; el botón es un interruptor y se comporta como uno. */
         '<span class="cinta-modo__cambiar">' +
-          window.ATWI.iconoSVG('volver', 14) +
-          (propuesta.modo === 'debate' ? 'Negociar' : 'Debatir') +
+          window.ATWI.iconoSVG('volver', 14) + 'Cambiar modo' +
         '</span>' +
       '</button>';
   }

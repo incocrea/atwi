@@ -92,7 +92,10 @@ body.app {
    frase. */
 .cabecera__sub {
   font-family: var(--display); font-weight: 700;
-  font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px;
+  /* A 13 px no cabía en los 186 px que deja la cabecera y partía en dos
+     renglones, que en una cabecera se paga en todas las pantallas. */
+  font-size: var(--t-mini); color: var(--tinta-suave); margin-top: 2px;
+  white-space: nowrap;
 }
 .cabecera__sub b { color: var(--lavanda-oscuro); font-weight: 800; }
 
