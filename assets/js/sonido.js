@@ -69,6 +69,13 @@ window.ATWI = window.ATWI || {};
     hay: function () { return Boolean(window.AudioContext || window.webkitAudioContext); },
 
     /**
+     * Abre el contexto sin hacer ruido. Hay que llamarlo DENTRO del gesto que
+     * empieza la secuencia: el navegador solo lo desbloquea ahí, y el redoble
+     * ya no suena en ese instante sino después de la entrada de la frase.
+     */
+    despertar: function () { contexto(); },
+
+    /**
      * Redoble de circo: golpes cada vez más rápidos y cada vez más fuertes.
      * Devuelve una función para cortarlo antes de tiempo.
      * @param segundos cuánto dura

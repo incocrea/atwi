@@ -42,6 +42,16 @@
   --veredicto-fondo: #2E2A3F;
   --veredicto-banda: #14111F;
 
+  /* --- Las dos voces -------------------------------------------------------
+     Quién dijo cada cosa. NO son los colores de los modos a propósito: si una
+     de las dos voces llevara el coral de Juicio o el menta de Pacto, esa
+     persona parecería la dueña de la sala. Son dos tonos hermanos que no
+     pertenecen a ninguno de los dos modos y que se distinguen bien tanto sobre
+     el crema de día como sobre los fondos oscuros de la sala.
+     Tampoco son un marcador: identifican, no comparan. */
+  --voz-a: #F0B429;
+  --voz-b: #7FA8F0;
+
   /* --- Familia de PREMIO -------------------------------------------------
      Todo lo que signifique avanzar o ganar algo va en cálido: puntos, nivel,
      insignias y el momento de la victoria. El lavanda se queda para la
@@ -159,6 +169,7 @@
   --ctx-pastilla: var(--lavanda-oscuro);
   /* Los de abajo solo los usan las pantallas oscuras; aquí van por si acaso. */
   --ctx-acento: var(--lavanda);
+  --ctx-relleno: var(--lavanda);
   --ctx-halo: transparent;
   --ctx-vidrio: var(--crema-hondo);
   --ctx-vidrio-mas: var(--linea);
@@ -188,40 +199,41 @@
   --ctx-fondo: #2E2A3F; --ctx-banda: #14111F; --ctx-tinta: #FBF7F2;
 }
 
-/* --- La sala, a oscuras y con el color del modo ------------------------------
-   La sala va oscura porque entrar a jugar tiene que sentirse distinto de
-   navegar por el catálogo. Pero hasta ahora iba oscura Y NEUTRA, igual en los
-   dos modos: se perdía lo único que no se negocia del color en este juego, que
-   Juicio es coral y Pacto es menta. Así que el fondo no es gris: es el ciruela
-   de la marca empujado hacia el tono del modo.
+/* --- La sala, con el color del modo -------------------------------------------
+   AQUÍ NO HAY FONDOS OSCUROS NI DEGRADADOS. La dirección gráfica del juego es
+   la de Finch: neutros cálidos, pasteles sólidos y sombras difusas. Una sala a
+   oscuras con un halo degradado detrás del juez era otra app dentro de esta, y
+   además rompía la única regla de color que no se negocia: la sala lleva el
+   color del modo, y ese color es un pastel.
 
-   El acento se aclara respecto al color de día (#F07F55 → #FF9B73 y #34B79B →
-   #5FD8B8) porque sobre un fondo oscuro el color de día se apaga y no llega al
-   contraste que pide un texto.
+   Así que el fondo es el tinte del modo, plano; las tarjetas son blancas con
+   sombra suave, como en el resto del juego; y el acento es la versión oscura
+   del color del modo, que es la que se lee sobre su propio tinte. El color a
+   plena fuerza se reserva para los rellenos, donde no tiene que leerse texto
+   encima.
 
-   `--ctx-tenue-2` subió de .50 a .62 tras medirlo en el navegador: a .50 el
-   texto de 13 px daba 4,32 sobre los dos fondos, por debajo del 4,5 que exige
-   ese tamaño. Medido ahora, mezclando la transparencia contra su fondo real:
-   Pacto 5,78 · Juicio 6,00 lo tenue, y 7,23 / 7,55 lo que dice el juez. */
+   Contraste medido en el navegador: ver el comentario de --ctx-tenue. */
 [data-ctx="sala-debate"] {
-  --ctx-fondo: #38232E;
-  --ctx-tinta: #FDF2EC;
-  --ctx-acento: #FF9B73;
-  --ctx-halo: rgba(240, 127, 85, .20);
-  --ctx-vidrio: rgba(255, 235, 226, .08);
-  --ctx-vidrio-mas: rgba(255, 235, 226, .15);
-  --ctx-linea: rgba(255, 235, 226, .18);
-  --ctx-tenue: rgba(253, 242, 236, .72);
-  --ctx-tenue-2: rgba(253, 242, 236, .62);
+  --ctx-fondo: #FDEAE1;          /* debate-tinte, sólido */
+  --ctx-tinta: #2E2A3F;
+  --ctx-acento: #C75B33;         /* debate-oscuro: se lee sobre el tinte */
+  --ctx-relleno: #F07F55;        /* debate a plena fuerza, solo para rellenos */
+  --ctx-halo: #FBDCCD;           /* el mismo tinte, un punto más hondo */
+  --ctx-vidrio: #FFFFFF;         /* las tarjetas son blancas, como en todo el juego */
+  --ctx-vidrio-mas: #F8D6C5;
+  --ctx-linea: #F2C7B2;
+  --ctx-tenue: #5F5872;
+  --ctx-tenue-2: #6E6783;
 }
 [data-ctx="sala-negociacion"] {
-  --ctx-fondo: #1C3138;
-  --ctx-tinta: #EAF8F4;
-  --ctx-acento: #5FD8B8;
-  --ctx-halo: rgba(52, 183, 155, .22);
-  --ctx-vidrio: rgba(226, 248, 243, .08);
-  --ctx-vidrio-mas: rgba(226, 248, 243, .15);
-  --ctx-linea: rgba(226, 248, 243, .18);
-  --ctx-tenue: rgba(234, 248, 244, .72);
-  --ctx-tenue-2: rgba(234, 248, 244, .62);
+  --ctx-fondo: #DDF4EE;          /* negociacion-tinte, sólido */
+  --ctx-tinta: #2E2A3F;
+  --ctx-acento: #1F7A64;
+  --ctx-relleno: #34B79B;
+  --ctx-halo: #C9EDE3;
+  --ctx-vidrio: #FFFFFF;
+  --ctx-vidrio-mas: #BFE8DC;
+  --ctx-linea: #A8DDCD;
+  --ctx-tenue: #5F5872;
+  --ctx-tenue-2: #6E6783;
 }

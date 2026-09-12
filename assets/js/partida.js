@@ -71,20 +71,48 @@ window.ATWI = window.ATWI || {};
   /* --- Arranque --------------------------------------------------------------
      `quien` son los dos nombres. El orden de la lista ES el orden de turno, y
      sale de un sorteo hecho antes de entrar aquí. */
+  /**
+   * `posturas` son los dos nombres en el orden de las POSTURAS: el primero
+   * defiende la A y el segundo la B. Eso lo decide quien propone, no el azar.
+   * `abre` es el índice de quien habla primero, y ESO sí sale del sorteo.
+   * Son dos cosas distintas y antes iban mezcladas en una sola lista.
+   */
   function empezar(op) {
+    var nombres = op.posturas || op.quien || ['Tú', 'La otra parte'];
+    var abre = typeof op.abre === 'number' ? op.abre : 0;
     P = {
       tema: op.tema,
       modo: op.modo,                 // 'debate' | 'negociacion'
       turnos: op.turnos,             // por persona
       publico: op.publico || 'pareja',
-      quien: op.quien,               // ['Harold', 'Marta'], ya sorteados
-      intervenciones: [],            // {persona, turno, audio, tipo, segundos, url}
+      jugadores: [
+        { nombre: nombres[0], letra: 'A', texto: op.tema.a, inicial: inicialDe(nombres[0]) },
+        { nombre: nombres[1], letra: 'B', texto: op.tema.b, inicial: inicialDe(nombres[1]) }
+      ],
+      orden: [abre, 1 - abre],       // índices sobre `jugadores`
+      intervenciones: [],            // {jugador, turno, audio, tipo, segundos, url}
       i: 0,                          // intervención actual, 0..(turnos*2 - 1)
       borrador: null,                // lo grabado y todavía NO entregado
       estado: 'aviso'
     };
+    iniciales();
     abrir();
     pintarAviso();
+  }
+
+  /* Si dos personas empiezan por la misma letra, la segunda lleva dos: en una
+     lista de círculos la inicial es lo único que distingue, y «H» y «H» no
+     distinguen nada. */
+  function inicialDe(nombre) {
+    return String(nombre || '?').trim().charAt(0).toUpperCase() || '?';
+  }
+
+  function iniciales() {
+    var a = P.jugadores[0], b = P.jugadores[1];
+    if (a.inicial !== b.inicial) return;
+    a.inicial = String(a.nombre).trim().slice(0, 2);
+    b.inicial = String(b.nombre).trim().slice(0, 2);
+    if (a.inicial.toLowerCase() === b.inicial.toLowerCase()) { a.inicial = 'A'; b.inicial = 'B'; }
   }
 
   function abrir() {
@@ -99,22 +127,30 @@ window.ATWI = window.ATWI || {};
   function cerrar() {
     var m = $('#m-partida');
     if (m) { m.hidden = true; m.removeAttribute('data-ctx'); }
-    pararEscucha();
+    cerrarReproductor();
     tirarBorrador();
     if (P) P.intervenciones.forEach(function (v) { if (v.url) URL.revokeObjectURL(v.url); });
     grabadora.cerrar();
     P = null;
   }
 
-  /* Quién habla ahora y qué número de turno suyo es */
+  /* Quién habla ahora, qué defiende y qué número de turno suyo es */
   function turnoActual() {
+    var j = P.orden[P.i % 2];                 // índice del jugador
     return {
-      persona: P.i % 2,                       // 0 o 1
-      nombre: P.quien[P.i % 2],
+      jugador: j,
+      nombre: P.jugadores[j].nombre,
+      postura: P.jugadores[j].texto,
+      letra: P.jugadores[j].letra,
       numero: Math.floor(P.i / 2) + 1,
       esUltima: P.i === P.turnos * 2 - 1,
       esPrimera: P.i === 0
     };
+  }
+
+  /** A quién acaba de escuchar quien habla ahora. */
+  function elOtro() {
+    return P.jugadores[P.orden[(P.i + 1) % 2]];
   }
 
   /* La cara del juez es el icono ILUSTRADO del modo, no un emoji: el emoji lo
@@ -148,40 +184,67 @@ window.ATWI = window.ATWI || {};
   }
 
   /**
-   * Una fila reproducible. `grande` es la del borrador en revisión, que manda
-   * en la pantalla; las de la lista van compactas.
+   * La tarjeta del borrador en revisión. El avance y la velocidad los lleva el
+   * reproductor flotante, así que aquí solo hace falta el botón y el dato.
    */
-  function pista(clave, titulo, meta, grande, ultima) {
-    var p = pistaDe(clave);
-    return '<div class="pista' + (grande ? ' pista--grande' : '') +
-             (ultima ? ' pista--ultima' : '') + '" data-pista="' + clave + '">' +
+  function pista(clave, titulo, meta) {
+    return '<div class="pista pista--grande" data-pista="' + clave + '">' +
         '<button type="button" class="pista__play" data-oir="' + clave + '"' +
                 ' aria-label="Escuchar ' + esc(titulo) + '">' +
-          '<span class="pista__icono">' + iconoSVG('play', grande ? 26 : 20) + '</span>' +
+          '<span class="pista__icono">' + iconoSVG('play', 26) + '</span>' +
         '</button>' +
         '<div class="pista__quien">' +
           '<span class="pista__titulo">' + esc(titulo) + '</span>' +
           '<span class="pista__meta">' + meta + '</span>' +
         '</div>' +
-        '<div class="pista__barra"><span></span></div>' +
       '</div>';
   }
 
-  /** La lista de lo ya dicho, para volver a oírlo antes de contestar. */
+  /**
+   * LO QUE SE DIJO, EN RUEDAS.
+   * Una fila por cada seis intervenciones. Cada rueda lleva la inicial de quien
+   * habló y el borde de su color, así que se lee de un vistazo de quién es cada
+   * una sin gastar una fila entera por audio. Con 5 turnos son diez audios:
+   * en filas no cabían en la pantalla, en ruedas caben en dos líneas.
+   *
+   * Los dos colores NO son los del modo a propósito. Si una de las dos voces
+   * llevara el coral de Juicio o el menta de Pacto, parecería que la sala es
+   * suya. Son dos tonos hermanos que no pertenecen a ninguno de los dos.
+   */
   function loDicho() {
     if (!P.intervenciones.length) return '';
     var total = P.intervenciones.length;
     return '<div class="dicho">' +
-        '<p class="dicho__titulo">' + iconoSVG('historial', 16) + 'Lo que se dijo hasta ahora</p>' +
-        P.intervenciones.map(function (v, n) {
-          var ultima = n === total - 1;
-          return pista('i' + n, P.quien[v.persona],
-            'Turno ' + v.turno + ' · ' + relojTexto(v.segundos) +
-              (ultima ? ' <span class="dicho__nueva">lo último</span>' : ''),
-            false, ultima);
-        }).join('') +
+        '<p class="dicho__titulo">' + iconoSVG('historial', 16) + 'Lo que se dijo · toca para oírlo</p>' +
+        '<div class="ruedas">' +
+          P.intervenciones.map(function (v, n) {
+            var j = P.jugadores[v.jugador];
+            return '<button type="button" class="rueda rueda--v' + v.jugador +
+                     (n === total - 1 ? ' rueda--ultima' : '') + '"' +
+                   ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
+                   ' aria-label="Escuchar a ' + esc(j.nombre) + ', turno ' + v.turno + '">' +
+                '<span class="rueda__ini">' + esc(j.inicial) + '</span>' +
+                '<span class="rueda__n">' + v.turno + '</span>' +
+              '</button>';
+          }).join('') +
+        '</div>' +
+        '<p class="dicho__leyenda">' +
+          P.jugadores.map(function (j, i) {
+            return '<span class="leyenda leyenda--v' + i + '">' +
+              '<i></i>' + esc(j.nombre) + ' · ' + j.letra + '</span>';
+          }).join('') +
+        '</p>' +
       '</div>';
   }
+
+  /* ==========================================================================
+     EL REPRODUCTOR FLOTANTE
+     Se levanta sobre la sala al tocar una rueda. Lleva lo que hace falta para
+     volver a oír algo de verdad: barra que se puede arrastrar y velocidad,
+     porque escuchar un minuto entero para pescar una frase es insufrible.
+     ========================================================================== */
+  var VELOCIDADES = [1, 1.25, 1.5, 2];
+  var velocidad = 1;
 
   function elAudio() {
     var a = $('#sala-audio');
@@ -194,7 +257,7 @@ window.ATWI = window.ATWI || {};
       a.preload = 'auto';
       $('#m-partida').appendChild(a);
       ['play', 'pause', 'ended', 'timeupdate'].forEach(function (ev) {
-        a.addEventListener(ev, function () { pintarPista(ev); });
+        a.addEventListener(ev, function () { refrescarReproductor(ev); });
       });
     }
     return a;
@@ -204,14 +267,13 @@ window.ATWI = window.ATWI || {};
     var a = elAudio();
     var p = pistaDe(clave);
     if (!p || !p.url) return;
-    if (sonando === clave && !a.paused) { a.pause(); return; }
-    if (sonando !== clave) {
-      limpiarPista(sonando);
-      sonando = clave;
-      a.src = p.url;
-      a.currentTime = 0;
-    }
+    if (sonando === clave) { if (a.paused) a.play(); else a.pause(); return; }
+    sonando = clave;
+    a.src = p.url;
+    a.currentTime = 0;
+    a.playbackRate = velocidad;
     a.play();
+    pintarReproductor();
   }
 
   function pararEscucha() {
@@ -219,35 +281,91 @@ window.ATWI = window.ATWI || {};
     if (a && !a.paused) a.pause();
   }
 
-  function limpiarPista(clave) {
-    if (!clave) return;
-    var f = $('[data-pista="' + clave + '"]');
-    if (!f) return;
-    f.classList.remove('pista--sonando');
-    var b = $('.pista__barra span', f);
-    if (b) b.style.width = '0%';
-    var ic = $('.pista__icono', f);
-    if (ic) ic.innerHTML = iconoSVG('play', f.classList.contains('pista--grande') ? 26 : 20);
+  function cerrarReproductor() {
+    pararEscucha();
+    sonando = null;
+    var r = $('#reproductor');
+    if (r) r.remove();
+    $$('.rueda--sonando').forEach(function (e) { e.classList.remove('rueda--sonando'); });
   }
 
-  function pintarPista(ev) {
+  /** Quién y qué es lo que suena. El borrador no es de nadie todavía. */
+  function quienSuena() {
+    if (sonando === 'b') return { nombre: 'Tu turno, sin mandar', meta: 'todavía no lo oyó nadie', voz: null };
+    var v = P.intervenciones[Number(String(sonando).slice(1))];
+    if (!v) return { nombre: '', meta: '', voz: null };
+    var j = P.jugadores[v.jugador];
+    return { nombre: j.nombre, meta: 'Turno ' + v.turno + ' · defiende ' + j.letra, voz: v.jugador };
+  }
+
+  function pintarReproductor() {
+    var q = quienSuena();
+    var r = $('#reproductor');
+    if (!r) {
+      r = document.createElement('div');
+      r.id = 'reproductor';
+      r.className = 'reproductor';
+      $('#m-partida').appendChild(r);
+    }
+    r.className = 'reproductor' + (q.voz !== null ? ' reproductor--v' + q.voz : '');
+    r.innerHTML =
+      '<div class="reproductor__alto">' +
+        '<button type="button" class="reproductor__play" data-accion="r-play" aria-label="Reproducir o pausar">' +
+          '<span id="r-icono">' + iconoSVG('pausa', 24) + '</span>' +
+        '</button>' +
+        '<div class="reproductor__quien">' +
+          '<span class="reproductor__nombre">' + esc(q.nombre) + '</span>' +
+          '<span class="reproductor__meta">' + esc(q.meta) + '</span>' +
+        '</div>' +
+        '<button type="button" class="reproductor__vel" data-accion="r-vel">' +
+          '<span id="r-vel">' + velocidad + '×</span></button>' +
+        '<button type="button" class="boton-icono reproductor__cerrar" data-accion="r-cerrar" ' +
+          'aria-label="Cerrar el reproductor">' + iconoSVG('cerrar', 18) + '</button>' +
+      '</div>' +
+      '<div class="reproductor__pista">' +
+        '<input type="range" id="r-barra" min="0" max="1000" value="0" step="1" ' +
+          'aria-label="Avance de la grabación">' +
+        '<span class="reproductor__t"><b id="r-t">0:00</b> / ' + relojTexto(duracionDe(sonando)) + '</span>' +
+      '</div>';
+    refrescarReproductor('play');
+  }
+
+  function duracionDe(clave) {
+    var p = pistaDe(clave);
+    return (p && p.segundos) || 0;
+  }
+
+  function refrescarReproductor(ev) {
     if (!P || !sonando) return;
     var a = $('#sala-audio');
-    var f = $('[data-pista="' + sonando + '"]');
-    if (!f) return;
-    var p = pistaDe(sonando);
-    var grande = f.classList.contains('pista--grande');
+    var r = $('#reproductor');
+    if (!r) return;
 
-    if (ev === 'ended') { a.currentTime = 0; limpiarPista(sonando); return; }
+    /* El avance se calcula sobre los segundos que contamos nosotros:
+       `a.duration` de un WebM de MediaRecorder vale Infinity. */
+    var total = duracionDe(sonando) || 1;
+    if (ev === 'ended') { a.currentTime = 0; }
 
-    f.classList.toggle('pista--sonando', !a.paused);
-    var ic = $('.pista__icono', f);
-    if (ic) ic.innerHTML = iconoSVG(a.paused ? 'play' : 'pausa', grande ? 26 : 20);
-    var b = $('.pista__barra span', f);
-    /* El ancho sale de los segundos que contamos nosotros: `a.duration` de un
-       WebM de MediaRecorder vale Infinity y no sirve para nada. */
-    if (b) b.style.width = Math.min(100, (a.currentTime / ((p && p.segundos) || 1)) * 100) + '%';
+    var ic = $('#r-icono');
+    if (ic) ic.innerHTML = iconoSVG(a.paused ? 'play' : 'pausa', 24);
+
+    var barra = $('#r-barra');
+    if (barra && !arrastrando) {
+      var frac = Math.min(1, a.currentTime / total);
+      barra.value = String(Math.round(frac * 1000));
+      barra.style.setProperty('--avance', (frac * 100) + '%');
+    }
+    var t = $('#r-t');
+    if (t) t.textContent = relojTexto(Math.floor(a.currentTime));
+
+    $$('.rueda').forEach(function (e) {
+      e.classList.toggle('rueda--sonando', e.dataset.rueda === sonando && !a.paused);
+    });
+    var ib = $('.pista--grande .pista__icono');
+    if (ib) ib.innerHTML = iconoSVG(sonando === 'b' && !a.paused ? 'pausa' : 'play', 26);
   }
+
+  var arrastrando = false;
 
   /* ==========================================================================
      1. EL SORTEO, ANTES DE EMPEZAR
@@ -265,15 +383,22 @@ window.ATWI = window.ATWI || {};
         '</div>' +
         '<div class="sorteo">' +
           '<p class="sorteo__que">Abre ' + (P.modo === 'debate' ? 'el debate' : 'la negociación') + '</p>' +
-          '<p class="sorteo__quien">' + esc(P.quien[0]) + '</p>' +
+          '<p class="sorteo__quien">' + esc(P.jugadores[P.orden[0]].nombre) + '</p>' +
           /* La revancha es cosa del modo Debate. En Negociación lo equivalente
              no revierte un resultado: encadena otra ronda. */
           '<p class="sorteo__como">Salió por sorteo. En la ' +
-            (P.modo === 'debate' ? 'revancha' : 'próxima') + ' abre ' + esc(P.quien[1]) + '.</p>' +
+            (P.modo === 'debate' ? 'revancha' : 'próxima') + ' abre ' +
+            esc(P.jugadores[P.orden[1]].nombre) + '.</p>' +
         '</div>' +
+        /* Quién defiende qué NO lo decide el sorteo: lo eligió quien propuso.
+           Se enseña aquí para que no haya dudas después. */
         '<div class="sala__posturas">' +
-          '<p class="chico"><strong>' + esc(P.quien[0]) + ':</strong> ' + esc(P.tema.a) + '</p>' +
-          '<p class="chico"><strong>' + esc(P.quien[1]) + ':</strong> ' + esc(P.tema.b) + '</p>' +
+          P.jugadores.map(function (j, i) {
+            return '<p class="chico voz voz--v' + i + '">' +
+              '<span class="voz__ini">' + esc(j.inicial) + '</span>' +
+              '<span><strong>' + esc(j.nombre) + '</strong> defiende la ' + j.letra + ': ' +
+              esc(j.texto) + '</span></p>';
+          }).join('') +
         '</div>' +
       '</div>';
     pie().innerHTML = principal('p-listo', 'Empezar');
@@ -295,8 +420,8 @@ window.ATWI = window.ATWI || {};
         juez('', t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') +
         '<div class="turno">' +
           '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + '</p>' +
-          '<p class="turno__postura">' + esc(t.persona === 0 ? P.tema.a : P.tema.b) + '</p>' +
+          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + ' · defiende la ' + t.letra + '</p>' +
+          '<p class="turno__postura">' + esc(t.postura) + '</p>' +
         '</div>' +
         loDicho() +
         (t.esPrimera
@@ -422,11 +547,11 @@ window.ATWI = window.ATWI || {};
         juez('', 'Todavía no lo he oído. Lo escucho cuando me lo mandes.') +
         '<div class="turno">' +
           '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + '</p>' +
+          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + ' · defiende la ' + t.letra + '</p>' +
         '</div>' +
         pista('b', 'Tu turno, sin mandar',
           relojTexto(b.segundos) + ' · ' +
-          (quedan > 0 ? 'te quedan ' + quedan + ' s' : 'sin tiempo de sobra'), true, false) +
+          (quedan > 0 ? 'te quedan ' + quedan + ' s' : 'sin tiempo de sobra')) +
         (corto
           ? '<p class="sala__nota sala__nota--ojo">Eso duró ' + b.segundos + ' s. ' +
             (puedeAgregar ? 'Agrega algo antes de mandarlo.' : 'Bórralo y grábalo otra vez.') + '</p>'
@@ -465,7 +590,7 @@ window.ATWI = window.ATWI || {};
     grabadora.terminar().then(function (r) {
       var blob = r ? r.audio : P.borrador.blob;
       P.intervenciones.push({
-        persona: t.persona, turno: t.numero,
+        jugador: t.jugador, turno: t.numero,
         audio: blob,
         tipo: r ? r.tipo : P.borrador.tipo,
         segundos: r ? r.segundos : P.borrador.segundos,
@@ -497,7 +622,7 @@ window.ATWI = window.ATWI || {};
       '</div>';
 
     pie().innerHTML = principal('p-seguir',
-      ultima ? 'Ver el resultado' : 'Le toca a ' + P.quien[(P.i + 1) % 2]);
+      ultima ? 'Ver el resultado' : 'Le toca a ' + elOtro().nombre);
   }
 
   function seguir() {
@@ -514,7 +639,7 @@ window.ATWI = window.ATWI || {};
      ========================================================================== */
   function deliberar() {
     P.estado = 'deliberando';
-    pararEscucha();
+    cerrarReproductor();
     caja().innerHTML =
       '<div class="sala sala--centrada">' +
         juez('juez--pensando', 'Deliberando…') +
@@ -527,7 +652,7 @@ window.ATWI = window.ATWI || {};
   function revelar() {
     var m = $('#m-partida');
     m.hidden = true;
-    var ganador = alAzar(P.quien);
+    var ganador = alAzar(P.jugadores).nombre;
     veredicto.revelar({
       modo: P.modo,
       publico: P.publico,
@@ -572,9 +697,37 @@ window.ATWI = window.ATWI || {};
     else if (a === 'p-borrar-si') borrar();
     else if (a === 'p-seguir') seguir();
     else if (a === 'p-revelar') revelar();
+    else if (a === 'r-play') { var au = $('#sala-audio'); if (au.paused) au.play(); else au.pause(); }
+    else if (a === 'r-vel') cambiarVelocidad();
+    else if (a === 'r-cerrar') cerrarReproductor();
     else if (a === 'p-salir') {
       if (confirm('Si sales ahora, la partida se pierde y no cuenta para nadie. ¿Salir?')) cerrar();
     }
+  });
+
+  function cambiarVelocidad() {
+    var i = VELOCIDADES.indexOf(velocidad);
+    velocidad = VELOCIDADES[(i + 1) % VELOCIDADES.length];
+    var a = $('#sala-audio');
+    if (a) a.playbackRate = velocidad;
+    var n = $('#r-vel');
+    if (n) n.textContent = velocidad + '×';
+  }
+
+  /* Arrastrar la barra. Se marca `arrastrando` para que el `timeupdate` no
+     pelee con el dedo y devuelva el pulgar a su sitio a media caricia. */
+  document.addEventListener('input', function (e) {
+    if (e.target.id !== 'r-barra' || !sonando) return;
+    arrastrando = true;
+    var a = $('#sala-audio');
+    var total = duracionDe(sonando) || 1;
+    a.currentTime = (Number(e.target.value) / 1000) * total;
+    e.target.style.setProperty('--avance', (Number(e.target.value) / 10) + '%');
+  });
+  ['change', 'pointerup', 'touchend'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (e.target && e.target.id === 'r-barra') arrastrando = false;
+    });
   });
 
   window.ATWI.partida = { empezar: empezar, cerrar: cerrar };

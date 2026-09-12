@@ -17,6 +17,12 @@ window.ATWI = window.ATWI || {};
 
   var cfg = window.ATWI.config;
   var CLAVE = 'atwi.perfil.v1';
+  /* La lista de temas NO es del perfil: es de la relación. Dos personas que
+     juegan juntas comparten reescrituras y temas propios, y la misma persona
+     con otra pareja tiene otra lista. Mientras no haya servidor solo existe
+     una relación, pero la clave va aparte para que el día que la haya se
+     migre sola. Ver docs/00 «El catálogo es una plantilla». */
+  var CLAVE_TEMAS = 'atwi.temas.v1';
 
   /* --- Estado de la persona ------------------------------------------------
      Contadores SEPARADOS y sin marcador comparativo entre los dos miembros de
@@ -76,6 +82,38 @@ window.ATWI = window.ATWI || {};
     return demoAvisos.cache;
   }
 
+  /* --- La lista de temas de esta relación -----------------------------------
+     El catálogo de 105 temas es una PLANTILLA y no cambia nunca. Encima van
+     dos cosas: temas reescritos (el original sigue ahí, se puede volver) y
+     temas propios. La lista que se ve es la plantilla con lo reescrito
+     sustituido, más lo propio. */
+  var MIS_TEMAS = 'Mis temas';
+  var listaTemas = null;
+
+  function cargarTemas() {
+    if (listaTemas) return listaTemas;
+    try {
+      var crudo = localStorage.getItem(CLAVE_TEMAS);
+      listaTemas = crudo ? JSON.parse(crudo) : { propios: [], reescritos: {} };
+    } catch (e) {
+      listaTemas = { propios: [], reescritos: {} };
+    }
+    if (!listaTemas.propios) listaTemas.propios = [];
+    if (!listaTemas.reescritos) listaTemas.reescritos = {};
+    return listaTemas;
+  }
+
+  function guardarTemas() {
+    try { localStorage.setItem(CLAVE_TEMAS, JSON.stringify(listaTemas)); } catch (e) {}
+  }
+
+  /** Un tema del catálogo con la reescritura de esta relación encima. */
+  function conReescritura(t) {
+    var r = cargarTemas().reescritos[t.id];
+    if (!r) return t;
+    return Object.assign({}, t, r, { id: t.id, reescrito: true });
+  }
+
   /* --- Catálogo ------------------------------------------------------------ */
   var catalogo = null;
 
@@ -108,19 +146,96 @@ window.ATWI = window.ATWI || {};
 
     catalogo: pedirCatalogo,
 
+    /** El nombre de la categoría donde caen los temas que escribe la gente. */
+    MIS_TEMAS: MIS_TEMAS,
+
+    /** Todos los temas jugables: la plantilla reescrita más los propios. */
+    todos: function () {
+      if (!catalogo) return cargarTemas().propios.slice();
+      return catalogo.temas.map(conReescritura).concat(cargarTemas().propios);
+    },
+
     /** Temas de una categoría, con los del recorrido inicial primero. */
     temasDe: function (nombreCategoria) {
+      if (nombreCategoria === MIS_TEMAS) return cargarTemas().propios.slice().reverse();
       if (!catalogo) return [];
       return catalogo.temas
         .filter(function (t) { return t.categoria === nombreCategoria; })
+        .map(conReescritura)
         .sort(function (a, b) { return (a.inicial || 99) - (b.inicial || 99); });
     },
+
+    /* --- Escribir temas -----------------------------------------------------
+       Dos operaciones distintas que la interfaz enseña casi igual:
+         · REESCRIBIR un tema del catálogo. El original no se toca: se guarda
+           encima lo que esta relación prefiere, y se puede devolver.
+         · CREAR un tema propio, que cae en «Mis temas» y no existe en ningún
+           catálogo.
+       Se guarda quién lo escribió y cuándo, porque reescribir el tema de una
+       discusión es algo que la otra persona tiene derecho a ver. */
+    reescribir: function (id, campos) {
+      var t = cargarTemas();
+      t.reescritos[id] = Object.assign({}, t.reescritos[id], campos, {
+        editadoPor: cargar().nombre || 'alguien',
+        editado: new Date().toISOString()
+      });
+      guardarTemas();
+      return this.tema(id);
+    },
+
+    /** Devuelve un tema reescrito a como estaba en el catálogo. */
+    devolverAlOriginal: function (id) {
+      delete cargarTemas().reescritos[id];
+      guardarTemas();
+      return this.tema(id);
+    },
+
+    /** ¿Este tema está reescrito respecto al catálogo? */
+    estaReescrito: function (id) {
+      return Boolean(cargarTemas().reescritos[id]);
+    },
+
+    /** Crea o actualiza un tema propio. Devuelve el tema guardado. */
+    guardarTemaPropio: function (t) {
+      var lista = cargarTemas();
+      var quien = cargar().nombre || 'alguien';
+      var existente = null;
+      for (var i = 0; i < lista.propios.length; i++) {
+        if (lista.propios[i].id === t.id) { existente = lista.propios[i]; break; }
+      }
+      var tema = Object.assign(existente || {
+        id: 'propio-' + Date.now().toString(36),
+        categoria: MIS_TEMAS,
+        emoji: '✍️'
+      }, {
+        titulo: t.titulo,
+        enunciado: t.enunciado,
+        a: t.a,
+        b: t.b,
+        intensidad: t.intensidad || 'media',
+        propio: true,
+        editadoPor: quien,
+        editado: new Date().toISOString()
+      });
+      if (!existente) lista.propios.push(tema);
+      guardarTemas();
+      return tema;
+    },
+
+    borrarTemaPropio: function (id) {
+      var lista = cargarTemas();
+      lista.propios = lista.propios.filter(function (t) { return t.id !== id; });
+      guardarTemas();
+    },
+
+    cuantosPropios: function () { return cargarTemas().propios.length; },
 
     /** Los doce temas con los que arranca una pareja nueva, en orden. */
     recorridoInicial: function () {
       if (!catalogo) return [];
       return catalogo.temas
         .filter(function (t) { return t.inicial; })
+        .map(conReescritura)
         .sort(function (a, b) { return a.inicial - b.inicial; });
     },
 
@@ -141,10 +256,9 @@ window.ATWI = window.ATWI || {};
 
     /** Busca por palabra en el título, el enunciado y las dos posturas. */
     buscar: function (texto, estado) {
-      if (!catalogo) return [];
       var q = (texto || '').trim().toLowerCase();
       var yo = this;
-      return catalogo.temas.filter(function (t) {
+      return this.todos().filter(function (t) {
         if (estado === 'sin' && yo.yaDebatido(t.id)) return false;
         if (estado === 'con' && !yo.yaDebatido(t.id)) return false;
         if (!q) return true;
@@ -153,6 +267,15 @@ window.ATWI = window.ATWI || {};
     },
 
     tema: function (id) {
+      var lista = this.todos();
+      for (var i = 0; i < lista.length; i++) {
+        if (lista[i].id === id) return lista[i];
+      }
+      return null;
+    },
+
+    /** El tema tal y como está en el catálogo, sin la reescritura encima. */
+    temaOriginal: function (id) {
       if (!catalogo) return null;
       for (var i = 0; i < catalogo.temas.length; i++) {
         if (catalogo.temas[i].id === id) return catalogo.temas[i];
@@ -183,8 +306,9 @@ window.ATWI = window.ATWI || {};
 
     /** Borra todo lo local. Solo lo llama el botón de ajustes. */
     olvidar: function () {
-      try { localStorage.removeItem(CLAVE); } catch (e) {}
+      try { localStorage.removeItem(CLAVE); localStorage.removeItem(CLAVE_TEMAS); } catch (e) {}
       perfil = null;
+      listaTemas = null;
     }
   };
 })();

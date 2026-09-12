@@ -181,26 +181,54 @@ window.ATWI = window.ATWI || {};
       return this.refrescar();
     },
 
-    /** Lee el perfil de quien está dentro; null si todavía no lo ha creado. */
-    miPerfil: function () {
+    /**
+     * Asegura que sabemos QUIÉN es el dueño de la sesión. Al volver del enlace
+     * del correo la sesión llega sin usuario, así que hay que preguntarlo antes
+     * de tocar nada que lleve su id.
+     */
+    conUsuario: function () {
       var s = sesion();
       if (!s) return Promise.resolve(null);
-      return pedir('/rest/v1/perfiles?select=*&id=eq.' + s.user.id, {
-        method: 'GET', headers: cabeceras(true)
-      }).then(function (filas) { return (filas && filas[0]) || null; });
+      if (s.user && s.user.id) return Promise.resolve(s);
+      return this.quienSoy().then(function () { return sesion(); });
+    },
+
+    /** Lee el perfil de quien está dentro; null si todavía no lo ha creado. */
+    miPerfil: function () {
+      return this.conUsuario().then(function (s) {
+        if (!s || !s.user) return null;
+        return pedir('/rest/v1/perfiles?select=*&id=eq.' + s.user.id, {
+          method: 'GET', headers: cabeceras(true)
+        }).then(function (filas) { return (filas && filas[0]) || null; });
+      });
     },
 
     /** Crea el perfil la primera vez. Solo nombre y avatar. */
     crearPerfil: function (nombre, avatar) {
-      var s = sesion();
-      if (!s) return Promise.reject(new Error('Sin sesión'));
-      var h = cabeceras(true);
-      h['Prefer'] = 'return=representation';
-      return pedir('/rest/v1/perfiles', {
-        method: 'POST',
-        headers: h,
-        body: JSON.stringify({ id: s.user.id, nombre: nombre, avatar: avatar || '🙂' })
-      }).then(function (filas) { return (filas && filas[0]) || null; });
+      return this.conUsuario().then(function (s) {
+        if (!s || !s.user) throw new Error('Sin sesión');
+        var h = cabeceras(true);
+        h['Prefer'] = 'return=representation';
+        return pedir('/rest/v1/perfiles', {
+          method: 'POST',
+          headers: h,
+          body: JSON.stringify({ id: s.user.id, nombre: nombre, avatar: avatar || '🙂' })
+        }).then(function (filas) { return (filas && filas[0]) || null; });
+      });
+    },
+
+    /** Cambia el nombre o el avatar de quien está dentro. */
+    guardarPerfil: function (cambios) {
+      return this.conUsuario().then(function (s) {
+        if (!s || !s.user) throw new Error('Sin sesión');
+        var h = cabeceras(true);
+        h['Prefer'] = 'return=representation';
+        return pedir('/rest/v1/perfiles?id=eq.' + s.user.id, {
+          method: 'PATCH',
+          headers: h,
+          body: JSON.stringify(cambios)
+        }).then(function (filas) { return (filas && filas[0]) || null; });
+      });
     },
 
     /** Los últimos avisos de mi buzón. */

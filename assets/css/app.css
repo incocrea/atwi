@@ -337,16 +337,9 @@ body.app {
 .revelacion__frase {
   font-family: var(--display);
   font-weight: 800;
-  font-size: 1.5rem;
   letter-spacing: .01em;
-  animation: frase-entra var(--dur-larga) var(--rebote);
 }
-.revelacion__frase--hecha { font-size: 1.0625rem; opacity: .55; }
-
-@keyframes frase-entra {
-  from { opacity: 0; transform: translateY(14px) scale(.92); }
-  to { opacity: 1; transform: none; }
-}
+.revelacion__frase--hecha { opacity: .55; }
 
 /* El número de la cuenta atrás: entra grande, se encoge y se desvanece */
 .revelacion__numero {
@@ -398,12 +391,21 @@ body.app {
 .revelacion__boton { margin-top: var(--e-4); max-width: 22rem; }
 
 /* --- «And The Winner Is», que es de donde sale el nombre ---------------------
-   Las cuatro iniciales van grandes y en lavanda; el resto de cada palabra, más
-   pequeño y tenue. Entran primero las iniciales, una a una, así que durante un
-   instante en pantalla se lee A T W I y después se completa la frase. */
-.revelacion__frase { display: flex; flex-wrap: wrap; justify-content: center; gap: .45em; }
+   UNA SOLA LÍNEA, SIEMPRE. Partir la frase en dos renglones parte el logotipo:
+   A-T-W-I deja de leerse como el nombre. Por eso no envuelve y el tamaño se
+   ajusta al ancho que haya, que como mucho son los 430 px del lienzo.
 
-.fm__palabra { display: inline-flex; align-items: center; gap: .08em; }
+   Entra tramo a tramo: cada uno aparece grande y centrado, aguanta medio
+   segundo y vuela a su sitio. Eso lo hace veredicto.js con un clon; aquí solo
+   viven los dos aspectos, el de vuelo y el ya colocado. */
+.revelacion__frase {
+  display: flex; flex-wrap: nowrap; justify-content: center;
+  align-items: center; gap: .3em; white-space: nowrap;
+  font-size: clamp(.95rem, 4.3vw, 1.28rem);
+  max-width: 100%;
+}
+
+.fm__palabra { display: inline-flex; align-items: center; gap: .06em; flex: none; }
 
 /* La inicial es la letra del logotipo, no una letra de la tipografía. */
 .fm__ini {
@@ -412,28 +414,39 @@ body.app {
   display: block;
   align-self: center;
   filter: drop-shadow(0 3px 10px rgba(0, 0, 0, .35));
-  animation: fm-ini 620ms var(--rebote) both;
+}
+
+/* El tramo en vuelo: grande, centrado y por encima de todo. Nace en el centro
+   del marco y desde ahí se coloca; el tramo real espera escondido debajo. */
+.fm__capa {
+  position: absolute; inset: 0; z-index: 3;
+  display: grid; place-items: center; pointer-events: none;
+}
+.fm__hero {
+  display: inline-flex; align-items: center; gap: .06em;
+  font-family: var(--display); font-weight: 800; white-space: nowrap;
+  /* Un 30% más que antes (2,2/13/3,6). El tramo largo, «Winner», es el que
+     manda cuánto se puede crecer: medido a 375 px de lienzo ocupa 261 y el
+     más ancho llega a 318 de 375, así que ninguno se sale. */
+  font-size: clamp(2.86rem, 16.9vw, 4.68rem);
+  transform-origin: 50% 50%; will-change: transform;
+  animation: hero-entra 260ms var(--rebote) both;
+}
+.fm__hero .fm__ini { height: 1.55em; filter: drop-shadow(0 8px 22px rgba(0, 0, 0, .5)); }
+.fm__hero .fm__resto { font-size: .78em; opacity: .88; }
+
+@keyframes hero-entra {
+  from { opacity: 0; transform: scale(.55); }
+  to { opacity: 1; transform: scale(1); }
 }
 .fm__resto {
   font-size: .82em;
   opacity: .72;
-  animation: fm-resto 420ms var(--suave) both;
-}
-
-@keyframes fm-ini {
-  0% { opacity: 0; transform: translateY(10px) scale(.4) rotate(-8deg); }
-  60% { transform: translateY(0) scale(1.14) rotate(2deg); }
-  100% { opacity: 1; transform: none; }
-}
-@keyframes fm-resto {
-  from { opacity: 0; transform: translateX(-6px); }
-  to { opacity: .72; transform: none; }
 }
 
 /* Ya revelado: se queda pequeña arriba, pero las iniciales siguen destacando */
-.revelacion__frase--hecha { gap: .35em; }
-.revelacion__frase--hecha .fm__ini { height: 1.7em; filter: none; animation: none; }
-.revelacion__frase--hecha .fm__resto { animation: none; }
+.revelacion__frase--hecha { font-size: clamp(.8rem, 3.4vw, 1rem); gap: .25em; }
+.revelacion__frase--hecha .fm__ini { height: 1.9em; filter: none; }
 
 /* --- Iconos ilustrados --------------------------------------------------------
    Son PNG a todo color, así que el estado no se puede cambiar recoloreando como
@@ -527,6 +540,57 @@ body.app {
 .aviso__cuerpo { font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4; }
 .aviso__cuando { font-size: var(--t-mini); color: var(--tinta-tenue); margin-top: 2px; }
 
+/* --- La ficha: el nombre y el dibujo, y se tocan ------------------------------
+   Era texto muerto que ponía «Sin nombre todavía» y no había por dónde
+   escribirlo. Ahora la ficha entera es el botón. */
+.ficha {
+  display: grid; justify-items: center; gap: 2px; width: 100%;
+  padding: var(--e-4) 0; border: 0; background: none; font: inherit;
+  color: inherit; cursor: pointer; text-align: center;
+}
+.ficha__avatar { width: 104px; height: 104px; font-size: 3rem; margin-bottom: var(--e-3); }
+.ficha__nombre {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h1);
+}
+.ficha__nombre svg { color: var(--tinta-tenue); flex: none; }
+.ficha:active .ficha__avatar { transform: scale(.96); }
+
+/* Los dibujos NO son personas: mientras no haya una dirección de personaje
+   decidida, no se insinúa una. Ver CLAUDE.md, «Iconos». */
+.dibujos { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--e-2); }
+.dibujo {
+  aspect-ratio: 1; display: grid; place-items: center; font-size: 1.4rem;
+  border: 2px solid var(--linea); border-radius: 14px;
+  background: var(--superficie); cursor: pointer; font-family: inherit;
+}
+.dibujo[aria-pressed="true"] { border-color: var(--lavanda); background: var(--lavanda-tinte); }
+
+/* --- Escribir un tema ---------------------------------------------------------- */
+.campo--parrafo { min-height: 5.5rem; resize: vertical; line-height: 1.45; font: inherit; }
+/* Cada postura lleva su letra al borde para no confundirse al escribir. */
+.postura-campo { border-left: 3px solid var(--linea-fuerte); padding-left: var(--e-3); }
+.postura-campo--a { border-left-color: var(--voz-a); }
+.postura-campo--b { border-left-color: var(--voz-b); }
+
+/* Quién tocó el tema y cuándo. Reescribir el tema de una discusión es algo que
+   la otra persona tiene derecho a ver. */
+.reescrito {
+  display: flex; align-items: center; gap: var(--e-2);
+  background: var(--premio-tinte); color: var(--premio-hondo);
+  border-radius: var(--radio-chip); padding: var(--e-2) var(--e-3);
+  font-size: var(--t-chico);
+}
+.reescrito svg { flex: none; }
+
+.categoria--propia { border: 2px dashed var(--linea-fuerte); background: transparent; box-shadow: none; }
+.categoria--propia .categoria__emoji { background: var(--premio-tinte); }
+.categoria--propia .categoria__n { color: var(--premio-hondo); font-size: var(--t-h3); }
+
+.fila--entre { justify-content: space-between; align-items: center; }
+.boton--chico { padding: var(--e-2) var(--e-3); font-size: var(--t-chico); gap: 6px; }
+.opcion--postura { align-items: start; }
+
 /* --- La cuenta, en Perfil y a la vista ---------------------------------------- */
 .cuenta {
   display: flex; align-items: center; gap: var(--e-3);
@@ -543,8 +607,9 @@ body.app {
 
 /* ==========================================================================
    LA SALA
-   Va a oscuras y a sangre: entrar a jugar tiene que sentirse distinto de
-   navegar por el catálogo. El juez está presente todo el rato.
+   A sangre y sin barra inferior, pero con la misma luz que el resto del juego:
+   fondo pastel sólido del color del modo, tarjetas blancas y sombras difusas.
+   El juez está presente todo el rato.
 
    NINGÚN COLOR EN CRUDO AQUÍ DENTRO. Todo sale de --ctx-*, que lo pone
    `data-ctx="sala-debate"` o `"sala-negociacion"` en el propio modal. Es lo
@@ -554,7 +619,10 @@ body.app {
 .sala { display: grid; gap: var(--e-4); align-content: start; padding-top: var(--e-2); }
 .sala--centrada { align-content: center; justify-items: center; min-height: 60vh; }
 
-.sala__tema { background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta); padding: var(--e-4); }
+.sala__tema {
+  background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
+  padding: var(--e-4); box-shadow: var(--sombra-1);
+}
 .sala__enunciado { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); line-height: 1.3; }
 .sala__chips { display: flex; gap: var(--e-2); flex-wrap: wrap; margin-top: var(--e-3); }
 .sala__recordatorio { font-size: var(--t-chico); color: var(--ctx-tenue-2); line-height: 1.4; text-align: center; }
@@ -581,7 +649,7 @@ body.app {
   width: 92px; height: 92px; border-radius: var(--radio-pastilla);
   display: grid; place-items: center;
   background: var(--ctx-vidrio);
-  box-shadow: inset 0 0 0 2px var(--ctx-linea), 0 0 34px var(--ctx-halo);
+  box-shadow: var(--sombra-2);
   transition: transform var(--dur-media) var(--suave), background var(--dur-media) var(--suave);
 }
 .juez__cara .ico { width: 46px; height: 46px; }
@@ -605,7 +673,9 @@ body.app {
 .turno__postura {
   margin-top: var(--e-3); padding: var(--e-3) var(--e-4);
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
+  box-shadow: var(--sombra-1);
   font-size: var(--t-chico); line-height: 1.45; color: var(--ctx-tenue);
+  text-align: left;
 }
 
 /* --- El reloj ----------------------------------------------------------------- */
@@ -616,13 +686,13 @@ body.app {
 
 /* UN SOLO BOTÓN PARA TRES COSAS: grabar, parar y agregar. No son tres botones
    en tres sitios: es el mismo control, en el mismo lugar, cambiando de estado.
-   Grabar y agregar llevan el color del modo; parar se apaga a vidrio y late,
+   Grabar y agregar llevan el color del modo; parar se vuelve blanco y late,
    para que a un metro se vea de un vistazo si el micro está abierto. */
 .boton--parar {
-  background: var(--ctx-vidrio-mas); color: var(--ctx-tinta);
-  box-shadow: inset 0 0 0 2px var(--ctx-linea);
+  background: var(--superficie); color: var(--tinta);
+  box-shadow: inset 0 0 0 2px var(--ctx-linea), var(--sombra-1);
 }
-.boton--parar:hover { background: var(--ctx-vidrio-mas); filter: brightness(1.25); }
+.boton--parar:hover { background: var(--ctx-halo); }
 .boton.grabando { animation: late 1.2s ease-in-out infinite; }
 @keyframes late { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
 
@@ -645,24 +715,22 @@ body.app {
   display: grid; grid-template-columns: auto 1fr; align-items: center;
   column-gap: var(--e-3); row-gap: 6px;
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
-  padding: var(--e-3);
+  padding: var(--e-3); box-shadow: var(--sombra-1);
   transition: background var(--dur-corta) var(--suave);
 }
 .pista--grande { padding: var(--e-4); column-gap: var(--e-4); }
-.pista--sonando { background: var(--ctx-vidrio-mas); }
 
 .pista__play {
   grid-row: span 2; border: 0; cursor: pointer; font: inherit;
   width: 42px; height: 42px; border-radius: var(--radio-pastilla);
   display: grid; place-items: center;
-  color: var(--ctx-fondo); background: var(--ctx-acento);
+  color: var(--blanco); background: var(--ctx-acento);
   transition: transform var(--dur-corta) var(--suave);
 }
 .pista--grande .pista__play { width: 58px; height: 58px; }
 .pista__play:active { transform: scale(.92); }
-.pista--sonando .pista__play { box-shadow: 0 0 0 4px var(--ctx-halo); }
 
-.pista__quien { display: grid; gap: 1px; min-width: 0; align-self: end; }
+.pista__quien { display: grid; gap: 1px; min-width: 0; text-align: left; }
 .pista__titulo {
   font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
   color: var(--ctx-tinta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -674,19 +742,11 @@ body.app {
 }
 .pista--grande .pista__meta { font-size: var(--t-chico); color: var(--ctx-tenue); }
 
-.pista__barra {
-  height: 6px; border-radius: 999px; background: var(--ctx-vidrio-mas);
-  overflow: hidden; align-self: start;
-}
-.pista--grande .pista__barra { height: 8px; }
-.pista__barra span {
-  display: block; height: 100%; width: 0%; border-radius: 999px;
-  background: var(--ctx-acento); transition: width 120ms linear;
-}
 
-/* --- Lo que se dijo hasta ahora ------------------------------------------------
-   Se oye antes de contestar, y se puede volver a oír. Es la misma idea que los
-   turnos en vivo: nadie responde de memoria a algo que escuchó una sola vez. */
+/* --- Lo que se dijo, en ruedas -------------------------------------------------
+   Seis por fila. Con 5 turnos son diez audios: en filas no cabían en pantalla,
+   en ruedas caben en dos líneas y se sigue viendo de quién es cada una por la
+   inicial y el color del borde. */
 .dicho { display: grid; gap: var(--e-2); }
 .dicho__titulo {
   display: flex; align-items: center; gap: 6px;
@@ -694,12 +754,112 @@ body.app {
   text-transform: uppercase; color: var(--ctx-tenue-2);
   margin-top: var(--e-2);
 }
-.dicho__nueva {
-  display: inline-block; margin-left: 4px; padding: 1px 7px;
-  border-radius: var(--radio-pastilla); background: var(--ctx-halo);
-  color: var(--ctx-acento); font-weight: 800; text-transform: none; letter-spacing: 0;
+.ruedas { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--e-2); }
+
+.rueda {
+  position: relative; aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  background: var(--ctx-vidrio); color: var(--ctx-tinta);
+  border: 2.5px solid var(--voz); font-family: var(--display); font-weight: 800;
+  box-shadow: var(--sombra-1);
+  transition: transform var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
 }
-.pista--ultima { box-shadow: inset 0 0 0 2px var(--ctx-linea); }
+.rueda--v0 { --voz: var(--voz-a); }
+.rueda--v1 { --voz: var(--voz-b); }
+.rueda:active { transform: scale(.92); }
+.rueda__ini { font-size: .95rem; line-height: 1; }
+/* El número de turno cuelga de la rueda, no dentro: dentro no cabe legible. */
+.rueda__n {
+  position: absolute; right: -2px; bottom: -2px;
+  min-width: 15px; height: 15px; padding: 0 3px; border-radius: 999px;
+  background: var(--voz); color: var(--tinta);
+  font-size: 9px; font-weight: 800; line-height: 15px; text-align: center;
+}
+.rueda--ultima { box-shadow: 0 0 0 3px var(--ctx-halo), var(--sombra-1); }
+.rueda--sonando { background: var(--voz); color: var(--tinta); animation: late 1.2s ease-in-out infinite; }
+
+.dicho__leyenda { display: flex; gap: var(--e-4); flex-wrap: wrap; margin-top: 2px; }
+.leyenda {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--t-mini); color: var(--ctx-tenue);
+}
+.leyenda i { width: 9px; height: 9px; border-radius: 50%; border: 2.5px solid var(--voz); }
+.leyenda--v0 { --voz: var(--voz-a); }
+.leyenda--v1 { --voz: var(--voz-b); }
+
+/* Quién defiende qué, en la pantalla del sorteo */
+.voz { display: grid; grid-template-columns: 26px 1fr; gap: var(--e-3); align-items: start; }
+.voz--v0 { --voz: var(--voz-a); }
+.voz--v1 { --voz: var(--voz-b); }
+.voz__ini {
+  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
+  border: 2.5px solid var(--voz); font-family: var(--display); font-weight: 800; font-size: .8rem;
+}
+
+/* --- El reproductor flotante ---------------------------------------------------
+   Se levanta sobre la sala al tocar una rueda. Barra que se arrastra y
+   velocidad: escuchar un minuto entero para pescar una frase es insufrible. */
+.reproductor {
+  position: absolute; left: var(--borde-pantalla); right: var(--borde-pantalla);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+  z-index: 5; display: grid; gap: var(--e-2);
+  padding: var(--e-3) var(--e-3) var(--e-4);
+  border-radius: var(--radio-tarjeta);
+  background: var(--superficie); box-shadow: var(--sombra-3);
+  animation: sube-poco var(--dur-media) var(--suave);
+  --voz: var(--ctx-acento);
+}
+.reproductor--v0 { --voz: var(--voz-a); }
+.reproductor--v1 { --voz: var(--voz-b); }
+@keyframes sube-poco { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.reproductor__alto { display: flex; align-items: center; gap: var(--e-3); }
+.reproductor__play {
+  flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0; cursor: pointer;
+  display: grid; place-items: center; background: var(--voz); color: var(--tinta);
+}
+.reproductor__quien { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.reproductor__nombre {
+  font-family: var(--display); font-weight: 800; color: var(--tinta);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.reproductor__meta { font-size: var(--t-mini); color: var(--tinta-suave); }
+.reproductor__vel {
+  flex: none; border: 2px solid var(--linea); background: var(--crema-hondo);
+  color: var(--tinta); border-radius: var(--radio-pastilla);
+  padding: 5px 10px; font-family: var(--display); font-weight: 800;
+  font-size: var(--t-chico); cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.reproductor__cerrar { flex: none; width: 34px; height: 34px; color: var(--tinta-suave); box-shadow: none !important; }
+.reproductor__pista { display: grid; gap: 2px; }
+.reproductor__t {
+  font-size: var(--t-mini); color: var(--tinta-suave);
+  font-variant-numeric: tabular-nums; text-align: right;
+}
+.reproductor__t b { color: var(--tinta); font-weight: 800; }
+
+/* La barra es un <input range> de verdad: se arrastra con el dedo y el lector
+   de pantalla la entiende. El relleno va con un degradado, que es la única
+   manera de pintarla igual en los tres navegadores. */
+#r-barra {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 22px;
+  background: transparent; cursor: pointer; margin: 0;
+}
+#r-barra::-webkit-slider-runnable-track {
+  height: 8px; border-radius: 999px;
+  background: linear-gradient(to right, var(--voz) var(--avance, 0%), var(--linea) var(--avance, 0%));
+}
+#r-barra::-moz-range-track { height: 8px; border-radius: 999px; background: var(--linea); }
+#r-barra::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--voz); }
+#r-barra::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 18px; height: 18px;
+  border-radius: 50%; background: var(--tinta); margin-top: -5px;
+  box-shadow: var(--sombra-2);
+}
+#r-barra::-moz-range-thumb {
+  width: 18px; height: 18px; border: 0; border-radius: 50%;
+  background: var(--tinta); box-shadow: var(--sombra-2);
+}
 
 /* Agregar y borrar: secundarias, una al lado de la otra y nunca del tamaño de
    mandar. Mandar es lo que se hace; las otras dos son la salvaguarda. */
@@ -709,22 +869,21 @@ body.app {
   padding: var(--e-3) var(--e-2); white-space: nowrap;
 }
 /* Borrar es lo único destructivo de la sala y se ve: nada de rojo de alarma
-   —esto es un juego, no un formulario—, pero sí un tono aparte del modo.
-   Va con `.modal--inmersivo` delante para ganarle a la regla que pinta de
-   blanco todos los botones suaves a oscuras. */
+   —esto es un juego, no un formulario—, pero sí un tono aparte del modo. */
 .modal--inmersivo .boton.boton--borrar {
-  color: #FFB4AE; border-color: rgba(255, 180, 174, .34);
+  color: var(--peligro); border-color: rgba(212, 91, 91, .32);
 }
 
 /* La confirmación de borrar NO es un `confirm()` del navegador: eso rompe la
    pantalla completa y saca a la persona del juego. Se pregunta aquí mismo. */
 .confirmar {
   display: grid; gap: var(--e-2); margin-top: var(--e-2);
-  background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
+  background: var(--superficie); border-radius: var(--radio-tarjeta);
+  box-shadow: var(--sombra-2);
   padding: var(--e-3) var(--e-4) var(--e-4);
   animation: entra var(--dur-corta) var(--suave);
 }
-.confirmar__que { font-size: var(--t-chico); color: var(--ctx-tinta); text-align: center; }
+.confirmar__que { font-size: var(--t-chico); color: var(--tinta); text-align: center; }
 .confirmar__opciones { display: flex; gap: var(--e-2); }
 .confirmar__opciones .boton { flex: 1; font-size: var(--t-chico); padding: var(--e-3) var(--e-2); }
 

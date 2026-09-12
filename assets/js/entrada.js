@@ -340,7 +340,22 @@ window.ATWI = window.ATWI || {};
       }
 
       auth.listo().then(function (s) {
-        if (s) { p.hidden = true; return hecho(); }
+        if (s) {
+          p.hidden = true;
+          hecho();
+          /* El perfil vive en el servidor y el aparato solo lo copia. Si la
+             copia local se perdió —otro teléfono, datos borrados, incógnito—
+             había que volver a registrarse para que el nombre reapareciera.
+             Se trae del servidor y se repinta. */
+          auth.miPerfil().then(function (perfil) {
+            if (!perfil) return;
+            var local = datos.perfil();
+            if (local.nombre === perfil.nombre && local.avatar === (perfil.avatar || local.avatar)) return;
+            datos.actualizar({ nombre: perfil.nombre || '', avatar: perfil.avatar || local.avatar });
+            if (window.ATWI.repintar) window.ATWI.repintar();
+          }).catch(function () { /* sin red se juega con lo que haya en local */ });
+          return;
+        }
         p.hidden = false;
         estado.paso = 'datos';
         pintar();

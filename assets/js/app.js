@@ -197,20 +197,33 @@
       var buscando = busqueda.trim() !== '' || filtro !== 'todos';
 
       if (categoriaAbierta) {
-        var temas = datos.temasDe(categoriaAbierta).filter(function (x) {
-          return datos.buscar(busqueda, filtro).indexOf(x) !== -1;
-        });
-        var meta = cat.categorias.filter(function (c) { return c.nombre === categoriaAbierta; })[0] || {};
+        var esMia = categoriaAbierta === datos.MIS_TEMAS;
+        var enCategoria = datos.temasDe(categoriaAbierta);
+        var visibles = datos.buscar(busqueda, filtro);
+        var temas = enCategoria.filter(function (x) { return visibles.indexOf(x) !== -1; });
+        var meta = esMia
+          ? { emoji: '✍️', total: enCategoria.length }
+          : (cat.categorias.filter(function (c) { return c.nombre === categoriaAbierta; })[0] || {});
+
         caja.innerHTML =
           '<div class="fila" style="margin-bottom:var(--e-3)">' +
             '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver a las categorías">' + icono('atras', 22) + '</button>' +
             '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.emoji || '') + ' ' + esc(categoriaAbierta) + '</h1>' +
             '<p class="chico suave">' + temas.length + ' de ' + (meta.total || 0) + '</p></div>' +
           '</div>' +
-          barraBusqueda() +
+
+          (esMia
+            ? '<button class="boton boton--bloque" data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
+                icono('mas', 20) + 'Escribir un tema</button>'
+            : barraBusqueda()) +
+
           (temas.length
             ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
-            : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+            : esMia
+              ? estadoVacio('✍️', 'Todavía no escribieron ninguno',
+                  'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
+                  'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.')
+              : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
         devolverFoco();
         return;
       }
@@ -232,6 +245,8 @@
         return;
       }
 
+      var propios = datos.cuantosPropios();
+
       caja.innerHTML =
         '<div class="fila" style="margin-bottom:var(--e-2)">' +
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Cambiar de modo">' + icono('atras', 22) + '</button>' +
@@ -243,6 +258,22 @@
         '</p>' +
         barraBusqueda() +
         '<div style="height:var(--e-3)"></div>' +
+
+        /* El catálogo es una plantilla: lo que no está, se escribe. Va ARRIBA
+           y no al final de 12 categorías, porque escribir el tema propio es lo
+           que hace que la pareja vuelva cuando el catálogo se acaba. */
+        '<button class="categoria categoria--propia" data-categoria="' + esc(datos.MIS_TEMAS) + '">' +
+          '<span class="categoria__emoji">✍️</span>' +
+          '<span><span class="categoria__nombre">' + esc(datos.MIS_TEMAS) + '</span>' +
+          '<span class="categoria__que">' +
+            (propios
+              ? 'Los que escribieron ustedes.'
+              : 'Lo que discuten y no está en la lista, escríbanlo aquí.') +
+          '</span></span>' +
+          '<span class="categoria__n">' + (propios || '+') + '</span>' +
+        '</button>' +
+        '<div style="height:var(--e-3)"></div>' +
+
         '<div class="categorias">' +
           cat.categorias.map(function (c) {
             return '<button class="categoria" data-categoria="' + esc(c.nombre) + '">' +
@@ -311,11 +342,17 @@
     var dentro = window.ATWI.auth && window.ATWI.auth.dentro();
 
     caja.innerHTML =
-      '<div class="centrado" style="padding:var(--e-4) 0 var(--e-4)">' +
-        '<div class="avatar" style="width:104px;height:104px;font-size:3rem;margin:0 auto var(--e-3)">' + esc(p.avatar) + '</div>' +
-        '<h1>' + (p.nombre ? esc(p.nombre) : 'Sin nombre todavía') + '</h1>' +
-        '<p class="chico suave">Nivel ' + p.nivel + '</p>' +
-      '</div>' +
+      /* Toda la ficha es un botón: el nombre y el dibujo se cambian desde
+         aquí. Antes solo decía «Sin nombre todavía» y no había por dónde
+         escribirlo. */
+      '<button class="ficha" data-accion="editar-ficha">' +
+        '<span class="avatar ficha__avatar">' + esc(p.avatar) + '</span>' +
+        '<span class="ficha__nombre">' +
+          (p.nombre ? esc(p.nombre) : 'Ponte un nombre') +
+          window.ATWI.iconoSVG('lapiz', 18) +
+        '</span>' +
+        '<span class="chico suave">Nivel ' + p.nivel + '</span>' +
+      '</button>' +
 
       /* La cuenta va ARRIBA, no enterrada bajo las insignias: quien busca
          cambiar de cuenta no debería tener que hacer scroll para encontrarlo. */
@@ -361,6 +398,63 @@
         '<div class="contador__n">' + n + '</div>' +
         '<div class="contador__que">' + que + '</div>' +
       '</div>';
+  }
+
+  /* --- Editar la ficha: el nombre y el dibujo --------------------------------
+     El nombre vive en el servidor y el aparato solo lo copia, así que se guarda
+     en los dos sitios. Sin servidor se queda en local y ya está.
+
+     Los dibujos NO son personas. Es la misma regla que la pestaña de Perfil:
+     mientras no haya una dirección de personaje decidida, no se insinúa una. */
+  var DIBUJOS = ['🙂', '🦊', '🐙', '🐢', '🦉', '🌻', '🍀', '🎈',
+                 '⭐', '🧩', '🎸', '🫐', '🌙', '🔥', '🌵', '🎲'];
+
+  function abrirFicha() {
+    var p = datos.perfil();
+    fichaElegida = p.avatar || '🙂';
+
+    $('#m-perfil .modal__cuerpo').innerHTML =
+      '<div class="apilado-5">' +
+        '<label style="display:block">' +
+          '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
+          '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
+            'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
+          '<span class="chico tenue" style="display:block;margin-top:6px">' +
+            'Es el nombre que ve la otra persona en la sala y en el resultado.</span>' +
+        '</label>' +
+        '<div>' +
+          '<span class="chico" style="font-weight:700">Tu dibujo</span>' +
+          '<div class="dibujos" style="margin-top:var(--e-2)">' +
+            DIBUJOS.map(function (d) {
+              return '<button class="dibujo" data-dibujo="' + d + '"' +
+                (d === fichaElegida ? ' aria-pressed="true"' : '') + '>' + d + '</button>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+        '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
+      '</div>';
+    abrirModal('m-perfil');
+    setTimeout(function () { var n = $('#f-nombre'); if (n && !p.nombre) n.focus(); }, 60);
+  }
+
+  var fichaElegida = '🙂';
+
+  function guardarFicha() {
+    var nombre = ($('#f-nombre').value || '').trim();
+    if (nombre.length < 2) { $('#f-error').textContent = 'Escribe un nombre de al menos dos letras.'; return; }
+
+    datos.actualizar({ nombre: nombre, avatar: fichaElegida });
+    cerrarModal('m-perfil');
+    pintarPerfil();
+    if (vistaActual === 'jugar') pintarJugar();
+
+    if (window.ATWI.auth && window.ATWI.auth.dentro()) {
+      window.ATWI.auth.guardarPerfil({ nombre: nombre, avatar: fichaElegida })
+        .catch(function () {
+          /* El cambio ya se ve; si el servidor no contestó, se reintenta solo
+             la próxima vez que se abra la ficha. No se le grita a nadie. */
+        });
+    }
   }
 
   /* ======================================================================
@@ -435,18 +529,37 @@
     propuesta.modo = null;
     propuesta.turnos = cfg.reglas.turnosPorDefecto;
 
+    var tocado = t.propio || datos.estaReescrito(id);
+
     $('#m-tema .modal__titulo').textContent = t.titulo;
     $('#m-tema .modal__cuerpo').innerHTML =
-      '<div class="tarjeta tarjeta--aire" style="margin-bottom:var(--e-4)">' +
+      '<div class="tarjeta tarjeta--aire" style="margin-bottom:var(--e-3)">' +
         '<p style="font-family:var(--display);font-weight:800;font-size:var(--t-h3);line-height:1.25">' + esc(t.enunciado) + '</p>' +
       '</div>' +
-      '<h3 style="margin-bottom:var(--e-2)">Las dos posturas</h3>' +
+
+      /* Reescribir el tema de una discusión es algo que la otra persona tiene
+         derecho a ver, así que la marca dice quién y cuándo. */
+      (tocado
+        ? '<div class="reescrito" style="margin-bottom:var(--e-3)">' +
+            window.ATWI.iconoSVG('lapiz', 16) +
+            '<span>' + (t.propio ? 'Tema suyo' : 'A su manera') +
+            ', por <strong>' + esc(t.editadoPor || 'alguien') + '</strong>' +
+            (t.editado ? ' · ' + haceCuanto(t.editado) : '') + '</span>' +
+          '</div>'
+        : '') +
+
+      '<div class="fila fila--entre" style="margin-bottom:var(--e-2)">' +
+        '<h3>Las dos posturas</h3>' +
+        '<button class="boton boton--suave boton--chico" data-accion="editar-tema">' +
+          window.ATWI.iconoSVG('lapiz', 16) + (tocado ? 'Cambiar' : 'A nuestra manera') + '</button>' +
+      '</div>' +
       '<div class="apilado" style="margin-bottom:var(--e-5)">' +
         posturaCaja('A', t.a) +
         posturaCaja('B', t.b) +
       '</div>' +
       '<div class="aviso-ia">' + icono('aviso', 20) +
-        '<span>Las dos se pueden defender. Si una te parece indefendible, el tema no está bien escrito: avísanos.</span>' +
+        '<span>Las dos se pueden defender. Si una no encaja con la discusión de ustedes, ' +
+        'reescríbela: el tema es una plantilla, no una sentencia.</span>' +
       '</div>';
 
     abrirModal('m-tema');
@@ -457,6 +570,127 @@
         '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
         '<span class="chico">' + esc(texto) + '</span>' +
       '</div>';
+  }
+
+  /* ======================================================================
+     Escribir un tema
+     Dos cosas con la misma pantalla, porque para quien escribe son la misma:
+       · REESCRIBIR uno del catálogo. El original no se toca y se puede volver.
+       · CREAR uno propio, que cae en «Mis temas».
+     El enunciado y las dos posturas son el material con el que trabaja el
+     árbitro, así que son lo único obligatorio.
+     ====================================================================== */
+  var escribiendo = null;   // {id, propio} · id null = tema nuevo
+
+  function abrirEscribir(id) {
+    var t = id ? datos.tema(id) : null;
+    var propio = Boolean(t && t.propio);
+    var reescrito = Boolean(t && !propio && datos.estaReescrito(id));
+    escribiendo = { id: id || null, propio: propio || !id };
+
+    $('#m-escribir .modal__titulo').textContent =
+      !t ? 'Tu propio tema' : (propio ? 'Tu tema' : 'A su manera');
+
+    $('#m-escribir .modal__cuerpo').innerHTML =
+      '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
+        (t && !propio
+          ? 'Cambia el enunciado o las posturas para que se parezcan a la discusión de ustedes. ' +
+            'El tema original del catálogo no se toca: puedes volver a él cuando quieras.'
+          : 'Escribe la discusión como es en casa. El enunciado plantea el desacuerdo, ' +
+            'y cada postura es lo que defiende una de las dos partes.') +
+      '</p>' +
+
+      (reescrito
+        ? '<div class="reescrito" style="margin-bottom:var(--e-4)">' +
+            window.ATWI.iconoSVG('lapiz', 16) +
+            '<span>Reescrito por <strong>' + esc(t.editadoPor || 'alguien') + '</strong>' +
+            (t.editado ? ' · ' + haceCuanto(t.editado) : '') + '</span>' +
+          '</div>'
+        : '') +
+
+      '<div class="apilado-5">' +
+        campoTexto('e-titulo', 'Título corto', t ? t.titulo : '', 'input',
+                   'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».', 60) +
+        campoTexto('e-enunciado', 'El enunciado', t ? t.enunciado : '', 'textarea',
+                   'La disputa, en una frase, con las dos salidas dentro. ' +
+                   'Por ejemplo: «Los platos se lavan al terminar de comer, o pueden esperar a la mañana».', 240) +
+
+        '<div class="postura-campo postura-campo--a">' +
+          campoTexto('e-a', 'Postura A', t ? t.a : '', 'textarea',
+                     'Lo que defiende quien está de un lado.', 240) +
+        '</div>' +
+        '<div class="postura-campo postura-campo--b">' +
+          campoTexto('e-b', 'Postura B', t ? t.b : '', 'textarea',
+                     'Lo que defiende quien está del otro.', 240) +
+        '</div>' +
+
+        '<div>' +
+          '<span class="chico" style="font-weight:700">¿Cuánto pesa?</span>' +
+          '<div class="filtros" style="margin-top:var(--e-2)">' +
+            [['ligera', 'Ligera'], ['media', 'Media'], ['profunda', 'Profunda']].map(function (x) {
+              var puesta = (t ? t.intensidad : 'media') === x[0];
+              return '<button class="chip chip--filtro" data-intensidad="' + x[0] + '"' +
+                     (puesta ? ' aria-pressed="true"' : '') + '>' + x[1] + '</button>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+
+        '<p class="chico" id="e-error" style="color:var(--peligro)"></p>' +
+      '</div>' +
+
+      '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
+        '<span>Las dos posturas tienen que poder defenderse. Si una es indefendible, ' +
+        'el árbitro no tiene nada que arbitrar y el resultado no vale nada.</span>' +
+      '</div>' +
+
+      (reescrito
+        ? '<button class="boton boton--fantasma boton--bloque" data-accion="devolver-tema" ' +
+          'style="margin-top:var(--e-5)">' + window.ATWI.iconoSVG('volver', 18) +
+          'Volver al tema del catálogo</button>'
+        : '') +
+      (propio
+        ? '<button class="boton boton--fantasma boton--bloque" data-accion="borrar-tema" ' +
+          'style="margin-top:var(--e-3);color:var(--peligro)">Borrar este tema</button>'
+        : '');
+
+    intensidadElegida = (t && t.intensidad) || 'media';
+    abrirModal('m-escribir');
+    setTimeout(function () { var n = $('#e-titulo'); if (n && !t) n.focus(); }, 60);
+  }
+
+  var intensidadElegida = 'media';
+
+  function campoTexto(id, etiqueta, valor, tipo, pista, max) {
+    var control = tipo === 'textarea'
+      ? '<textarea class="campo campo--parrafo" id="' + id + '" rows="3" maxlength="' + max + '">' + esc(valor) + '</textarea>'
+      : '<input class="campo" id="' + id + '" type="text" maxlength="' + max + '" value="' + esc(valor) + '">';
+    return '<label style="display:block">' +
+        '<span class="chico" style="font-weight:700">' + esc(etiqueta) + '</span>' +
+        '<span style="display:block;margin-top:6px">' + control + '</span>' +
+        '<span class="chico tenue" style="display:block;margin-top:6px">' + pista + '</span>' +
+      '</label>';
+  }
+
+  function guardarTema() {
+    var v = function (id) { return ($('#' + id).value || '').trim(); };
+    var titulo = v('e-titulo'), enunciado = v('e-enunciado'), a = v('e-a'), b = v('e-b');
+    var fallo =
+      titulo.length < 3 ? 'El título necesita al menos tres letras.' :
+      enunciado.length < 15 ? 'El enunciado se queda corto: tiene que plantear la disputa entera.' :
+      a.length < 5 ? 'Falta lo que defiende la postura A.' :
+      b.length < 5 ? 'Falta lo que defiende la postura B.' :
+      a.toLowerCase() === b.toLowerCase() ? 'Las dos posturas dicen lo mismo: entonces no hay debate.' : '';
+    if (fallo) { $('#e-error').textContent = fallo; return; }
+
+    var campos = { titulo: titulo, enunciado: enunciado, a: a, b: b, intensidad: intensidadElegida };
+    var guardado = escribiendo.propio
+      ? datos.guardarTemaPropio(Object.assign({ id: escribiendo.id }, campos))
+      : datos.reescribir(escribiendo.id, campos);
+
+    cerrarModal('m-escribir');
+    pintarCatalogo();
+    /* Si se estaba mirando ese tema, se vuelve a abrir ya con lo nuevo. */
+    if (propuesta.temaId === guardado.id || !$('#m-tema').hidden) abrirTema(guardado.id);
   }
 
   function abrirModo() {
@@ -489,7 +723,11 @@
         '<span>Si no se ponen de acuerdo en el modo, el debate no se juega. Nadie puede imponerle un Debate al otro.</span>' +
       '</div>';
 
-    $$('#m-modo .modal__pie button').forEach(function (b) { b.disabled = true; });
+    $('#m-modo').className = 'modal';
+    $$('#m-modo .modal__pie button').forEach(function (b, i) {
+      b.disabled = true;
+      if (i === 0) b.className = 'boton boton--bloque boton--grande';
+    });
     abrirModal('m-modo');
   }
 
@@ -510,18 +748,104 @@
     $$('#m-modo .opcion').forEach(function (o) {
       o.setAttribute('aria-pressed', String(o.dataset.modo === clave));
     });
-    $$('#m-modo .modal__pie button').forEach(function (b) { b.disabled = false; });
+    /* Desde que se elige el modo, el flujo entero lleva SU color. Antes seguía
+       en lavanda de marca hasta entrar a la sala, y el lavanda es la identidad,
+       no el modo: un color por modo y no se mezclan. */
+    $('#m-modo').className = 'modal modal--' + clave;
+    $$('#m-modo .modal__pie button').forEach(function (b, i) {
+      b.disabled = false;
+      if (i === 0) b.className = 'boton boton--bloque boton--grande boton--' + clave;
+    });
+  }
+
+  /* ======================================================================
+     Antes de empezar: quién defiende qué, y con quién se juega
+     Sin esto la partida arrancaba con «Tú» contra «La otra parte» y sin decir
+     quién defendía cuál de las dos posturas, que es justo lo que el árbitro
+     tiene que juzgar.
+     ====================================================================== */
+  function abrirPreparar() {
+    var t = datos.tema(propuesta.temaId);
+    if (!t) return;
+    var p = datos.perfil();
+    propuesta.miPostura = null;
+    propuesta.otro = propuesta.otro || '';
+
+    $('#m-preparar').className = 'modal modal--' + propuesta.modo;
+    $('#m-preparar .modal__cuerpo').innerHTML =
+      '<p class="sala__enunciado" style="color:var(--tinta);margin-bottom:var(--e-4)">' +
+        esc(t.enunciado) + '</p>' +
+
+      '<h3 style="margin-bottom:var(--e-2)">¿Cuál defiendes tú?</h3>' +
+      '<div class="apilado" style="margin-bottom:var(--e-5)">' +
+        opcionPostura('a', 'A', t.a) +
+        opcionPostura('b', 'B', t.b) +
+      '</div>' +
+
+      '<h3 style="margin-bottom:var(--e-2)">¿Con quién juegas?</h3>' +
+      '<label style="display:block">' +
+        '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
+          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '">' +
+        '<span class="chico tenue" style="display:block;margin-top:6px">' +
+          'Van a jugar los dos en este teléfono, por turnos. El nombre es para saber ' +
+          'de quién es cada intervención y qué dice el resultado.</span>' +
+      '</label>' +
+      '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
+
+      '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
+        '<span>Quién abre se sortea, como en ajedrez, y se enseña antes de empezar. ' +
+        'En la revancha abre ' + (propuesta.modo === 'debate' ? 'el otro' : 'la otra parte') + '.</span>' +
+      '</div>';
+
+    var b = $('#m-preparar .modal__pie button');
+    b.disabled = true;
+    b.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
+    abrirModal('m-preparar');
+  }
+
+  function opcionPostura(clave, letra, texto) {
+    return '<button class="opcion opcion--postura" data-postura="' + clave + '" aria-pressed="false">' +
+        '<span style="display:grid;grid-template-columns:32px 1fr;gap:var(--e-3);align-items:start">' +
+          '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
+          '<span class="chico" style="line-height:1.45">' + esc(texto) + '</span>' +
+        '</span>' +
+        '<span class="opcion__marca">' + icono('listo', 16) + '</span>' +
+      '</button>';
+  }
+
+  function elegirPostura(clave) {
+    propuesta.miPostura = clave;
+    $$('#m-preparar .opcion').forEach(function (o) {
+      o.setAttribute('aria-pressed', String(o.dataset.postura === clave));
+    });
+    revisarPreparar();
+  }
+
+  function revisarPreparar() {
+    var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
+    $('#m-preparar .modal__pie button').disabled = !(propuesta.miPostura && otro.length >= 2);
   }
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
      el documento permite para los temas del catálogo. Con dos teléfonos hace
      falta el servidor y llega después. */
-  function jugarAqui() {
+  function sortearYJugar() {
     var t = datos.tema(propuesta.temaId);
     var yo = datos.perfil().nombre || 'Tú';
-    var otro = 'La otra parte';
-    /* El sorteo de quién abre. Como en ajedrez, y se enseña antes de empezar. */
-    var orden = Math.random() < 0.5 ? [yo, otro] : [otro, yo];
+    var otro = ($('#p-otro').value || '').trim();
+    if (otro.length < 2) { $('#p-error').textContent = 'Escribe con quién juegas.'; return; }
+    if (otro.toLowerCase() === yo.toLowerCase()) {
+      $('#p-error').textContent = 'Se llaman igual: ponle otro nombre para no confundirse en la sala.';
+      return;
+    }
+    propuesta.otro = otro;
+
+    /* `quien[0]` defiende la postura A y `quien[1]` la B: eso lo fija quien
+       elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
+    var porPostura = propuesta.miPostura === 'a' ? [yo, otro] : [otro, yo];
+    var abre = Math.random() < 0.5 ? 0 : 1;
+
+    cerrarModal('m-preparar');
     cerrarModal('m-modo');
     cerrarModal('m-tema');
     window.ATWI.partida.empezar({
@@ -529,7 +853,8 @@
       modo: propuesta.modo,
       turnos: propuesta.turnos || cfg.reglas.turnosPorDefecto,
       publico: modoPublico || 'pareja',
-      quien: orden
+      posturas: porPostura,      // [quien defiende A, quien defiende B]
+      abre: abre                 // índice sobre `posturas`
     });
   }
 
@@ -569,6 +894,10 @@
     else if (nombre === 'perfil') pintarPerfil();
   }
 
+  /* Para quien llegue de fuera con datos nuevos: la puerta, cuando se trae el
+     perfil del servidor después de arrancar. */
+  window.ATWI.repintar = function () { pintar(vistaActual); };
+
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-vista]');
     if (b) { irA(b.dataset.vista); return; }
@@ -597,6 +926,29 @@
 
     var modo = e.target.closest('[data-modo]');
     if (modo) { elegirModo(modo.dataset.modo); return; }
+
+    var post = e.target.closest('[data-postura]');
+    if (post) { elegirPostura(post.dataset.postura); return; }
+
+    var dib = e.target.closest('[data-dibujo]');
+    if (dib) {
+      fichaElegida = dib.dataset.dibujo;
+      $$('#m-perfil [data-dibujo]').forEach(function (x) {
+        if (x.dataset.dibujo === fichaElegida) x.setAttribute('aria-pressed', 'true');
+        else x.removeAttribute('aria-pressed');
+      });
+      return;
+    }
+
+    var inten = e.target.closest('[data-intensidad]');
+    if (inten) {
+      intensidadElegida = inten.dataset.intensidad;
+      $$('#m-escribir [data-intensidad]').forEach(function (x) {
+        if (x.dataset.intensidad === intensidadElegida) x.setAttribute('aria-pressed', 'true');
+        else x.removeAttribute('aria-pressed');
+      });
+      return;
+    }
 
     var cerrar = e.target.closest('[data-cerrar]');
     if (cerrar) { cerrarModal(cerrar.dataset.cerrar); return; }
@@ -629,7 +981,27 @@
     else if (a === 'cambiar-publico') { modoPublico = null; categoriaAbierta = null; pintarCatalogo(); }
     else if (a === 'elegir-modo') { abrirModo(); }
     else if (a === 'proponer') { proponer(); }
-    else if (a === 'jugar-aqui') { jugarAqui(); }
+    else if (a === 'jugar-aqui') { abrirPreparar(); }
+    else if (a === 'sortear') { sortearYJugar(); }
+    else if (a === 'editar-ficha') { abrirFicha(); }
+    else if (a === 'guardar-ficha') { guardarFicha(); }
+    else if (a === 'tema-nuevo') { abrirEscribir(null); }
+    else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId); }
+    else if (a === 'guardar-tema') { guardarTema(); }
+    else if (a === 'devolver-tema') {
+      datos.devolverAlOriginal(escribiendo.id);
+      cerrarModal('m-escribir');
+      pintarCatalogo();
+      abrirTema(escribiendo.id);
+    }
+    else if (a === 'borrar-tema') {
+      if (confirm('Se borra este tema de la lista de ustedes. Lo ya debatido sigue en el historial.')) {
+        datos.borrarTemaPropio(escribiendo.id);
+        cerrarModal('m-escribir');
+        cerrarModal('m-tema');
+        pintarCatalogo();
+      }
+    }
     else if (a === 'salir') {
       /* Se cierra la sesión Y se borra lo que quedó en el aparato: si no, el
          siguiente en entrar vería el nombre y los contadores del anterior. */
@@ -651,6 +1023,7 @@
      hay que devolverle el foco y el cursor donde estaba. */
   var reponerFoco = false;
   document.addEventListener('input', function (e) {
+    if (e.target.id === 'p-otro') { revisarPreparar(); return; }
     if (e.target.id !== 'q') return;
     busqueda = e.target.value;
     reponerFoco = true;

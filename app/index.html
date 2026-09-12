@@ -11,10 +11,10 @@
 <title>ATWI</title>
 <meta name="description" content="Juego de debate para parejas. Modo Debate y modo Negociación.">
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=24f6701">
-<link rel="stylesheet" href="../assets/css/base.css?v=24f6701">
-<link rel="stylesheet" href="../assets/css/app.css?v=24f6701">
-<link rel="stylesheet" href="../assets/css/modal.css?v=24f6701">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=d9613de">
+<link rel="stylesheet" href="../assets/css/base.css?v=d9613de">
+<link rel="stylesheet" href="../assets/css/app.css?v=d9613de">
+<link rel="stylesheet" href="../assets/css/modal.css?v=d9613de">
 </head>
 
 <body class="app">
@@ -93,6 +93,30 @@
     </div>
   </div>
 
+  <!-- Tu ficha: el nombre con el que te ven y el dibujo que te representa -->
+  <div class="modal" id="m-perfil" hidden role="dialog" aria-modal="true" aria-labelledby="t-perfil">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-perfil" aria-label="Cerrar" data-icono="cerrar"></button>
+      <span class="modal__titulo" id="t-perfil">Tu ficha</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque boton--grande" data-accion="guardar-ficha">Guardar</button>
+    </div>
+  </div>
+
+  <!-- Escribir un tema: uno propio, o reescribir uno del catálogo -->
+  <div class="modal" id="m-escribir" hidden role="dialog" aria-modal="true" aria-labelledby="t-escribir">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-escribir" aria-label="Cerrar" data-icono="cerrar"></button>
+      <span class="modal__titulo" id="t-escribir">Escribir un tema</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque boton--grande" data-accion="guardar-tema">Guardar el tema</button>
+    </div>
+  </div>
+
   <!-- Elegir el modo (es una propuesta, no una imposición) -->
   <div class="modal" id="m-modo" hidden role="dialog" aria-modal="true" aria-labelledby="t-modo">
     <div class="modal__cabecera">
@@ -103,6 +127,18 @@
     <div class="modal__pie">
       <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui" disabled>Jugar aquí, por turnos</button>
       <button class="boton boton--suave boton--bloque" data-accion="proponer" disabled>Proponérselo por invitación</button>
+    </div>
+  </div>
+
+  <!-- Antes de empezar: quién defiende qué, y con quién se juega -->
+  <div class="modal" id="m-preparar" hidden role="dialog" aria-modal="true" aria-labelledby="t-preparar">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-preparar" aria-label="Volver" data-icono="atras"></button>
+      <span class="modal__titulo" id="t-preparar">Antes de empezar</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque boton--grande" data-accion="sortear" disabled>Sortear quién abre</button>
     </div>
   </div>
 
@@ -122,15 +158,15 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=24f6701"></script>
-<script src="../assets/js/iconos.js?v=24f6701"></script>
-<script src="../assets/js/datos.js?v=24f6701"></script>
-<script src="../assets/js/sonido.js?v=24f6701"></script>
-<script src="../assets/js/veredicto.js?v=24f6701"></script>
-<script src="../assets/js/grabadora.js?v=24f6701"></script>
-<script src="../assets/js/partida.js?v=24f6701"></script>
-<script src="../assets/js/auth.js?v=24f6701"></script>
-<script src="../assets/js/entrada.js?v=24f6701"></script>
-<script src="../assets/js/app.js?v=24f6701"></script>
+<script src="../assets/js/config.js?v=d9613de"></script>
+<script src="../assets/js/iconos.js?v=d9613de"></script>
+<script src="../assets/js/datos.js?v=d9613de"></script>
+<script src="../assets/js/sonido.js?v=d9613de"></script>
+<script src="../assets/js/veredicto.js?v=d9613de"></script>
+<script src="../assets/js/grabadora.js?v=d9613de"></script>
+<script src="../assets/js/partida.js?v=d9613de"></script>
+<script src="../assets/js/auth.js?v=d9613de"></script>
+<script src="../assets/js/entrada.js?v=d9613de"></script>
+<script src="../assets/js/app.js?v=d9613de"></script>
 </body>
 </html>

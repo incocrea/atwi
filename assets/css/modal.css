@@ -46,32 +46,40 @@
   gap: var(--e-2);
 }
 
-/* Variante inmersiva: la partida y el veredicto. Sin barra, a sangre.
-   El color NO es fijo: lo pone el `data-ctx` del propio modal, que en la sala
-   es el del modo —coral en Juicio, menta en Pacto— y en el veredicto el
-   ciruela. El degradado deja un halo del color del modo arriba, donde está el
-   juez, para que la pantalla no sea un rectángulo plano. */
+/* EL COLOR DEL MODO NO EMPIEZA EN LA SALA, EMPIEZA AL ELEGIRLO. En cuanto se
+   elige Debate o Negociación, las pantallas que quedan hasta entrar a jugar se
+   tiñen de ese color. El lavanda es la identidad de la marca, no el modo, y
+   tenerlo aquí hacía que todo el flujo pareciera lo mismo. */
+.modal--debate { background: var(--debate-tinte); }
+.modal--debate .modal__pie { background: var(--debate-tinte); border-top-color: rgba(199, 91, 51, .16); }
+.modal--negociacion { background: var(--negociacion-tinte); }
+.modal--negociacion .modal__pie { background: var(--negociacion-tinte); border-top-color: rgba(33, 135, 111, .16); }
+.modal--debate .opcion[aria-pressed="true"] { border-color: var(--debate); background: var(--blanco); }
+.modal--debate .opcion[aria-pressed="true"] .opcion__marca { border-color: var(--debate); background: var(--debate); color: var(--blanco); }
+.modal--negociacion .opcion[aria-pressed="true"] { border-color: var(--negociacion); background: var(--blanco); }
+.modal--negociacion .opcion[aria-pressed="true"] .opcion__marca { border-color: var(--negociacion); background: var(--negociacion); color: var(--blanco); }
+
+/* Variante inmersiva: la sala. Sin barra inferior y a sangre, pero NO oscura:
+   el juego entero es claro, de pasteles sólidos y sombras difusas, y la sala no
+   es una excepción. El color lo pone el `data-ctx` del propio modal, que aquí
+   es el tinte del modo: coral en Juicio, menta en Pacto. Plano, sin degradado. */
 .modal--inmersivo {
-  background: var(--ctx-fondo, var(--tinta));
-  color: var(--ctx-tinta, var(--blanco));
-  background-image: radial-gradient(120% 55% at 50% 0%, var(--ctx-halo, transparent) 0%, transparent 70%);
+  background: var(--ctx-fondo, var(--crema));
+  color: var(--ctx-tinta, var(--tinta));
 }
 .modal--inmersivo .modal__pie { background: transparent; border-top: 0; }
-.modal--inmersivo .suave { color: var(--ctx-tenue, rgba(255, 255, 255, .72)); }
-/* A oscuras, «suave» no puede ser un botón blanco: sería más llamativo que el
-   principal. Se invierte a vidrio sobre el fondo oscuro. */
+.modal--inmersivo .suave { color: var(--ctx-tenue); }
 .modal--inmersivo .boton--suave {
-  background: var(--ctx-vidrio, rgba(255, 255, 255, .10));
-  color: var(--ctx-tinta, var(--blanco));
-  border-color: var(--ctx-linea, rgba(255, 255, 255, .18)); box-shadow: none;
+  background: var(--superficie); color: var(--tinta);
+  border-color: var(--ctx-linea); box-shadow: var(--sombra-1);
 }
-.modal--inmersivo .boton--suave:hover { background: var(--ctx-vidrio-mas, rgba(255, 255, 255, .17)); }
-.modal--inmersivo .boton[disabled] { opacity: .45; pointer-events: none; }
-.modal--inmersivo .boton-icono { color: var(--ctx-tinta, var(--blanco)); background: var(--ctx-vidrio, transparent); }
-.modal--inmersivo .chip { background: var(--ctx-vidrio-mas); color: var(--ctx-tinta); }
+.modal--inmersivo .boton--suave:hover { background: var(--ctx-halo); }
+.modal--inmersivo .boton[disabled] { opacity: .5; pointer-events: none; }
+.modal--inmersivo .boton-icono { background: var(--superficie); box-shadow: var(--sombra-1); }
+.modal--inmersivo .chip { background: var(--ctx-halo); color: var(--ctx-tenue); }
 /* El chip del modo sí lleva color: es lo que dice en qué se está jugando. */
 .modal--inmersivo .chip--debate,
-.modal--inmersivo .chip--negociacion { background: var(--ctx-halo); color: var(--ctx-acento); }
+.modal--inmersivo .chip--negociacion { background: var(--superficie); color: var(--ctx-acento); }
 .modal--inmersivo audio { display: none; }
 
 /* Pasos de un flujo (elegir tema, proponer modo, invitar) */
