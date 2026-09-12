@@ -416,12 +416,9 @@ window.ATWI = window.ATWI || {};
           '<p class="sorteo__que">Quién inicia</p>' +
           '<span class="avatar sorteo__ficha" id="sorteo-ficha"></span>' +
           '<p class="sorteo__quien" id="sorteo-quien">&nbsp;</p>' +
-          /* La revancha es cosa del modo Debate. En Negociación lo equivalente
-             no revierte un resultado: encadena otra ronda. Se tapa hasta el
-             final: nombra a quien NO abre y destriparía el sorteo. */
-          '<p class="sorteo__como" id="sorteo-como" hidden>Salió por sorteo. En la ' +
-            (P.modo === 'debate' ? 'revancha' : 'próxima') + ' abre ' +
-            esc(P.jugadores[P.orden[1]].nombre) + '.</p>' +
+          /* Aquí iba «Salió por sorteo. En la revancha abre X». Se va: lo del
+             sorteo acaba de verse en pantalla durante cuatro segundos, y quién
+             abre la revancha no le importa a nadie antes de jugar esta. */
         '</div>' +
       '</div>';
     /* El botón espera al sorteo: si no, se puede pasar de largo y el juego
@@ -489,8 +486,6 @@ window.ATWI = window.ATWI || {};
       if (!P || P.estado !== 'aviso') return;
       ficha.classList.add('sorteo__ficha--parada');
       quien.classList.add('sorteo__quien--parada');
-      var como = $('#sorteo-como');
-      if (como) como.hidden = false;
       var b = $('#m-partida [data-accion="p-listo"]');
       if (b) b.disabled = false;
       if (sonido.hay()) sonido.campana();

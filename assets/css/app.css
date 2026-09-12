@@ -1064,8 +1064,10 @@ body.app {
   font-size: var(--t-mini); font-weight: 800; letter-spacing: .06em;
   text-transform: uppercase; color: var(--ctx-tenue-2);
 }
+/* Es lo que se está mirando durante cuatro segundos: manda ella, no el nombre.
+   Por eso crece la ficha y encoge el nombre, en vez de al revés. */
 .sorteo__ficha {
-  width: 88px; height: 88px; font-size: 2.5rem;
+  width: 124px; height: 124px; font-size: 2.5rem; --grosor-aro: 6px;
   animation: sorteo-late 340ms ease-in-out infinite alternate;
 }
 .sorteo__ficha--parada { animation: sorteo-para 620ms var(--rebote); }
@@ -1077,15 +1079,13 @@ body.app {
 }
 
 .sorteo__quien {
-  font-family: var(--display); font-weight: 800; font-size: 2rem;
+  font-family: var(--display); font-weight: 800; font-size: 1.6875rem;  /* 27 px */
   color: var(--ctx-tenue); line-height: 1.1;
   transition: color var(--dur-media) var(--suave);
 }
 /* Hasta que para, el nombre va apagado: lo que se está viendo todavía no es
    un resultado. Al aterrizar toma el color del modo. */
 .sorteo__quien--parada { color: var(--ctx-acento); animation: ganador var(--dur-larga) var(--rebote); }
-.sorteo__como { font-size: var(--t-mini); color: var(--ctx-tenue-2); }
-.sorteo__como[hidden] { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .sorteo__ficha, .sorteo__ficha--parada, .sorteo__quien--parada { animation: none; }
