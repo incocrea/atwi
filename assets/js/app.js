@@ -784,22 +784,20 @@
 
       '<h3 style="margin-bottom:var(--e-2)">¿Quiénes juegan?</h3>' +
 
-      /* Si la ficha todavía no tiene nombre se pide AQUÍ. Antes se rellenaba
-         solo con «Tú», y en la sala el botón y las ruedas acababan diciendo
-         «Tú» en vez del nombre de nadie. */
-      (p.nombre
-        ? ''
-        : '<label style="display:block;margin-bottom:var(--e-3)">' +
-            '<span class="chico" style="font-weight:700">Tu nombre</span>' +
-            '<input class="campo" id="p-yo" type="text" maxlength="24" autocomplete="given-name" ' +
-              'placeholder="Tu nombre" style="margin-top:6px">' +
-          '</label>') +
+      /* Los dos nombres se ven SIEMPRE, y el propio viene ya puesto desde la
+         ficha. Antes solo se preguntaba cuando faltaba, así que quien ya tenía
+         nombre no veía con qué nombre iba a salir en la sala ni podía
+         cambiarlo sin irse a Perfil. Lo que se escriba aquí actualiza la ficha. */
+      '<label style="display:block;margin-bottom:var(--e-3)">' +
+        '<span class="chico" style="font-weight:700">Tu nombre</span>' +
+        '<input class="campo" id="p-yo" type="text" maxlength="24" autocomplete="given-name" ' +
+          'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
+      '</label>' +
 
       '<label style="display:block">' +
-        (p.nombre ? '' : '<span class="chico" style="font-weight:700">Su nombre</span>') +
+        '<span class="chico" style="font-weight:700">Su nombre</span>' +
         '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
-          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '"' +
-          (p.nombre ? '' : ' style="margin-top:6px"') + '>' +
+          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '" style="margin-top:6px">' +
         '<span class="chico tenue" style="display:block;margin-top:6px">' +
           'Van a jugar los dos en este teléfono, por turnos. Los nombres son para saber ' +
           'de quién es cada intervención y qué dice el resultado.</span>' +
@@ -837,7 +835,7 @@
 
   function revisarPreparar() {
     var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
-    var yo = $('#p-yo') ? ($('#p-yo').value || '').trim() : (datos.perfil().nombre || '');
+    var yo = ($('#p-yo') && $('#p-yo').value || '').trim();
     $('#m-preparar .modal__pie button').disabled =
       !(propuesta.miPostura && otro.length >= 2 && yo.length >= 2);
   }
@@ -848,7 +846,7 @@
   function sortearYJugar() {
     var t = datos.tema(propuesta.temaId);
     var otro = ($('#p-otro').value || '').trim();
-    var yo = $('#p-yo') ? ($('#p-yo').value || '').trim() : (datos.perfil().nombre || '');
+    var yo = ($('#p-yo').value || '').trim();
 
     if (yo.length < 2) { $('#p-error').textContent = 'Escribe tu nombre.'; return; }
     if (otro.length < 2) { $('#p-error').textContent = 'Escribe con quién juegas.'; return; }
@@ -856,9 +854,10 @@
       $('#p-error').textContent = 'Se llaman igual: ponle otro nombre para no confundirse en la sala.';
       return;
     }
-    /* El nombre que se escribe aquí es el de la ficha: se guarda, y de paso
-       deja de preguntarse en la siguiente partida. */
-    if (!datos.perfil().nombre) {
+    /* El campo viene de la ficha, así que si se cambia aquí se cambia la ficha:
+       tener dos nombres distintos para la misma persona sería peor que no
+       dejarla cambiarlo. */
+    if (yo !== datos.perfil().nombre) {
       datos.actualizar({ nombre: yo });
       if (window.ATWI.auth && window.ATWI.auth.dentro()) {
         window.ATWI.auth.guardarPerfil({ nombre: yo }).catch(function () {});
