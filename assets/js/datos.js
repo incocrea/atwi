@@ -23,6 +23,12 @@ window.ATWI = window.ATWI || {};
      una relación, pero la clave va aparte para que el día que la haya se
      migre sola. Ver docs/00 «El catálogo es una plantilla». */
   var CLAVE_TEMAS = 'atwi.temas.v1';
+  /* Quien juega enfrente en una partida local NO tiene cuenta: es alguien que
+     agarró este teléfono. No hay perfil suyo en ningún sitio, pero su ficha
+     —dibujo y color— sí se recuerda aquí, para que la próxima vez que juegue
+     salga como salió. La partida va al historial igual; lo que no existe es un
+     perfil de oponente al que colgarla. */
+  var CLAVE_INVITADOS = 'atwi.invitados.v1';
 
   /* --- Estado de la persona ------------------------------------------------
      Contadores SEPARADOS y sin marcador comparativo entre los dos miembros de
@@ -113,6 +119,25 @@ window.ATWI = window.ATWI || {};
     var r = cargarTemas().reescritos[t.id];
     if (!r) return t;
     return Object.assign({}, t, r, { id: t.id, reescrito: true });
+  }
+
+  /* --- Los invitados locales ------------------------------------------------ */
+  var invitados = null;
+
+  function cargarInvitados() {
+    if (invitados) return invitados;
+    try { invitados = JSON.parse(localStorage.getItem(CLAVE_INVITADOS) || '[]'); }
+    catch (e) { invitados = []; }
+    if (!Array.isArray(invitados)) invitados = [];
+    return invitados;
+  }
+
+  function guardarInvitados() {
+    try { localStorage.setItem(CLAVE_INVITADOS, JSON.stringify(invitados)); } catch (e) {}
+  }
+
+  function mismoNombre(a, b) {
+    return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
   }
 
   /* --- Catálogo ------------------------------------------------------------ */
@@ -231,6 +256,44 @@ window.ATWI = window.ATWI || {};
 
     cuantosPropios: function () { return cargarTemas().propios.length; },
 
+    /* --- Invitados locales --------------------------------------------------
+       Fichas de quien juega enfrente en este teléfono sin tener cuenta. No son
+       perfiles: no hay historial suyo, ni contadores, ni nada que les pertenezca.
+       Es solo memoria de cortesía para no volver a preguntar el dibujo y el
+       color cada vez que juega la misma persona. */
+    invitados: function () { return cargarInvitados().slice(); },
+
+    invitado: function (nombre) {
+      var lista = cargarInvitados();
+      for (var i = 0; i < lista.length; i++) {
+        if (mismoNombre(lista[i].nombre, nombre)) return lista[i];
+      }
+      return null;
+    },
+
+    recordarInvitado: function (ficha) {
+      if (!ficha || !ficha.nombre) return null;
+      var lista = cargarInvitados();
+      var guardado = this.invitado(ficha.nombre);
+      if (guardado) {
+        guardado.nombre = ficha.nombre;      // respeta mayúsculas nuevas
+        guardado.avatar = ficha.avatar;
+        guardado.color = ficha.color;
+      } else {
+        guardado = { nombre: ficha.nombre, avatar: ficha.avatar, color: ficha.color };
+        lista.push(guardado);
+      }
+      /* El último con quien se jugó primero: es casi siempre el de la próxima. */
+      invitados = [guardado].concat(lista.filter(function (x) { return x !== guardado; })).slice(0, 12);
+      guardarInvitados();
+      return guardado;
+    },
+
+    olvidarInvitado: function (nombre) {
+      invitados = cargarInvitados().filter(function (x) { return !mismoNombre(x.nombre, nombre); });
+      guardarInvitados();
+    },
+
     /** Los doce temas con los que arranca una pareja nueva, en orden. */
     recorridoInicial: function () {
       if (!catalogo) return [];
@@ -240,7 +303,12 @@ window.ATWI = window.ATWI || {};
         .sort(function (a, b) { return a.inicial - b.inicial; });
     },
 
-    /** El siguiente tema sugerido: el primero del recorrido sin jugar. */
+    /**
+     * El siguiente tema del recorrido sin jugar. Ya NO se enseña en la portada
+     * —se quitó esa tarjeta— pero el recorrido inicial de doce temas sigue
+     * siendo una decisión del producto y esto es lo que lo calcula, así que se
+     * queda para cuando se enganche donde toque.
+     */
     siguienteSugerido: function () {
       var jugados = cargar().temasJugados;
       var pendientes = this.recorridoInicial().filter(function (t) {
@@ -307,9 +375,14 @@ window.ATWI = window.ATWI || {};
 
     /** Borra todo lo local. Solo lo llama el botón de ajustes. */
     olvidar: function () {
-      try { localStorage.removeItem(CLAVE); localStorage.removeItem(CLAVE_TEMAS); } catch (e) {}
+      try {
+        localStorage.removeItem(CLAVE);
+        localStorage.removeItem(CLAVE_TEMAS);
+        localStorage.removeItem(CLAVE_INVITADOS);
+      } catch (e) {}
       perfil = null;
       listaTemas = null;
+      invitados = null;
     }
   };
 })();

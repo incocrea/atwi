@@ -77,8 +77,10 @@ window.ATWI = window.ATWI || {};
    * `abre` es el índice de quien habla primero, y ESO sí sale del sorteo.
    * Son dos cosas distintas y antes iban mezcladas en una sola lista.
    */
+  var COLOR_POR_DEFECTO = ['#7A6AD8', '#F0B429'];
+
   function empezar(op) {
-    var nombres = op.posturas || op.quien || ['Tú', 'La otra parte'];
+    var gente = (op.posturas || op.quien || ['Tú', 'La otra parte']).map(ficha);
     var abre = typeof op.abre === 'number' ? op.abre : 0;
     P = {
       tema: op.tema,
@@ -86,8 +88,8 @@ window.ATWI = window.ATWI || {};
       turnos: op.turnos,             // por persona
       publico: op.publico || 'pareja',
       jugadores: [
-        { nombre: nombres[0], letra: 'A', texto: op.tema.a, inicial: inicialDe(nombres[0]) },
-        { nombre: nombres[1], letra: 'B', texto: op.tema.b, inicial: inicialDe(nombres[1]) }
+        Object.assign({ letra: 'A', texto: op.tema.a }, gente[0]),
+        Object.assign({ letra: 'B', texto: op.tema.b }, gente[1])
       ],
       orden: [abre, 1 - abre],       // índices sobre `jugadores`
       intervenciones: [],            // {jugador, turno, audio, tipo, segundos, url}
@@ -95,24 +97,31 @@ window.ATWI = window.ATWI || {};
       borrador: null,                // lo grabado y todavía NO entregado
       estado: 'aviso'
     };
-    iniciales();
+    separarFichas();
     abrir();
     pintarAviso();
   }
 
-  /* Si dos personas empiezan por la misma letra, la segunda lleva dos: en una
-     lista de círculos la inicial es lo único que distingue, y «H» y «H» no
-     distinguen nada. */
-  function inicialDe(nombre) {
-    return String(nombre || '?').trim().charAt(0).toUpperCase() || '?';
+  /* Cada jugador llega con su ficha —nombre, dibujo y color—. Se admite también
+     un nombre suelto por si alguna llamada vieja lo pasa así. */
+  function ficha(x, i) {
+    if (typeof x === 'string') x = { nombre: x };
+    return {
+      nombre: x.nombre || '?',
+      avatar: x.avatar || '🙂',
+      color: x.color || COLOR_POR_DEFECTO[i] || COLOR_POR_DEFECTO[0]
+    };
   }
 
-  function iniciales() {
+  /* Dos fichas iguales no se distinguen, que es justo para lo que sirven. Si
+     coinciden se le cambia el color a la segunda; solo si también el dibujo es
+     el mismo se toca el dibujo. */
+  function separarFichas() {
     var a = P.jugadores[0], b = P.jugadores[1];
-    if (a.inicial !== b.inicial) return;
-    a.inicial = String(a.nombre).trim().slice(0, 2);
-    b.inicial = String(b.nombre).trim().slice(0, 2);
-    if (a.inicial.toLowerCase() === b.inicial.toLowerCase()) { a.inicial = 'A'; b.inicial = 'B'; }
+    if (a.color.toLowerCase() !== b.color.toLowerCase()) return;
+    b.color = b.color.toLowerCase() === COLOR_POR_DEFECTO[1].toLowerCase()
+      ? COLOR_POR_DEFECTO[0] : COLOR_POR_DEFECTO[1];
+    if (a.avatar === b.avatar) b.avatar = a.avatar === '🦊' ? '🐙' : '🦊';
   }
 
   function abrir() {
@@ -202,14 +211,14 @@ window.ATWI = window.ATWI || {};
 
   /**
    * LO QUE SE DIJO, EN RUEDAS.
-   * Una fila por cada seis intervenciones. Cada rueda lleva la inicial de quien
-   * habló y el borde de su color, así que se lee de un vistazo de quién es cada
-   * una sin gastar una fila entera por audio. Con 5 turnos son diez audios:
-   * en filas no cabían en la pantalla, en ruedas caben en dos líneas.
+   * Una fila por cada seis intervenciones. Cada rueda ES LA FICHA de quien
+   * habló: su dibujo sobre su color, igual que su avatar en el perfil. Se
+   * reconoce de un vistazo sin gastar una fila entera por audio, y con 5 turnos
+   * —diez audios— siguen cabiendo en dos líneas.
    *
-   * Los dos colores NO son los del modo a propósito. Si una de las dos voces
+   * El color no lo pone el modo sino cada persona: si una de las dos voces
    * llevara el coral de Juicio o el menta de Pacto, parecería que la sala es
-   * suya. Son dos tonos hermanos que no pertenecen a ninguno de los dos.
+   * suya.
    */
   function loDicho() {
     if (!P.intervenciones.length) return '';
@@ -219,19 +228,21 @@ window.ATWI = window.ATWI || {};
         '<div class="ruedas">' +
           P.intervenciones.map(function (v, n) {
             var j = P.jugadores[v.jugador];
-            return '<button type="button" class="rueda rueda--v' + v.jugador +
+            return '<button type="button" class="rueda' +
                      (n === total - 1 ? ' rueda--ultima' : '') + '"' +
+                   ' style="--voz:' + esc(j.color) + '"' +
                    ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
                    ' aria-label="Escuchar a ' + esc(j.nombre) + ', turno ' + v.turno + '">' +
-                '<span class="rueda__ini">' + esc(j.inicial) + '</span>' +
+                '<span class="rueda__cara">' + esc(j.avatar) + '</span>' +
                 '<span class="rueda__n">' + v.turno + '</span>' +
               '</button>';
           }).join('') +
         '</div>' +
         '<p class="dicho__leyenda">' +
-          P.jugadores.map(function (j, i) {
-            return '<span class="leyenda leyenda--v' + i + '">' +
-              '<i></i>' + esc(j.nombre) + ' · ' + j.letra + '</span>';
+          P.jugadores.map(function (j) {
+            return '<span class="leyenda">' +
+              '<i style="background:' + esc(j.color) + '">' + esc(j.avatar) + '</i>' +
+              esc(j.nombre) + ' · ' + j.letra + '</span>';
           }).join('') +
         '</p>' +
       '</div>';
@@ -291,11 +302,16 @@ window.ATWI = window.ATWI || {};
 
   /** Quién y qué es lo que suena. El borrador no es de nadie todavía. */
   function quienSuena() {
-    if (sonando === 'b') return { nombre: 'Tu turno, sin mandar', meta: 'todavía no lo oyó nadie', voz: null };
+    if (sonando === 'b') {
+      var yo = P.jugadores[turnoActual().jugador];
+      return { nombre: 'Tu turno, sin mandar', meta: 'todavía no lo oyó nadie',
+               color: yo.color, avatar: yo.avatar };
+    }
     var v = P.intervenciones[Number(String(sonando).slice(1))];
-    if (!v) return { nombre: '', meta: '', voz: null };
+    if (!v) return { nombre: '', meta: '', color: null, avatar: '' };
     var j = P.jugadores[v.jugador];
-    return { nombre: j.nombre, meta: 'Turno ' + v.turno + ' · defiende ' + j.letra, voz: v.jugador };
+    return { nombre: j.nombre, meta: 'Turno ' + v.turno + ' · defiende ' + j.letra,
+             color: j.color, avatar: j.avatar };
   }
 
   function pintarReproductor() {
@@ -307,7 +323,8 @@ window.ATWI = window.ATWI || {};
       r.className = 'reproductor';
       $('#m-partida').appendChild(r);
     }
-    r.className = 'reproductor' + (q.voz !== null ? ' reproductor--v' + q.voz : '');
+    r.className = 'reproductor';
+    r.style.setProperty('--voz', q.color || 'var(--ctx-acento)');
     r.innerHTML =
       '<div class="reproductor__alto">' +
         '<button type="button" class="reproductor__play" data-accion="r-play" aria-label="Reproducir o pausar">' +
@@ -394,8 +411,9 @@ window.ATWI = window.ATWI || {};
            Se enseña aquí para que no haya dudas después. */
         '<div class="sala__posturas">' +
           P.jugadores.map(function (j, i) {
-            return '<p class="chico voz voz--v' + i + '">' +
-              '<span class="voz__ini">' + esc(j.inicial) + '</span>' +
+            return '<p class="chico voz">' +
+              '<span class="voz__cara" style="background:' + esc(j.color) + '">' +
+                esc(j.avatar) + '</span>' +
               '<span><strong>' + esc(j.nombre) + '</strong> defiende la ' + j.letra + ': ' +
               esc(j.texto) + '</span></p>';
           }).join('') +

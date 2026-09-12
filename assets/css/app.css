@@ -88,7 +88,14 @@ body.app {
 .cabecera__titulo { font-family: var(--display); font-size: var(--t-h2); font-weight: 800; }
 .cabecera__sub { font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; }
 
-.monedero { display: flex; gap: var(--e-2); }
+.monedero { display: flex; gap: var(--e-2); align-items: center; }
+.avatar--cabecera {
+  width: 38px; height: 38px; font-size: 1.1rem; border: 0; padding: 0; cursor: pointer;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55), var(--sombra-1);
+}
+.avatar--cabecera[hidden] { display: none; }
+.avatar-boton { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
+.avatar-boton:active .avatar { transform: scale(.95); }
 /* Los contadores de la cabecera son premio: van en cálido. */
 .monedero__dato {
   display: inline-flex;
@@ -824,45 +831,67 @@ body.app {
 }
 .ruedas { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--e-2); }
 
+/* Cada rueda ES la ficha de quien habló: su dibujo sobre su color, igual que
+   el avatar del perfil. El aro blanco de dentro es el mismo recurso del avatar
+   y de los iconos ilustrados: recorta la ficha del fondo, sea cual sea. */
 .rueda {
-  position: relative; aspect-ratio: 1; border-radius: 50%;
-  display: grid; place-items: center; cursor: pointer;
-  background: var(--ctx-vidrio); color: var(--ctx-tinta);
-  border: 2.5px solid var(--voz); font-family: var(--display); font-weight: 800;
-  box-shadow: var(--sombra-1);
-  transition: transform var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
+  position: relative; aspect-ratio: 1; border-radius: 50%; border: 0;
+  display: grid; place-items: center; cursor: pointer; min-width: 0;
+  background: var(--voz); color: var(--tinta);
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, .55), var(--sombra-1);
+  transition: transform var(--dur-corta) var(--suave);
 }
-.rueda--v0 { --voz: var(--voz-a); }
-.rueda--v1 { --voz: var(--voz-b); }
 .rueda:active { transform: scale(.92); }
-.rueda__ini { font-size: .95rem; line-height: 1; }
-/* El número de turno cuelga de la rueda, no dentro: dentro no cabe legible. */
+.rueda__cara { font-size: 1.15rem; line-height: 1; }
+/* El número de turno cuelga de la rueda, no dentro: dentro no cabe legible, y
+   va en blanco para leerse sobre cualquiera de los diez colores. */
 .rueda__n {
   position: absolute; right: -2px; bottom: -2px;
-  min-width: 15px; height: 15px; padding: 0 3px; border-radius: 999px;
-  background: var(--voz); color: var(--tinta);
-  font-size: 9px; font-weight: 800; line-height: 15px; text-align: center;
+  min-width: 16px; height: 16px; padding: 0 3px; border-radius: 999px;
+  background: var(--superficie); color: var(--tinta);
+  font-family: var(--display); font-size: 9px; font-weight: 800;
+  line-height: 16px; text-align: center; box-shadow: var(--sombra-1);
 }
-.rueda--ultima { box-shadow: 0 0 0 3px var(--ctx-halo), var(--sombra-1); }
-.rueda--sonando { background: var(--voz); color: var(--tinta); animation: late 1.2s ease-in-out infinite; }
+.rueda--ultima { box-shadow: inset 0 0 0 2.5px rgba(255,255,255,.55), 0 0 0 3px var(--ctx-halo), var(--sombra-1); }
+.rueda--sonando { animation: late 1.2s ease-in-out infinite; }
 
 .dicho__leyenda { display: flex; gap: var(--e-4); flex-wrap: wrap; margin-top: 2px; }
 .leyenda {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: var(--t-mini); color: var(--ctx-tenue);
 }
-.leyenda i { width: 9px; height: 9px; border-radius: 50%; border: 2.5px solid var(--voz); }
-.leyenda--v0 { --voz: var(--voz-a); }
-.leyenda--v1 { --voz: var(--voz-b); }
+.leyenda i {
+  width: 20px; height: 20px; border-radius: 50%; font-style: normal; font-size: .7rem;
+  display: grid; place-items: center;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55);
+}
 
 /* Quién defiende qué, en la pantalla del sorteo */
-.voz { display: grid; grid-template-columns: 26px 1fr; gap: var(--e-3); align-items: start; }
-.voz--v0 { --voz: var(--voz-a); }
-.voz--v1 { --voz: var(--voz-b); }
-.voz__ini {
-  width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
-  border: 2.5px solid var(--voz); font-family: var(--display); font-weight: 800; font-size: .8rem;
+.voz { display: grid; grid-template-columns: 30px 1fr; gap: var(--e-3); align-items: start; }
+.voz__cara {
+  width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+  font-size: .95rem;
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, .55), var(--sombra-1);
 }
+
+/* --- La ficha del invitado, en la pantalla de antes de empezar --------------- */
+.con-ficha { display: flex; align-items: center; gap: var(--e-3); }
+.con-ficha .campo { flex: 1; min-width: 0; }
+.avatar--chico { width: 48px; height: 48px; font-size: 1.4rem; border: 0; cursor: pointer; padding: 0; }
+.avatar--mini { width: 26px; height: 26px; font-size: .85rem; box-shadow: inset 0 0 0 2px rgba(255,255,255,.55); }
+
+/* Con quién se jugó antes en este teléfono. No son cuentas: son fichas. */
+.invitados { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+.invitado {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px 4px 4px; border-radius: var(--radio-pastilla);
+  border: 2px solid var(--linea); background: var(--superficie);
+  font: inherit; font-size: var(--t-chico); font-weight: 700; color: var(--tinta-suave);
+  cursor: pointer; min-width: 0;
+}
+.invitado[aria-pressed="true"] { border-color: var(--lavanda); color: var(--tinta); }
+
+.color--tomado { opacity: .28; cursor: not-allowed; }
 
 /* --- El reproductor flotante ---------------------------------------------------
    Se levanta sobre la sala al tocar una rueda. Barra que se arrastra y

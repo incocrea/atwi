@@ -47,7 +47,20 @@
     /* Cada pantalla inunda el marco con su color. */
     var marco = $('.marco');
     if (marco) marco.setAttribute('data-ctx', nombre);
+    refrescarFichaCabecera();
     pintar(nombre);
+  }
+
+  /* El atajo al perfil vive en la cabecera, al lado del buzón, salvo en Jugar
+     —donde la ficha grande del saludo ya hace de atajo— y en el propio Perfil,
+     donde no tendría a dónde llevar. */
+  function refrescarFichaCabecera() {
+    var b = $('#ficha-cabecera');
+    if (!b) return;
+    var p = datos.perfil();
+    b.hidden = vistaActual === 'perfil' || vistaActual === 'jugar';
+    b.textContent = p.avatar;
+    b.style.background = p.avatarFondo || '#7A6AD8';
   }
 
   /* ======================================================================
@@ -82,11 +95,13 @@
   function pintarJugar() {
     var p = datos.perfil();
     var caja = $('#v-jugar');
-    var sugerido = datos.siguienteSugerido();
 
     caja.innerHTML =
+      /* La ficha del saludo ES el atajo al perfil: es lo más grande de la
+         pantalla y es donde la mano va a buscarse a sí misma. */
       '<div class="saludo">' +
-        avatarHTML(p) +
+        '<button class="avatar-boton" data-vista="perfil" aria-label="Tu perfil">' +
+          avatarHTML(p) + '</button>' +
         '<div style="flex:1;min-width:0">' +
           '<h1>' + (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
           '<p class="chico suave">Nivel ' + p.nivel + ' · ' + p.puntos + ' de ' + p.puntosNivel + ' puntos</p>' +
@@ -97,11 +112,6 @@
       '<button class="boton boton--bloque boton--grande" data-accion="nuevo" style="margin-bottom:var(--e-4)">' +
         icono('mas', 22) + 'Proponer un debate' +
       '</button>' +
-
-      (sugerido
-        ? '<h2 style="margin:var(--e-5) 0 var(--e-3)">Siguiente del recorrido</h2>' +
-          tarjetaTema(sugerido)
-        : '') +
 
       '<h2 style="margin:var(--e-5) 0 var(--e-3)">Los dos modos</h2>' +
       '<div class="modos">' +
@@ -423,10 +433,25 @@
       esc(p.avatar) + '</span>';
   }
 
-  function abrirFicha() {
+  /* La misma pantalla sirve para mi ficha y para la del invitado. Lo único que
+     cambia es de dónde salen los valores, si se pide el nombre, y que al
+     invitado no se le deja mi color: dos fichas iguales no se distinguen en
+     la sala, que es justo para lo que sirven. */
+  var editandoFicha = 'yo';    // 'yo' | 'invitado'
+
+  function abrirFicha(quien) {
+    editandoFicha = quien === 'invitado' ? 'invitado' : 'yo';
+    var deInvitado = editandoFicha === 'invitado';
     var p = datos.perfil();
-    fichaElegida = p.avatar || '🙂';
-    colorElegido = p.avatarFondo || COLORES_FICHA[0];
+    var g = deInvitado ? fichaDelInvitado(($('#p-otro') && $('#p-otro').value || '').trim()) : null;
+
+    fichaElegida = deInvitado ? g.avatar : (p.avatar || '🙂');
+    colorElegido = deInvitado ? g.color : (p.avatarFondo || COLORES_FICHA[0]);
+    var vetado = deInvitado ? (p.avatarFondo || '').toLowerCase() : '';
+
+    $('#m-perfil .modal__titulo').textContent = deInvitado
+      ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
+      : 'Tu ficha';
 
     $('#m-perfil .modal__cuerpo').innerHTML =
       '<div class="centrado" style="padding-bottom:var(--e-4)">' +
@@ -434,16 +459,21 @@
           'style="background:' + esc(colorElegido) + ';margin:0 auto">' + esc(fichaElegida) + '</span>' +
       '</div>' +
       '<div class="apilado-5">' +
-        '<label style="display:block">' +
-          '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
-          '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
-            'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
-          '<span class="chico tenue" style="display:block;margin-top:6px">' +
-            'Es el nombre que ve la otra persona en la sala y en el resultado.</span>' +
-        '</label>' +
+
+        (deInvitado
+          ? '<p class="chico suave">Esta ficha es solo para jugar aquí: no es una cuenta ' +
+            'y no tiene historial propio. Se recuerda en este teléfono para que la ' +
+            'próxima vez salga igual.</p>'
+          : '<label style="display:block">' +
+              '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
+              '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
+                'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
+              '<span class="chico tenue" style="display:block;margin-top:6px">' +
+                'Es el nombre que ve la otra persona en la sala y en el resultado.</span>' +
+            '</label>') +
 
         '<div>' +
-          '<span class="chico" style="font-weight:700">Tu dibujo</span>' +
+          '<span class="chico" style="font-weight:700">' + (deInvitado ? 'Su dibujo' : 'Tu dibujo') + '</span>' +
           '<div class="dibujos" style="margin-top:var(--e-2)">' +
             DIBUJOS.map(function (d) {
               return '<button class="dibujo" data-dibujo="' + d + '"' +
@@ -454,18 +484,27 @@
         '</div>' +
 
         '<div>' +
-          '<span class="chico" style="font-weight:700">El color de tu ficha</span>' +
+          '<span class="chico" style="font-weight:700">' +
+            (deInvitado ? 'El color de su ficha' : 'El color de tu ficha') + '</span>' +
           '<div class="colores" style="margin-top:var(--e-2)">' +
             COLORES_FICHA.map(function (c, i) {
-              return '<button class="color" data-color="' + c + '" style="background:' + c + '"' +
+              var esMio = c.toLowerCase() === vetado;
+              return '<button class="color' + (esMio ? ' color--tomado' : '') + '" data-color="' + c + '" ' +
+                'style="background:' + c + '"' + (esMio ? ' disabled' : '') +
                 (c.toLowerCase() === colorElegido.toLowerCase() ? ' aria-pressed="true"' : '') +
-                ' aria-label="Color ' + (i + 1) + ' de ' + COLORES_FICHA.length + '"></button>';
+                ' aria-label="' + (esMio ? 'Ese color ya es el tuyo' : 'Color ' + (i + 1)) + '"></button>';
             }).join('') +
           '</div>' +
+          (deInvitado
+            ? '<p class="chico tenue" style="margin-top:6px">El tuyo está apartado: ' +
+              'dos fichas del mismo color no se distinguen en la sala.</p>'
+            : '') +
         '</div>' +
 
         '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
       '</div>';
+
+    $('#m-perfil .modal__pie button').textContent = deInvitado ? 'Listo' : 'Guardar';
     abrirModal('m-perfil');
     setTimeout(function () { var n = $('#f-nombre'); if (n && !p.nombre) n.focus(); }, 60);
   }
@@ -478,12 +517,24 @@
   }
 
   function guardarFicha() {
+    /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
+       se recuerda al empezar la partida, cuando ya se sabe su nombre. */
+    if (editandoFicha === 'invitado') {
+      propuesta.otroAvatar = fichaElegida;
+      propuesta.otroColor = colorElegido;
+      cerrarModal('m-perfil');
+      var boton = $('#p-ficha-otro');
+      if (boton) { boton.textContent = fichaElegida; boton.style.background = colorElegido; }
+      return;
+    }
+
     var nombre = ($('#f-nombre').value || '').trim();
     if (nombre.length < 2) { $('#f-error').textContent = 'Escribe un nombre de al menos dos letras.'; return; }
 
     datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarFondo: colorElegido });
     cerrarModal('m-perfil');
     pintarPerfil();
+    refrescarFichaCabecera();
     if (vistaActual === 'jugar') pintarJugar();
 
     if (window.ATWI.auth && window.ATWI.auth.dentro()) {
@@ -807,12 +858,39 @@
      quién defendía cuál de las dos posturas, que es justo lo que el árbitro
      tiene que juzgar.
      ====================================================================== */
+  /* Los invitados con los que ya se jugó en este teléfono, para no volver a
+     escribirles el nombre ni volver a elegirles la ficha. */
+  function invitadosPrevios() { return datos.invitados(); }
+
+  /** La ficha del invitado de esta partida: la recordada, o una recién puesta. */
+  function fichaDelInvitado(nombre) {
+    var g = nombre ? datos.invitado(nombre) : null;
+    if (g) return { nombre: g.nombre, avatar: g.avatar, color: g.color };
+    return {
+      nombre: nombre || '',
+      avatar: propuesta.otroAvatar || '🦊',
+      color: propuesta.otroColor || colorLibre()
+    };
+  }
+
+  /** Un color que no sea el mío: dos fichas del mismo color no se distinguen. */
+  function colorLibre() {
+    var mio = (datos.perfil().avatarFondo || '').toLowerCase();
+    for (var i = 0; i < COLORES_FICHA.length; i++) {
+      if (COLORES_FICHA[i].toLowerCase() !== mio) return COLORES_FICHA[i];
+    }
+    return COLORES_FICHA[0];
+  }
+
   function abrirPreparar() {
     var t = datos.tema(propuesta.temaId);
     if (!t) return;
     var p = datos.perfil();
     propuesta.miPostura = null;
     propuesta.otro = propuesta.otro || '';
+    var g = fichaDelInvitado(propuesta.otro);
+    propuesta.otroAvatar = g.avatar;
+    propuesta.otroColor = g.color;
 
     $('#m-preparar').className = 'modal modal--' + propuesta.modo;
     $('#m-preparar .modal__cuerpo').innerHTML =
@@ -837,14 +915,31 @@
           'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
       '</label>' +
 
-      '<label style="display:block">' +
-        '<span class="chico" style="font-weight:700">Su nombre</span>' +
+      /* La ficha del invitado se toca para elegirle dibujo y color. No es una
+         cuenta: es alguien que agarró este teléfono. Pero su ficha se recuerda,
+         así que la próxima vez que juegue sale como salió. */
+      '<span class="chico" style="font-weight:700;display:block">Su nombre</span>' +
+      '<div class="con-ficha" style="margin-top:6px">' +
+        '<button type="button" class="avatar avatar--chico" id="p-ficha-otro" ' +
+          'data-accion="ficha-invitado" aria-label="Elegir su dibujo y su color" ' +
+          'style="background:' + esc(propuesta.otroColor) + '">' + esc(propuesta.otroAvatar) + '</button>' +
         '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
-          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '" style="margin-top:6px">' +
-        '<span class="chico tenue" style="display:block;margin-top:6px">' +
-          'Van a jugar los dos en este teléfono, por turnos. Los nombres son para saber ' +
-          'de quién es cada intervención y qué dice el resultado.</span>' +
-      '</label>' +
+          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '">' +
+      '</div>' +
+      '<span class="chico tenue" style="display:block;margin-top:6px">' +
+        'Van a jugar los dos en este teléfono, por turnos. Toca el círculo para darle ' +
+        'dibujo y color: es lo que se ve en cada intervención de la sala.</span>' +
+
+      (invitadosPrevios().length
+        ? '<div class="invitados" style="margin-top:var(--e-3)">' +
+            invitadosPrevios().map(function (g) {
+              return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
+                  '<span class="avatar avatar--mini" style="background:' + esc(g.color) + '">' +
+                    esc(g.avatar) + '</span>' + esc(g.nombre) +
+                '</button>';
+            }).join('') +
+          '</div>'
+        : '') +
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
       '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
@@ -906,11 +1001,20 @@
         window.ATWI.auth.guardarPerfil({ nombre: yo }).catch(function () {});
       }
     }
+    /* La ficha del invitado se recuerda AQUÍ, que es cuando por fin se sabe su
+       nombre. No crea cuenta ni historial: es memoria de este teléfono para no
+       volver a preguntárselo. */
+    datos.recordarInvitado({ nombre: otro, avatar: propuesta.otroAvatar, color: propuesta.otroColor });
     propuesta.otro = otro;
 
-    /* `quien[0]` defiende la postura A y `quien[1]` la B: eso lo fija quien
-       elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
-    var porPostura = propuesta.miPostura === 'a' ? [yo, otro] : [otro, yo];
+    /* Cada jugador viaja con su ficha entera —nombre, dibujo y color—, porque
+       en la sala cada intervención se marca con la ficha de quien habló, no con
+       una inicial. El primero defiende la postura A y el segundo la B: eso lo
+       fija quien elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
+    var p = datos.perfil();
+    var fichaMia = { nombre: yo, avatar: p.avatar || '🙂', color: p.avatarFondo || COLORES_FICHA[0] };
+    var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar, color: propuesta.otroColor };
+    var porPostura = propuesta.miPostura === 'a' ? [fichaMia, fichaSuya] : [fichaSuya, fichaMia];
     var abre = Math.random() < 0.5 ? 0 : 1;
 
     cerrarModal('m-preparar');
@@ -998,6 +1102,26 @@
     var post = e.target.closest('[data-postura]');
     if (post) { elegirPostura(post.dataset.postura); return; }
 
+    /* Tocar a alguien con quien ya se jugó rellena su nombre y su ficha. */
+    var inv = e.target.closest('[data-invitado]');
+    if (inv) {
+      var g = datos.invitado(inv.dataset.invitado);
+      if (g) {
+        propuesta.otro = g.nombre;
+        propuesta.otroAvatar = g.avatar;
+        propuesta.otroColor = g.color;
+        $('#p-otro').value = g.nombre;
+        var bf = $('#p-ficha-otro');
+        if (bf) { bf.textContent = g.avatar; bf.style.background = g.color; }
+        $$('#m-preparar [data-invitado]').forEach(function (x) {
+          if (x.dataset.invitado === g.nombre) x.setAttribute('aria-pressed', 'true');
+          else x.removeAttribute('aria-pressed');
+        });
+        revisarPreparar();
+      }
+      return;
+    }
+
     var dib = e.target.closest('[data-dibujo]');
     if (dib) {
       fichaElegida = dib.dataset.dibujo;
@@ -1063,7 +1187,8 @@
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { sortearYJugar(); }
-    else if (a === 'editar-ficha') { abrirFicha(); }
+    else if (a === 'editar-ficha') { abrirFicha('yo'); }
+    else if (a === 'ficha-invitado') { abrirFicha('invitado'); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
     else if (a === 'tema-nuevo') { abrirEscribir(null); }
     else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId); }
@@ -1103,7 +1228,20 @@
      hay que devolverle el foco y el cursor donde estaba. */
   var reponerFoco = false;
   document.addEventListener('input', function (e) {
-    if (e.target.id === 'p-otro' || e.target.id === 'p-yo') { revisarPreparar(); return; }
+    if (e.target.id === 'p-otro') {
+      /* Si el nombre escrito es de alguien con quien ya se jugó, vuelve su
+         ficha: la gracia de recordarla es no tener que elegirla otra vez. */
+      var g = datos.invitado(e.target.value.trim());
+      if (g) {
+        propuesta.otroAvatar = g.avatar;
+        propuesta.otroColor = g.color;
+        var bf = $('#p-ficha-otro');
+        if (bf) { bf.textContent = g.avatar; bf.style.background = g.color; }
+      }
+      revisarPreparar();
+      return;
+    }
+    if (e.target.id === 'p-yo') { revisarPreparar(); return; }
     if (e.target.id !== 'q') return;
     busqueda = e.target.value;
     reponerFoco = true;
