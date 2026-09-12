@@ -183,7 +183,15 @@ body.app {
 .barra-item:active { transform: scale(.94); }
 
 /* --- Bloque de bienvenida -------------------------------------------------- */
+/* El saludo se alinea a la DERECHA, contra el borde de la barra de nivel: la
+   ficha ancla el bloque por la izquierda y el texto cierra por la otra punta,
+   que es lo que lo convierte en una unidad y no en dos cosas pegadas. */
 .saludo { display: flex; align-items: center; gap: var(--e-4); margin-bottom: var(--e-4); }
+.saludo__datos { flex: 1; min-width: 0; text-align: right; }
+/* Más pequeño que un h1 suelto: aquí compite con la ficha, no manda solo. */
+.saludo__hola { font-size: 1.375rem; line-height: 1.15; }
+
+.titulo-centrado { text-align: center; margin: 0 0 var(--e-3); }
 
 /* El círculo lleva el color que elija cada quien; el aro blanco de dentro lo
    recorta del fondo igual que el perfil blanco de los iconos ilustrados. */
@@ -275,7 +283,16 @@ body.app {
   width: 100%; margin-top: var(--e-2);
 }
 .carta-modo__salidas .boton { padding: var(--e-3) var(--e-2); gap: 6px; font-size: var(--t-chico); }
-.carta-modo__explica { background: var(--superficie); }
+/* «Explícame» también lleva el color del modo, pero en versión secundaria:
+   sobre blanco, con la letra y el borde del modo. Rellenarlo igual que «Jugar»
+   dejaría dos botones idénticos y ninguno mandaría. */
+.carta-modo__explica { background: var(--superficie); border-width: 2px; }
+/* La letra va un punto más honda que el color del modo: a --debate-oscuro y
+   --negociacion-oscuro daba 4,22 y 4,41 sobre blanco, por debajo del 4,5 que
+   pide un cuerpo de 13 px. El borde sí lleva el color del modo a plena fuerza,
+   que ahí no se lee nada. */
+.carta-modo--debate .carta-modo__explica { color: #A8431F; border-color: var(--debate); }
+.carta-modo--negociacion .carta-modo__explica { color: #176450; border-color: var(--negociacion); }
 
 /* Lo que de verdad hay que entender de cada modo, resaltado dentro del texto:
    en Controversia, que no se juzga quién tiene razón; en Negociación, que no
@@ -296,7 +313,9 @@ body.app {
 }
 .explica__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-h1); line-height: 1.1; }
 .explica__que {
-  font-size: var(--t-base); color: var(--tinta-suave); line-height: 1.55;
+  /* 19 px: tres más que el cuerpo normal. Es la única pantalla que existe para
+     leerse, así que puede permitirse el tamaño. */
+  font-size: 1.1875rem; color: var(--tinta-suave); line-height: 1.5;
   max-width: 26rem;
 }
 

@@ -211,8 +211,8 @@
       '<div class="saludo">' +
         '<button class="avatar-boton" data-vista="perfil" aria-label="Tu perfil">' +
           avatarHTML(p) + '</button>' +
-        '<div style="flex:1;min-width:0">' +
-          '<h1>' + (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
+        '<div class="saludo__datos">' +
+          '<h1 class="saludo__hola">' + (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
           '<p class="chico suave">Nivel ' + p.nivel + ' · ' + p.puntos + ' de ' + p.puntosNivel + ' puntos</p>' +
           '<div class="nivel-barra"><i style="width:' + Math.min(100, Math.round(p.puntos / p.puntosNivel * 100)) + '%"></i></div>' +
         '</div>' +
@@ -224,7 +224,7 @@
          explicación de cada modo vivía en otra tarjeta, de adorno, que nadie
          relacionaba con el botón. Ahora es una sola cosa: la tarjeta explica y
          la tarjeta empieza. */
-      '<h2 style="margin:0 0 var(--e-3)">¿Qué quieren jugar?</h2>' +
+      '<h2 class="titulo-centrado">Selecciona el modo</h2>' +
       '<div class="cartas-modo">' +
         cartaModo('debate') +
         cartaModo('negociacion') +

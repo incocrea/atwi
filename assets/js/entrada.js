@@ -98,7 +98,7 @@ window.ATWI = window.ATWI || {};
 
   var AVISO_IA =
     '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
-      '<span>' + cfg.descargo + '</span>' +
+      '<span>' + cfg.descargo + cfg.gancho + '</span>' +
     '</div>';
 
   var ERROR = '<p class="chico" id="c-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
