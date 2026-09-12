@@ -423,16 +423,6 @@ window.ATWI = window.ATWI || {};
             (P.modo === 'debate' ? 'revancha' : 'próxima') + ' abre ' +
             esc(P.jugadores[P.orden[1]].nombre) + '.</p>' +
         '</div>' +
-        /* EL ENCUENTRO. Ocupa el hueco que queda entre el sorteo y el botón, y
-           ahí se QUEDAN: entran desde fuera, chocan y no se van. Se probó como
-           cortinilla a pantalla completa que se desvanecía, y lo que dejaba era
-           una pantalla vacía justo después del momento más vistoso.
-
-           El resumen de quién defiende qué vivía aquí y se fue: lo mismo se
-           lee en cada turno, y encima del botón pedía leer tres cosas antes de
-           poder empezar. */
-        '<div class="encuentro' + (P.modo === 'debate' ? '' : ' encuentro--pacto') +
-          '" id="encuentro" aria-hidden="true"></div>' +
       '</div>';
     /* El botón espera al sorteo: si no, se puede pasar de largo y el juego
        habría decidido quién abre sin que nadie lo viera. */
@@ -532,14 +522,22 @@ window.ATWI = window.ATWI || {};
 
   function entrarAlEncuentro() {
     if (!P || P.estado !== 'aviso') return;
-    var caja = $('#encuentro');
-    if (!caja || caja.firstChild) return;
+    var m = $('#m-partida');
+    if (!m || $('#encuentro')) return;
 
     var pacto = P.modo !== 'debate';
     var pose = pacto ? 'puno' : 'plante';
     var izq = P.jugadores[P.orden[0]];         // quien abre, a la izquierda
     var der = P.jugadores[P.orden[1]];
 
+    /* Va colgado del MODAL y no del cuerpo: el cuerpo tiene relleno y scroll
+       propio, y dentro de él las figuras acababan cortadas por la caja —por las
+       piernas— en vez de por la pantalla. Aquí abajo lo único que las corta es
+       el borde del aparato, que es lo que se busca. */
+    var caja = document.createElement('div');
+    caja.id = 'encuentro';
+    caja.className = 'encuentro' + (pacto ? ' encuentro--pacto' : '');
+    caja.setAttribute('aria-hidden', 'true');
     caja.innerHTML =
       '<span class="encuentro__lado encuentro__lado--izq">' +
         window.ATWI.retrato(izq.avatar, pose, { fondo: null, mira: 'derecha',
@@ -554,6 +552,7 @@ window.ATWI = window.ATWI || {};
          adorno pegado que no era de nadie. El VS de Controversia sí hace falta:
          ahí no hay nada en el medio que diga que se enfrentan. */
       (pacto ? '' : '<span class="encuentro__vs">VS</span>');
+    m.appendChild(caja);
 
     /* El golpe suena cuando LLEGAN, no al salir: es el sonido del encuentro, y
        adelantarlo lo convierte en el de arrancar. */
@@ -563,7 +562,12 @@ window.ATWI = window.ATWI || {};
       if (sonido.hay()) sonido.choque();
     }, MS_VIAJE);
 
-    P.limpiarEncuentro = function () { clearTimeout(alLlegar); };
+    /* Si se sale de la sala a mitad, la escena se va con ella: colgada del
+       modal, se quedaría flotando sobre la pantalla siguiente. */
+    P.limpiarEncuentro = function () {
+      clearTimeout(alLlegar);
+      if (caja.parentNode) caja.remove();
+    };
   }
 
   /* ==========================================================================
