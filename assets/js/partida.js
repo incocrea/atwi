@@ -115,7 +115,7 @@ window.ATWI = window.ATWI || {};
     if (typeof x === 'string') x = { nombre: x };
     return {
       nombre: x.nombre || '?',
-      avatar: x.avatar || '🙂',
+      avatar: x.avatar || (i ? 'luna' : 'kai'),
       color: x.color || COLOR_POR_DEFECTO[i] || COLOR_POR_DEFECTO[0]
     };
   }
@@ -128,7 +128,7 @@ window.ATWI = window.ATWI || {};
     if (a.color.toLowerCase() !== b.color.toLowerCase()) return;
     b.color = b.color.toLowerCase() === COLOR_POR_DEFECTO[1].toLowerCase()
       ? COLOR_POR_DEFECTO[0] : COLOR_POR_DEFECTO[1];
-    if (a.avatar === b.avatar) b.avatar = a.avatar === '🦊' ? '🐙' : '🦊';
+    if (a.avatar === b.avatar) b.avatar = window.ATWI.otroPersonaje(a.avatar);
   }
 
   function abrir() {
@@ -240,7 +240,7 @@ window.ATWI = window.ATWI || {};
                    ' style="--voz:' + esc(j.color) + '"' +
                    ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
                    ' aria-label="Escuchar a ' + esc(j.nombre) + ', turno ' + v.turno + '">' +
-                '<span class="rueda__cara">' + esc(j.avatar) + '</span>' +
+                window.ATWI.fichaHTML(j.avatar, 'rueda__cara') +
                 '<span class="rueda__n">' + v.turno + '</span>' +
               '</button>';
           }).join('') +
@@ -248,7 +248,7 @@ window.ATWI = window.ATWI || {};
         '<p class="dicho__leyenda">' +
           P.jugadores.map(function (j) {
             return '<span class="leyenda">' +
-              '<i style="background:' + esc(j.color) + '">' + esc(j.avatar) + '</i>' +
+              window.ATWI.fichaHTML(j.avatar, 'avatar--mini') +
               esc(j.nombre) + ' · ' + j.letra + '</span>';
           }).join('') +
         '</p>' +
@@ -425,8 +425,7 @@ window.ATWI = window.ATWI || {};
         '<div class="sala__posturas">' +
           P.jugadores.map(function (j, i) {
             return '<p class="chico voz">' +
-              '<span class="voz__cara" style="background:' + esc(j.color) + '">' +
-                esc(j.avatar) + '</span>' +
+              window.ATWI.fichaHTML(j.avatar, 'voz__cara') +
               '<span><strong>' + esc(j.nombre) + '</strong> defiende la ' + j.letra + ': ' +
               esc(j.texto) + '</span></p>';
           }).join('') +
@@ -474,8 +473,7 @@ window.ATWI = window.ATWI || {};
 
     function pinta(i) {
       var j = P.jugadores[i];
-      ficha.textContent = j.avatar;
-      ficha.style.background = j.color;
+      ficha.innerHTML = window.ATWI.fichaHTML(j.avatar, 'sorteo__cara');
       quien.textContent = j.nombre;
     }
     pinta(inicio);

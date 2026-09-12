@@ -36,8 +36,12 @@ window.ATWI = window.ATWI || {};
      Ver docs/02-modos-y-catalogo.md §11. */
   var PERFIL_NUEVO = {
     nombre: '',
-    avatar: '🙂',
-    avatarFondo: '#7A6AD8',   // uno de los diez de tokens.css
+    /* El avatar es una CLAVE DE PERSONAJE —'kai' o 'luna'—, no un dibujo. Fue
+       un emoji con un color a elegir hasta el 2026-09-12; lo guardado de
+       entonces se normaliza al cargar, porque un perfil viejo traería un emoji
+       aquí y la sala intentaría pintarlo como si fuera una cara. */
+    avatar: 'kai',
+    avatarFondo: '#6EC6FF',   // el color del personaje, ya no se elige aparte
     nivel: 1,
     puntos: 0,
     puntosNivel: 100,
@@ -60,6 +64,11 @@ window.ATWI = window.ATWI || {};
     } catch (e) {
       perfil = Object.assign({}, PERFIL_NUEVO);
     }
+    if (!window.ATWI.esPersonaje || !window.ATWI.esPersonaje(perfil.avatar)) {
+      perfil.avatar = PERFIL_NUEVO.avatar;
+    }
+    perfil.avatarFondo = window.ATWI.colorPersonaje
+      ? window.ATWI.colorPersonaje(perfil.avatar) : PERFIL_NUEVO.avatarFondo;
     return perfil;
   }
 
@@ -290,10 +299,10 @@ window.ATWI = window.ATWI || {};
       var guardado = this.invitado(ficha.nombre);
       if (guardado) {
         guardado.nombre = ficha.nombre;      // respeta mayúsculas nuevas
-        guardado.avatar = ficha.avatar;
+        guardado.nombre = ficha.nombre;
         guardado.color = ficha.color;
       } else {
-        guardado = { nombre: ficha.nombre, avatar: ficha.avatar, color: ficha.color };
+        guardado = { nombre: ficha.nombre };
         lista.push(guardado);
       }
       /* El último con quien se jugó primero: es casi siempre el de la próxima. */

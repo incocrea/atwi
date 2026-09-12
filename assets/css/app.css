@@ -326,6 +326,36 @@ body.app {
 .retrato--ficha { border-radius: 50%; aspect-ratio: 1; }
 .retrato--ficha .retrato__fig { transform: scale(1.25); transform-origin: 50% 22%; }
 
+/* La ficha redonda usa la caja de `.avatar` —que es la que trae los tamaños de
+   cada sitio— pero por dentro es un retrato: fuera el color de fondo plano y el
+   centrado de texto, que ahora estorban. El acercamiento es lo que hace que se
+   vea la CARA y no el cuerpo entero metido en un botón de 26 px. */
+.avatar--pj {
+  position: relative; overflow: hidden; background: none; padding: 0;
+  display: block;
+}
+.avatar--pj .retrato__fondo { position: absolute; inset: 0; width: 100%; height: 100%; }
+.avatar--pj .retrato__fig {
+  position: relative; display: block; width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom;
+  transform: scale(1.3); transform-origin: 50% 20%;
+}
+
+/* El selector: las dos caras grandes, una al lado de la otra, con su nombre
+   debajo. `minmax(0, 1fr)` y no `1fr`: el mínimo del contenido ensancharía la
+   columna y sacaría la fila por el costado. */
+.personajes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-3); }
+.personaje {
+  display: grid; justify-items: center; gap: 6px;
+  padding: var(--e-3) var(--e-2);
+  border: 2px solid transparent; border-radius: var(--radio-carta);
+  background: var(--superficie); box-shadow: var(--sombra-1);
+  font: inherit; cursor: pointer; min-width: 0;
+}
+.personaje[aria-pressed="true"] { border-color: var(--pj); box-shadow: var(--sombra-2); }
+.personaje__cara { width: 88px; height: 88px; }
+.personaje__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-chico); }
+
 /* --- La explicación de un modo ------------------------------------------------
    Hace juego con su carta: mismo rótulo dibujado, mismo color de fondo, que lo
    pone `modal--<modo>`. Es la misma cosa, en grande. */
@@ -1338,3 +1368,28 @@ body.app {
 .turno-ficha--cupo { opacity: .55; }
 .turno-ficha__n { font-family: var(--display); font-weight: 800; font-size: 1.25rem; }
 .turno-ficha__min { font-size: var(--t-mini); color: var(--tinta-tenue); }
+
+/* --- La ficha de personaje dentro de cajas que no la esperaban ----------------
+   Los tamaños de la ficha viven en la clase de cada sitio —la rueda, la voz del
+   sorteo, la cabecera—, y todas esas clases daban por sentado que dentro había
+   un emoji sobre un color plano: fondo, centrado de texto, tamaño de fuente.
+   Aquí se les quita eso.
+
+   La clase va DOBLADA a propósito, `.avatar--pj.avatar--pj`. Con una sola
+   quedaba a la misma especificidad que `.voz__cara` o `.rueda__cara` y ganaba el
+   último escrito, que es una forma frágil de decidir quién manda. Doblada gana
+   por peso y deja de depender del orden del archivo. */
+.avatar--pj.avatar--pj { display: block; background: none; padding: 0; overflow: hidden; }
+
+/* Las que van DENTRO de otro círculo lo llenan entero, porque quien trae el
+   tamaño es el de fuera. Sin `overflow: hidden` en el contenedor: la rueda lleva
+   colgando por fuera el número de turno, y esconderlo lo recortaba. Recortar la
+   cara al círculo ya lo hace la propia ficha. */
+.rueda, .sorteo__ficha, .avatar--cabecera { position: relative; }
+.sorteo__ficha, .avatar--cabecera { background: none; }
+.avatar--pj.rueda__cara,
+.avatar--pj.sorteo__cara,
+.avatar--pj.avatar--cabecera-cara {
+  position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit;
+  box-shadow: none;
+}

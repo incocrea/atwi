@@ -107,4 +107,31 @@ window.ATWI = window.ATWI || {};
       return { clave: k, nombre: GENTE[k].nombre, color: GENTE[k].fuerte };
     });
   };
+
+  /** ¿Es una clave de personaje? Sirve para distinguir lo guardado de lo viejo. */
+  window.ATWI.esPersonaje = function (quien) { return Object.prototype.hasOwnProperty.call(GENTE, quien); };
+
+  /** El nombre propio, para leerlo en pantalla. */
+  window.ATWI.nombrePersonaje = function (quien) { return (GENTE[quien] || GENTE.kai).nombre; };
+
+  /** Su color fuerte. Es el que marca su voz en la sala. */
+  window.ATWI.colorPersonaje = function (quien) { return (GENTE[quien] || GENTE.kai).fuerte; };
+
+  /**
+   * El OTRO. Con dos personajes esto decide solo, y por eso al invitado local no
+   * se le pregunta: si yo soy Kai, él es Luna. Dos fichas iguales no se
+   * distinguen en la sala, que es justo para lo que sirven.
+   */
+  window.ATWI.otroPersonaje = function (quien) { return quien === 'luna' ? 'kai' : 'luna'; };
+
+  /** La ficha redonda: la cara dentro de su disco de color. */
+  window.ATWI.fichaHTML = function (quien, clase, estilo) {
+    if (!window.ATWI.esPersonaje(quien)) quien = 'kai';
+    return '<span class="avatar avatar--pj ' + (clase || '') + '"' +
+        (estilo ? ' style="' + estilo + '"' : '') + ' data-quien="' + quien + '">' +
+        window.ATWI.fondoPersonaje(quien, 'disco') +
+        '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-frente.png" ' +
+          'alt="' + esc(GENTE[quien].nombre) + '" loading="lazy" decoding="async">' +
+      '</span>';
+  };
 })();
