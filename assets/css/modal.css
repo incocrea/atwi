@@ -1,0 +1,112 @@
+/* ==========================================================================
+   ATWI · modal.css
+   Los modales de la app son SIEMPRE a pantalla completa: entrar en un flujo
+   tiene que sentirse como cambiar de pantalla en un juego, no como abrir una
+   ventanita encima de una web. Solo la landing usa la hoja que sube desde
+   abajo, porque ahí sí es un sitio.
+   ========================================================================== */
+
+.modal {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  background: var(--crema);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  animation: modal-entra var(--dur-media) var(--suave);
+}
+.modal[hidden] { display: none; }
+
+@keyframes modal-entra {
+  from { opacity: 0; transform: translateY(18px) scale(.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.modal__cabecera {
+  display: flex;
+  align-items: center;
+  gap: var(--e-3);
+  padding: calc(env(safe-area-inset-top, 0px) + var(--e-3)) var(--borde-pantalla) var(--e-3);
+}
+.modal__titulo { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); flex: 1; }
+
+.modal__cuerpo {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 var(--borde-pantalla) var(--e-4);
+}
+
+.modal__pie {
+  padding: var(--e-3) var(--borde-pantalla) calc(env(safe-area-inset-bottom, 0px) + var(--e-4));
+  background: var(--crema);
+  border-top: 1px solid var(--linea);
+  display: grid;
+  gap: var(--e-2);
+}
+
+/* Variante inmersiva: la partida y el veredicto. Sin barra, a sangre. */
+.modal--inmersivo { background: var(--tinta); color: var(--blanco); }
+.modal--inmersivo .modal__pie { background: transparent; border-top: 0; }
+.modal--inmersivo .suave { color: rgba(255, 255, 255, .72); }
+
+/* Pasos de un flujo (elegir tema, proponer modo, invitar) */
+.pasos { display: flex; gap: 6px; padding: 0 var(--borde-pantalla) var(--e-3); }
+.paso { flex: 1; height: 5px; border-radius: var(--radio-pastilla); background: var(--crema-hondo); }
+.paso[data-hecho] { background: var(--lavanda); }
+
+/* Opción seleccionable grande (elegir modo, elegir postura) */
+.opcion {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--e-3);
+  width: 100%;
+  padding: var(--e-4);
+  border: 2px solid var(--linea);
+  border-radius: var(--radio-tarjeta);
+  background: var(--superficie);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.opcion[aria-pressed="true"] { border-color: var(--lavanda); background: var(--lavanda-tinte); }
+.opcion__marca {
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radio-pastilla);
+  border: 2px solid var(--linea-fuerte);
+  display: grid;
+  place-items: center;
+}
+.opcion[aria-pressed="true"] .opcion__marca { border-color: var(--lavanda); background: var(--lavanda); color: var(--blanco); }
+
+/* --- Hoja inferior, solo en la landing ------------------------------------- */
+.hoja {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  align-items: end;
+  background: rgba(46, 42, 63, .45);
+  animation: velo var(--dur-corta) var(--suave);
+}
+.hoja[hidden] { display: none; }
+@keyframes velo { from { opacity: 0; } to { opacity: 1; } }
+
+.hoja__panel {
+  background: var(--superficie);
+  border-radius: var(--radio-modal) var(--radio-modal) 0 0;
+  padding: var(--e-5) var(--e-5) calc(env(safe-area-inset-bottom, 0px) + var(--e-5));
+  max-height: 85dvh;
+  overflow-y: auto;
+  animation: sube var(--dur-media) var(--suave);
+}
+@keyframes sube { from { transform: translateY(100%); } to { transform: none; } }
+
+@media (min-width: 700px) {
+  .hoja { align-items: center; justify-items: center; }
+  .hoja__panel { max-width: 34rem; width: 100%; border-radius: var(--radio-modal); }
+}

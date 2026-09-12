@@ -1,0 +1,107 @@
+/* ==========================================================================
+   ATWI · tokens.css
+   Solo variables: color, tipografía, espacio, forma y movimiento.
+   Ningún selector de componente vive aquí.
+
+   La dirección gráfica es la de Finch: neutros cálidos tirando a crema,
+   un lavanda de marca, colores pastel saturados pero suaves, formas muy
+   redondeadas y sombras difusas. Cada modo de juego tiene su color y no se
+   mezclan nunca: Pacto es menta, Juicio es coral.
+   ========================================================================== */
+:root {
+  /* --- Marca ------------------------------------------------------------- */
+  --lavanda: #7A6AD8;         /* primario: CTA, nivel, acentos de marca */
+  --lavanda-claro: #A89AF0;
+  --lavanda-oscuro: #5A49B4;  /* estado pulsado y texto sobre tinte */
+  --lavanda-tinte: #EFECFE;
+
+  /* --- Los dos modos (nunca se mezclan) ---------------------------------- */
+  --pacto: #34B79B;           /* menta: modo Pacto, el mediador */
+  --pacto-oscuro: #21876F;
+  --pacto-tinte: #DDF4EE;
+  --juicio: #F07F55;          /* coral: modo Juicio, el árbitro */
+  --juicio-oscuro: #C75B33;
+  --juicio-tinte: #FDEAE1;
+
+  /* --- Apoyo ------------------------------------------------------------- */
+  --cielo: #63AEEF;
+  --cielo-tinte: #E3F0FD;
+  --sol: #F5C243;             /* insignias y recompensas */
+  --sol-tinte: #FDF2D6;
+  --rosa: #EE9BBE;
+
+  /* --- Neutros cálidos --------------------------------------------------- */
+  --crema: #FBF7F2;           /* fondo de la app */
+  --crema-hondo: #F3EDE4;     /* fondo de zonas hundidas */
+  --superficie: #FFFFFF;      /* tarjetas, modales, campos */
+  --tinta: #2E2A3F;           /* texto principal: ciruela muy oscuro, no negro */
+  --tinta-suave: #6D6683;     /* texto secundario (AA sobre crema y superficie) */
+  --tinta-tenue: #9A94AC;     /* pistas y texto deshabilitado */
+  --linea: #E9E2D8;
+  --linea-fuerte: #D6CCBE;
+  --blanco: #FFFFFF;
+
+  /* --- Estados ----------------------------------------------------------- */
+  --exito: var(--pacto);
+  --alerta: #E4A11B;
+  --peligro: #D45B5B;
+  --peligro-tinte: #FBE8E8;
+  --foco: #2F6BE0;            /* anillo de foco, distinto de cualquier acento */
+
+  /* --- Sombras (difusas y suaves, nunca duras) --------------------------- */
+  --sombra-1: 0 2px 8px rgba(46, 42, 63, .06);
+  --sombra-2: 0 6px 20px rgba(46, 42, 63, .10);
+  --sombra-3: 0 16px 40px rgba(46, 42, 63, .16);
+  --sombra-cta: 0 8px 20px rgba(122, 106, 216, .34);
+  --sombra-marco: 0 30px 80px rgba(46, 42, 63, .28);
+
+  /* --- Tipografía --------------------------------------------------------
+     Redondeada, como Finch. Las familias propias todavía no están
+     autoalojadas: ver site/assets/fonts/LEEME.txt. Mientras tanto cae en la
+     redondeada del sistema, que en iOS es SF Pro Rounded. */
+  --display: 'Baloo 2', 'Nunito', ui-rounded, 'SF Pro Rounded', 'Segoe UI Variable', system-ui, sans-serif;
+  --texto: 'Nunito', ui-rounded, 'SF Pro Rounded', 'Segoe UI Variable', system-ui, -apple-system, sans-serif;
+
+  /* Escala pensada para 360-430 px de ancho. La app no crece más. */
+  --t-base: 1rem;             /* 16 px */
+  --t-chico: 0.8125rem;       /* 13 px */
+  --t-mini: 0.6875rem;        /* 11 px, solo etiquetas de la barra */
+  --t-h1: 1.75rem;
+  --t-h2: 1.3125rem;
+  --t-h3: 1.0625rem;
+  --t-numeraco: 2.75rem;      /* cifras grandes del perfil y del veredicto */
+  --t-boton: 1.0625rem;
+
+  /* La landing sí es fluida, porque también se ve en escritorio */
+  --t-hero: clamp(2.25rem, 8vw, 4.5rem);
+  --t-hero-2: clamp(1.5rem, 4.5vw, 2.5rem);
+
+  /* --- Espacio ----------------------------------------------------------- */
+  --e-1: 0.25rem;
+  --e-2: 0.5rem;
+  --e-3: 0.75rem;
+  --e-4: 1rem;
+  --e-5: 1.5rem;
+  --e-6: 2rem;
+  --e-7: 3rem;
+  --e-8: 4.5rem;
+
+  --app-ancho: 430px;         /* ancho máximo del lienzo del juego */
+  --barra-alto: 68px;         /* barra inferior fija */
+  --diana: 48px;              /* tamaño mínimo táctil */
+  --borde-pantalla: 1.125rem; /* margen lateral dentro del juego */
+
+  /* --- Forma (muy redondeada) -------------------------------------------- */
+  --radio-pastilla: 999px;
+  --radio-boton: 16px;
+  --radio-tarjeta: 22px;
+  --radio-modal: 28px;
+  --radio-chip: 12px;
+
+  /* --- Movimiento --------------------------------------------------------- */
+  --dur-corta: 150ms;
+  --dur-media: 240ms;
+  --dur-larga: 420ms;
+  --suave: cubic-bezier(.2, .7, .2, 1);
+  --rebote: cubic-bezier(.34, 1.56, .64, 1);
+}

@@ -1,0 +1,15 @@
+FUENTES DE ATWI
+===============
+
+La dirección gráfica pide tipografía redondeada, como Finch. Todavía no están
+autoalojadas: tokens.css declara las familias y cae en la redondeada del
+sistema (en iOS, SF Pro Rounded; en Android y Windows, la del sistema).
+
+Cuando se decidan, van aquí en woff2 con subconjunto latino y se declaran en
+fuentes.css, igual que en el proyecto nmllm:
+
+  - Display (titulares, botones, cifras):  Baloo 2 (700, 800)
+  - Texto (todo lo demás):                 Nunito (400, 600, 700)
+
+Ambas tienen licencia SIL Open Font License y están en Google Fonts.
+Subconjunto mínimo: latín + tildes + ñ + ¿¡ + comillas angulares.

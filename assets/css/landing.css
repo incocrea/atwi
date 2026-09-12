@@ -1,0 +1,129 @@
+/* ==========================================================================
+   ATWI · landing.css
+   La ÚNICA pantalla que se diseña también para escritorio. Es informativa y
+   breve: qué es ATWI, los dos modos, y el botón de jugar. Todo lo demás del
+   producto vive en /app/ y es solo móvil.
+   ========================================================================== */
+
+body.landing {
+  background: var(--crema);
+  overflow-y: auto;
+  height: auto;
+}
+
+.envoltura { max-width: 1080px; margin: 0 auto; padding: 0 var(--e-5); }
+
+/* --- Barra superior --------------------------------------------------------- */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-4);
+  padding: var(--e-4) 0;
+}
+.marca { display: flex; align-items: center; gap: var(--e-2); font-family: var(--display); font-weight: 800; font-size: 1.25rem; }
+.marca__disco {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radio-pastilla);
+  background: linear-gradient(160deg, var(--lavanda-claro), var(--lavanda));
+  display: grid;
+  place-items: center;
+  color: var(--blanco);
+  font-size: 1.1rem;
+}
+
+/* --- Héroe ------------------------------------------------------------------ */
+.heroe {
+  padding: var(--e-6) 0 var(--e-7);
+  display: grid;
+  gap: var(--e-6);
+  align-items: center;
+}
+@media (min-width: 860px) {
+  .heroe { grid-template-columns: 1.05fr .95fr; padding: var(--e-8) 0; }
+}
+
+.heroe__titular {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--t-hero);
+  line-height: 1.02;
+  letter-spacing: -.02em;
+}
+.heroe__titular em { font-style: normal; color: var(--lavanda); }
+.heroe__entrada { font-size: 1.125rem; color: var(--tinta-suave); max-width: 34rem; margin-top: var(--e-4); }
+.heroe__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-5); }
+
+/* Maqueta del teléfono en el héroe */
+.mock {
+  justify-self: center;
+  width: 280px;
+  aspect-ratio: 9 / 19;
+  border-radius: 36px;
+  border: 9px solid #1D1A2A;
+  background: var(--crema);
+  box-shadow: var(--sombra-marco);
+  padding: var(--e-4);
+  display: grid;
+  align-content: start;
+  gap: var(--e-3);
+  overflow: hidden;
+}
+.mock__barra { height: 6px; width: 46%; border-radius: var(--radio-pastilla); background: var(--linea); justify-self: center; }
+
+/* --- Secciones -------------------------------------------------------------- */
+.seccion { padding: var(--e-7) 0; }
+.seccion__titulo { font-size: clamp(1.5rem, 4vw, 2.25rem); margin-bottom: var(--e-2); }
+.seccion__entrada { color: var(--tinta-suave); max-width: 40rem; }
+
+.rejilla-modos { display: grid; gap: var(--e-4); margin-top: var(--e-5); }
+@media (min-width: 760px) { .rejilla-modos { grid-template-columns: 1fr 1fr; } }
+
+.ficha-modo { padding: var(--e-5); border-radius: var(--radio-modal); background: var(--superficie); box-shadow: var(--sombra-1); }
+.ficha-modo__icono { width: 60px; height: 60px; border-radius: 20px; display: grid; place-items: center; margin-bottom: var(--e-4); }
+.ficha-modo--juicio .ficha-modo__icono { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
+.ficha-modo--pacto .ficha-modo__icono { background: var(--pacto-tinte); color: var(--pacto-oscuro); }
+.ficha-modo__lista { margin: var(--e-4) 0 0; padding: 0; list-style: none; display: grid; gap: var(--e-2); }
+.ficha-modo__lista li { display: grid; grid-template-columns: 1.25rem 1fr; gap: var(--e-2); font-size: var(--t-chico); color: var(--tinta-suave); }
+
+.pasos-juego { display: grid; gap: var(--e-4); margin-top: var(--e-5); counter-reset: paso; }
+@media (min-width: 760px) { .pasos-juego { grid-template-columns: repeat(3, 1fr); } }
+.paso-juego { padding: var(--e-5); border-radius: var(--radio-tarjeta); background: var(--crema-hondo); }
+.paso-juego::before {
+  counter-increment: paso;
+  content: counter(paso);
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radio-pastilla);
+  background: var(--lavanda);
+  color: var(--blanco);
+  font-family: var(--display);
+  font-weight: 800;
+  margin-bottom: var(--e-3);
+}
+
+/* --- Bloque de honestidad --------------------------------------------------- */
+.honesto {
+  margin: var(--e-7) 0;
+  padding: var(--e-5);
+  border-radius: var(--radio-modal);
+  background: var(--lavanda-tinte);
+  color: var(--lavanda-oscuro);
+}
+.honesto h2 { color: var(--tinta); margin-bottom: var(--e-3); }
+.honesto p + p { margin-top: var(--e-3); }
+
+/* --- Pie -------------------------------------------------------------------- */
+.pie {
+  border-top: 1px solid var(--linea);
+  padding: var(--e-6) 0 var(--e-7);
+  color: var(--tinta-suave);
+  font-size: var(--t-chico);
+}
+.pie__enlaces { display: flex; flex-wrap: wrap; gap: var(--e-4); margin-bottom: var(--e-3); }
+
+/* --- La barra inferior NO existe en la landing ------------------------------- */
+body.landing .barra { display: none; }

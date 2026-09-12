@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FBF7F2">
+<title>ATWI</title>
+<meta name="description" content="Juego de debate para parejas. Modo Juicio y modo Pacto.">
+
+<link rel="stylesheet" href="../assets/css/tokens.css">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/app.css">
+<link rel="stylesheet" href="../assets/css/modal.css">
+</head>
+
+<body class="app">
+
+<div class="marco">
+
+  <header class="cabecera">
+    <div>
+      <div class="cabecera__titulo">ATWI</div>
+      <div class="cabecera__sub">Juego de debate</div>
+    </div>
+    <div class="monedero">
+      <span class="monedero__dato" title="Puntos de razón">⚡ <span id="dato-puntos">0</span></span>
+      <span class="monedero__dato" title="Sellos de pacto">🕊️ <span id="dato-sellos">0</span></span>
+    </div>
+  </header>
+
+  <main class="vistas">
+    <section class="vista" id="v-jugar" aria-label="Jugar"></section>
+    <section class="vista" id="v-catalogo" aria-label="Catálogo"></section>
+    <section class="vista" id="v-historial" aria-label="Historial"></section>
+    <section class="vista" id="v-perfil" aria-label="Perfil"></section>
+  </main>
+
+  <nav class="barra" aria-label="Navegación principal">
+    <button class="barra-item" data-vista="jugar" data-etiqueta="Jugar"></button>
+    <button class="barra-item" data-vista="catalogo" data-etiqueta="Catálogo"></button>
+    <button class="barra-item" data-vista="historial" data-etiqueta="Historial"></button>
+    <button class="barra-item" data-vista="perfil" data-etiqueta="Perfil"></button>
+  </nav>
+
+  <!-- ================= Modales a pantalla completa ================= -->
+
+  <!-- Detalle de un tema -->
+  <div class="modal" id="m-tema" hidden role="dialog" aria-modal="true" aria-labelledby="t-tema">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-tema" aria-label="Cerrar" data-icono="cerrar"></button>
+      <span class="modal__titulo" id="t-tema"></span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque boton--grande" data-accion="elegir-modo">Jugar este tema</button>
+    </div>
+  </div>
+
+  <!-- Elegir el modo (es una propuesta, no una imposición) -->
+  <div class="modal" id="m-modo" hidden role="dialog" aria-modal="true" aria-labelledby="t-modo">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-modo" aria-label="Volver" data-icono="atras"></button>
+      <span class="modal__titulo" id="t-modo">¿Cómo lo jugamos?</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque boton--grande" data-accion="proponer" disabled>Proponer</button>
+    </div>
+  </div>
+
+  <!-- Invitación -->
+  <div class="modal" id="m-invitar" hidden role="dialog" aria-modal="true" aria-labelledby="t-invitar">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-invitar" aria-label="Cerrar" data-icono="cerrar"></button>
+      <span class="modal__titulo" id="t-invitar">Invitación</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque" data-cerrar="m-invitar">Hecho</button>
+    </div>
+  </div>
+
+</div>
+
+<p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/iconos.js"></script>
+<script src="../assets/js/datos.js"></script>
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

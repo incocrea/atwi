@@ -1,0 +1,3 @@
+# ATWI — todavía en construcción: nada indexable.
+User-agent: *
+Disallow: /

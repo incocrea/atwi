@@ -1,0 +1,13 @@
+{
+  "name": "ATWI",
+  "short_name": "ATWI",
+  "description": "Juego de debate para parejas.",
+  "start_url": "/app/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FBF7F2",
+  "theme_color": "#FBF7F2",
+  "lang": "es",
+  "icons": []
+}

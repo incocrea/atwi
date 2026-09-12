@@ -1,0 +1,276 @@
+/* ==========================================================================
+   ATWI · app.css
+   El caparazón del juego. Reglas del producto:
+     · Solo móvil. En escritorio se dibuja dentro de un marco de teléfono para
+       poder revisarlo, pero el diseño no crece: el lienzo son 430 px.
+     · Pantalla completa. Cada vista ocupa el alto real (100dvh) y el scroll se
+       evita al máximo; cuando es inevitable scrollea la vista, nunca el body.
+     · Barra inferior fija y siempre visible, salvo en las pantallas de partida,
+       que son inmersivas.
+   ========================================================================== */
+
+/* --- El lienzo ------------------------------------------------------------ */
+html, body { height: 100%; overscroll-behavior: none; }
+
+body.app {
+  background: var(--crema-hondo);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.marco {
+  position: relative;
+  width: 100%;
+  max-width: var(--app-ancho);
+  height: 100dvh;
+  background: var(--crema);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+}
+
+/* En escritorio: teléfono centrado sobre un fondo suave. El diseño no crece. */
+@media (min-width: 900px) and (min-height: 720px) {
+  body.app {
+    background:
+      radial-gradient(1200px 600px at 50% -10%, var(--lavanda-tinte), transparent 60%),
+      var(--crema-hondo);
+  }
+  .marco {
+    height: min(920px, calc(100dvh - 3rem));
+    border-radius: 38px;
+    box-shadow: var(--sombra-marco);
+    border: 10px solid #1D1A2A;
+  }
+  .aviso-escritorio { display: block; }
+}
+
+.aviso-escritorio {
+  display: none;
+  position: fixed;
+  bottom: var(--e-4);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--t-chico);
+  color: var(--tinta-suave);
+}
+
+/* --- Cabecera ------------------------------------------------------------- */
+.cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--e-3);
+  padding: calc(env(safe-area-inset-top, 0px) + var(--e-4)) var(--borde-pantalla) var(--e-3);
+  background: var(--crema);
+}
+.cabecera__titulo { font-family: var(--display); font-size: var(--t-h2); font-weight: 800; }
+.cabecera__sub { font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; }
+
+.monedero { display: flex; gap: var(--e-2); }
+.monedero__dato {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: .25rem .6rem;
+  border-radius: var(--radio-pastilla);
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--t-chico);
+}
+
+/* --- Las vistas ----------------------------------------------------------- */
+.vistas { position: relative; min-height: 0; }
+
+.vista {
+  position: absolute;
+  inset: 0;
+  padding: 0 var(--borde-pantalla) var(--e-4);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+}
+.vista[data-activa] { display: block; animation: entra var(--dur-media) var(--suave); }
+
+@keyframes entra {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --- Barra inferior fija --------------------------------------------------- */
+.barra {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: calc(var(--barra-alto) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--superficie);
+  border-top: 1px solid var(--linea);
+  box-shadow: 0 -4px 20px rgba(46, 42, 63, .06);
+}
+
+.barra-item {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--tinta-tenue);
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: var(--t-mini);
+  transition: color var(--dur-corta) var(--suave);
+}
+.barra-item svg { width: 26px; height: 26px; }
+.barra-item[aria-current="page"] { color: var(--lavanda); }
+.barra-item[aria-current="page"] svg { transform: translateY(-1px) scale(1.06); }
+.barra-item:active { transform: scale(.94); }
+
+/* --- Bloque de bienvenida -------------------------------------------------- */
+.saludo { display: flex; align-items: center; gap: var(--e-4); margin-bottom: var(--e-4); }
+
+.avatar {
+  width: 76px;
+  height: 76px;
+  flex: none;
+  border-radius: var(--radio-pastilla);
+  background: linear-gradient(160deg, var(--lavanda-claro), var(--lavanda));
+  display: grid;
+  place-items: center;
+  box-shadow: var(--sombra-2);
+  font-size: 2.2rem;
+}
+
+.nivel-barra {
+  height: 10px;
+  border-radius: var(--radio-pastilla);
+  background: var(--crema-hondo);
+  overflow: hidden;
+  margin-top: 6px;
+}
+.nivel-barra > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--lavanda-claro), var(--lavanda));
+}
+
+/* --- Tarjetas de modo ------------------------------------------------------ */
+.modos { display: grid; gap: var(--e-3); }
+
+.modo {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--e-4);
+  align-items: center;
+  padding: var(--e-4);
+  border-radius: var(--radio-tarjeta);
+  border: 0;
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  width: 100%;
+  transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave);
+}
+.modo:active { transform: scale(.985); box-shadow: var(--sombra-2); }
+.modo__icono { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; }
+.modo--juicio .modo__icono { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
+.modo--pacto .modo__icono { background: var(--pacto-tinte); color: var(--pacto-oscuro); }
+.modo__nombre { display: block; font-family: var(--display); font-weight: 800; font-size: var(--t-h3); }
+.modo__que { display: block; font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; line-height: 1.35; }
+
+/* --- Catálogo --------------------------------------------------------------- */
+.categorias { display: grid; gap: var(--e-3); }
+
+.categoria {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  gap: var(--e-3);
+  align-items: center;
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--radio-tarjeta);
+  border: 0;
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  width: 100%;
+}
+.categoria__emoji {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  background: var(--crema-hondo);
+}
+.categoria__n { font-size: var(--t-chico); color: var(--tinta-tenue); font-weight: 700; }
+
+.tema { display: grid; gap: 6px; padding: var(--e-4); }
+.tema__titulo { font-family: var(--display); font-weight: 800; }
+.tema__enunciado { font-size: var(--t-chico); color: var(--tinta-suave); }
+.tema__pie { display: flex; gap: var(--e-2); flex-wrap: wrap; margin-top: 2px; }
+
+/* --- Estados vacíos -------------------------------------------------------- */
+.vacio { text-align: center; padding: var(--e-7) var(--e-4); color: var(--tinta-suave); }
+.vacio__emoji { font-size: 3rem; margin-bottom: var(--e-3); }
+
+/* --- Perfil ---------------------------------------------------------------- */
+.contadores { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e-3); }
+
+.contador {
+  text-align: center;
+  padding: var(--e-4) var(--e-2);
+  border-radius: var(--radio-tarjeta);
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+}
+.contador__n { font-family: var(--display); font-weight: 800; font-size: 1.75rem; line-height: 1; }
+.contador__que {
+  font-size: var(--t-mini);
+  color: var(--tinta-suave);
+  font-weight: 700;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.insignias { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--e-3); }
+.insignia {
+  aspect-ratio: 1;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  background: var(--superficie);
+  box-shadow: var(--sombra-1);
+}
+.insignia--bloqueada { background: var(--crema-hondo); box-shadow: none; filter: grayscale(1); opacity: .5; }
+
+/* --- Aviso de IA, obligatorio y permanente (art. 50 del Reglamento de IA) --- */
+.aviso-ia {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--e-2);
+  padding: var(--e-3);
+  border-radius: var(--radio-chip);
+  background: var(--lavanda-tinte);
+  color: var(--lavanda-oscuro);
+  font-size: var(--t-chico);
+  font-weight: 600;
+}

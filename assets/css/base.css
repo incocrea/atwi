@@ -1,0 +1,119 @@
+/* ==========================================================================
+   ATWI · base.css
+   Reinicio, tipografía y las piezas que se repiten en todas las pantallas:
+   botones, chips, tarjetas y campos. Nada específico de una pantalla.
+   ========================================================================== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--texto);
+  font-size: var(--t-base);
+  line-height: 1.5;
+  color: var(--tinta);
+  background: var(--crema);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 { font-family: var(--display); font-weight: 800; line-height: 1.15; margin: 0; letter-spacing: -.01em; }
+h1 { font-size: var(--t-h1); }
+h2 { font-size: var(--t-h2); }
+h3 { font-size: var(--t-h3); }
+p  { margin: 0; }
+img, svg { max-width: 100%; display: block; }
+
+a { color: var(--lavanda-oscuro); text-decoration-thickness: 2px; text-underline-offset: 2px; }
+
+:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; border-radius: 6px; }
+
+/* Sin selección accidental al tocar dos veces: esto es un juego, no un texto */
+.js-nosel, button, .chip, .barra-item { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+
+/* --- Botones -------------------------------------------------------------- */
+.boton {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
+  min-height: var(--diana); padding: 0 var(--e-5);
+  font-family: var(--display); font-size: var(--t-boton); font-weight: 800;
+  border: 0; border-radius: var(--radio-pastilla); cursor: pointer;
+  background: var(--lavanda); color: var(--blanco); box-shadow: var(--sombra-cta);
+  transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
+}
+.boton:hover { background: var(--lavanda-oscuro); }
+.boton:active { transform: translateY(2px) scale(.985); box-shadow: 0 3px 10px rgba(122,106,216,.3); }
+.boton--bloque { width: 100%; }
+.boton--grande { min-height: 60px; font-size: 1.1875rem; }
+.boton--suave { background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra-1); border: 2px solid var(--linea); }
+.boton--suave:hover { background: var(--crema-hondo); }
+.boton--fantasma { background: transparent; color: var(--tinta-suave); box-shadow: none; font-weight: 700; }
+.boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); }
+.boton--juicio { background: var(--juicio); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
+.boton--juicio:hover { background: var(--juicio-oscuro); }
+.boton--pacto { background: var(--pacto); box-shadow: 0 8px 20px rgba(52,183,155,.34); }
+.boton--pacto:hover { background: var(--pacto-oscuro); }
+.boton[disabled] { background: var(--linea-fuerte); color: var(--blanco); box-shadow: none; cursor: not-allowed; }
+
+/* Botón redondo de icono (cerrar, atrás) */
+.boton-icono {
+  width: var(--diana); height: var(--diana); display: grid; place-items: center;
+  border: 0; border-radius: var(--radio-pastilla); cursor: pointer;
+  background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra-1);
+}
+.boton-icono:active { transform: scale(.94); }
+
+/* --- Chips y etiquetas ---------------------------------------------------- */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--e-1);
+  padding: .3rem .7rem; border-radius: var(--radio-chip);
+  font-size: var(--t-chico); font-weight: 700; line-height: 1.3;
+  background: var(--crema-hondo); color: var(--tinta-suave);
+}
+.chip--juicio { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
+.chip--pacto  { background: var(--pacto-tinte);  color: var(--pacto-oscuro); }
+.chip--marca  { background: var(--lavanda-tinte); color: var(--lavanda-oscuro); }
+.chip--sol    { background: var(--sol-tinte); color: #8A6A0B; }
+.chip--ligera   { background: var(--pacto-tinte); color: var(--pacto-oscuro); }
+.chip--media    { background: var(--sol-tinte); color: #8A6A0B; }
+.chip--profunda { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
+
+/* --- Tarjetas ------------------------------------------------------------- */
+.tarjeta {
+  background: var(--superficie);
+  border-radius: var(--radio-tarjeta);
+  box-shadow: var(--sombra-1);
+  padding: var(--e-4);
+}
+.tarjeta--aire { padding: var(--e-5); }
+.tarjeta--pulsable { cursor: pointer; transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave); text-align: left; width: 100%; border: 0; font: inherit; color: inherit; }
+.tarjeta--pulsable:active { transform: scale(.985); box-shadow: var(--sombra-2); }
+
+/* --- Campos --------------------------------------------------------------- */
+.campo {
+  width: 100%; min-height: var(--diana); padding: var(--e-3) var(--e-4);
+  font: inherit; color: var(--tinta);
+  background: var(--superficie); border: 2px solid var(--linea); border-radius: var(--radio-boton);
+}
+.campo:focus { border-color: var(--lavanda); outline: none; }
+.campo::placeholder { color: var(--tinta-tenue); }
+textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
+
+/* --- Utilidades ----------------------------------------------------------- */
+.apilado > * + * { margin-top: var(--e-3); }
+.apilado-5 > * + * { margin-top: var(--e-5); }
+.fila { display: flex; align-items: center; gap: var(--e-3); }
+.fila--entre { justify-content: space-between; }
+.centrado { text-align: center; }
+.suave { color: var(--tinta-suave); }
+.tenue { color: var(--tinta-tenue); }
+.chico { font-size: var(--t-chico); }
+.oculto { display: none !important; }
+.solo-lectores {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
