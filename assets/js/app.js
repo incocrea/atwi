@@ -782,12 +782,26 @@
         opcionPostura('b', 'B', t.b) +
       '</div>' +
 
-      '<h3 style="margin-bottom:var(--e-2)">¿Con quién juegas?</h3>' +
+      '<h3 style="margin-bottom:var(--e-2)">¿Quiénes juegan?</h3>' +
+
+      /* Si la ficha todavía no tiene nombre se pide AQUÍ. Antes se rellenaba
+         solo con «Tú», y en la sala el botón y las ruedas acababan diciendo
+         «Tú» en vez del nombre de nadie. */
+      (p.nombre
+        ? ''
+        : '<label style="display:block;margin-bottom:var(--e-3)">' +
+            '<span class="chico" style="font-weight:700">Tu nombre</span>' +
+            '<input class="campo" id="p-yo" type="text" maxlength="24" autocomplete="given-name" ' +
+              'placeholder="Tu nombre" style="margin-top:6px">' +
+          '</label>') +
+
       '<label style="display:block">' +
+        (p.nombre ? '' : '<span class="chico" style="font-weight:700">Su nombre</span>') +
         '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
-          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '">' +
+          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '"' +
+          (p.nombre ? '' : ' style="margin-top:6px"') + '>' +
         '<span class="chico tenue" style="display:block;margin-top:6px">' +
-          'Van a jugar los dos en este teléfono, por turnos. El nombre es para saber ' +
+          'Van a jugar los dos en este teléfono, por turnos. Los nombres son para saber ' +
           'de quién es cada intervención y qué dice el resultado.</span>' +
       '</label>' +
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
@@ -823,7 +837,9 @@
 
   function revisarPreparar() {
     var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
-    $('#m-preparar .modal__pie button').disabled = !(propuesta.miPostura && otro.length >= 2);
+    var yo = $('#p-yo') ? ($('#p-yo').value || '').trim() : (datos.perfil().nombre || '');
+    $('#m-preparar .modal__pie button').disabled =
+      !(propuesta.miPostura && otro.length >= 2 && yo.length >= 2);
   }
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
@@ -831,12 +847,22 @@
      falta el servidor y llega después. */
   function sortearYJugar() {
     var t = datos.tema(propuesta.temaId);
-    var yo = datos.perfil().nombre || 'Tú';
     var otro = ($('#p-otro').value || '').trim();
+    var yo = $('#p-yo') ? ($('#p-yo').value || '').trim() : (datos.perfil().nombre || '');
+
+    if (yo.length < 2) { $('#p-error').textContent = 'Escribe tu nombre.'; return; }
     if (otro.length < 2) { $('#p-error').textContent = 'Escribe con quién juegas.'; return; }
     if (otro.toLowerCase() === yo.toLowerCase()) {
       $('#p-error').textContent = 'Se llaman igual: ponle otro nombre para no confundirse en la sala.';
       return;
+    }
+    /* El nombre que se escribe aquí es el de la ficha: se guarda, y de paso
+       deja de preguntarse en la siguiente partida. */
+    if (!datos.perfil().nombre) {
+      datos.actualizar({ nombre: yo });
+      if (window.ATWI.auth && window.ATWI.auth.dentro()) {
+        window.ATWI.auth.guardarPerfil({ nombre: yo }).catch(function () {});
+      }
     }
     propuesta.otro = otro;
 
@@ -1023,7 +1049,7 @@
      hay que devolverle el foco y el cursor donde estaba. */
   var reponerFoco = false;
   document.addEventListener('input', function (e) {
-    if (e.target.id === 'p-otro') { revisarPreparar(); return; }
+    if (e.target.id === 'p-otro' || e.target.id === 'p-yo') { revisarPreparar(); return; }
     if (e.target.id !== 'q') return;
     busqueda = e.target.value;
     reponerFoco = true;

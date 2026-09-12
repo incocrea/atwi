@@ -446,7 +446,15 @@ window.ATWI = window.ATWI || {};
       return '<button class="boton boton--suave" data-accion="p-agregar">' +
                iconoSVG('micro', 20) + 'Agregar algo más</button>';
     }
-    return principal('p-grabar', 'Grabar mi turno', iconoSVG('micro', 24));
+    /* EL BOTÓN DICE DE QUIÉN ES EL TURNO. Jugando los dos en un solo teléfono,
+       el botón es lo último que se mira antes de hablar, y «Grabar mi turno» no
+       dice a quién le toca: el teléfono cambia de manos cada turno. Si no hay
+       nombre todavía se queda la fórmula genérica, que es lo único que se puede
+       decir sin mentir. */
+    var t = turnoActual();
+    var suyo = t.nombre && t.nombre !== 'Tú';
+    return principal('p-grabar', suyo ? 'Turno de ' + t.nombre : 'Grabar mi turno',
+                     iconoSVG('micro', 24));
   }
 
   /* Dos maneras de abrir el micro: empezar de cero y seguir sobre lo ya
