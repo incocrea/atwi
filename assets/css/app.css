@@ -594,16 +594,38 @@ body.app {
   border: 2px solid var(--ctx-fondo);
 }
 
+/* CADA TIPO DE AVISO TIENE SU COLOR. Un buzón donde todo se ve igual obliga a
+   leerlo entero para saber qué hay; con color, «te toca grabar» y «ya hay
+   resultado» se distinguen antes de leer. El color va en el círculo del icono
+   y en la pestaña de la izquierda cuando está sin leer, no en el fondo de la
+   tarjeta: ocho tarjetas de ocho colores serían una feria. */
 .aviso {
-  display: grid; grid-template-columns: 42px 1fr; gap: var(--e-3);
+  display: grid; grid-template-columns: 44px 1fr; gap: var(--e-3);
+  align-items: start;
   width: 100%; padding: var(--e-3) var(--e-4);
   border: 0; border-radius: var(--radio-tarjeta);
   background: var(--superficie); box-shadow: var(--sombra-1);
   text-align: left; font: inherit; color: inherit; cursor: pointer;
+  --av: var(--lavanda); --av-tinte: var(--lavanda-tinte); --av-hondo: var(--lavanda-oscuro);
 }
 .aviso:active { transform: scale(.99); }
-.aviso--nuevo { border-left: 4px solid var(--debate); }
-.aviso__icono { font-size: 1.5rem; align-self: start; }
+.aviso--nuevo { border-left: 4px solid var(--av); }
+
+.aviso[data-tipo="invitacion"] { --av: var(--lavanda); --av-tinte: var(--lavanda-tinte); --av-hondo: var(--lavanda-oscuro); }
+.aviso[data-tipo="tu_turno"]   { --av: var(--debate); --av-tinte: var(--debate-tinte); --av-hondo: var(--debate-oscuro); }
+.aviso[data-tipo="resultado"]  { --av: var(--sol); --av-tinte: var(--sol-tinte); --av-hondo: var(--sol-oscuro); }
+.aviso[data-tipo="revancha"]   { --av: var(--rosa); --av-tinte: var(--rosa-tinte); --av-hondo: var(--rosa-oscuro); }
+.aviso[data-tipo="revision"]   { --av: var(--cielo); --av-tinte: var(--cielo-tinte); --av-hondo: var(--cielo-oscuro); }
+.aviso[data-tipo="acuerdo"]    { --av: var(--negociacion); --av-tinte: var(--negociacion-tinte); --av-hondo: var(--negociacion-oscuro); }
+.aviso[data-tipo="vinculo"]    { --av: var(--uva); --av-tinte: var(--uva-tinte); --av-hondo: var(--uva-oscuro); }
+.aviso[data-tipo="plataforma"] { --av: var(--arena); --av-tinte: var(--arena-tinte); --av-hondo: var(--arena-oscuro); }
+
+.aviso__icono {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: grid; place-items: center;
+  background: var(--av-tinte); color: var(--av-hondo);
+}
+.aviso__icono .ico { width: 28px; height: 28px; }
 .aviso__texto { display: grid; gap: 2px; min-width: 0; }
 .aviso__titulo { font-family: var(--display); font-weight: 800; }
 .aviso__cuerpo { font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4; }

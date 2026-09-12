@@ -552,9 +552,24 @@
   /* ======================================================================
      El buzón
      ====================================================================== */
+  /* Cada tipo lleva el icono ILUSTRADO que le corresponde de verdad, no un
+     emoji del sistema —que cada teléfono dibuja a su manera— ni uno prestado
+     por parecido. Seis de los ocho tipos tienen el suyo:
+
+       invitacion → los bocadillos: alguien te habla
+       tu_turno   → el micrófono: te toca grabar
+       resultado  → la insignia: es el momento de premio
+       revancha   → el mazo: una revancha es un debate
+       revision   → las manos: revisar un acuerdo es negociar
+       acuerdo    → las manos, por lo mismo
+
+     `vinculo` y `plataforma` todavía NO tienen icono ilustrado propio y van con
+     el de línea, que se recolorea solo con el tono del tipo. Generarlos cuesta
+     crédito de la API de imagen, así que no se hace sin autorización. */
   var ICONO_AVISO = {
-    invitacion: '📨', tu_turno: '🎙️', resultado: '🏁', revancha: '⚔️',
-    revision: '🤝', acuerdo: '🤝', vinculo: '💞', plataforma: '📣'
+    invitacion: 'jugar', tu_turno: 'micro', resultado: 'perfil', revancha: 'debate',
+    revision: 'negociacion', acuerdo: 'negociacion',
+    vinculo: 'corazon', plataforma: 'aviso'
   };
 
   function haceCuanto(iso) {
@@ -590,8 +605,9 @@
       }
       caja.innerHTML = '<div class="apilado">' + lista.map(function (a) {
         return '<button class="aviso' + (a.leido ? '' : ' aviso--nuevo') + '" ' +
+            'data-tipo="' + esc(a.tipo) + '" ' +
             (a.debate ? 'data-ir-debate="' + esc(a.debate) + '"' : '') + '>' +
-            '<span class="aviso__icono">' + (ICONO_AVISO[a.tipo] || '•') + '</span>' +
+            '<span class="aviso__icono">' + icono(ICONO_AVISO[a.tipo] || 'aviso', 28) + '</span>' +
             '<span class="aviso__texto">' +
               '<span class="aviso__titulo">' + esc(a.titulo) + '</span>' +
               (a.cuerpo ? '<span class="aviso__cuerpo">' + esc(a.cuerpo) + '</span>' : '') +
