@@ -1465,11 +1465,16 @@ body.app {
   position: absolute; top: var(--sube, 0); bottom: auto;
   height: var(--alto-fig, 120%); width: auto; max-width: none;
 }
-/* Kai es más alto que Luna y se nota, pero poco: un 4%. Más que eso deja de
-   leerse como «es más alto» y pasa a leerse como «están a distinta distancia».
-   El 2% de subida compensa que, midiendo más, su puño caería más abajo: así los
-   dos se encuentran a la misma altura aunque no midan lo mismo. */
-.encuentro__fig[data-quien="kai"] .retrato__fig { --alto-fig: 124%; --sube: -2%; }
+/* Kai es más ALTO que Luna, que no es lo mismo que más grande. La diferencia la
+   hace la POSICIÓN, no el tamaño: los dos se dibujan igual de grandes y él se
+   coloca un 4% más arriba, así que lo que sobresale es la cabeza y no la figura
+   entera. Agrandarlo se probó primero y lo que se leía era que estaba más cerca
+   de la cámara, no que fuera más alto.
+
+   Efecto secundario asumido: su puño queda ese 4% por encima del de Luna. En un
+   choque de puños eso no desentona —tampoco se chocan a escuadra en la vida
+   real— y es el precio de que se le note la altura. */
+.encuentro__fig[data-quien="kai"] .retrato__fig { --sube: -4%; }
 .encuentro__lado--izq .retrato__fig { right: 0; }
 .encuentro__lado--der .retrato__fig { left: 0; }
 .retrato--volteado .retrato__fig { transform: scaleX(-1); }
