@@ -461,9 +461,7 @@
   /* --- Arranque ------------------------------------------------------------ */
   function arrancar() {
     $$('.barra-item').forEach(function (b) {
-      var n = b.dataset.vista;
-      b.innerHTML = icono(n === 'jugar' ? 'jugar' : n === 'catalogo' ? 'catalogo' : n === 'historial' ? 'historial' : 'perfil', 26) +
-        '<span>' + b.dataset.etiqueta + '</span>';
+      b.innerHTML = icono(b.dataset.vista, 30) + '<span>' + b.dataset.etiqueta + '</span>';
     });
     $$('[data-icono]').forEach(function (el) { el.innerHTML = icono(el.dataset.icono, Number(el.dataset.tam) || 22); });
     irA('jugar');

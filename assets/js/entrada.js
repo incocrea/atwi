@@ -1,11 +1,16 @@
 /* ==========================================================================
    ATWI · entrada.js
-   La puerta: registro y entrada. Dos pasos y nada más.
+   La puerta. Registrarse una vez, y entrar siempre.
 
-     1. Nombre y correo  ->  te mandamos un código de seis dígitos
-     2. Código           ->  dentro
+   REGISTRO, tres pasos:
+     1. Nombre y correo            ->  se manda un enlace de acceso al correo
+     2. Se pulsa el enlace         ->  se vuelve aquí ya con sesión abierta
+     3. Se elige una contraseña    ->  y ya está dentro, sin volver a entrar
 
-   NO pedimos contraseña, ni edad, ni teléfono, ni ubicación, ni fecha de
+   ENTRADAS SIGUIENTES: correo y contraseña, que es lo que el navegador sabe
+   guardar y rellenar solo. Nadie teclea códigos cada vez.
+
+   NO pedimos nada más: ni edad, ni teléfono, ni ubicación, ni fecha de
    nacimiento. Cuando haya pagos, los datos de la tarjeta los pide y los guarda
    la pasarela; a ATWI no llegan nunca y no queremos que lleguen.
 
@@ -29,12 +34,15 @@ window.ATWI = window.ATWI || {};
     });
   }
 
+  /* El nombre se escribe antes de salir hacia el correo, así que se guarda para
+     recuperarlo al volver. Si el enlace se abre en otro dispositivo no estará,
+     y entonces se vuelve a pedir en el último paso. */
+  var CLAVE_NOMBRE = 'atwi.nombre.pendiente';
+
   var estado = { paso: 'datos', nombre: '', correo: '', captcha: '', enviando: false };
   var alTerminar = null;
 
-  /* --- Turnstile ------------------------------------------------------------
-     Solo se carga si hay site key. El widget devuelve un token que Supabase
-     valida contra la secret key, que vive en el panel del proyecto y no aquí. */
+  /* --- Turnstile ------------------------------------------------------------ */
   function montarCaptcha() {
     if (!cfg.turnstileSiteKey) return;
     var hueco = $('#captcha');
@@ -44,8 +52,7 @@ window.ATWI = window.ATWI || {};
         var s = document.createElement('script');
         s.id = 'js-turnstile';
         s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        s.async = true;
-        s.defer = true;
+        s.async = true; s.defer = true;
         s.onload = montarCaptcha;
         document.head.appendChild(s);
       }
@@ -57,10 +64,6 @@ window.ATWI = window.ATWI || {};
       language: 'es',
       theme: 'light',
       size: 'flexible',
-      /* La caja gris de Cloudflare no aparece salvo que de verdad haga falta
-         resolver algo. Para casi todo el mundo el token se genera en silencio y
-         la pantalla se queda limpia, que es lo que pide una pantalla de entrada
-         de un juego. Si el visitante parece un robot, entonces sí se dibuja. */
       appearance: 'interaction-only',
       callback: function (t) { estado.captcha = t; },
       'expired-callback': function () { estado.captcha = ''; },
@@ -68,60 +71,112 @@ window.ATWI = window.ATWI || {};
     });
   }
 
-  /* --- Pintado -------------------------------------------------------------- */
+  function refrescarCaptcha() {
+    estado.captcha = '';
+    if (window.turnstile) montarCaptcha();
+  }
+
+  /* --- Piezas de pantalla ---------------------------------------------------- */
+  function cabeza(emoji, titulo, bajada) {
+    return '<div class="centrado" style="padding:var(--e-5) 0 var(--e-5)">' +
+        (emoji === null
+          ? '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="190" height="58" ' +
+            'style="margin:0 auto;height:58px;width:auto">'
+          : '<div style="font-size:3.25rem;line-height:1">' + emoji + '</div>') +
+        '<h1 style="margin-top:var(--e-3)">' + esc(titulo) + '</h1>' +
+        '<p class="chico suave" style="margin-top:var(--e-2)">' + bajada + '</p>' +
+      '</div>';
+  }
+
+  function campo(id, etiqueta, atributos, pista) {
+    return '<label style="display:block">' +
+        '<span class="chico" style="font-weight:700">' + esc(etiqueta) + '</span>' +
+        '<input class="campo" id="' + id + '" ' + atributos + ' style="margin-top:6px">' +
+        (pista ? '<span class="chico tenue" style="display:block;margin-top:6px">' + pista + '</span>' : '') +
+      '</label>';
+  }
+
+  var AVISO_IA =
+    '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
+      '<span>ATWI es un juego y los resultados los genera una inteligencia artificial. ' +
+      'No es terapia ni asesoramiento profesional.</span>' +
+    '</div>';
+
+  var ERROR = '<p class="chico" id="c-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+
+  /* --- Pintado --------------------------------------------------------------- */
   function pintar() {
     var caja = $('#puerta .modal__cuerpo');
-    if (estado.paso === 'datos') {
+    var boton = $('#puerta .modal__pie button');
+    var p = estado.paso;
+
+    if (p === 'datos') {
       caja.innerHTML =
-        '<div class="centrado" style="padding:var(--e-5) 0 var(--e-6)">' +
-          '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="190" height="58" style="margin:0 auto;height:58px;width:auto">' +
-          '<h1 style="margin-top:var(--e-3)">Entra a jugar</h1>' +
-          '<p class="chico suave" style="margin-top:var(--e-2)">' +
-            'Solo el nombre y el correo. Nada más.</p>' +
-        '</div>' +
+        cabeza(null, 'Entra a jugar', 'Solo el nombre y el correo. Nada más.') +
         '<div class="apilado-5">' +
-          '<label style="display:block">' +
-            '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
-            '<input class="campo" id="c-nombre" type="text" autocomplete="given-name" ' +
-              'maxlength="40" placeholder="Tu nombre" value="' + esc(estado.nombre) + '" style="margin-top:6px">' +
-          '</label>' +
-          '<label style="display:block">' +
-            '<span class="chico" style="font-weight:700">Tu correo</span>' +
-            '<input class="campo" id="c-correo" type="email" autocomplete="email" inputmode="email" ' +
-              'placeholder="tu@correo.com" value="' + esc(estado.correo) + '" style="margin-top:6px">' +
-            '<span class="chico tenue" style="display:block;margin-top:6px">' +
-              'Te mandamos un código de seis dígitos. No hay contraseña que recordar.</span>' +
-          '</label>' +
+          campo('c-nombre', '¿Cómo te llamamos?',
+                'type="text" autocomplete="given-name" maxlength="40" placeholder="Tu nombre" value="' + esc(estado.nombre) + '"') +
+          campo('c-correo', 'Tu correo',
+                'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"',
+                'Te mandamos un enlace para entrar. La contraseña la eliges después.') +
           '<div class="captcha"><div id="captcha"></div></div>' +
-          '<p class="chico tenue" id="c-error" style="color:var(--peligro)"></p>' +
+          ERROR +
         '</div>' +
-        '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
-          '<span>ATWI es un juego y los resultados los genera una inteligencia artificial. ' +
-          'No es terapia ni asesoramiento profesional.</span>' +
-        '</div>';
+        '<button class="boton boton--fantasma boton--bloque" data-accion="ir-entrar" style="margin-top:var(--e-4)">' +
+          'Ya tengo cuenta</button>' +
+        AVISO_IA;
       montarCaptcha();
-      setTimeout(function () { var n = $('#c-nombre'); if (n && !estado.nombre) n.focus(); }, 60);
-    } else {
+      enfocar('#c-nombre', !estado.nombre);
+      boton.textContent = 'Mandarme el enlace';
+
+    } else if (p === 'revisa') {
       caja.innerHTML =
-        '<div class="centrado" style="padding:var(--e-5) 0 var(--e-6)">' +
-          '<div style="font-size:3.5rem;line-height:1">📬</div>' +
-          '<h1 style="margin-top:var(--e-3)">Mira tu correo</h1>' +
-          '<p class="chico suave" style="margin-top:var(--e-2)">' +
-            'Mandamos un código de seis dígitos a <strong>' + esc(estado.correo) + '</strong>.</p>' +
+        cabeza('📬', 'Mira tu correo',
+               'Mandamos un enlace a <strong>' + esc(estado.correo) + '</strong>. Ábrelo en este mismo teléfono y entras solo.') +
+        '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
+          '<p class="chico suave">¿No llega? Mira en el correo no deseado. El enlace caduca en una hora.</p>' +
         '</div>' +
-        '<label style="display:block">' +
-          '<span class="chico" style="font-weight:700">El código</span>' +
-          '<input class="campo" id="c-codigo" type="text" inputmode="numeric" autocomplete="one-time-code" ' +
-            'maxlength="6" placeholder="000000" style="margin-top:6px;letter-spacing:.4em;text-align:center;' +
-            'font-family:var(--display);font-size:1.5rem;font-weight:800">' +
-        '</label>' +
-        '<p class="chico tenue" id="c-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
+        ERROR +
         '<button class="boton boton--fantasma boton--bloque" data-accion="otro-correo" style="margin-top:var(--e-4)">' +
           'Usar otro correo</button>';
-      setTimeout(function () { var c = $('#c-codigo'); if (c) c.focus(); }, 60);
+      boton.textContent = 'Volver a mandarlo';
+
+    } else if (p === 'contrasena') {
+      caja.innerHTML =
+        cabeza('🔑', 'Ya estás dentro',
+               'Elige una contraseña para la próxima vez. El navegador te la va a guardar.') +
+        '<div class="apilado-5">' +
+          campo('c-nombre2', 'Tu nombre',
+                'type="text" autocomplete="given-name" maxlength="40" placeholder="Tu nombre" value="' + esc(estado.nombre) + '"') +
+          campo('c-clave', 'Contraseña',
+                'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
+                'Que puedas recordar. No hace falta que sea rara.') +
+          ERROR +
+        '</div>' + AVISO_IA;
+      enfocar('#c-clave', true);
+      boton.textContent = 'Guardar y jugar';
+
+    } else if (p === 'entrar') {
+      caja.innerHTML =
+        cabeza(null, 'Hola otra vez', 'Correo y contraseña y listo.') +
+        '<div class="apilado-5">' +
+          campo('c-correo2', 'Tu correo',
+                'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"') +
+          campo('c-clave2', 'Contraseña', 'type="password" autocomplete="current-password" placeholder="Tu contraseña"') +
+          '<div class="captcha"><div id="captcha"></div></div>' +
+          ERROR +
+        '</div>' +
+        '<button class="boton boton--fantasma boton--bloque" data-accion="ir-datos" style="margin-top:var(--e-4)">' +
+          'Es mi primera vez</button>';
+      montarCaptcha();
+      enfocar('#c-correo2', !estado.correo);
+      boton.textContent = 'Entrar';
     }
-    $('#puerta .modal__pie button').textContent =
-      estado.paso === 'datos' ? 'Mandarme el código' : 'Entrar';
+  }
+
+  function enfocar(sel, si) {
+    if (!si) return;
+    setTimeout(function () { var e = $(sel); if (e) e.focus(); }, 60);
   }
 
   function error(texto) {
@@ -129,60 +184,88 @@ window.ATWI = window.ATWI || {};
     if (e) e.textContent = texto || '';
   }
 
-  function ocupado(si) {
+  function ocupado(si, textoQuieto) {
     estado.enviando = si;
     var b = $('#puerta .modal__pie button');
-    if (b) { b.disabled = si; b.textContent = si ? 'Un momento…' : (estado.paso === 'datos' ? 'Mandarme el código' : 'Entrar'); }
+    if (b) { b.disabled = si; b.textContent = si ? 'Un momento…' : textoQuieto; }
   }
 
-  /* --- Pasos ---------------------------------------------------------------- */
-  function mandarCodigo() {
-    var nombre = ($('#c-nombre').value || '').trim();
-    var correo = ($('#c-correo').value || '').trim().toLowerCase();
+  function valeCorreo(c) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c); }
+
+  /* --- Acciones --------------------------------------------------------------- */
+  function mandarEnlace() {
+    var nombre = ($('#c-nombre') ? $('#c-nombre').value : estado.nombre || '').trim();
+    var correo = ($('#c-correo') ? $('#c-correo').value : estado.correo || '').trim().toLowerCase();
     if (nombre.length < 2) return error('Escribe tu nombre.');
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return error('Ese correo no parece válido.');
-    if (cfg.turnstileSiteKey && !estado.captcha) return error('Marca la casilla de seguridad de aquí arriba.');
+    if (!valeCorreo(correo)) return error('Ese correo no parece válido.');
 
     estado.nombre = nombre;
     estado.correo = correo;
     error('');
+    try { localStorage.setItem(CLAVE_NOMBRE, nombre); } catch (e) {}
 
-    /* Sin servidor: modo local, se entra con el nombre y ya. */
-    if (!auth.hayServidor()) {
+    if (!auth.hayServidor()) {          // modo local: sin backend no hay correo
       datos.actualizar({ nombre: nombre });
       return cerrar();
     }
 
     ocupado(true);
-    auth.pedirCodigo(correo, estado.captcha)
-      .then(function () { estado.paso = 'codigo'; ocupado(false); pintar(); })
+    /* La vuelta es esta misma pantalla. Tiene que estar dada de alta en el panel
+       de Supabase, en Authentication -> URL Configuration -> Redirect URLs. */
+    var vuelta = location.origin + location.pathname;
+    auth.mandarEnlace(correo, estado.captcha, vuelta)
+      .then(function () { estado.paso = 'revisa'; ocupado(false, 'Volver a mandarlo'); pintar(); })
       .catch(function (e) {
-        ocupado(false);
-        if (e.estado === 429) error('Demasiados intentos. Espera unos minutos y vuelve a probar.');
-        else error(e.message || 'No se pudo mandar el código.');
-        if (window.turnstile) { estado.captcha = ''; montarCaptcha(); }
+        ocupado(false, 'Mandarme el enlace');
+        error(e.estado === 429
+          ? 'Demasiados intentos seguidos. Espera unos minutos.'
+          : (e.message || 'No se pudo mandar el enlace.'));
+        refrescarCaptcha();
+      });
+  }
+
+  function guardarContrasena() {
+    var nombre = ($('#c-nombre2').value || '').trim();
+    var clave = $('#c-clave').value || '';
+    if (nombre.length < 2) return error('Escribe tu nombre.');
+    if (clave.length < 8) return error('La contraseña necesita al menos 8 caracteres.');
+    error('');
+    ocupado(true);
+
+    auth.ponerContrasena(clave)
+      .then(function () { return auth.miPerfil(); })
+      .then(function (perfil) { return perfil || auth.crearPerfil(nombre, '🙂'); })
+      .then(function (perfil) {
+        datos.actualizar({ nombre: (perfil && perfil.nombre) || nombre });
+        try { localStorage.removeItem(CLAVE_NOMBRE); } catch (e) {}
+        ocupado(false, '');
+        cerrar();
+      })
+      .catch(function (e) {
+        ocupado(false, 'Guardar y jugar');
+        error(e.message || 'No se pudo guardar.');
       });
   }
 
   function entrar() {
-    var codigo = ($('#c-codigo').value || '').replace(/\D/g, '');
-    if (codigo.length !== 6) return error('El código son seis dígitos.');
+    var correo = ($('#c-correo2').value || '').trim().toLowerCase();
+    var clave = $('#c-clave2').value || '';
+    if (!valeCorreo(correo)) return error('Ese correo no parece válido.');
+    if (!clave) return error('Escribe tu contraseña.');
     error('');
     ocupado(true);
-    auth.verificarCodigo(estado.correo, codigo)
+
+    auth.entrarConContrasena(correo, clave, estado.captcha)
       .then(function () { return auth.miPerfil(); })
       .then(function (perfil) {
-        if (perfil) return perfil;
-        return auth.crearPerfil(estado.nombre, '🙂');
-      })
-      .then(function (perfil) {
-        datos.actualizar({ nombre: (perfil && perfil.nombre) || estado.nombre });
-        ocupado(false);
+        datos.actualizar({ nombre: (perfil && perfil.nombre) || '' });
+        ocupado(false, '');
         cerrar();
       })
       .catch(function (e) {
-        ocupado(false);
-        error(e.estado === 403 || e.estado === 401 ? 'Código incorrecto o caducado.' : (e.message || 'No se pudo entrar.'));
+        ocupado(false, 'Entrar');
+        error(e.estado === 400 ? 'Correo o contraseña incorrectos.' : (e.message || 'No se pudo entrar.'));
+        refrescarCaptcha();
       });
   }
 
@@ -192,15 +275,19 @@ window.ATWI = window.ATWI || {};
     if (alTerminar) alTerminar();
   }
 
-  /* --- Eventos --------------------------------------------------------------- */
+  /* --- Eventos ---------------------------------------------------------------- */
   document.addEventListener('click', function (ev) {
     var acc = ev.target.closest('#puerta [data-accion]');
-    if (!acc) return;
-    if (estado.enviando) return;
-    if (acc.dataset.accion === 'continuar') {
-      if (estado.paso === 'datos') mandarCodigo(); else entrar();
-    } else if (acc.dataset.accion === 'otro-correo') {
-      estado.paso = 'datos'; estado.captcha = ''; pintar();
+    if (!acc || estado.enviando) return;
+    var a = acc.dataset.accion;
+    if (a === 'continuar') {
+      if (estado.paso === 'datos' || estado.paso === 'revisa') mandarEnlace();
+      else if (estado.paso === 'contrasena') guardarContrasena();
+      else if (estado.paso === 'entrar') entrar();
+    } else if (a === 'otro-correo' || a === 'ir-datos') {
+      estado.paso = 'datos'; refrescarCaptcha(); pintar();
+    } else if (a === 'ir-entrar') {
+      estado.paso = 'entrar'; refrescarCaptcha(); pintar();
     }
   });
 
@@ -208,14 +295,12 @@ window.ATWI = window.ATWI || {};
     if (ev.key !== 'Enter') return;
     var p = $('#puerta');
     if (!p || p.hidden || estado.enviando) return;
-    if (ev.target.tagName === 'INPUT') { ev.preventDefault(); }
-    if (estado.paso === 'datos') mandarCodigo(); else entrar();
+    if (ev.target.tagName === 'INPUT') ev.preventDefault();
+    var b = $('#puerta .modal__pie button');
+    if (b) b.click();
   });
 
-  /* Salida de desarrollo: con ?local=1 se salta la puerta y se entra con un
-     nombre de prueba, para poder revisar el diseño de las pantallas sin gastar
-     un correo en cada recarga. SOLO funciona en localhost: en el sitio
-     publicado esta condición es falsa y la puerta se comporta normal. */
+  /* --- Arranque ---------------------------------------------------------------- */
   function modoPruebas() {
     var enLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
     return enLocal && /[?&]local=1/.test(location.search);
@@ -226,19 +311,44 @@ window.ATWI = window.ATWI || {};
     exigir: function (hecho) {
       alTerminar = hecho;
       var p = $('#puerta');
+
       if (modoPruebas()) {
         if (!datos.perfil().nombre) datos.actualizar({ nombre: 'Prueba' });
         p.hidden = true;
         return hecho();
       }
+
       if (!auth.hayServidor()) {
-        /* Modo local: con que haya nombre guardado basta. */
         if (datos.perfil().nombre) { p.hidden = true; return hecho(); }
-        p.hidden = false; pintar(); return;
+        p.hidden = false; estado.paso = 'datos'; pintar(); return;
       }
+
+      /* ¿Venimos de pulsar el enlace del correo? */
+      var recogida = null;
+      var fallo = null;
+      try { recogida = auth.recogerDelEnlace(); }
+      catch (e) { fallo = e.message; }
+
+      if (recogida) {
+        try { estado.nombre = localStorage.getItem(CLAVE_NOMBRE) || ''; } catch (e) {}
+        p.hidden = false;
+        estado.paso = 'contrasena';
+        pintar();
+        /* El correo llega dentro del usuario, no del fragmento. */
+        auth.quienSoy().then(function (u) { if (u) estado.correo = u.email || ''; });
+        return;
+      }
+
       auth.listo().then(function (s) {
         if (s) { p.hidden = true; return hecho(); }
-        p.hidden = false; pintar();
+        p.hidden = false;
+        estado.paso = 'datos';
+        pintar();
+        if (fallo) {
+          error(/invalid or has expired/i.test(fallo)
+            ? 'El enlace caducó. Pide otro y ábrelo antes de una hora.'
+            : fallo);
+        }
       });
     }
   };

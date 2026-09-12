@@ -32,8 +32,26 @@ window.ATWI = window.ATWI || {};
     aviso: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.8v4.6M12 15.9v.2"/>'
   };
 
-  /** Devuelve el SVG de un icono. `tam` en píxeles, 24 por defecto. */
+  /* Iconos ILUSTRADOS. Son PNG de pegatina generados con la API de imagen y
+     recortados de una lámina, para que salgan todos de la misma mano. Los SVG
+     de línea de abajo se quedan solo para lo que todavía no está ilustrado:
+     flechas, cerrar y aviso, que son cromo de interfaz y no iconografía.
+     La ruta es relativa a /app/, que es la única pantalla que los usa. */
+  var ILUSTRADOS = ['jugar', 'catalogo', 'historial', 'perfil',
+                    'debate', 'negociacion', 'micro', 'mas'];
+
+  /** Devuelve el icono ilustrado si existe, y si no el SVG de línea. */
   window.ATWI.icono = function (nombre, tam) {
+    if (ILUSTRADOS.indexOf(nombre) !== -1) {
+      var t = tam || 24;
+      return '<img class="ico" src="../assets/img/iconos/' + nombre + '.png" alt="" ' +
+             'width="' + t + '" height="' + t + '" loading="lazy" decoding="async">';
+    }
+    return window.ATWI.iconoSVG(nombre, tam);
+  };
+
+  /** El juego de líneas, para lo que aún no tiene ilustración. */
+  window.ATWI.iconoSVG = function (nombre, tam) {
     var d = TRAZOS[nombre];
     if (!d) return '';
     var t = tam || 24;

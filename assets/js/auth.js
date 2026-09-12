@@ -7,8 +7,9 @@
    ubicación, ni fecha de nacimiento. Cuando haya pagos, los datos de pago los
    pide y los guarda la pasarela (Stripe), nunca ATWI.
 
-   CÓMO ENTRA LA GENTE: código de seis dígitos al correo. Sin contraseña, que
-   es una cosa menos que olvidar y una cosa menos que se nos pueda filtrar.
+   CÓMO ENTRA LA GENTE: la primera vez, un enlace al correo. Al volver de ese
+   enlace se elige contraseña y se queda dentro. Las siguientes veces, correo y
+   contraseña, que es lo que el navegador guarda y rellena solo.
    ========================================================================== */
 window.ATWI = window.ATWI || {};
 
@@ -79,30 +80,86 @@ window.ATWI = window.ATWI || {};
     dentro: function () { return Boolean(sesion() && sesion().access_token); },
 
     /**
-     * Paso 1: pide el código de seis dígitos.
-     * @param correo      dirección de correo
+     * REGISTRO, paso 1: manda al correo un enlace de acceso.
+     * Al pulsarlo se vuelve aquí ya con sesión, y entonces se define la
+     * contraseña. A partir de ahí se entra con correo y contraseña, que es lo
+     * que el navegador sabe guardar y rellenar solo.
+     *
+     * @param correo       dirección de correo
      * @param captchaToken token de Turnstile, si está activado en el panel
+     * @param vuelta       a dónde vuelve el enlace
      */
-    pedirCodigo: function (correo, captchaToken) {
+    mandarEnlace: function (correo, captchaToken, vuelta) {
       var cuerpo = { email: correo, create_user: true };
+      if (vuelta) cuerpo.options = { email_redirect_to: vuelta };
       if (captchaToken) cuerpo.gotrue_meta_security = { captcha_token: captchaToken };
-      return pedir('/auth/v1/otp', {
+      return pedir('/auth/v1/otp?redirect_to=' + encodeURIComponent(vuelta || ''), {
         method: 'POST',
         headers: cabeceras(false),
         body: JSON.stringify(cuerpo)
       });
     },
 
-    /** Paso 2: canjea el código por una sesión. */
-    verificarCodigo: function (correo, codigo) {
-      return pedir('/auth/v1/verify', {
+    /**
+     * REGISTRO, paso 2: el enlace del correo vuelve con la sesión colgada del
+     * fragmento de la URL. Se recoge, se guarda y se limpia la barra de
+     * direcciones, para que la sesión no se quede escrita donde cualquiera la
+     * pueda copiar del historial.
+     */
+    recogerDelEnlace: function () {
+      var h = (location.hash || '').replace(/^#/, '');
+      if (!h) return null;
+      var d = {};
+      h.split('&').forEach(function (par) {
+        var i = par.indexOf('=');
+        if (i > 0) d[decodeURIComponent(par.slice(0, i))] = decodeURIComponent(par.slice(i + 1));
+      });
+      if (d.error_description) {
+        history.replaceState(null, '', location.pathname + location.search);
+        var e = new Error(d.error_description);
+        e.esDelEnlace = true;
+        throw e;
+      }
+      if (!d.access_token) return null;
+      var s = {
+        access_token: d.access_token,
+        refresh_token: d.refresh_token,
+        token_type: d.token_type,
+        expires_in: Number(d.expires_in || 3600),
+        expires_at: Math.floor(Date.now() / 1000) + Number(d.expires_in || 3600),
+        user: null
+      };
+      guardarSesion(s);
+      history.replaceState(null, '', location.pathname + location.search);
+      return s;
+    },
+
+    /** Quién es el dueño de la sesión actual. Hace falta tras el enlace. */
+    quienSoy: function () {
+      var s = sesion();
+      if (!s) return Promise.resolve(null);
+      return pedir('/auth/v1/user', { method: 'GET', headers: cabeceras(true) })
+        .then(function (u) { s.user = u; guardarSesion(s); return u; });
+    },
+
+    /** REGISTRO, paso 3: define la contraseña y deja la sesión abierta. */
+    ponerContrasena: function (clave) {
+      return pedir('/auth/v1/user', {
+        method: 'PUT',
+        headers: cabeceras(true),
+        body: JSON.stringify({ password: clave })
+      });
+    },
+
+    /** Entradas siguientes: correo y contraseña, que el navegador ya rellena. */
+    entrarConContrasena: function (correo, clave, captchaToken) {
+      var cuerpo = { email: correo, password: clave };
+      if (captchaToken) cuerpo.gotrue_meta_security = { captcha_token: captchaToken };
+      return pedir('/auth/v1/token?grant_type=password', {
         method: 'POST',
         headers: cabeceras(false),
-        body: JSON.stringify({ email: correo, token: codigo, type: 'email' })
-      }).then(function (s) {
-        guardarSesion(s);
-        return s;
-      });
+        body: JSON.stringify(cuerpo)
+      }).then(function (s) { guardarSesion(s); return s; });
     },
 
     /** Renueva la sesión si está a punto de caducar. */

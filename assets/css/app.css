@@ -415,3 +415,24 @@ body.app {
 .revelacion__frase--hecha { gap: .35em; }
 .revelacion__frase--hecha .fm__ini { font-size: 1.7em; text-shadow: none; animation: none; }
 .revelacion__frase--hecha .fm__resto { animation: none; }
+
+/* --- Iconos ilustrados --------------------------------------------------------
+   Son PNG a todo color, así que el estado no se puede cambiar recoloreando como
+   con un SVG de línea. La pestaña inactiva se apaga con saturación y opacidad, y
+   la activa recupera el color entero y crece un punto. Un solo archivo por icono. */
+.ico { display: block; object-fit: contain; }
+
+.barra-item .ico {
+  width: 30px;
+  height: 30px;
+  filter: grayscale(.55) opacity(.55);
+  transition: filter var(--dur-corta) var(--suave), transform var(--dur-corta) var(--suave);
+}
+.barra-item[aria-current="page"] .ico {
+  filter: none;
+  transform: translateY(-1px) scale(1.1);
+}
+
+/* En botones y tarjetas van a todo color desde el principio */
+.boton .ico { width: 22px; height: 22px; }
+.modo__icono .ico { width: 38px; height: 38px; }
