@@ -158,6 +158,11 @@
     if (!m) return;
     m.hidden = false;
     pilaModales.push(id);
+    /* EL ÚLTIMO EN ABRIRSE ES EL QUE SE VE. Sin esto mandaba el orden del HTML,
+       y como `m-preparar` está escrito después que `m-perfil`, la ficha del
+       invitado se abría DETRÁS de «Antes de empezar»: respondía a los toques
+       pero no se veía. El orden de apilado lo decide quien abre, no el archivo. */
+    m.style.zIndex = 40 + pilaModales.length;
     var foco = $('.modal__cuerpo', m) || m;
     foco.scrollTop = 0;
     entrar();
@@ -168,6 +173,7 @@
     var m = document.getElementById(id);
     if (!m) return;
     m.hidden = true;
+    m.style.zIndex = '';
     pilaModales = pilaModales.filter(function (x) { return x !== id; });
   }
 
@@ -631,23 +637,32 @@
       ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
       : 'Tu ficha';
 
+    /* El retrato va AL LADO del nombre, no centrado encima: centrado se comía
+       unos 120 px de alto y obligaba a hacer scroll en una pantalla que se
+       decide de un vistazo. Es además el mismo patrón que la ficha del
+       invitado, donde el círculo ya vive junto a su campo. */
     $('#m-perfil .modal__cuerpo').innerHTML =
-      '<div class="centrado" style="padding-bottom:var(--e-4)">' +
-        '<span class="avatar ficha__avatar" id="f-muestra" ' +
-          'style="background:' + esc(colorElegido) + ';margin:0 auto">' + esc(fichaElegida) + '</span>' +
-      '</div>' +
-      '<div class="apilado-5">' +
+      '<div class="apilado-5" style="padding-top:var(--e-3)">' +
 
         (deInvitado
-          ? '<p class="chico suave">Esta ficha es solo para jugar aquí: no es una cuenta ' +
-            'y no tiene historial propio. Se recuerda en este teléfono para que la ' +
-            'próxima vez salga igual.</p>'
+          /* También en fila, por lo mismo: centrado y con tres renglones de
+             explicación debajo, esta pantalla pedía scroll. */
+          ? '<div class="con-ficha">' +
+              '<span class="avatar avatar--retrato" id="f-muestra" ' +
+                'style="background:' + esc(colorElegido) + '">' + esc(fichaElegida) + '</span>' +
+              '<span class="chico suave">Solo para jugar aquí: no es una cuenta ni tiene ' +
+                'historial. Se recuerda en este teléfono.</span>' +
+            '</div>'
           : '<label style="display:block">' +
               '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
-              '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
-                'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
+              '<span class="con-ficha" style="margin-top:6px">' +
+                '<span class="avatar avatar--retrato" id="f-muestra" ' +
+                  'style="background:' + esc(colorElegido) + '">' + esc(fichaElegida) + '</span>' +
+                '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
+                  'placeholder="Tu nombre" value="' + esc(p.nombre) + '">' +
+              '</span>' +
               '<span class="chico tenue" style="display:block;margin-top:6px">' +
-                'Es el nombre que ve la otra persona en la sala y en el resultado.</span>' +
+                'Así te ve la otra persona en la sala y en el resultado.</span>' +
             '</label>') +
 
         '<div>' +
@@ -665,12 +680,16 @@
           '<span class="chico" style="font-weight:700">' +
             (deInvitado ? 'El color de su ficha' : 'El color de tu ficha') + '</span>' +
           '<div class="colores" style="margin-top:var(--e-2)">' +
+            /* El círculo va en un <i> dentro del botón: así el punto de color
+               puede ser pequeño —caben los diez en una fila— mientras el área
+               que se toca sigue siendo alta y cómoda. */
             COLORES_FICHA.map(function (c, i) {
               var esMio = c.toLowerCase() === vetado;
-              return '<button class="color' + (esMio ? ' color--tomado' : '') + '" data-color="' + c + '" ' +
-                'style="background:' + c + '"' + (esMio ? ' disabled' : '') +
+              return '<button class="color' + (esMio ? ' color--tomado' : '') + '" data-color="' + c + '"' +
+                (esMio ? ' disabled' : '') +
                 (c.toLowerCase() === colorElegido.toLowerCase() ? ' aria-pressed="true"' : '') +
-                ' aria-label="' + (esMio ? 'Ese color ya es el tuyo' : 'Color ' + (i + 1)) + '"></button>';
+                ' aria-label="' + (esMio ? 'Ese color ya es el tuyo' : 'Color ' + (i + 1)) + '">' +
+                '<i style="background:' + c + '"></i></button>';
             }).join('') +
           '</div>' +
           (deInvitado

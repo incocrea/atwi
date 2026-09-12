@@ -803,17 +803,28 @@ body.app {
 }
 .dibujo[aria-pressed="true"] { border-color: var(--lavanda); background: var(--lavanda-tinte); }
 
-/* Los diez colores de ficha. El aro blanco de dentro es el mismo recurso que
-   usan los iconos ilustrados: recorta el color del fondo, sea cual sea. */
-.colores { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--e-2); }
+/* Los diez colores de ficha, EN UNA SOLA FILA. En dos filas la pantalla de la
+   ficha pedía scroll, y una pantalla que se decide de un vistazo no debería.
+
+   El punto de color es pequeño, pero el botón que lo contiene es alto: lo que
+   se toca no es el círculo sino los 44 px de alto del botón. Encogerlo todo
+   habría dejado dianas de 26 px, que es la mitad de lo que hace falta. */
+.colores { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
 .color {
-  aspect-ratio: 1; border: 0; border-radius: 50%; cursor: pointer; min-width: 0;
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .85), var(--sombra-1);
+  height: 44px; min-width: 0; padding: 0; border: 0;
+  background: none; cursor: pointer;
+  display: grid; place-items: center;
   transition: transform var(--dur-corta) var(--suave);
 }
-.color:active { transform: scale(.9); }
-.color[aria-pressed="true"] {
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .9), 0 0 0 3px var(--tinta);
+.color i {
+  width: 100%; max-width: 28px; aspect-ratio: 1; border-radius: 50%;
+  /* El aro blanco es el mismo recurso que usan los iconos ilustrados: recorta
+     el color del fondo, sea cual sea. */
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .85), var(--sombra-1);
+}
+.color:active { transform: scale(.88); }
+.color[aria-pressed="true"] i {
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .9), 0 0 0 3px var(--tinta);
 }
 
 /* --- Escribir un tema ---------------------------------------------------------- */
@@ -1070,6 +1081,8 @@ body.app {
 .con-ficha { display: flex; align-items: center; gap: var(--e-3); }
 .con-ficha .campo { flex: 1; min-width: 0; }
 .avatar--chico { width: 48px; height: 48px; font-size: 1.4rem; border: 0; cursor: pointer; padding: 0; }
+/* El retrato en vivo de la ficha, al lado del campo del nombre. */
+.avatar--retrato { width: 56px; height: 56px; font-size: 1.6rem; }
 .avatar--mini { width: 26px; height: 26px; font-size: .85rem; box-shadow: inset 0 0 0 2px rgba(255,255,255,.55); }
 
 /* Con quién se jugó antes en este teléfono. No son cuentas: son fichas. */
