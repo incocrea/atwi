@@ -25,6 +25,8 @@
     });
   }
 
+  var DESCARGO = cfg.descargo;
+
   /* ======================================================================
      Navegación entre vistas
      ====================================================================== */
@@ -213,10 +215,7 @@
 
       '<div class="aviso-ia" style="margin-top:var(--e-5)">' +
         icono('aviso', 20) +
-        '<span>ATWI es un juego que se apoya en IA para facilitar la resolución de ' +
-        'conflictos o promover el ejercicio de la argumentación respetuosa. Aunque puede ' +
-        'ayudar a mediar diferencias y lograr acuerdos, no reemplaza la terapia ni ' +
-        'asesoramiento profesional.</span>' +
+        '<span>' + DESCARGO + '</span>' +
       '</div>' +
 
       /* PROVISIONAL: para probar el efecto de revelación mientras no hay partida

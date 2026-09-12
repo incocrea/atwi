@@ -11,12 +11,27 @@
 window.ATWI = window.ATWI || {};
 
 window.ATWI.config = {
+  /* EL DESCARGO, EN UN SOLO SITIO. Sale en la portada del juego y en la puerta,
+     y tener dos redacciones distintas según por dónde se entre sería peor que no
+     tener ninguna. Vive aquí, y no en app.js, porque entrada.js se carga antes
+     que app.js y también lo necesita.
+
+     El gancho del final va aparte y se pinta más grande y en cálido porque hace
+     otro trabajo: el descargo protege, el gancho explica de qué va esto en una
+     línea, que es lo que se repite en una cena. */
+  descargo:
+    'ATWI se apoya en modelos de IA para facilitar la resolución de conflictos y ' +
+    'promover el ejercicio del debate de forma divertida. Aunque puede ayudar a mediar ' +
+    'diferencias y lograr acuerdos, no reemplaza la terapia ni asesoramiento profesional.' +
+    '<span class="aviso-ia__gancho">«Es como el UNO, pero en vez de provocar ' +
+    'discusiones busca solucionarlas.»</span>',
+
   /* Sello de la versión publicada. En el repositorio va VACÍO a propósito:
      lo rellena tools/publicar.ps1 con el SHA corto del commit, en la copia que
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'fda9683',
+  version: '980bd57',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

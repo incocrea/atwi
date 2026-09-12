@@ -345,6 +345,20 @@ body.app {
   font-size: var(--t-chico);
   font-weight: 600;
 }
+.aviso-ia svg { flex: none; }
+
+/* El gancho: la frase del final, la que se cuenta en una cena. Va aparte del
+   descargo —en su renglón, más grande y en cálido— porque hace otro trabajo:
+   el descargo protege, el gancho explica de qué va esto en una línea. */
+.aviso-ia__gancho {
+  display: block;
+  margin-top: var(--e-3);
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--t-h3);
+  line-height: 1.3;
+  color: var(--gancho);
+}
 
 /* --- La revelación del resultado -------------------------------------------
    Ocupa el marco entero y va en CÁLIDO: es el único momento de la app que

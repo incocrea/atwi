@@ -41,6 +41,11 @@
   --uva-tinte: #F3E6FB;
   --uva-oscuro: #7B3BA0;
   --rosa-tinte: #FCE6EE;
+
+  /* El coral del gancho del descargo. Es el del modo Debate llevado un paso
+     más oscuro: a #C75B33 daba 3,64 sobre el tinte lavanda del aviso, por
+     debajo del 4,5 que exige un cuerpo de 17 px aunque vaya en negrita. */
+  --gancho: #A8431F;
   --menta-clara: #8FD9C7;
   --rosa: #EE9BBE;
   --rosa-oscuro: #E4658F;

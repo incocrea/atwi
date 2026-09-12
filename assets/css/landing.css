@@ -124,6 +124,17 @@ body.landing {
   font-size: var(--t-chico);
 }
 .pie__enlaces { display: flex; flex-wrap: wrap; gap: var(--e-4); margin-bottom: var(--e-3); }
+.pie p { max-width: 46rem; }
+/* El gancho del pie: la frase que se repite en una cena. Más grande y en
+   cálido, porque hace otro trabajo que el descargo que va encima. */
+.pie__gancho {
+  margin: var(--e-3) 0;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: var(--t-h3);
+  line-height: 1.3;
+  color: var(--gancho);
+}
 
 /* --- La barra inferior NO existe en la landing ------------------------------- */
 body.landing .barra { display: none; }
