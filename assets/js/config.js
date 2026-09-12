@@ -33,7 +33,7 @@ window.ATWI.config = {
       partido: ['Negoc', 'IA', 'ción'],
       que: 'Un mediador IA escucha ambas posiciones, consulta qué dicen los expertos ' +
            'sobre el tema y propone 3 posibles acuerdos.',
-      clave: 'Si ninguno satisface a las dos partes, se vale seguir en desacuerdo y ' +
+      clave: 'Si ningún acuerdo satisface a las dos partes, se vale seguir en desacuerdo y ' +
              'reintentar la negociación más adelante.'
     }
   },
@@ -61,7 +61,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '3f46dff',
+  version: 'fc6b5b3',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
