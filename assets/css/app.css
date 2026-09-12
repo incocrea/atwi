@@ -272,9 +272,12 @@ body.app {
   display: grid; place-items: center;
   background: var(--superficie); box-shadow: var(--sombra-1);
 }
-.carta-modo__nombre {
-  font-family: var(--display); font-weight: 800; font-size: var(--t-h2);
-  line-height: 1.1; min-width: 0;
+/* El nombre del modo va dibujado, no escrito. Se le fija el ALTO y no el ancho
+   porque las dos piezas no miden lo mismo de largo y así quedan del mismo
+   tamaño aparente; `min-width: 0` para que el flex pueda encogerla antes que
+   sacarla por el costado. */
+.carta-modo__rotulo {
+  height: 62px; width: auto; max-width: 100%; min-width: 0; display: block;
 }
 /* Las dos salidas, centradas abajo y del mismo tamaño: una lleva a entender y
    la otra a jugar, y ninguna de las dos es la equivocada. */
@@ -294,13 +297,18 @@ body.app {
 .carta-modo--debate .carta-modo__explica { color: #A8431F; border-color: var(--debate); }
 .carta-modo--negociacion .carta-modo__explica { color: #176450; border-color: var(--negociacion); }
 
-/* Lo que de verdad hay que entender de cada modo, resaltado dentro del texto:
-   en Controversia, que no se juzga quién tiene razón; en Negociación, que no
-   estar de acuerdo también es un final válido. Va en el tono hondo del modo
-   —no en otro color— para que destaque sin salirse de la tarjeta. */
-.resalte { font-weight: 800; }
-.explica--debate .resalte { color: #A8431F; }
-.explica--negociacion .resalte { color: #176450; }
+/* Lo que de verdad hay que entender de cada modo: en Controversia, que no se
+   juzga quién tiene razón; en Negociación, que no estar de acuerdo también es
+   un final válido. Va en párrafo aparte, con el doble de aire encima, entre
+   comillas y en cursiva —como una cita— y tres píxeles más grande que el resto.
+   Dentro del párrafo se leía de corrido y se perdía. */
+.explica__clave {
+  margin-top: var(--e-5);
+  font-size: 1.375rem; line-height: 1.4; font-style: italic; font-weight: 800;
+  max-width: 26rem;
+}
+.explica--debate .explica__clave { color: #A8431F; }
+.explica--negociacion .explica__clave { color: #176450; }
 
 /* --- La explicación de un modo ------------------------------------------------
    Hace juego con su carta: mismo disco blanco, mismo nombre, mismo color de
@@ -311,7 +319,10 @@ body.app {
   display: grid; place-items: center;
   background: var(--superficie); box-shadow: var(--sombra-2);
 }
-.explica__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-h1); line-height: 1.1; }
+/* El nombre del modo va dibujado. `max-width: 100%` no es adorno: sin él, en
+   un lienzo estrecho la pieza se sale por el costado, y de lado no scrollea
+   nada. */
+.explica__rotulo { display: block; width: 15rem; max-width: 100%; height: auto; }
 .explica__que {
   /* 19 px: tres más que el cuerpo normal. Es la única pantalla que existe para
      leerse, así que puede permitirse el tamaño. */
@@ -636,14 +647,16 @@ body.app {
   font-size: 1.28rem;
 }
 
-.fm__palabra { display: inline-flex; align-items: center; gap: .06em; flex: none; }
+.fm__palabra { display: inline-flex; align-items: flex-end; flex: none; }
 
-/* La inicial es la letra del logotipo, no una letra de la tipografía. */
-.fm__ini {
-  height: 2.3em;
+/* El tramo es una pieza dibujada, no texto. Todas las piezas se recortaron
+   sobre un lienzo de la misma altura y apoyadas abajo, así que con darles la
+   misma altura aquí ya caen sobre la misma línea base: no hay que alinearlas
+   una a una ni corregir nada por tramo. */
+.fm__tramo {
+  height: 2.6em;
   width: auto;
   display: block;
-  align-self: center;
   filter: drop-shadow(0 3px 9px var(--veredicto-sombra));
 }
 
@@ -654,25 +667,23 @@ body.app {
   display: grid; place-items: center; pointer-events: none;
 }
 .fm__hero {
-  display: inline-flex; align-items: center; gap: .06em;
-  font-family: var(--display); font-weight: 800; white-space: nowrap;
-  /* Un 30% más que antes (2,2/13/3,6). El tramo largo, «Winner», es el que
-     manda cuánto se puede crecer: medido a 375 px de lienzo ocupa 261 y el
-     más ancho llega a 318 de 375, así que ninguno se sale. */
+  display: inline-flex; align-items: flex-end;
+  white-space: nowrap;
+  /* El tramo largo, «Winner», es el que manda cuánto se puede crecer: es casi
+     tres veces más ancho que alto, así que a 375 px de lienzo ocupa 254 y
+     ninguno se sale. En escritorio el juego vive en un marco de 430, y por eso
+     el tope no es `vw` a secas sino un clamp. */
   font-size: clamp(2.86rem, 16.9vw, 4.68rem);
   transform-origin: 50% 50%; will-change: transform;
   animation: hero-entra 260ms var(--rebote) both;
 }
-.fm__hero .fm__ini { height: 1.55em; filter: drop-shadow(0 8px 20px var(--veredicto-sombra)); }
-.fm__hero .fm__resto { font-size: .78em; opacity: .88; }
+/* 1,6em: el tramo largo, «Winner», es casi tres veces más ancho que alto, así
+   que a 375 px de lienzo ocupa 302 y deja 36 a cada lado. Más grande se sale. */
+.fm__hero .fm__tramo { height: 1.6em; filter: drop-shadow(0 8px 20px var(--veredicto-sombra)); }
 
 @keyframes hero-entra {
   from { opacity: 0; transform: scale(.55); }
   to { opacity: 1; transform: scale(1); }
-}
-.fm__resto {
-  font-size: .82em;
-  opacity: .72;
 }
 
 /* Ya revelado NO cambia NADA: ni tamaño, ni sitio, ni color. Se probó a

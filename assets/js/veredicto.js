@@ -33,19 +33,24 @@ window.ATWI = window.ATWI || {};
   function alAzar(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
 
   /* La frase del resultado es también el nombre de la app: And-The-Winner-Is.
-     La inicial NO es tipografía, es la letra de verdad del logotipo recortada
-     de su lámina, y por eso la frase se lee como el nombre.
+     No es tipografía: cada tramo es una pieza dibujada, con su inicial de color
+     y su perfil blanco, recortada de su lámina. Por eso la frase se lee como el
+     nombre y no como una frase cualquiera puesta en negrita.
+
+     Van en CUATRO piezas y no en una sola por la entrada: cada tramo vuela por
+     separado, así que tienen que ser cuatro elementos con su propia caja. Las
+     cuatro se dibujaron con la misma altura de caja y se recortaron sobre un
+     lienzo de la misma altura, apoyadas abajo, de modo que darles a todas la
+     misma altura en CSS las deja sobre la misma línea base.
 
      Se pinta siempre montada y en una sola línea: partirla en dos renglones
-     rompe el logotipo. El drama lo pone la entrada, no el escalonado de las
-     letras. */
+     rompe el logotipo. El drama lo pone la entrada, no el escalonado. */
   function fraseMarca() {
     var partes = cfg.veredicto.frase;
     if (typeof partes === 'string') return esc(partes);   // por si vuelve a ser texto plano
     return partes.map(function (par) {
       return '<span class="fm__palabra">' +
-          '<img class="fm__ini" src="../assets/img/letras/' + par[0] + '.png" alt="' + esc(par[0]) + '">' +
-          '<span class="fm__resto">' + esc(par[1]) + '</span>' +
+          '<img class="fm__tramo" src="../assets/img/atwi/' + par[0] + '.png" alt="' + esc(par[1]) + '">' +
         '</span>';
     }).join('');
   }
@@ -78,16 +83,28 @@ window.ATWI = window.ATWI || {};
     if (!f) return;
     f.style.fontSize = '';
     var hueco = f.clientWidth;
-    var natural = f.scrollWidth;
-    if (!hueco || !natural) return;
+    var tramos = [].slice.call(f.querySelectorAll('.fm__palabra'));
+    if (!hueco || !tramos.length) return;
+
+    /* El ancho real se suma a mano, tramo a tramo. `scrollWidth` NO sirve: la
+       fila va centrada, y lo que se sale por la izquierda no entra en esa
+       cuenta. Mide de menos, el factor sale grande y la frase acaba
+       desbordando por los dos costados: medido, 399 px de contenido en 339 de
+       hueco con scrollWidth diciendo 369. */
+    var separacion = parseFloat(getComputedStyle(f).columnGap) || 0;
+    var natural = tramos.reduce(function (suma, t) {
+      return suma + t.getBoundingClientRect().width;
+    }, 0) + separacion * (tramos.length - 1);
+    if (!natural) return;
+
     var base = parseFloat(getComputedStyle(f).fontSize) || 16;
     f.style.fontSize = (base * (hueco / natural)).toFixed(2) + 'px';
   }
 
-  /* Las iniciales son imágenes: medir antes de que carguen da un ancho falso y
+  /* Los tramos son imágenes: medir antes de que carguen da un ancho falso y
      la frase se queda a medias o se sale. */
   function conLasLetrasPuestas(p) {
-    var imgs = [].slice.call(p.querySelectorAll('.fm__ini'));
+    var imgs = [].slice.call(p.querySelectorAll('.fm__tramo'));
     return Promise.all(imgs.map(function (im) {
       if (im.complete && im.naturalWidth) return null;
       return new Promise(function (listo) {

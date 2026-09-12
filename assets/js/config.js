@@ -25,16 +25,16 @@ window.ATWI.config = {
       partido: ['Controvers', 'IA', ''],
       que: '¿No se ponen de acuerdo? ¡Que la ciencia decida! Un juez IA escucha sus ' +
            'argumentos, consulta qué dicen los expertos al respecto y evalúa quién ' +
-           'defiende mejor su posición. 100% neutral: <b class="resalte">no va de quién ' +
-           'tiene la razón, sino de quién defiende mejor su punto de vista.</b>'
+           'defiende mejor su posición. 100% neutral.',
+      clave: 'No va de quién tiene la razón, sino de quién defiende mejor su punto de vista.'
     },
     negociacion: {
       nombre: 'Negociación',
       partido: ['Negoc', 'IA', 'ción'],
       que: 'Un mediador IA escucha ambas posiciones, consulta qué dicen los expertos ' +
-           'sobre el tema y propone 3 posibles acuerdos. Si ninguno satisface a las dos ' +
-           'partes, <b class="resalte">se vale seguir en desacuerdo y reintentar la ' +
-           'negociación más adelante.</b>'
+           'sobre el tema y propone 3 posibles acuerdos.',
+      clave: 'Si ninguno satisface a las dos partes, se vale seguir en desacuerdo y ' +
+             'reintentar la negociación más adelante.'
     }
   },
 
@@ -61,7 +61,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'c97d8d7',
+  version: '5eb6473',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -155,11 +155,11 @@ window.ATWI.config = {
      audio suspendido hasta que hay un gesto, así que todo arranca del toque en
      «Ver el resultado» y nunca automáticamente (docs/01 §8.6). */
   veredicto: {
-    /* De aquí sale el nombre de la app: And The Winner Is. Las cuatro iniciales
-       se pintan grandes y en color de marca, y entran antes que el resto de las
-       letras, para que se lea ATWI un instante antes de leerse la frase.
-       Cada palabra va como [inicial, resto]. */
-    frase: [['A', 'nd'], ['T', 'he'], ['W', 'inner'], ['I', 's…']],
+    /* De aquí sale el nombre de la app: And The Winner Is. Cada tramo es una
+       pieza dibujada con su inicial grande y en color de marca, para que se lea
+       ATWI un instante antes de leerse la frase.
+       Cada tramo va como [archivo en img/atwi, lo que se lee en voz alta]. */
+    frase: [['And', 'And'], ['The', 'The'], ['Winner', 'Winner'], ['Is', 'Is…']],
     segundosCuentaAtras: 3,
 
     /* En Negociación no gana una persona. Con pareja gana siempre la relación. */

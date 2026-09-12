@@ -36,6 +36,15 @@
 
   function modoLlano(clave) { return (cfg.modos[clave] || {}).nombre || ''; }
 
+  /* El nombre del modo DIBUJADO: no es el nombre en negrita, es una pieza de
+     arte con su placa y sus adornos, de la misma mano que los iconos. Se usa
+     donde el nombre es el titular —la carta del home y su explicación—; en
+     sitios pequeños sigue mandando el texto, que a ese tamaño se lee mejor. */
+  function rotuloModo(clave, clase) {
+    return '<img class="' + clase + '" src="../assets/img/rotulos/' + clave + '.png" ' +
+           'alt="' + esc(modoLlano(clave)) + '" decoding="async">';
+  }
+
   /* ======================================================================
      Navegación entre vistas
      ====================================================================== */
@@ -254,7 +263,7 @@
   function cartaModo(clave) {
     return '<div class="carta-modo carta-modo--' + clave + '">' +
         '<div class="carta-modo__alto">' +
-          '<span class="carta-modo__nombre">' + nombreModo(clave) + '</span>' +
+          rotuloModo(clave, 'carta-modo__rotulo') +
           '<span class="carta-modo__disco">' + icono(clave, 34) + '</span>' +
         '</div>' +
         '<div class="carta-modo__salidas">' +
@@ -281,11 +290,12 @@
     $('#m-explicar .modal__cuerpo').innerHTML =
       '<div class="explica explica--' + clave + '">' +
         '<span class="explica__disco">' + icono(clave, 62) + '</span>' +
-        '<h2 class="explica__nombre">' + nombreModo(clave) + '</h2>' +
-        /* `que` lleva HTML a propósito —el resalte de la frase que importa— y
-           por eso NO se escapa. Es texto nuestro, de config.js, no de nadie de
-           fuera: si algún día saliera de la base, hay que escaparlo. */
-        '<p class="explica__que">' + m.que + '</p>' +
+        rotuloModo(clave, 'explica__rotulo') +
+        /* La frase que importa va en párrafo aparte, entrecomillada y en
+           cursiva: leída de corrido dentro del texto se perdía entre lo demás,
+           y es justo lo único que hay que llevarse de esta pantalla. */
+        '<p class="explica__que">' + esc(m.que) + '</p>' +
+        '<p class="explica__clave">«' + esc(m.clave) + '»</p>' +
       '</div>';
 
     $('#m-explicar .modal__pie button').className =
