@@ -380,13 +380,17 @@ body.app {
 }
 .cinta-modo--debate { background: var(--debate-tinte); }
 .cinta-modo--negociacion { background: var(--negociacion-tinte); }
-.cinta-modo__que {
-  flex: 1; min-width: 0; font-family: var(--display); font-weight: 800;
-  font-size: var(--t-chico);
+/* El rótulo manda el alto de la cinta. Se le fija el ALTO y no el ancho para
+   que las dos piezas queden del mismo tamaño aparente aunque una sea más larga,
+   y `min-width: 0` para que el flex la encoja antes que sacarla por el costado
+   en un lienzo estrecho. */
+.cinta-modo__rotulo {
+  flex: 0 1 auto; min-width: 0; height: 44px; width: auto; display: block;
 }
-.cinta-modo__que .ia { font-size: 1.15em; }
+/* `margin-left: auto` y no `flex: 1` en el rótulo: estirar un `img` con el alto
+   fijo lo deforma, así que el que se come el hueco sobrante es el botón. */
 .cinta-modo__cambiar {
-  flex: none; display: inline-flex; align-items: center; gap: 4px;
+  flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
   padding: 5px 10px; border-radius: var(--radio-pastilla);
   background: var(--superficie); box-shadow: var(--sombra-1);
   font-size: var(--t-mini); font-weight: 800; color: var(--tinta-suave);

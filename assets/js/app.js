@@ -354,10 +354,11 @@
   function cintaModo() {
     if (!propuesta.modo) return '';
     return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" data-accion="cambiar-modo">' +
-        icono(propuesta.modo, 24) +
-        /* Solo el nombre: el icono y el color ya dicen que esto es el modo, y
-           «Van a jugar» delante partía la cinta en dos renglones. */
-        '<span class="cinta-modo__que">' + nombreModo(propuesta.modo) + '</span>' +
+        /* El rótulo dibujado en lugar de icono más nombre: ya trae dentro su
+           icono y su color, así que ponerle otro al lado era decirlo dos veces.
+           «Van a jugar» delante partía la cinta en dos renglones, y tampoco
+           está. */
+        rotuloModo(propuesta.modo, 'cinta-modo__rotulo') +
         /* Dice siempre lo mismo. Nombrar el destino —«Negociar», «Debatir»—
            obligaba a leer dos veces para separar en qué modo estás de a cuál
            irías; el botón es un interruptor y se comporta como uno. */
