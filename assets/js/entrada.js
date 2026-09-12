@@ -216,10 +216,9 @@ window.ATWI = window.ATWI || {};
     }
     if (codigo === 'captcha_failed') {
       return enLocalhost()
-        ? 'La verificación antirrobots no funciona en localhost: la clave de ' +
-          'Cloudflare solo admite atwi.app. No es tu contraseña. Para probar ' +
-          'aquí, añade localhost a los dominios del widget en Cloudflare, o ' +
-          'usa la app publicada.'
+        ? 'No es tu contraseña: el antirrobots no dio token en localhost. ' +
+          'Comprueba que «localhost» esté entre los dominios del widget ' +
+          cfg.turnstileSiteKey + ' en Cloudflare, escrito sin http:// y sin puerto.'
         : 'No se pudo completar la verificación antirrobots. Recarga e inténtalo otra vez.';
     }
     if (codigo === 'invalid_credentials') return 'Correo o contraseña incorrectos.';
@@ -228,17 +227,22 @@ window.ATWI = window.ATWI || {};
     return e.message || 'No se pudo entrar.';
   }
 
-  /* Si el antirrobots no llega a dibujarse, se dice ANTES de que alguien teclee
-     su contraseña tres veces. Solo pasa en local, y ahí conviene saberlo. */
+  /**
+   * Si el antirrobots no llega a dar token, se dice ANTES de que alguien teclee
+   * su contraseña tres veces. Solo se avisa en local, que es donde pasa.
+   *
+   * Se mira el TOKEN y no el iframe: con `appearance: interaction-only` el
+   * widget no dibuja nada cuando no hace falta desafío, así que la ausencia de
+   * iframe no prueba nada. Lo que prueba que algo va mal es no tener token.
+   */
   function avisarSiFaltaElCaptcha() {
     if (!cfg.turnstileSiteKey || !enLocalhost()) return;
     setTimeout(function () {
-      var hueco = $('#captcha');
-      if (hueco && !hueco.querySelector('iframe')) {
-        error('Aviso de local: el antirrobots no cargó (la clave solo admite ' +
-              'atwi.app), así que entrar con contraseña va a fallar aquí.');
-      }
-    }, 2500);
+      if (estado.captcha) return;
+      error('Aviso de local: el antirrobots no dio token para «localhost», así ' +
+            'que entrar va a fallar aquí. Revisa los dominios del widget ' +
+            cfg.turnstileSiteKey + ' en Cloudflare.');
+    }, 4000);
   }
 
   /* --- Acciones --------------------------------------------------------------- */
