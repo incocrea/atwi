@@ -86,7 +86,7 @@
 
     caja.innerHTML =
       '<div class="saludo">' +
-        '<div class="avatar">' + esc(p.avatar) + '</div>' +
+        avatarHTML(p) +
         '<div style="flex:1;min-width:0">' +
           '<h1>' + (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
           '<p class="chico suave">Nivel ' + p.nivel + ' · ' + p.puntos + ' de ' + p.puntosNivel + ' puntos</p>' +
@@ -346,7 +346,7 @@
          aquí. Antes solo decía «Sin nombre todavía» y no había por dónde
          escribirlo. */
       '<button class="ficha" data-accion="editar-ficha">' +
-        '<span class="avatar ficha__avatar">' + esc(p.avatar) + '</span>' +
+        avatarHTML(p, 'ficha__avatar') +
         '<span class="ficha__nombre">' +
           (p.nombre ? esc(p.nombre) : 'Ponte un nombre') +
           window.ATWI.iconoSVG('lapiz', 18) +
@@ -400,20 +400,39 @@
       '</div>';
   }
 
-  /* --- Editar la ficha: el nombre y el dibujo --------------------------------
+  /* --- Editar la ficha: el nombre, el dibujo y el color -----------------------
      El nombre vive en el servidor y el aparato solo lo copia, así que se guarda
      en los dos sitios. Sin servidor se queda en local y ya está.
 
      Los dibujos NO son personas. Es la misma regla que la pestaña de Perfil:
      mientras no haya una dirección de personaje decidida, no se insinúa una. */
-  var DIBUJOS = ['🙂', '🦊', '🐙', '🐢', '🦉', '🌻', '🍀', '🎈',
-                 '⭐', '🧩', '🎸', '🫐', '🌙', '🔥', '🌵', '🎲'];
+  var DIBUJOS = ['🙂', '🦊', '🐙', '🐢', '🦉', '🐝', '🌻', '🍀',
+                 '🎈', '⭐', '🧩', '🎸', '🫐', '🌙', '🔥', '🌵',
+                 '🎲', '🚀'];
+
+  var COLORES_FICHA = ['#7A6AD8', '#B063D6', '#EE7FA8', '#F07F55', '#F0B429',
+                       '#9CC93F', '#34B79B', '#3FB6D0', '#5A9BEF', '#C09A6B'];
+
+  var fichaElegida = '🙂';
+  var colorElegido = '#7A6AD8';
+
+  /** El círculo del avatar, con su dibujo y su color. */
+  function avatarHTML(p, clase, estilo) {
+    return '<span class="avatar ' + (clase || '') + '" style="background:' +
+      esc(p.avatarFondo || COLORES_FICHA[0]) + (estilo ? ';' + estilo : '') + '">' +
+      esc(p.avatar) + '</span>';
+  }
 
   function abrirFicha() {
     var p = datos.perfil();
     fichaElegida = p.avatar || '🙂';
+    colorElegido = p.avatarFondo || COLORES_FICHA[0];
 
     $('#m-perfil .modal__cuerpo').innerHTML =
+      '<div class="centrado" style="padding-bottom:var(--e-4)">' +
+        '<span class="avatar ficha__avatar" id="f-muestra" ' +
+          'style="background:' + esc(colorElegido) + ';margin:0 auto">' + esc(fichaElegida) + '</span>' +
+      '</div>' +
       '<div class="apilado-5">' +
         '<label style="display:block">' +
           '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
@@ -422,38 +441,62 @@
           '<span class="chico tenue" style="display:block;margin-top:6px">' +
             'Es el nombre que ve la otra persona en la sala y en el resultado.</span>' +
         '</label>' +
+
         '<div>' +
           '<span class="chico" style="font-weight:700">Tu dibujo</span>' +
           '<div class="dibujos" style="margin-top:var(--e-2)">' +
             DIBUJOS.map(function (d) {
               return '<button class="dibujo" data-dibujo="' + d + '"' +
-                (d === fichaElegida ? ' aria-pressed="true"' : '') + '>' + d + '</button>';
+                (d === fichaElegida ? ' aria-pressed="true"' : '') +
+                ' aria-label="Elegir ' + d + '">' + d + '</button>';
             }).join('') +
           '</div>' +
         '</div>' +
+
+        '<div>' +
+          '<span class="chico" style="font-weight:700">El color de tu ficha</span>' +
+          '<div class="colores" style="margin-top:var(--e-2)">' +
+            COLORES_FICHA.map(function (c, i) {
+              return '<button class="color" data-color="' + c + '" style="background:' + c + '"' +
+                (c.toLowerCase() === colorElegido.toLowerCase() ? ' aria-pressed="true"' : '') +
+                ' aria-label="Color ' + (i + 1) + ' de ' + COLORES_FICHA.length + '"></button>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+
         '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
       '</div>';
     abrirModal('m-perfil');
     setTimeout(function () { var n = $('#f-nombre'); if (n && !p.nombre) n.focus(); }, 60);
   }
 
-  var fichaElegida = '🙂';
+  function refrescarMuestra() {
+    var m = $('#f-muestra');
+    if (!m) return;
+    m.textContent = fichaElegida;
+    m.style.background = colorElegido;
+  }
 
   function guardarFicha() {
     var nombre = ($('#f-nombre').value || '').trim();
     if (nombre.length < 2) { $('#f-error').textContent = 'Escribe un nombre de al menos dos letras.'; return; }
 
-    datos.actualizar({ nombre: nombre, avatar: fichaElegida });
+    datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarFondo: colorElegido });
     cerrarModal('m-perfil');
     pintarPerfil();
     if (vistaActual === 'jugar') pintarJugar();
 
     if (window.ATWI.auth && window.ATWI.auth.dentro()) {
-      window.ATWI.auth.guardarPerfil({ nombre: nombre, avatar: fichaElegida })
+      var auth = window.ATWI.auth;
+      /* El color todavía no tiene columna en la base: va en la migración 0010,
+         que está escrita y sin aplicar. Se intenta con él y, si el servidor lo
+         rechaza por no conocerlo, se reintenta sin él para no perder el nombre
+         por un campo de adorno. */
+      auth.guardarPerfil({ nombre: nombre, avatar: fichaElegida, avatar_fondo: colorElegido })
         .catch(function () {
-          /* El cambio ya se ve; si el servidor no contestó, se reintenta solo
-             la próxima vez que se abra la ficha. No se le grita a nadie. */
-        });
+          return auth.guardarPerfil({ nombre: nombre, avatar: fichaElegida });
+        })
+        .catch(function () { /* sin red se queda en local y se reintenta al volver */ });
     }
   }
 
@@ -542,7 +585,7 @@
       (tocado
         ? '<div class="reescrito" style="margin-bottom:var(--e-3)">' +
             window.ATWI.iconoSVG('lapiz', 16) +
-            '<span>' + (t.propio ? 'Tema suyo' : 'A su manera') +
+            '<span>' + (t.propio ? 'Tema suyo' : 'Editado') +
             ', por <strong>' + esc(t.editadoPor || 'alguien') + '</strong>' +
             (t.editado ? ' · ' + haceCuanto(t.editado) : '') + '</span>' +
           '</div>'
@@ -551,7 +594,7 @@
       '<div class="fila fila--entre" style="margin-bottom:var(--e-2)">' +
         '<h3>Las dos posturas</h3>' +
         '<button class="boton boton--suave boton--chico" data-accion="editar-tema">' +
-          window.ATWI.iconoSVG('lapiz', 16) + (tocado ? 'Cambiar' : 'A nuestra manera') + '</button>' +
+          window.ATWI.iconoSVG('lapiz', 16) + 'Editar tema</button>' +
       '</div>' +
       '<div class="apilado" style="margin-bottom:var(--e-5)">' +
         posturaCaja('A', t.a) +
@@ -589,7 +632,7 @@
     escribiendo = { id: id || null, propio: propio || !id };
 
     $('#m-escribir .modal__titulo').textContent =
-      !t ? 'Tu propio tema' : (propio ? 'Tu tema' : 'A su manera');
+      !t ? 'Tu propio tema' : 'Editar tema';
 
     $('#m-escribir .modal__cuerpo').innerHTML =
       '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
@@ -962,6 +1005,18 @@
         if (x.dataset.dibujo === fichaElegida) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
+      refrescarMuestra();
+      return;
+    }
+
+    var col = e.target.closest('[data-color]');
+    if (col) {
+      colorElegido = col.dataset.color;
+      $$('#m-perfil [data-color]').forEach(function (x) {
+        if (x.dataset.color === colorElegido) x.setAttribute('aria-pressed', 'true');
+        else x.removeAttribute('aria-pressed');
+      });
+      refrescarMuestra();
       return;
     }
 

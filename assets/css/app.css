@@ -12,6 +12,22 @@
 /* --- El lienzo ------------------------------------------------------------ */
 html, body { height: 100%; overscroll-behavior: none; }
 
+/* ==========================================================================
+   NADA EN LA APP SCROLLEA DE LADO. NUNCA.
+   El juego es una columna de 430 px como mucho: si algo se sale por el
+   costado, es un fallo de esa pieza, no una manera de verla. Una barra
+   horizontal en un modal a pantalla completa rompe la ilusión de estar dentro
+   de un juego y además esconde contenido donde nadie lo busca.
+
+   Se corta aquí, en todos los contenedores que scrollean, y la pieza que se
+   salga se arregla en su sitio. Ojo con `repeat(N, 1fr)` en rejillas: `1fr`
+   es `minmax(auto, 1fr)` y el mínimo del contenido puede ensanchar la
+   columna; para eso está `minmax(0, 1fr)`.
+   ========================================================================== */
+html, body, .marco, .vista, .modal, .modal__cuerpo, .hoja__panel { overflow-x: hidden; }
+/* Ninguna imagen ni vídeo puede pasarse de su caja y arrastrar la columna. */
+img, video, canvas, svg { max-width: 100%; }
+
 body.app {
   background: var(--crema-hondo);
   display: grid;
@@ -158,15 +174,17 @@ body.app {
 /* --- Bloque de bienvenida -------------------------------------------------- */
 .saludo { display: flex; align-items: center; gap: var(--e-4); margin-bottom: var(--e-4); }
 
+/* El círculo lleva el color que elija cada quien; el aro blanco de dentro lo
+   recorta del fondo igual que el perfil blanco de los iconos ilustrados. */
 .avatar {
   width: 76px;
   height: 76px;
   flex: none;
   border-radius: var(--radio-pastilla);
-  background: linear-gradient(160deg, var(--lavanda-claro), var(--lavanda));
+  background: var(--ficha-1);
   display: grid;
   place-items: center;
-  box-shadow: var(--sombra-2);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .5), var(--sombra-2);
   font-size: 2.2rem;
 }
 
@@ -312,16 +330,19 @@ body.app {
 }
 
 /* --- La revelación del resultado -------------------------------------------
-   Ocupa el marco entero y va a oscuras: el contraste con el crema de todo lo
-   demás es la mitad del efecto. La cuenta atrás es GRÁFICA además de sonora,
-   porque en iOS con el interruptor de silencio el audio no suena y el suspense
-   tiene que funcionar igual. */
+   Ocupa el marco entero y va en CÁLIDO: es el único momento de la app que
+   celebra algo, y el cálido es la familia de premio. Plano, sin degradado y sin
+   fondo oscuro, como el resto del juego.
+
+   La cuenta atrás es GRÁFICA además de sonora, porque en iOS con el interruptor
+   de silencio el audio no suena y el suspense tiene que funcionar igual. Por lo
+   mismo el confeti: la celebración no puede depender de que haya altavoz. */
 .revelacion {
   position: absolute;
   inset: 0;
   z-index: 60;
-  background: radial-gradient(120% 90% at 50% 15%, #3B3456, #1C1830 70%);
-  color: var(--blanco);
+  background: var(--veredicto-fondo);
+  color: var(--tinta);
   /* Tres filas FIJAS: la frase, lo que cambia, y el botón. Antes era una sola
      columna centrada, así que al revelar el resultado la frase se desplazaba
      hacia arriba —el contenido de debajo crecía— justo después de haberla
@@ -363,6 +384,7 @@ body.app {
   min-height: 8rem;
   display: grid;
   place-items: center;
+  color: var(--premio-hondo);
   animation: numero var(--dur-larga) var(--suave);
 }
 @keyframes numero {
@@ -378,8 +400,10 @@ body.app {
   line-height: 1.05;
   animation: ganador var(--dur-larga) var(--rebote);
 }
-.revelacion--debate .revelacion__ganador { color: var(--debate); }
-.revelacion--negociacion .revelacion__ganador { color: var(--negociacion); }
+/* Sobre crema, el color del modo a plena fuerza no llega al contraste que pide
+   ni un texto grande: va la versión oscura, que es el mismo color. */
+.revelacion--debate .revelacion__ganador { color: var(--debate-oscuro); }
+.revelacion--negociacion .revelacion__ganador { color: var(--negociacion-oscuro); }
 
 @keyframes ganador {
   0% { opacity: 0; transform: scale(.5) rotate(-4deg); }
@@ -393,15 +417,26 @@ body.app {
   max-width: 22rem;
   padding: var(--e-4);
   border-radius: var(--radio-tarjeta);
-  background: rgba(255, 255, 255, .08);
+  background: var(--veredicto-tarjeta);
+  box-shadow: var(--sombra-2);
 }
 .revelacion__pie {
   font-size: var(--t-chico);
   line-height: 1.5;
   max-width: 22rem;
-  color: rgba(255, 255, 255, .78);
+  color: var(--tinta-suave);
 }
 .revelacion__boton { margin-top: 0; }
+.revelacion--debate .revelacion__boton { background: var(--debate); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
+.revelacion--negociacion .revelacion__boton { background: var(--negociacion); box-shadow: 0 8px 20px rgba(52,183,155,.34); }
+
+/* El confeti va por encima de todo y no se puede tocar: es decoración, y
+   robarle el toque al botón de «Ver el desglose» sería un fastidio. */
+.confeti {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none;
+  animation: confeti-sale 600ms var(--suave) 3.4s both;
+}
+@keyframes confeti-sale { to { opacity: 0; } }
 
 /* --- «And The Winner Is», que es de donde sale el nombre ---------------------
    UNA SOLA LÍNEA, SIEMPRE. Partir la frase en dos renglones parte el logotipo:
@@ -428,7 +463,7 @@ body.app {
   width: auto;
   display: block;
   align-self: center;
-  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, .35));
+  filter: drop-shadow(0 3px 9px var(--veredicto-sombra));
 }
 
 /* El tramo en vuelo: grande, centrado y por encima de todo. Nace en el centro
@@ -447,7 +482,7 @@ body.app {
   transform-origin: 50% 50%; will-change: transform;
   animation: hero-entra 260ms var(--rebote) both;
 }
-.fm__hero .fm__ini { height: 1.55em; filter: drop-shadow(0 8px 22px rgba(0, 0, 0, .5)); }
+.fm__hero .fm__ini { height: 1.55em; filter: drop-shadow(0 8px 20px var(--veredicto-sombra)); }
 .fm__hero .fm__resto { font-size: .78em; opacity: .88; }
 
 @keyframes hero-entra {
@@ -459,9 +494,11 @@ body.app {
   opacity: .72;
 }
 
-/* Ya revelado: NO cambia de tamaño ni de sitio, solo se apaga un punto para
-   que el nombre del resultado sea lo que manda. */
-.revelacion__frase--hecha { opacity: .62; transition: opacity var(--dur-media) var(--suave); }
+/* Ya revelado NO cambia NADA: ni tamaño, ni sitio, ni color. Se probó a
+   apagarla un punto para que el nombre del ganador mandara, y lo que pasaba es
+   que el logotipo se veía desteñido: las letras son las de la marca y con
+   opacidad pierden su color. El nombre ya manda por tamaño y por contraste, no
+   hace falta apagar nada. */
 
 /* --- Iconos ilustrados --------------------------------------------------------
    Son PNG a todo color, así que el estado no se puede cambiar recoloreando como
@@ -573,13 +610,29 @@ body.app {
 
 /* Los dibujos NO son personas: mientras no haya una dirección de personaje
    decidida, no se insinúa una. Ver CLAUDE.md, «Iconos». */
-.dibujos { display: grid; grid-template-columns: repeat(8, 1fr); gap: var(--e-2); }
+/* `minmax(0, 1fr)` y no `1fr`: con `1fr` el mínimo del contenido ensancha la
+   columna y la rejilla se sale por el costado. Ver la regla de arriba del todo:
+   nada en la app scrollea de lado. */
+.dibujos { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--e-2); }
 .dibujo {
-  aspect-ratio: 1; display: grid; place-items: center; font-size: 1.4rem;
-  border: 2px solid var(--linea); border-radius: 14px;
+  aspect-ratio: 1; display: grid; place-items: center; font-size: 1.5rem;
+  border: 2px solid var(--linea); border-radius: 14px; padding: 0; min-width: 0;
   background: var(--superficie); cursor: pointer; font-family: inherit;
 }
 .dibujo[aria-pressed="true"] { border-color: var(--lavanda); background: var(--lavanda-tinte); }
+
+/* Los diez colores de ficha. El aro blanco de dentro es el mismo recurso que
+   usan los iconos ilustrados: recorta el color del fondo, sea cual sea. */
+.colores { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--e-2); }
+.color {
+  aspect-ratio: 1; border: 0; border-radius: 50%; cursor: pointer; min-width: 0;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .85), var(--sombra-1);
+  transition: transform var(--dur-corta) var(--suave);
+}
+.color:active { transform: scale(.9); }
+.color[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, .9), 0 0 0 3px var(--tinta);
+}
 
 /* --- Escribir un tema ---------------------------------------------------------- */
 .campo--parrafo { min-height: 5.5rem; resize: vertical; line-height: 1.45; font: inherit; }

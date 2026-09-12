@@ -39,8 +39,34 @@
   --menta-clara: #8FD9C7;
   --rosa: #EE9BBE;
   --rosa-oscuro: #E4658F;
-  --veredicto-fondo: #2E2A3F;
-  --veredicto-banda: #14111F;
+  /* El momento del resultado va en CÁLIDO, que es la familia de premio: es lo
+     único de la app que celebra algo. Ni oscuro ni degradado, como el resto. */
+  --veredicto-fondo: #FDF2D6;      /* sol-tinte: crema dorada, plana */
+  --veredicto-tarjeta: #FFFFFF;
+  --veredicto-sombra: rgba(138, 100, 7, .22);
+
+  /* --- Los diez colores de ficha -------------------------------------------
+     El fondo del círculo del avatar. Son diez tonos repartidos por toda la
+     rueda para que dos personas nunca se confundan de un vistazo, y todos con
+     la misma receta: saturados pero suaves, que es la dirección del juego.
+
+     La condición que tenían que cumplir: leerse como una figura sobre los
+     fondos donde aparece la ficha, que son claros —el crema de la app, el
+     lavanda de Jugar, el dorado del veredicto y los tintes de la sala—. Por
+     eso ninguno es pastel claro: contra crema no se verían. Medido el más
+     flojo, el arena, da 1,74 contra el crema; por eso todos llevan además un
+     aro blanco, que es lo que los recorta del fondo pase lo que pase y de paso
+     los hermana con los iconos ilustrados, que también van perfilados. */
+  --ficha-1: #7A6AD8;   /* lavanda de marca */
+  --ficha-2: #B063D6;   /* uva */
+  --ficha-3: #EE7FA8;   /* rosa */
+  --ficha-4: #F07F55;   /* coral */
+  --ficha-5: #F0B429;   /* ámbar */
+  --ficha-6: #9CC93F;   /* lima */
+  --ficha-7: #34B79B;   /* menta */
+  --ficha-8: #3FB6D0;   /* turquesa */
+  --ficha-9: #5A9BEF;   /* cielo */
+  --ficha-10: #C09A6B;  /* arena */
 
   /* --- Las dos voces -------------------------------------------------------
      Quién dijo cada cosa. NO son los colores de los modos a propósito: si una
@@ -196,7 +222,7 @@
   --ctx-fondo: #FDEAE1; --ctx-banda: #C75B33; --ctx-barra: #FDF2EC; --ctx-pastilla: #A8431F;
 }
 [data-ctx="veredicto"] {
-  --ctx-fondo: #2E2A3F; --ctx-banda: #14111F; --ctx-tinta: #FBF7F2;
+  --ctx-fondo: var(--veredicto-fondo); --ctx-banda: #C9A22E; --ctx-tinta: var(--tinta);
 }
 
 /* --- La sala, con el color del modo -------------------------------------------

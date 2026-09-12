@@ -31,6 +31,7 @@ window.ATWI = window.ATWI || {};
   var PERFIL_NUEVO = {
     nombre: '',
     avatar: '🙂',
+    avatarFondo: '#7A6AD8',   // uno de los diez de tokens.css
     nivel: 1,
     puntos: 0,
     puntosNivel: 100,

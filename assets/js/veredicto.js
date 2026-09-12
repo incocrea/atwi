@@ -226,8 +226,100 @@ window.ATWI = window.ATWI || {};
       });
     },
 
-    cerrar: function () { if (caja) caja.hidden = true; }
+    cerrar: function () {
+      if (!caja) return;
+      caja.hidden = true;
+      /* El confeti se sigue dibujando aunque la pantalla esté oculta: cortarlo
+         al salir evita dejar un requestAnimationFrame girando de fondo. */
+      var c = caja.querySelector('.confeti');
+      if (c) c.remove();
+    }
   };
+
+  /* ==========================================================================
+     EL CONFETI
+     Dibujado en un canvas, sin librería ni imágenes: son dos cañones que
+     disparan desde las esquinas de abajo hacia dentro, con gravedad y giro.
+     Cada papelito es un rectángulo que rota sobre su eje, y por eso a ratos se
+     ve de canto: es lo que hace que parezca papel y no una bolita de color.
+
+     Va con el platillo y con la revelación del nombre, y es la mitad visible de
+     la celebración: en iOS con el silencio puesto no suena nada, así que si la
+     fiesta fuera solo sonora no habría fiesta.
+     ========================================================================== */
+  var COLORES = ['#F5C243', '#F07F55', '#EE9BBE', '#FFFFFF', '#7A6AD8', '#34B79B'];
+
+  function confeti(p, modo) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var lienzo = document.createElement('canvas');
+    lienzo.className = 'confeti';
+    p.appendChild(lienzo);
+
+    var ancho = p.clientWidth, alto = p.clientHeight;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    lienzo.width = ancho * dpr;
+    lienzo.height = alto * dpr;
+    lienzo.style.width = ancho + 'px';
+    lienzo.style.height = alto + 'px';
+    var g = lienzo.getContext('2d');
+    g.scale(dpr, dpr);
+
+    /* El color del modo entra en la mezcla para que la fiesta sea de ESTA
+       partida y no un confeti genérico. */
+    var paleta = COLORES.concat([modo === 'negociacion' ? '#34B79B' : '#F07F55']);
+    var trozos = [];
+
+    function canon(x, haciaLaDerecha) {
+      for (var i = 0; i < 70; i++) {
+        var angulo = (-Math.PI / 2) + (haciaLaDerecha ? 1 : -1) * (0.15 + Math.random() * 0.55);
+        var fuerza = 9 + Math.random() * 9;
+        trozos.push({
+          x: x, y: alto + 10,
+          vx: Math.cos(angulo) * fuerza,
+          vy: Math.sin(angulo) * fuerza,
+          an: Math.random() * Math.PI,
+          van: (Math.random() - 0.5) * 0.35,
+          w: 5 + Math.random() * 6,
+          h: 8 + Math.random() * 7,
+          color: paleta[Math.floor(Math.random() * paleta.length)]
+        });
+      }
+    }
+    canon(ancho * 0.12, true);
+    canon(ancho * 0.88, false);
+
+    var desde = null;
+    function cuadro(ahora) {
+      if (desde === null) desde = ahora;
+      g.clearRect(0, 0, ancho, alto);
+      var vivos = 0;
+
+      for (var i = 0; i < trozos.length; i++) {
+        var t = trozos[i];
+        t.vy += 0.30;            // gravedad
+        t.vx *= 0.992;           // el aire lo frena de lado
+        t.x += t.vx;
+        t.y += t.vy;
+        t.an += t.van;
+        if (t.y > alto + 40) continue;
+        vivos++;
+
+        g.save();
+        g.translate(t.x, t.y);
+        g.rotate(t.an);
+        /* El ancho se encoge con el giro: así el papelito se ve de canto al
+           pasar por el perfil, que es lo que delata que es papel. */
+        g.fillStyle = t.color;
+        g.fillRect(-t.w / 2, -t.h / 2, t.w * Math.abs(Math.cos(t.an)), t.h);
+        g.restore();
+      }
+
+      if (vivos && ahora - desde < 4000) requestAnimationFrame(cuadro);
+      else lienzo.remove();
+    }
+    requestAnimationFrame(cuadro);
+  }
 
   function mostrarResultado(p, r) {
     var v = cfg.veredicto;
@@ -252,18 +344,19 @@ window.ATWI = window.ATWI || {};
       detalle = '<p class="revelacion__pie">Mira el desglose para ver por qué.</p>';
     }
 
-    /* La frase se queda donde está: solo se apaga un punto. Volver a pintarla
-       la haría saltar de tamaño y de sitio justo después de haberla colocado
-       tramo a tramo, que es lo contrario de lo que cuenta la animación. */
-    var frase = p.querySelector('.revelacion__frase');
-    if (frase) frase.classList.add('revelacion__frase--hecha');
-
+    /* La frase se queda EXACTAMENTE como está: no se toca ni para bajarle la
+       opacidad. Volver a pintarla la haría saltar de tamaño y de sitio justo
+       después de haberla colocado tramo a tramo, y apagarla destiñe el
+       logotipo. El nombre del ganador manda por tamaño, no por contraste
+       prestado. */
     p.querySelector('#rev-centro').innerHTML =
       '<p class="revelacion__ganador">' + esc(titular) + '</p>' + detalle;
 
     p.querySelector('#rev-abajo').innerHTML =
       '<button class="boton boton--bloque boton--grande revelacion__boton" data-accion="ver-desglose">' +
         'Ver el desglose</button>';
+
+    confeti(p, r.modo);
 
     var b = p.querySelector('[data-accion="ver-desglose"]');
     b.addEventListener('click', function () {
