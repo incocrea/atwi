@@ -244,30 +244,35 @@ body.app {
 .carta-modo--debate { background: var(--debate-tinte); }
 .carta-modo--negociacion { background: var(--negociacion-tinte); }
 
+/* El nombre y el icono, uno en cada extremo del mismo renglón: hace de balanza
+   y deja la carta leyéndose como una ficha, no como un bloque con dibujo. */
+.carta-modo__alto {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e-3); width: 100%;
+}
 .carta-modo__disco {
-  width: 76px; height: 76px; border-radius: var(--radio-pastilla);
+  width: 53px; height: 53px; flex: none; border-radius: var(--radio-pastilla);
   display: grid; place-items: center;
   background: var(--superficie); box-shadow: var(--sombra-1);
-  margin-bottom: var(--e-2);
 }
 .carta-modo__nombre {
   font-family: var(--display); font-weight: 800; font-size: var(--t-h2);
-  line-height: 1.1;
+  line-height: 1.1; min-width: 0;
 }
 .carta-modo__que {
-  font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4;
+  font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.45;
 }
-/* La pastilla de abajo dice qué pasa al tocar, y lleva el color del modo. */
+/* La pastilla de abajo lleva el color del modo y dice lo mismo en las dos:
+   lo que cambia entre una carta y otra es el modo, no la acción. */
 .carta-modo__ir {
   display: inline-flex; align-items: center; gap: 6px;
-  margin-top: var(--e-3); padding: var(--e-2) var(--e-4);
+  margin-top: var(--e-2); padding: var(--e-2) var(--e-5);
   border-radius: var(--radio-pastilla);
   font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
   color: var(--blanco);
 }
 .carta-modo--debate .carta-modo__ir { background: var(--debate-oscuro); }
 .carta-modo--negociacion .carta-modo__ir { background: var(--negociacion-oscuro); }
-.carta-modo__ir .ico { width: 18px; height: 18px; filter: brightness(0) invert(1); }
 
 /* EL JUEGO DE PALABRAS. Las dos palabras esconden «IA»: negoc·IA·ción y
    controvers·IA. Va en el lavanda de la marca en los dos modos, no en el color

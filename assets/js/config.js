@@ -23,16 +23,18 @@ window.ATWI.config = {
     debate: {
       nombre: 'Controversia',
       partido: ['Controvers', 'IA', ''],
-      que: 'Dos partes compiten por quién argumenta mejor. Un juez imparcial evalúa, ' +
-           'declara ganador y explica por qué.',
-      invita: 'Proponer una controversia'
+      que: '¿No se ponen de acuerdo? ¡Que la ciencia decida! Un juez IA escucha sus ' +
+           'argumentos, consulta qué dice la ciencia al respecto y evalúa quién defiende ' +
+           'mejor su posición. 100% neutral: no va de quién tiene la razón, sino de quién ' +
+           'defiende mejor su punto de vista.'
     },
     negociacion: {
       nombre: 'Negociación',
       partido: ['Negoc', 'IA', 'ción'],
-      que: 'Un negociador propone tres acuerdos, votan, y el elegido lo firman los dos. ' +
-           'También vale seguir en desacuerdo.',
-      invita: 'Proponer una negociación'
+      que: 'Un mediador IA experto escucha ambas posiciones, consulta qué dicen los ' +
+           'expertos sobre el tema y propone 3 posibles acuerdos. Si ninguno satisface a ' +
+           'las dos partes, se vale seguir en desacuerdo y reintentar la negociación más ' +
+           'adelante.'
     }
   },
 
@@ -56,7 +58,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '80f4774',
+  version: 'c024738',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

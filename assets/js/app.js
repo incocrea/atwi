@@ -239,14 +239,19 @@
       '</div>';
   }
 
-  /* La tarjeta de un modo: explica y empieza, que antes eran dos cosas. */
+  /* La tarjeta de un modo: explica y empieza, que antes eran dos cosas.
+     El nombre y el icono comparten renglón, uno en cada extremo, para que las
+     dos cartas se lean como dos fichas iguales y no como dos bloques de texto
+     con un dibujo encima. */
   function cartaModo(clave) {
     var m = cfg.modos[clave];
     return '<button class="carta-modo carta-modo--' + clave + '" data-crear="' + clave + '">' +
-        '<span class="carta-modo__disco">' + icono(clave, 44) + '</span>' +
-        '<span class="carta-modo__nombre">' + nombreModo(clave) + '</span>' +
+        '<span class="carta-modo__alto">' +
+          '<span class="carta-modo__nombre">' + nombreModo(clave) + '</span>' +
+          '<span class="carta-modo__disco">' + icono(clave, 31) + '</span>' +
+        '</span>' +
         '<span class="carta-modo__que">' + esc(m.que) + '</span>' +
-        '<span class="carta-modo__ir">' + icono('mas', 18) + esc(m.invita) + '</span>' +
+        '<span class="carta-modo__ir">' + window.ATWI.iconoSVG('play', 16) + 'Jugar</span>' +
       '</button>';
   }
 
