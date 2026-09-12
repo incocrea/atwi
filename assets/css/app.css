@@ -267,17 +267,15 @@ body.app {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--e-3); width: 100%;
 }
-.carta-modo__disco {
-  width: 53px; height: 53px; flex: none; border-radius: var(--radio-pastilla);
-  display: grid; place-items: center;
-  background: var(--superficie); box-shadow: var(--sombra-1);
-}
-/* El nombre del modo va dibujado, no escrito. Se le fija el ALTO y no el ancho
-   porque las dos piezas no miden lo mismo de largo y así quedan del mismo
-   tamaño aparente; `min-width: 0` para que el flex pueda encogerla antes que
-   sacarla por el costado. */
+/* El nombre del modo va dibujado, no escrito, y ya no hay disco al lado: el
+   rótulo lleva su propio icono dentro, así que repetirlo en un círculo era
+   decir dos veces lo mismo. Con la fila entera libre se centra y crece.
+   Se le fija el ALTO y no el ancho porque las dos piezas no miden lo mismo de
+   largo y así quedan del mismo tamaño aparente; `min-width: 0` para que el
+   flex pueda encogerla antes que sacarla por el costado. */
 .carta-modo__rotulo {
-  height: 62px; width: auto; max-width: 100%; min-width: 0; display: block;
+  height: 88px; width: auto; max-width: 100%; min-width: 0; display: block;
+  margin: 0 auto;
 }
 /* Las dos salidas, centradas abajo y del mismo tamaño: una lleva a entender y
    la otra a jugar, y ninguna de las dos es la equivocada. */
@@ -311,18 +309,14 @@ body.app {
 .explica--negociacion .explica__clave { color: #176450; }
 
 /* --- La explicación de un modo ------------------------------------------------
-   Hace juego con su carta: mismo disco blanco, mismo nombre, mismo color de
-   fondo, que lo pone `modal--<modo>`. Es la misma cosa, en grande. */
+   Hace juego con su carta: mismo rótulo dibujado, mismo color de fondo, que lo
+   pone `modal--<modo>`. Es la misma cosa, en grande. */
 .explica { display: grid; justify-items: center; text-align: center; gap: var(--e-3); padding-top: var(--e-5); }
-.explica__disco {
-  width: 104px; height: 104px; border-radius: var(--radio-pastilla);
-  display: grid; place-items: center;
-  background: var(--superficie); box-shadow: var(--sombra-2);
-}
-/* El nombre del modo va dibujado. `max-width: 100%` no es adorno: sin él, en
-   un lienzo estrecho la pieza se sale por el costado, y de lado no scrollea
-   nada. */
-.explica__rotulo { display: block; width: 15rem; max-width: 100%; height: auto; }
+/* El nombre del modo va dibujado y manda solo: aquí es el titular de la
+   pantalla, así que ocupa el ancho que le dejen. `max-width: 100%` no es
+   adorno: sin él, en un lienzo estrecho la pieza se sale por el costado, y de
+   lado no scrollea nada. */
+.explica__rotulo { display: block; width: 21rem; max-width: 100%; height: auto; }
 .explica__que {
   /* 19 px: tres más que el cuerpo normal. Es la única pantalla que existe para
      leerse, así que puede permitirse el tamaño. */

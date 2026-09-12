@@ -264,7 +264,6 @@
     return '<div class="carta-modo carta-modo--' + clave + '">' +
         '<div class="carta-modo__alto">' +
           rotuloModo(clave, 'carta-modo__rotulo') +
-          '<span class="carta-modo__disco">' + icono(clave, 34) + '</span>' +
         '</div>' +
         '<div class="carta-modo__salidas">' +
           '<button class="boton boton--suave carta-modo__explica" data-explicar="' + clave + '">' +
@@ -289,7 +288,6 @@
     $('#m-explicar .modal__titulo').textContent = 'Cómo se juega';
     $('#m-explicar .modal__cuerpo').innerHTML =
       '<div class="explica explica--' + clave + '">' +
-        '<span class="explica__disco">' + icono(clave, 62) + '</span>' +
         rotuloModo(clave, 'explica__rotulo') +
         /* La frase que importa va en párrafo aparte, entrecomillada y en
            cursiva: leída de corrido dentro del texto se perdía entre lo demás,
