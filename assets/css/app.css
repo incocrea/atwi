@@ -383,10 +383,30 @@ body.app {
 }
 .categoria__n { font-size: var(--t-chico); color: var(--tinta-tenue); font-weight: 700; }
 
-.tema { display: grid; gap: 6px; padding: var(--e-4); }
+/* La caja es la tarjeta; dentro, el botón grande del tema y la fila de chips.
+   El padding vive en la caja y el botón lo ocupa entero, para que tocar
+   «cualquier parte del tema» siga funcionando como antes. */
+.tema-caja { padding: var(--e-4); display: grid; gap: var(--e-2); }
+.tema {
+  display: grid; gap: 6px; width: 100%; padding: 0;
+  border: 0; background: none; font: inherit; color: inherit;
+  text-align: left; cursor: pointer;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.tema:active { transform: scale(.99); }
 .tema__titulo { font-family: var(--display); font-weight: 800; }
 .tema__enunciado { font-size: var(--t-chico); color: var(--tinta-suave); }
-.tema__pie { display: flex; gap: var(--e-2); flex-wrap: wrap; margin-top: 2px; }
+.tema__pie { display: flex; gap: var(--e-2); flex-wrap: wrap; align-items: center; }
+
+/* Personalizar parece un chip más porque es donde la vista ya está mirando,
+   pero es el único que se pulsa: por eso lleva borde y no relleno. */
+.chip--editar {
+  border: 1.5px dashed var(--linea-fuerte); background: transparent;
+  color: var(--tinta-suave); cursor: pointer; font-family: inherit;
+  margin-left: auto; gap: 5px;
+}
+.chip--editar:hover { border-color: var(--lavanda); color: var(--lavanda-oscuro); }
+.chip--editar:active { transform: scale(.94); }
 
 /* --- Estados vacíos -------------------------------------------------------- */
 .vacio { text-align: center; padding: var(--e-7) var(--e-4); color: var(--tinta-suave); }

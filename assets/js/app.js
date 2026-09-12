@@ -258,19 +258,30 @@
       '</button>';
   }
 
+  /* La tarjeta NO es un botón: dentro lleva otro —personalizar— y un botón
+     dentro de otro no es HTML válido. Es una caja con el botón grande arriba
+     —tocar el tema— y la fila de chips debajo, donde el de personalizar cabe
+     como uno más porque eso es lo que parece. */
   function tarjetaTema(t) {
     var hecho = datos.yaDebatido(t.id);
-    return '<button class="tarjeta tarjeta--pulsable tema' + (hecho ? ' tema--hecho' : '') + '" ' +
-        'data-tema="' + esc(t.id) + '">' +
-        '<span class="tema__titulo">' + esc(t.titulo) + '</span>' +
-        '<span class="tema__enunciado">' + esc(t.enunciado) + '</span>' +
-        '<span class="tema__pie">' +
+    var tocado = t.propio || datos.estaReescrito(t.id);
+    return '<div class="tarjeta tema-caja' + (hecho ? ' tema--hecho' : '') + '">' +
+        '<button class="tema" data-tema="' + esc(t.id) + '">' +
+          '<span class="tema__titulo">' + esc(t.titulo) + '</span>' +
+          '<span class="tema__enunciado">' + esc(t.enunciado) + '</span>' +
+        '</button>' +
+        '<div class="tema__pie">' +
           '<span class="chip chip--' + esc(t.intensidad) + '">' + esc(t.intensidad) + '</span>' +
           (hecho
             ? '<span class="chip chip--hecho">' + icono('listo', 13) + ' Ya debatido</span>'
             : '<span class="chip chip--nuevo">Sin estrenar</span>') +
-        '</span>' +
-      '</button>';
+          /* Directo al editor, sin pasar por el detalle: quien ve un tema que
+             no encaja con su discusión quiere arreglarlo ahí mismo. */
+          '<button class="chip chip--editar" data-editar-tema="' + esc(t.id) + '">' +
+            window.ATWI.iconoSVG('lapiz', 13) +
+            (tocado ? 'Editar' : 'Personalizar') + '</button>' +
+        '</div>' +
+      '</div>';
   }
 
   /* ======================================================================
@@ -1239,6 +1250,11 @@
       irA('catalogo');
       return;
     }
+
+    /* Antes que `[data-tema]`: el de personalizar vive dentro de la misma
+       tarjeta y si se mirara después, el tema se abriría igualmente. */
+    var edi = e.target.closest('[data-editar-tema]');
+    if (edi) { abrirEscribir(edi.dataset.editarTema); return; }
 
     var tema = e.target.closest('[data-tema]');
     if (tema) { abrirTema(tema.dataset.tema); return; }
