@@ -522,3 +522,82 @@ body.app {
 .aviso__titulo { font-family: var(--display); font-weight: 800; }
 .aviso__cuerpo { font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4; }
 .aviso__cuando { font-size: var(--t-mini); color: var(--tinta-tenue); margin-top: 2px; }
+
+/* ==========================================================================
+   LA SALA
+   Va a oscuras y a sangre: entrar a jugar tiene que sentirse distinto de
+   navegar por el catálogo. El juez está presente todo el rato.
+   ========================================================================== */
+.sala { display: grid; gap: var(--e-4); align-content: start; padding-top: var(--e-2); }
+.sala--centrada { align-content: center; justify-items: center; min-height: 60vh; }
+
+.sala__tema { background: rgba(255,255,255,.07); border-radius: var(--radio-tarjeta); padding: var(--e-4); }
+.sala__enunciado { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); line-height: 1.3; }
+.sala__chips { display: flex; gap: var(--e-2); flex-wrap: wrap; margin-top: var(--e-3); }
+.sala__recordatorio { font-size: var(--t-chico); color: rgba(255,255,255,.6); line-height: 1.4; text-align: center; }
+.sala__posturas { display: grid; gap: var(--e-2); }
+.sala__posturas p { color: rgba(255,255,255,.78); line-height: 1.45; }
+.sala__nota { font-size: var(--t-chico); color: rgba(255,255,255,.55); text-align: center; }
+
+/* --- El sorteo de quién abre ------------------------------------------------- */
+.sorteo { text-align: center; padding: var(--e-4) 0; }
+.sorteo__que { font-size: var(--t-chico); color: rgba(255,255,255,.6); }
+.sorteo__quien {
+  font-family: var(--display); font-weight: 800; font-size: 2.25rem;
+  color: var(--lavanda-claro); line-height: 1.1; margin-top: 2px;
+  animation: ganador var(--dur-larga) var(--rebote);
+}
+.sorteo__como { font-size: var(--t-mini); color: rgba(255,255,255,.45); margin-top: var(--e-2); }
+
+/* --- El juez, presente todo el rato ------------------------------------------ */
+.juez { display: grid; justify-items: center; gap: var(--e-2); }
+.juez__cara {
+  width: 84px; height: 84px; border-radius: var(--radio-pastilla);
+  display: grid; place-items: center; font-size: 2.6rem;
+  background: rgba(255,255,255,.10);
+  transition: transform var(--dur-media) var(--suave), background var(--dur-media) var(--suave);
+}
+.juez__dice {
+  font-size: var(--t-chico); color: rgba(255,255,255,.8);
+  text-align: center; max-width: 20rem; line-height: 1.45; min-height: 2.4em;
+}
+/* Escuchando: respira. Asintiendo: cabecea una vez. Pensando: gira despacio. */
+.juez--escuchando .juez__cara { animation: escucha 2.2s ease-in-out infinite; background: rgba(255,255,255,.16); }
+.juez--asiente .juez__cara { animation: asiente 620ms var(--suave); }
+.juez--pensando .juez__cara { animation: piensa 2.6s linear infinite; }
+
+@keyframes escucha { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@keyframes asiente { 0%,100% { transform: translateY(0); } 35% { transform: translateY(7px); } }
+@keyframes piensa { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }
+
+/* --- De quién es el turno ----------------------------------------------------- */
+.turno { text-align: center; }
+.turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.75rem; }
+.turno__cual { font-size: var(--t-chico); color: rgba(255,255,255,.55); }
+.turno__postura {
+  margin-top: var(--e-3); padding: var(--e-3) var(--e-4);
+  background: rgba(255,255,255,.07); border-radius: var(--radio-tarjeta);
+  font-size: var(--t-chico); line-height: 1.45; color: rgba(255,255,255,.82);
+}
+
+/* --- El reloj ----------------------------------------------------------------- */
+.reloj { text-align: center; font-family: var(--display); font-weight: 800; }
+.reloj span:first-child { font-size: 2.5rem; }
+.reloj__tope { display: block; font-size: var(--t-chico); font-weight: 700; color: rgba(255,255,255,.45); }
+.reloj--corriendo span:first-child { color: var(--debate); }
+
+/* El botón de grabar late mientras graba */
+.boton.grabando { animation: late 1.2s ease-in-out infinite; }
+@keyframes late { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+/* --- Las fichas de número de turnos -------------------------------------------- */
+.turnos-fila { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--e-2); }
+.turno-ficha {
+  display: grid; justify-items: center; gap: 2px; padding: var(--e-3) 0;
+  border: 2px solid var(--linea); border-radius: var(--radio-boton);
+  background: var(--superficie); cursor: pointer; font: inherit; color: inherit;
+}
+.turno-ficha[aria-pressed="true"] { border-color: var(--lavanda); background: var(--lavanda-tinte); }
+.turno-ficha--cupo { opacity: .55; }
+.turno-ficha__n { font-family: var(--display); font-weight: 800; font-size: 1.25rem; }
+.turno-ficha__min { font-size: var(--t-mini); color: var(--tinta-tenue); }

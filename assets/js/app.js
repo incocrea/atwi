@@ -13,6 +13,7 @@
 (function () {
   'use strict';
 
+  var cfg = window.ATWI.config;
   var datos = window.ATWI.datos;
   var icono = window.ATWI.icono;
   var $ = function (sel, raiz) { return (raiz || document).querySelector(sel); };
@@ -335,7 +336,11 @@
         }).join('') +
       '</div>' +
 
-      '<div style="margin-top:var(--e-6)">' +
+      '<div class="apilado" style="margin-top:var(--e-6)">' +
+        (window.ATWI.auth && window.ATWI.auth.dentro()
+          ? '<p class="chico tenue centrado">Sesión de ' + esc(window.ATWI.auth.correo()) + '</p>' +
+            '<button class="boton boton--suave boton--bloque" data-accion="salir">Cerrar sesión</button>'
+          : '') +
         '<button class="boton boton--fantasma boton--bloque" data-accion="olvidar">Borrar mis datos de este dispositivo</button>' +
       '</div>';
   }
@@ -407,13 +412,17 @@
   /* ======================================================================
      Flujo: proponer un debate
      ====================================================================== */
-  var propuesta = { temaId: null, modo: null };
+  var propuesta = { temaId: null, modo: null, turnos: null };
+  /* Duración estimada de una partida según los turnos por persona. Sale de
+     docs/03 §19: grabar, esperar al otro, transcribir y el veredicto. */
+  var MINUTOS = { 1: 3, 2: 5, 3: 7, 4: 9, 5: 12 };
 
   function abrirTema(id) {
     var t = datos.tema(id);
     if (!t) return;
     propuesta.temaId = id;
     propuesta.modo = null;
+    propuesta.turnos = cfg.reglas.turnosPorDefecto;
 
     $('#m-tema .modal__titulo').textContent = t.titulo;
     $('#m-tema .modal__cuerpo').innerHTML =
@@ -449,14 +458,27 @@
         'Es una propuesta: la otra persona tiene que aceptarla antes de empezar.' +
       '</p>' +
       '<div class="apilado">' +
-        opcionModo('debate', 'Debate', 'Competís por quién argumenta mejor. El juez declara ganador y explica por qué. Queda en tu historial.') +
+        opcionModo('debate', 'Debate', 'Compiten por quién argumenta mejor. El juez declara ganador y explica por qué. Queda en tu historial.') +
         opcionModo('negociacion', 'Negociación', 'Sin ganador. El negociador propone tres acuerdos, votan y firman el que les convenza. Pueden seguir en desacuerdo.') +
       '</div>' +
+
+      '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Cuántos turnos?</h3>' +
+      '<div class="turnos-fila">' +
+        [1, 2, 3, 4, 5].map(function (n) {
+          var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
+          return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
+            'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
+            '<span class="turno-ficha__n">' + n + '</span>' +
+            '<span class="turno-ficha__min">' + MINUTOS[n] + ' min</span>' +
+          '</button>';
+        }).join('') +
+      '</div>' +
+      '<p class="chico tenue" style="margin-top:var(--e-2)">4 y 5 turnos necesitan cupo.</p>' +
       '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
         '<span>Si no se ponen de acuerdo en el modo, el debate no se juega. Nadie puede imponerle un Debate al otro.</span>' +
       '</div>';
 
-    $('#m-modo [data-accion="proponer"]').disabled = true;
+    $$('#m-modo .modal__pie button').forEach(function (b) { b.disabled = true; });
     abrirModal('m-modo');
   }
 
@@ -477,7 +499,27 @@
     $$('#m-modo .opcion').forEach(function (o) {
       o.setAttribute('aria-pressed', String(o.dataset.modo === clave));
     });
-    $('#m-modo [data-accion="proponer"]').disabled = false;
+    $$('#m-modo .modal__pie button').forEach(function (b) { b.disabled = false; });
+  }
+
+  /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
+     el documento permite para los temas del catálogo. Con dos teléfonos hace
+     falta el servidor y llega después. */
+  function jugarAqui() {
+    var t = datos.tema(propuesta.temaId);
+    var yo = datos.perfil().nombre || 'Tú';
+    var otro = 'La otra parte';
+    /* El sorteo de quién abre. Como en ajedrez, y se enseña antes de empezar. */
+    var orden = Math.random() < 0.5 ? [yo, otro] : [otro, yo];
+    cerrarModal('m-modo');
+    cerrarModal('m-tema');
+    window.ATWI.partida.empezar({
+      tema: t,
+      modo: propuesta.modo,
+      turnos: propuesta.turnos || cfg.reglas.turnosPorDefecto,
+      publico: modoPublico || 'pareja',
+      quien: orden
+    });
   }
 
   function proponer() {
@@ -532,6 +574,16 @@
     var tema = e.target.closest('[data-tema]');
     if (tema) { abrirTema(tema.dataset.tema); return; }
 
+    var tn = e.target.closest('[data-turnos]');
+    if (tn) {
+      propuesta.turnos = Number(tn.dataset.turnos);
+      $$('#m-modo [data-turnos]').forEach(function (x) {
+        if (Number(x.dataset.turnos) === propuesta.turnos) x.setAttribute('aria-pressed', 'true');
+        else x.removeAttribute('aria-pressed');
+      });
+      return;
+    }
+
     var modo = e.target.closest('[data-modo]');
     if (modo) { elegirModo(modo.dataset.modo); return; }
 
@@ -566,6 +618,16 @@
     else if (a === 'cambiar-publico') { modoPublico = null; categoriaAbierta = null; pintarCatalogo(); }
     else if (a === 'elegir-modo') { abrirModo(); }
     else if (a === 'proponer') { proponer(); }
+    else if (a === 'jugar-aqui') { jugarAqui(); }
+    else if (a === 'salir') {
+      /* Se cierra la sesión Y se borra lo que quedó en el aparato: si no, el
+         siguiente en entrar vería el nombre y los contadores del anterior. */
+      var salir = window.ATWI.auth ? window.ATWI.auth.salir() : Promise.resolve();
+      salir.then(function () {
+        datos.olvidar();
+        location.href = location.pathname;
+      });
+    }
     else if (a === 'olvidar') {
       if (confirm('Se borrará tu perfil, tus partidas y tus actas de este dispositivo. No se puede deshacer.')) {
         datos.olvidar();

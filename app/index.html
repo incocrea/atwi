@@ -71,6 +71,16 @@
     <div class="modal__cuerpo"></div>
   </div>
 
+  <!-- La sala: aquí se juega -->
+  <div class="modal" id="m-partida" hidden role="dialog" aria-modal="true" aria-labelledby="t-partida">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-accion="p-salir" aria-label="Salir de la partida" data-icono="cerrar"></button>
+      <span class="modal__titulo" id="t-partida">La sala</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie"></div>
+  </div>
+
   <!-- Detalle de un tema -->
   <div class="modal" id="m-tema" hidden role="dialog" aria-modal="true" aria-labelledby="t-tema">
     <div class="modal__cabecera">
@@ -91,7 +101,8 @@
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
-      <button class="boton boton--bloque boton--grande" data-accion="proponer" disabled>Proponer</button>
+      <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui" disabled>Jugar aquí, por turnos</button>
+      <button class="boton boton--suave boton--bloque" data-accion="proponer" disabled>Proponérselo por invitación</button>
     </div>
   </div>
 
@@ -116,6 +127,8 @@
 <script src="../assets/js/datos.js"></script>
 <script src="../assets/js/sonido.js"></script>
 <script src="../assets/js/veredicto.js"></script>
+<script src="../assets/js/grabadora.js"></script>
+<script src="../assets/js/partida.js"></script>
 <script src="../assets/js/auth.js"></script>
 <script src="../assets/js/entrada.js"></script>
 <script src="../assets/js/app.js"></script>
