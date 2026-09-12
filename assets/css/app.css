@@ -322,13 +322,27 @@ body.app {
   z-index: 60;
   background: radial-gradient(120% 90% at 50% 15%, #3B3456, #1C1830 70%);
   color: var(--blanco);
+  /* Tres filas FIJAS: la frase, lo que cambia, y el botón. Antes era una sola
+     columna centrada, así que al revelar el resultado la frase se desplazaba
+     hacia arriba —el contenido de debajo crecía— justo después de haberla
+     colocado tramo a tramo. Con las filas fijas, donde aterriza cada tramo es
+     ya su sitio definitivo. */
   display: grid;
-  align-content: center;
+  grid-template-rows: auto 1fr auto;
   justify-items: center;
   gap: var(--e-4);
   padding: var(--e-6) var(--borde-pantalla) calc(env(safe-area-inset-bottom, 0px) + var(--e-6));
   text-align: center;
   animation: revela-fondo var(--dur-media) var(--suave);
+}
+
+/* Las tres zonas comparten el ancho del botón: es lo que da la columna. */
+.revelacion__frase,
+.revelacion__centro,
+.revelacion__abajo { width: 100%; max-width: 22rem; }
+
+.revelacion__centro {
+  display: grid; align-content: center; justify-items: center; gap: var(--e-4);
 }
 .revelacion[hidden] { display: none; }
 
@@ -339,7 +353,6 @@ body.app {
   font-weight: 800;
   letter-spacing: .01em;
 }
-.revelacion__frase--hecha { opacity: .55; }
 
 /* El número de la cuenta atrás: entra grande, se encoge y se desvanece */
 .revelacion__numero {
@@ -388,7 +401,7 @@ body.app {
   max-width: 22rem;
   color: rgba(255, 255, 255, .78);
 }
-.revelacion__boton { margin-top: var(--e-4); max-width: 22rem; }
+.revelacion__boton { margin-top: 0; }
 
 /* --- «And The Winner Is», que es de donde sale el nombre ---------------------
    UNA SOLA LÍNEA, SIEMPRE. Partir la frase en dos renglones parte el logotipo:
@@ -398,11 +411,13 @@ body.app {
    Entra tramo a tramo: cada uno aparece grande y centrado, aguanta medio
    segundo y vuela a su sitio. Eso lo hace veredicto.js con un clon; aquí solo
    viven los dos aspectos, el de vuelo y el ya colocado. */
+/* El tamaño de letra lo calcula veredicto.js midiendo: la frase tiene que
+   ocupar exactamente el ancho de la columna, y no hay tamaño fijo que cuadre
+   en todos los anchos. Lo de aquí es solo el punto de partida de esa medida. */
 .revelacion__frase {
   display: flex; flex-wrap: nowrap; justify-content: center;
   align-items: center; gap: .3em; white-space: nowrap;
-  font-size: clamp(.95rem, 4.3vw, 1.28rem);
-  max-width: 100%;
+  font-size: 1.28rem;
 }
 
 .fm__palabra { display: inline-flex; align-items: center; gap: .06em; flex: none; }
@@ -444,9 +459,9 @@ body.app {
   opacity: .72;
 }
 
-/* Ya revelado: se queda pequeña arriba, pero las iniciales siguen destacando */
-.revelacion__frase--hecha { font-size: clamp(.8rem, 3.4vw, 1rem); gap: .25em; }
-.revelacion__frase--hecha .fm__ini { height: 1.9em; filter: none; }
+/* Ya revelado: NO cambia de tamaño ni de sitio, solo se apaga un punto para
+   que el nombre del resultado sea lo que manda. */
+.revelacion__frase--hecha { opacity: .62; transition: opacity var(--dur-media) var(--suave); }
 
 /* --- Iconos ilustrados --------------------------------------------------------
    Son PNG a todo color, así que el estado no se puede cambiar recoloreando como

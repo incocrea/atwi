@@ -66,6 +66,38 @@ window.ATWI = window.ATWI || {};
   var MS_GRANDE = 500;    // lo que aguanta cada tramo a tamaño completo
   var MS_VUELO = 380;     // lo que tarda en colocarse
 
+  /**
+   * La frase ocupa EL MISMO ANCHO que el botón de abajo, y para eso hay que
+   * medir: no hay tamaño de letra fijo que cuadre en todos los anchos de
+   * pantalla, y `vw` tampoco sirve porque en escritorio el juego vive dentro de
+   * un marco de 430 px y no en la ventana entera. Así que se mide lo que ocupa
+   * la frase a su tamaño de base y se escala hasta llenar la columna.
+   */
+  function ajustarAncho(p) {
+    var f = p.querySelector('.revelacion__frase');
+    if (!f) return;
+    f.style.fontSize = '';
+    var hueco = f.clientWidth;
+    var natural = f.scrollWidth;
+    if (!hueco || !natural) return;
+    var base = parseFloat(getComputedStyle(f).fontSize) || 16;
+    f.style.fontSize = (base * (hueco / natural)).toFixed(2) + 'px';
+  }
+
+  /* Las iniciales son imágenes: medir antes de que carguen da un ancho falso y
+     la frase se queda a medias o se sale. */
+  function conLasLetrasPuestas(p) {
+    var imgs = [].slice.call(p.querySelectorAll('.fm__ini'));
+    return Promise.all(imgs.map(function (im) {
+      if (im.complete && im.naturalWidth) return null;
+      return new Promise(function (listo) {
+        im.addEventListener('load', listo, { once: true });
+        im.addEventListener('error', listo, { once: true });
+        setTimeout(listo, 1200);      // si la imagen no llega, no se cuelga el juego
+      });
+    }));
+  }
+
   function entradaDramatica(p) {
     var frase = p.querySelector('.revelacion__frase');
     var tramos = [].slice.call(frase.querySelectorAll('.fm__palabra'));
@@ -149,8 +181,16 @@ window.ATWI = window.ATWI || {};
 
       p.hidden = false;
       p.className = 'revelacion revelacion--' + (r.modo === 'negociacion' ? 'negociacion' : 'debate');
-      p.innerHTML = '<p class="revelacion__frase">' + fraseMarca() + '</p>' +
-                    '<div class="revelacion__numero" id="rev-n"></div>';
+      /* Tres filas fijas: la frase arriba, lo que cambia en medio y el botón
+         abajo. La frase NO se vuelve a pintar al revelar el resultado, así que
+         no se mueve ni cambia de tamaño: donde aterrizan los tramos es ya su
+         sitio definitivo. */
+      p.innerHTML =
+        '<p class="revelacion__frase">' + fraseMarca() + '</p>' +
+        '<div class="revelacion__centro" id="rev-centro">' +
+          '<div class="revelacion__numero" id="rev-n"></div>' +
+        '</div>' +
+        '<div class="revelacion__abajo" id="rev-abajo"></div>';
 
       /* El contexto de audio se abre AQUÍ, dentro del gesto que llamó a
          revelar(), que es el único momento en que el navegador lo desbloquea.
@@ -177,7 +217,10 @@ window.ATWI = window.ATWI || {};
         return mostrarResultado(p, r);
       }
 
-      return entradaDramatica(p).then(function () {
+      return conLasLetrasPuestas(p).then(function () {
+        ajustarAncho(p);
+        return entradaDramatica(p);
+      }).then(function () {
         if (sonido.hay()) cortar = sonido.redoble(segundos + 0.2);
         return tick();
       });
@@ -209,10 +252,16 @@ window.ATWI = window.ATWI || {};
       detalle = '<p class="revelacion__pie">Mira el desglose para ver por qué.</p>';
     }
 
-    p.innerHTML =
-      '<p class="revelacion__frase revelacion__frase--hecha">' + fraseMarca() + '</p>' +
-      '<p class="revelacion__ganador">' + esc(titular) + '</p>' +
-      detalle +
+    /* La frase se queda donde está: solo se apaga un punto. Volver a pintarla
+       la haría saltar de tamaño y de sitio justo después de haberla colocado
+       tramo a tramo, que es lo contrario de lo que cuenta la animación. */
+    var frase = p.querySelector('.revelacion__frase');
+    if (frase) frase.classList.add('revelacion__frase--hecha');
+
+    p.querySelector('#rev-centro').innerHTML =
+      '<p class="revelacion__ganador">' + esc(titular) + '</p>' + detalle;
+
+    p.querySelector('#rev-abajo').innerHTML =
       '<button class="boton boton--bloque boton--grande revelacion__boton" data-accion="ver-desglose">' +
         'Ver el desglose</button>';
 
