@@ -1453,10 +1453,13 @@ body.app {
 }
 
 .encuentro__fig { position: absolute; inset: 0; display: block; }
+/* SIN sombra. Se le puso una y lo que hacía era delatar el contenedor: la
+   figura llega justo al borde de arriba, así que el desenfoque se cortaba en
+   seco y dejaba una raya gris cruzando a las dos. Y tampoco hace falta: el
+   perfil blanco de pegatina ya las despega del fondo, que es para lo que está. */
 .encuentro__fig .retrato__fig {
   position: absolute; bottom: 0;
   height: 100%; width: auto; max-width: none;
-  filter: drop-shadow(0 8px 18px rgba(46, 42, 63, .16));
 }
 .encuentro__lado--izq .retrato__fig { right: 0; }
 .encuentro__lado--der .retrato__fig { left: 0; }
