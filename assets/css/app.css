@@ -73,18 +73,21 @@ body.app {
 .cabecera__sub { font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; }
 
 .monedero { display: flex; gap: var(--e-2); }
+/* Los contadores de la cabecera son premio: van en cálido. */
 .monedero__dato {
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: .25rem .6rem;
   border-radius: var(--radio-pastilla);
-  background: var(--superficie);
+  background: var(--premio-tinte);
+  color: var(--premio-hondo);
   box-shadow: var(--sombra-1);
   font-family: var(--display);
   font-weight: 800;
   font-size: var(--t-chico);
 }
+.monedero__dato--acuerdo { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
 
 /* --- Las vistas ----------------------------------------------------------- */
 .vistas { position: relative; min-height: 0; }
@@ -174,11 +177,13 @@ body.app {
   overflow: hidden;
   margin-top: 6px;
 }
+/* La barra de nivel va de dorado a coral: es avance, no identidad. */
 .nivel-barra > i {
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--lavanda-claro), var(--lavanda));
+  background: linear-gradient(90deg, var(--premio), var(--premio-calido));
+  box-shadow: 0 0 10px rgba(245, 194, 67, .5);
 }
 
 /* --- Tarjetas de modo ------------------------------------------------------ */
@@ -260,6 +265,9 @@ body.app {
   box-shadow: var(--sombra-1);
 }
 .contador__n { font-family: var(--display); font-weight: 800; font-size: 1.75rem; line-height: 1; }
+.contador--debate .contador__n { color: var(--debate-oscuro); }
+.contador--acuerdo .contador__n { color: var(--negociacion-oscuro); }
+.contador--premio .contador__n { color: var(--premio-hondo); }
 .contador__que {
   font-size: var(--t-mini);
   color: var(--tinta-suave);
@@ -270,16 +278,25 @@ body.app {
 }
 
 .insignias { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--e-3); }
+/* Insignia ganada: dorada y con brillo. Bloqueada: silueta apagada, nunca un
+   candado genérico, que no dice qué hay debajo. */
 .insignia {
   aspect-ratio: 1;
   border-radius: 18px;
   display: grid;
   place-items: center;
   font-size: 1.6rem;
-  background: var(--superficie);
-  box-shadow: var(--sombra-1);
+  background: linear-gradient(160deg, var(--premio-tinte), #FBE9BD);
+  border: 2px solid var(--premio);
+  box-shadow: 0 4px 14px rgba(201, 162, 46, .28);
 }
-.insignia--bloqueada { background: var(--crema-hondo); box-shadow: none; filter: grayscale(1); opacity: .5; }
+.insignia--bloqueada {
+  background: rgba(46, 42, 63, .05);
+  border-color: transparent;
+  box-shadow: none;
+  filter: grayscale(1);
+  opacity: .38;
+}
 
 /* --- Aviso de IA, obligatorio y permanente (art. 50 del Reglamento de IA) --- */
 .aviso-ia {
@@ -386,13 +403,15 @@ body.app {
    instante en pantalla se lee A T W I y después se completa la frase. */
 .revelacion__frase { display: flex; flex-wrap: wrap; justify-content: center; gap: .45em; }
 
-.fm__palabra { display: inline-flex; align-items: baseline; }
+.fm__palabra { display: inline-flex; align-items: center; gap: .08em; }
 
+/* La inicial es la letra del logotipo, no una letra de la tipografía. */
 .fm__ini {
-  font-size: 2.1em;
-  line-height: .9;
-  color: var(--lavanda-claro);
-  text-shadow: 0 2px 14px rgba(168, 154, 240, .55);
+  height: 2.3em;
+  width: auto;
+  display: block;
+  align-self: center;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, .35));
   animation: fm-ini 620ms var(--rebote) both;
 }
 .fm__resto {
@@ -413,7 +432,7 @@ body.app {
 
 /* Ya revelado: se queda pequeña arriba, pero las iniciales siguen destacando */
 .revelacion__frase--hecha { gap: .35em; }
-.revelacion__frase--hecha .fm__ini { font-size: 1.7em; text-shadow: none; animation: none; }
+.revelacion__frase--hecha .fm__ini { height: 1.7em; filter: none; animation: none; }
 .revelacion__frase--hecha .fm__resto { animation: none; }
 
 /* --- Iconos ilustrados --------------------------------------------------------

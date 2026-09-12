@@ -42,8 +42,12 @@ window.ATWI = window.ATWI || {};
     return partes.map(function (par, i) {
       var retardoI = (i * 0.16).toFixed(2);
       var retardoR = (0.70 + i * 0.06).toFixed(2);
-      return '<span class="fm__palabra">' +
-        '<span class="fm__ini"' + (cortas ? '' : ' style="animation-delay:' + retardoI + 's"') + '>' + esc(par[0]) + '</span>' +
+      /* La inicial NO es tipografía: es la letra de verdad del logotipo,
+         recortada de su lámina. Por eso la frase se lee como el nombre. */
+      var ini = '<img class="fm__ini" src="../assets/img/letras/' + par[0] + '.png" ' +
+                'alt="' + esc(par[0]) + '"' +
+                (cortas ? '' : ' style="animation-delay:' + retardoI + 's"') + '>';
+      return '<span class="fm__palabra">' + ini +
         '<span class="fm__resto"' + (cortas ? '' : ' style="animation-delay:' + retardoR + 's"') + '>' + esc(par[1]) + '</span>' +
       '</span>';
     }).join(' ');

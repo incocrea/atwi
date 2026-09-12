@@ -263,9 +263,9 @@
       '</div>' +
 
       '<div class="contadores">' +
-        contador(p.debates, 'Debates') +
-        contador(p.acuerdos, 'Acuerdos') +
-        contador(p.semanasActivas, 'Semanas') +
+        contador(p.debates, 'Debates', 'debate') +
+        contador(p.acuerdos, 'Acuerdos', 'acuerdo') +
+        contador(p.semanasActivas, 'Semanas', 'premio') +
       '</div>' +
 
       '<div class="tarjeta" style="margin-top:var(--e-4);background:var(--negociacion-tinte);box-shadow:none">' +
@@ -288,8 +288,11 @@
       '</div>';
   }
 
-  function contador(n, que) {
-    return '<div class="contador"><div class="contador__n">' + n + '</div><div class="contador__que">' + que + '</div></div>';
+  function contador(n, que, familia) {
+    return '<div class="contador' + (familia ? ' contador--' + familia : '') + '">' +
+        '<div class="contador__n">' + n + '</div>' +
+        '<div class="contador__que">' + que + '</div>' +
+      '</div>';
   }
 
   /* ======================================================================

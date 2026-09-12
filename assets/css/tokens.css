@@ -42,6 +42,22 @@
   --veredicto-fondo: #2E2A3F;
   --veredicto-banda: #14111F;
 
+  /* --- Familia de PREMIO -------------------------------------------------
+     Todo lo que signifique avanzar o ganar algo va en cálido: puntos, nivel,
+     insignias y el momento de la victoria. El lavanda se queda para la
+     identidad, no para la recompensa.
+
+     Aviso honesto sobre por qué: la idea de que el cálido «dispara dopamina»
+     circula en blogs de diseño y NO la sostiene la investigación revisada; de
+     hecho el único estudio del sistema de recompensa que se encontró va en
+     sentido contrario y usa el amarillo como estímulo neutro. Lo que sí
+     sostiene esta elección es la convención cultural del logro —medallas,
+     trofeos, estrellas doradas, podios—, que se reconoce al instante. */
+  --premio: var(--sol);
+  --premio-hondo: var(--sol-oscuro);
+  --premio-tinte: var(--sol-tinte);
+  --premio-calido: var(--debate);          /* el coral del final de la rampa */
+
   /* --- Neutros cálidos --------------------------------------------------- */
   --crema: #FBF7F2;           /* fondo de la app */
   --crema-hondo: #F3EDE4;     /* fondo de zonas hundidas */
