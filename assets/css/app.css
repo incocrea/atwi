@@ -1456,11 +1456,20 @@ body.app {
 /* SIN sombra. Se le puso una y lo que hacía era delatar el contenedor: la
    figura llega justo al borde de arriba, así que el desenfoque se cortaba en
    seco y dejaba una raya gris cruzando a las dos. Y tampoco hace falta: el
-   perfil blanco de pegatina ya las despega del fondo, que es para lo que está. */
+   perfil blanco de pegatina ya las despega del fondo, que es para lo que está.
+
+   Van ANCLADAS ARRIBA y no abajo. Así, al crecer, lo que sobra se va por abajo y
+   por los lados —fuera de la pantalla, que es donde se acordó que podían
+   salirse— y no por arriba, que es donde está el nombre. */
 .encuentro__fig .retrato__fig {
-  position: absolute; bottom: 0;
-  height: 100%; width: auto; max-width: none;
+  position: absolute; top: var(--sube, 0); bottom: auto;
+  height: var(--alto-fig, 120%); width: auto; max-width: none;
 }
+/* Kai es más alto que Luna y se nota, pero poco: un 4%. Más que eso deja de
+   leerse como «es más alto» y pasa a leerse como «están a distinta distancia».
+   El 2% de subida compensa que, midiendo más, su puño caería más abajo: así los
+   dos se encuentran a la misma altura aunque no midan lo mismo. */
+.encuentro__fig[data-quien="kai"] .retrato__fig { --alto-fig: 124%; --sube: -2%; }
 .encuentro__lado--izq .retrato__fig { right: 0; }
 .encuentro__lado--der .retrato__fig { left: 0; }
 .retrato--volteado .retrato__fig { transform: scaleX(-1); }
