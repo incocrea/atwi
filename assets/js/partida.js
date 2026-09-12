@@ -549,9 +549,11 @@ window.ATWI = window.ATWI || {};
         window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
-      (pacto
-        ? '<span class="encuentro__chispa"></span>'
-        : '<span class="encuentro__vs">VS</span>');
+      /* En Negociación NO se dibuja destello: las dos figuras ya traen sus
+         propias chispas junto al puño, y una tercera encima se veía como un
+         adorno pegado que no era de nadie. El VS de Controversia sí hace falta:
+         ahí no hay nada en el medio que diga que se enfrentan. */
+      (pacto ? '' : '<span class="encuentro__vs">VS</span>');
 
     /* El golpe suena cuando LLEGAN, no al salir: es el sonido del encuentro, y
        adelantarlo lo convierte en el de arrancar. */

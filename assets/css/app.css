@@ -1459,30 +1459,16 @@ body.app {
 }
 .retrato--volteado .retrato__fig { transform: translateX(-50%) scaleX(-1); }
 
-.encuentro__vs, .encuentro__chispa {
-  position: absolute; z-index: 3; left: 50%; top: var(--alto-golpe, 46%);
+.encuentro__vs {
+  position: absolute; z-index: 3; left: 50%; top: 46%;
   transform: translate(-50%, -50%) scale(0); opacity: 0;
 }
-/* El VS cae a la altura del pecho, donde se cruzan las miradas. La chispa NO:
-   tiene que caer donde se tocan los nudillos, que está más abajo. */
-.encuentro__chispa { --alto-golpe: 56%; }
 .encuentro__vs {
   font-family: var(--display); font-weight: 800; font-size: 3.6rem; line-height: 1;
   color: var(--ctx-banda, var(--tinta));
   -webkit-text-stroke: 6px var(--ctx-fondo, var(--crema)); paint-order: stroke;
 }
-/* Ocho rayos. Sale de un `repeating-conic-gradient` y no de uno normal: con el
-   normal hay que escribir los ocho tramos a mano y basta equivocarse en un
-   ángulo para que salga un solo rayo, que fue lo que pasó. */
-.encuentro__chispa {
-  width: 96px; height: 96px; border-radius: 50%;
-  background: repeating-conic-gradient(from 0deg,
-    var(--dorado, #F5C243) 0deg 6deg, transparent 6deg 45deg);
-  -webkit-mask: radial-gradient(closest-side, transparent 26%, #000 29%);
-  mask: radial-gradient(closest-side, transparent 26%, #000 29%);
-}
-.encuentro--llegado .encuentro__vs,
-.encuentro--llegado .encuentro__chispa { animation: encuentro-golpe 460ms var(--rebote) both; }
+.encuentro--llegado .encuentro__vs { animation: encuentro-golpe 460ms var(--rebote) both; }
 @keyframes encuentro-golpe {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(2.2) rotate(-12deg); }
   55% { opacity: 1; transform: translate(-50%, -50%) scale(.88) rotate(3deg); }
@@ -1505,7 +1491,7 @@ body.app {
   .encuentro__lado--izq { transform: translateX(var(--fin-izq, 0)); }
   .encuentro__lado--der { transform: translateX(var(--fin-der, 0)); }
   .encuentro--llegado .encuentro__lado { transition: none; }
-  .encuentro--llegado .encuentro__vs, .encuentro--llegado .encuentro__chispa {
+  .encuentro--llegado .encuentro__vs {
     animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1);
   }
 }
