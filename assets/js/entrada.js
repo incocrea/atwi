@@ -55,6 +55,13 @@ window.ATWI = window.ATWI || {};
     window.turnstile.render(hueco, {
       sitekey: cfg.turnstileSiteKey,
       language: 'es',
+      theme: 'light',
+      size: 'flexible',
+      /* La caja gris de Cloudflare no aparece salvo que de verdad haga falta
+         resolver algo. Para casi todo el mundo el token se genera en silencio y
+         la pantalla se queda limpia, que es lo que pide una pantalla de entrada
+         de un juego. Si el visitante parece un robot, entonces sí se dibuja. */
+      appearance: 'interaction-only',
       callback: function (t) { estado.captcha = t; },
       'expired-callback': function () { estado.captcha = ''; },
       'error-callback': function () { estado.captcha = ''; }
@@ -67,7 +74,7 @@ window.ATWI = window.ATWI || {};
     if (estado.paso === 'datos') {
       caja.innerHTML =
         '<div class="centrado" style="padding:var(--e-5) 0 var(--e-6)">' +
-          '<div style="font-size:3.5rem;line-height:1">⚖️</div>' +
+          '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="190" height="58" style="margin:0 auto;height:58px;width:auto">' +
           '<h1 style="margin-top:var(--e-3)">Entra a jugar</h1>' +
           '<p class="chico suave" style="margin-top:var(--e-2)">' +
             'Solo el nombre y el correo. Nada más.</p>' +
@@ -85,7 +92,7 @@ window.ATWI = window.ATWI || {};
             '<span class="chico tenue" style="display:block;margin-top:6px">' +
               'Te mandamos un código de seis dígitos. No hay contraseña que recordar.</span>' +
           '</label>' +
-          '<div id="captcha"></div>' +
+          '<div class="captcha"><div id="captcha"></div></div>' +
           '<p class="chico tenue" id="c-error" style="color:var(--peligro)"></p>' +
         '</div>' +
         '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
@@ -134,7 +141,7 @@ window.ATWI = window.ATWI || {};
     var correo = ($('#c-correo').value || '').trim().toLowerCase();
     if (nombre.length < 2) return error('Escribe tu nombre.');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(correo)) return error('Ese correo no parece válido.');
-    if (cfg.turnstileSiteKey && !estado.captcha) return error('Espera a que termine la comprobación de seguridad.');
+    if (cfg.turnstileSiteKey && !estado.captcha) return error('Marca la casilla de seguridad de aquí arriba.');
 
     estado.nombre = nombre;
     estado.correo = correo;
@@ -205,11 +212,25 @@ window.ATWI = window.ATWI || {};
     if (estado.paso === 'datos') mandarCodigo(); else entrar();
   });
 
+  /* Salida de desarrollo: con ?local=1 se salta la puerta y se entra con un
+     nombre de prueba, para poder revisar el diseño de las pantallas sin gastar
+     un correo en cada recarga. SOLO funciona en localhost: en el sitio
+     publicado esta condición es falsa y la puerta se comporta normal. */
+  function modoPruebas() {
+    var enLocal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    return enLocal && /[?&]local=1/.test(location.search);
+  }
+
   window.ATWI.entrada = {
     /** Abre la puerta si hace falta. Llama a `hecho` cuando se puede jugar. */
     exigir: function (hecho) {
       alTerminar = hecho;
       var p = $('#puerta');
+      if (modoPruebas()) {
+        if (!datos.perfil().nombre) datos.actualizar({ nombre: 'Prueba' });
+        p.hidden = true;
+        return hecho();
+      }
       if (!auth.hayServidor()) {
         /* Modo local: con que haya nombre guardado basta. */
         if (datos.perfil().nombre) { p.hidden = true; return hecho(); }

@@ -23,12 +23,24 @@
   --debate-oscuro: #C75B33;
   --debate-tinte: #FDEAE1;
 
-  /* --- Apoyo ------------------------------------------------------------- */
+  /* --- Apoyo -------------------------------------------------------------
+     El juego no puede ser todo lavanda: cada pantalla tiene su color y de ahí
+     salen el verde, el amarillo, el arena y el naranja. Ver el bloque de
+     contextos al final de este archivo. */
   --cielo: #63AEEF;
   --cielo-tinte: #E3F0FD;
+  --cielo-oscuro: #2F6BA8;
   --sol: #F5C243;             /* insignias y recompensas */
   --sol-tinte: #FDF2D6;
+  --sol-banda: #C9A22E;
+  --sol-oscuro: #8A6407;
+  --arena: #E7D9C3;
+  --arena-oscuro: #7E6A4E;
+  --menta-clara: #8FD9C7;
   --rosa: #EE9BBE;
+  --rosa-oscuro: #E4658F;
+  --veredicto-fondo: #2E2A3F;
+  --veredicto-banda: #14111F;
 
   /* --- Neutros cálidos --------------------------------------------------- */
   --crema: #FBF7F2;           /* fondo de la app */
@@ -104,4 +116,50 @@
   --dur-larga: 420ms;
   --suave: cubic-bezier(.2, .7, .2, 1);
   --rebote: cubic-bezier(.34, 1.56, .64, 1);
+}
+
+/* ==========================================================================
+   COLOR POR PANTALLA
+   Cada vista inunda el marco con su color. Es lo que hace que entrar al
+   catálogo se sienta distinto de entrar al perfil, y lo que saca al juego del
+   crema uniforme. El contenedor lleva `data-ctx` y la barra inferior lo lee.
+
+   REGLA: dentro de una pantalla NO se usa --lavanda, --sol, --menta ni ningún
+   color en crudo. Solo --ctx-*. Así cambiar el color de una pantalla es tocar
+   una línea, y no cazar valores por veinte reglas.
+
+   La pastilla de la pestaña activa es OSCURA, no clara. Sobre una barra ya muy
+   clara una pastilla clara no llega al contraste mínimo que exige el estado de
+   un control. Medido en el navegador, blanco sobre cada pastilla: jugar 6,89 ·
+   debate 6,02 · historial 5,54 · perfil 5,38 · catálogo 5,17 · negociación 4,83.
+   Todas por encima de 4,5, que es lo que pide la etiqueta de 11 px. El verde de
+   negociación se oscureció de #21876F a #1F8069 justo por eso: daba 4,41.
+   ========================================================================== */
+[data-ctx] {
+  --ctx-fondo: var(--crema);
+  --ctx-banda: var(--lavanda-oscuro);
+  --ctx-tinta: var(--tinta);
+  --ctx-barra: var(--superficie);
+  --ctx-pastilla: var(--lavanda-oscuro);
+}
+[data-ctx="jugar"] {
+  --ctx-fondo: #EFECFE; --ctx-banda: #5A49B4; --ctx-barra: #F6F3FE; --ctx-pastilla: #5A49B4;
+}
+[data-ctx="catalogo"] {
+  --ctx-fondo: #F3EDE4; --ctx-banda: #C2AE92; --ctx-barra: #FBF7F2; --ctx-pastilla: #7E6A4E;
+}
+[data-ctx="historial"] {
+  --ctx-fondo: #E3F0FD; --ctx-banda: #2F6BA8; --ctx-barra: #EFF7FE; --ctx-pastilla: #2F6BA8;
+}
+[data-ctx="perfil"] {
+  --ctx-fondo: #FDF2D6; --ctx-banda: #C9A22E; --ctx-barra: #FEF8E8; --ctx-pastilla: #8A6407;
+}
+[data-ctx="negociacion"] {
+  --ctx-fondo: #DDF4EE; --ctx-banda: #21876F; --ctx-barra: #EAF8F4; --ctx-pastilla: #1F8069;
+}
+[data-ctx="debate"] {
+  --ctx-fondo: #FDEAE1; --ctx-banda: #C75B33; --ctx-barra: #FDF2EC; --ctx-pastilla: #A8431F;
+}
+[data-ctx="veredicto"] {
+  --ctx-fondo: #2E2A3F; --ctx-banda: #14111F; --ctx-tinta: #FBF7F2;
 }

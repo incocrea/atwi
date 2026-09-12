@@ -43,6 +43,9 @@
     });
     var v = $('#v-' + nombre);
     if (v) v.scrollTop = 0;
+    /* Cada pantalla inunda el marco con su color. */
+    var marco = $('.marco');
+    if (marco) marco.setAttribute('data-ctx', nombre);
     pintar(nombre);
   }
 
@@ -102,12 +105,21 @@
       '<h2 style="margin:var(--e-5) 0 var(--e-3)">Los dos modos</h2>' +
       '<div class="modos">' +
         fichaModo('debate', 'Debate', 'Dos partes compiten por quién argumenta mejor. Un juez imparcial evalúa, declara ganador y explica por qué.') +
-        fichaModo('negociacion', 'Negociación', 'Un negociador de IA propone tres acuerdos, votáis, y el elegido lo firmáis los dos. También vale seguir en desacuerdo.') +
+        fichaModo('negociacion', 'Negociación', 'Un negociador de IA propone tres acuerdos, votan, y el elegido lo firman los dos. También vale seguir en desacuerdo.') +
       '</div>' +
 
       '<div class="aviso-ia" style="margin-top:var(--e-5)">' +
         icono('aviso', 20) +
         '<span>Los resultados los genera una inteligencia artificial. ATWI es un juego: no es terapia ni asesoramiento profesional.</span>' +
+      '</div>' +
+
+      /* PROVISIONAL: para probar el efecto de revelación mientras no hay partida
+         de verdad. Se quita en cuanto el duelo funcione de extremo a extremo. */
+      '<h2 style="margin:var(--e-6) 0 var(--e-3)">Probar el efecto</h2>' +
+      '<div class="apilado">' +
+        '<button class="boton boton--suave boton--bloque" data-accion="demo-debate">Resultado de un Debate</button>' +
+        '<button class="boton boton--suave boton--bloque" data-accion="demo-acuerdo">Negociación con acuerdo</button>' +
+        '<button class="boton boton--suave boton--bloque" data-accion="demo-sin-acuerdo">Negociación sin acuerdo</button>' +
       '</div>';
   }
 
@@ -194,7 +206,7 @@
         '</div>' +
         '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
           cat.total + ' temas sobre los que discuten las parejas de verdad. ' +
-          'Para cuando no tenéis nada por lo que discutir.' +
+          'Para cuando no tienen nada por lo que discutir.' +
         '</p>' +
         '<div class="categorias">' +
           cat.categorias.map(function (c) {
@@ -258,7 +270,7 @@
 
       '<div class="tarjeta" style="margin-top:var(--e-4);background:var(--negociacion-tinte);box-shadow:none">' +
         '<p class="chico" style="color:var(--negociacion-oscuro);font-weight:700">' +
-          'Aquí no hay marcador entre vosotros dos. Cada quien ve sus propios contadores, ' +
+          'Aquí no hay marcador entre ustedes dos. Cada quien ve sus propios contadores, ' +
           'y nunca se comparan lado a lado. Es a propósito.' +
         '</p>' +
       '</div>' +
@@ -326,10 +338,10 @@
       '</p>' +
       '<div class="apilado">' +
         opcionModo('debate', 'Debate', 'Competís por quién argumenta mejor. El juez declara ganador y explica por qué. Queda en tu historial.') +
-        opcionModo('negociacion', 'Negociación', 'Sin ganador. El negociador propone tres acuerdos, votáis y firmáis el que os convenza. Podéis seguir en desacuerdo.') +
+        opcionModo('negociacion', 'Negociación', 'Sin ganador. El negociador propone tres acuerdos, votan y firman el que les convenza. Pueden seguir en desacuerdo.') +
       '</div>' +
       '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
-        '<span>Si no os ponéis de acuerdo en el modo, el debate no se juega. Nadie puede imponerle un Debate al otro.</span>' +
+        '<span>Si no se ponen de acuerdo en el modo, el debate no se juega. Nadie puede imponerle un Debate al otro.</span>' +
       '</div>';
 
     $('#m-modo [data-accion="proponer"]').disabled = true;
@@ -416,6 +428,24 @@
     var a = acc.dataset.accion;
 
     if (a === 'nuevo') { irA('catalogo'); }
+    else if (a === 'demo-debate') {
+      window.ATWI.veredicto.revelar({
+        modo: 'debate', publico: 'pareja',
+        ganador: datos.perfil().nombre || 'Tú'
+      });
+    }
+    else if (a === 'demo-acuerdo') {
+      window.ATWI.veredicto.revelar({
+        modo: 'negociacion', publico: 'pareja',
+        tema: 'los platos',
+        acuerdo: 'Si cenamos después de las diez, los platos se quedan en remojo y se lavan a la mañana siguiente antes del café.'
+      });
+    }
+    else if (a === 'demo-sin-acuerdo') {
+      window.ATWI.veredicto.revelar({
+        modo: 'negociacion', publico: 'pareja', tema: 'los platos', acuerdo: null
+      });
+    }
     else if (a === 'catalogo-atras') { categoriaAbierta = null; pintarCatalogo(); }
     else if (a === 'cambiar-publico') { modoPublico = null; categoriaAbierta = null; pintarCatalogo(); }
     else if (a === 'elegir-modo') { abrirModo(); }

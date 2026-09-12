@@ -117,3 +117,15 @@ textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* --- Turnstile ---------------------------------------------------------------
+   En modo «interaction-only» el widget no dibuja nada salvo que de verdad haga
+   falta resolver un reto, así que este bloque casi siempre está vacío y no debe
+   ocupar ni dejar hueco. Cuando aparece, va centrado y sin caja. */
+.captcha { display: grid; justify-items: center; }
+/* Con «interaction-only» el widget no dibuja nada salvo que de verdad haya que
+   resolver un reto, y entonces este bloque ni ocupa ni deja hueco. Cuando SÍ
+   aparece hay que dejarlo ver entero: esconderlo dejaría tirado justo a quien
+   necesita resolverlo. Por eso aquí no hay transform ni márgenes negativos. */
+.captcha:has(> div:empty) { display: none; }
+.captcha > div { max-width: 100%; }

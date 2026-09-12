@@ -1,13 +1,30 @@
 {
   "name": "ATWI",
   "short_name": "ATWI",
-  "description": "Juego de debate para parejas.",
-  "start_url": "/app/",
-  "scope": "/",
+  "description": "Juego de debate. De uno a cinco turnos, y una IA da el resultado.",
+  "start_url": "./app/",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#FBF7F2",
   "theme_color": "#FBF7F2",
   "lang": "es",
-  "icons": []
+  "icons": [
+    {
+      "src": "assets/img/icono-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/img/icono-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/img/icono-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
 }

@@ -42,10 +42,23 @@ window.ATWI.config = {
      aplica el servidor; estas son solo para no enseñar botones imposibles.
      Vienen de docs/02-modos-y-catalogo.md. */
   reglas: {
-    /* El turno único está PROHIBIDO en los dos modos (docs/03 §14). En Debate,
-       porque sin réplica el criterio de escucha no tiene sobre qué puntuarse;
-       en Negociación, porque dos turnos son el bucle completo de la mediación. */
-    turnosMin: 2,
+    /* TURNOS ALTERNOS, SIEMPRE. Nadie graba sin haber escuchado antes al otro,
+       con la única excepción de quien abre, que no tiene a quién escuchar.
+       NO hay turnos ciegos ni simultáneos, en ningún modo y con ningún número:
+       eso no es como se discute en la vida real y es justo lo que la app imita.
+       Decisión del titular, 2026-09-12, y supera lo que dicen docs/02 §3 y
+       docs/03 §16.
+
+       Quién abre se decide como en ajedrez: por sorteo o de común acuerdo, se
+       enseña en pantalla antes de empezar, y en la revancha abre el otro.
+
+       De 1 a 5 turnos por persona. A un turno la ronda sigue teniendo forma
+       —enunciado, A, B que le responde, resultado— pero no se puede puntuar
+       «escucha y reconocimiento», porque quien abrió no tuvo a nadie a quien
+       escuchar: esa modalidad se puntúa con cuatro criterios y la app lo dice. */
+    turnosAlternos: true,
+    quienEmpieza: 'sorteo',        // 'sorteo' | 'acordado'
+    turnosMin: 1,
     turnosMax: 5,
     turnosPorDefecto: 3,
     turnosConCupo: [4, 5],       // fuera del nivel gratuito
@@ -70,10 +83,38 @@ window.ATWI.config = {
 
      Ninguna valora ni da la razón: solo acusan recibo y pasan el turno. */
   frasesDelJuez: [
-    'Te he escuchado. Veamos qué dice la otra parte.',
-    'Anotado tal cual lo has dicho. Turno de enfrente.',
+    'Te escuché. Veamos qué dice la otra parte.',
+    'Anotado tal cual lo dijiste. Turno de enfrente.',
     'Lo tengo. Ahora escucho a la otra persona.',
     'Registrado. Que hable la otra parte.',
     'Hasta aquí lo tuyo. Escuchemos el otro lado.'
-  ]
+  ],
+
+  /* Al cerrarse la última intervención, antes de que el juez se retire a pensar.
+     Tres variantes para que no suene a grabación. También fijas. */
+  frasesDeCierre: [
+    'Ya tengo todos los argumentos. Voy a deliberar.',
+    'Con esto me basta. Denme un momento para pensarlo.',
+    'Hemos terminado la ronda. Ahora me toca a mí.'
+  ],
+
+  /* El momento del resultado. Frase, cuenta atrás y redoble.
+     El redoble NO puede sonar solo: la política de autoreproducción deja el
+     audio suspendido hasta que hay un gesto, así que todo arranca del toque en
+     «Ver el resultado» y nunca automáticamente (docs/01 §8.6). */
+  veredicto: {
+    /* De aquí sale el nombre de la app: And The Winner Is. Las cuatro iniciales
+       se pintan grandes y en color de marca, y entran antes que el resto de las
+       letras, para que se lea ATWI un instante antes de leerse la frase.
+       Cada palabra va como [inicial, resto]. */
+    frase: [['A', 'nd'], ['T', 'he'], ['W', 'inner'], ['I', 's…']],
+    segundosCuentaAtras: 3,
+
+    /* En Negociación no gana una persona. Con pareja gana siempre la relación. */
+    ganadorNegociacion: { pareja: 'la relación', amigos: 'los dos' },
+
+    conAcuerdo: 'Tienen un acuerdo sobre {tema}, escrito por ustedes y firmado por los dos.',
+    sinAcuerdo: 'Esta vez no hubo acuerdo, y no pasa nada. Practicaron el arte de diferir ' +
+                'sin molestarse, y eso ya es una gran victoria.'
+  }
 };

@@ -24,7 +24,9 @@ body.app {
   width: 100%;
   max-width: var(--app-ancho);
   height: 100dvh;
-  background: var(--crema);
+  background: var(--ctx-fondo);
+  color: var(--ctx-tinta);
+  transition: background var(--dur-media) var(--suave);
   display: grid;
   grid-template-rows: auto 1fr auto;
   overflow: hidden;
@@ -64,7 +66,8 @@ body.app {
   justify-content: space-between;
   gap: var(--e-3);
   padding: calc(env(safe-area-inset-top, 0px) + var(--e-4)) var(--borde-pantalla) var(--e-3);
-  background: var(--crema);
+  background: var(--ctx-fondo);
+  transition: background var(--dur-media) var(--suave);
 }
 .cabecera__titulo { font-family: var(--display); font-size: var(--t-h2); font-weight: 800; }
 .cabecera__sub { font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; }
@@ -108,9 +111,10 @@ body.app {
   grid-template-columns: repeat(4, 1fr);
   height: calc(var(--barra-alto) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: var(--superficie);
-  border-top: 1px solid var(--linea);
+  background: var(--ctx-barra);
+  border-top: 1px solid rgba(46, 42, 63, .08);
   box-shadow: 0 -4px 20px rgba(46, 42, 63, .06);
+  transition: background var(--dur-media) var(--suave);
 }
 
 .barra-item {
@@ -129,7 +133,22 @@ body.app {
   transition: color var(--dur-corta) var(--suave);
 }
 .barra-item svg { width: 26px; height: 26px; }
-.barra-item[aria-current="page"] { color: var(--lavanda); }
+/* La pastilla activa va en el tono hondo del contexto y la etiqueta en blanco:
+   es lo único que alcanza el contraste que exige el estado de un control. */
+/* La pastilla NO puede ir a z-index negativo: la barra tiene fondo propio y se
+   la comería. Va dentro del apilado del propio botón, con el icono y la
+   etiqueta por encima. */
+.barra-item { position: relative; }
+.barra-item[aria-current="page"] { color: var(--blanco); }
+.barra-item[aria-current="page"]::before {
+  content: '';
+  position: absolute;
+  inset: 6px 8px;
+  border-radius: 16px;
+  background: var(--ctx-pastilla);
+  z-index: 0;
+}
+.barra-item > * { position: relative; z-index: 1; }
 .barra-item[aria-current="page"] svg { transform: translateY(-1px) scale(1.06); }
 .barra-item:active { transform: scale(.94); }
 
@@ -274,3 +293,125 @@ body.app {
   font-size: var(--t-chico);
   font-weight: 600;
 }
+
+/* --- La revelación del resultado -------------------------------------------
+   Ocupa el marco entero y va a oscuras: el contraste con el crema de todo lo
+   demás es la mitad del efecto. La cuenta atrás es GRÁFICA además de sonora,
+   porque en iOS con el interruptor de silencio el audio no suena y el suspense
+   tiene que funcionar igual. */
+.revelacion {
+  position: absolute;
+  inset: 0;
+  z-index: 60;
+  background: radial-gradient(120% 90% at 50% 15%, #3B3456, #1C1830 70%);
+  color: var(--blanco);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--e-4);
+  padding: var(--e-6) var(--borde-pantalla) calc(env(safe-area-inset-bottom, 0px) + var(--e-6));
+  text-align: center;
+  animation: revela-fondo var(--dur-media) var(--suave);
+}
+.revelacion[hidden] { display: none; }
+
+@keyframes revela-fondo { from { opacity: 0; } to { opacity: 1; } }
+
+.revelacion__frase {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  letter-spacing: .01em;
+  animation: frase-entra var(--dur-larga) var(--rebote);
+}
+.revelacion__frase--hecha { font-size: 1.0625rem; opacity: .55; }
+
+@keyframes frase-entra {
+  from { opacity: 0; transform: translateY(14px) scale(.92); }
+  to { opacity: 1; transform: none; }
+}
+
+/* El número de la cuenta atrás: entra grande, se encoge y se desvanece */
+.revelacion__numero {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 8rem;
+  line-height: 1;
+  min-height: 8rem;
+  display: grid;
+  place-items: center;
+  animation: numero var(--dur-larga) var(--suave);
+}
+@keyframes numero {
+  0% { opacity: 0; transform: scale(2.1); filter: blur(6px); }
+  35% { opacity: 1; transform: scale(1); filter: blur(0); }
+  100% { opacity: .85; transform: scale(.94); }
+}
+
+.revelacion__ganador {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2rem, 12vw, 3.25rem);
+  line-height: 1.05;
+  animation: ganador var(--dur-larga) var(--rebote);
+}
+.revelacion--debate .revelacion__ganador { color: var(--debate); }
+.revelacion--negociacion .revelacion__ganador { color: var(--negociacion); }
+
+@keyframes ganador {
+  0% { opacity: 0; transform: scale(.5) rotate(-4deg); }
+  60% { transform: scale(1.08) rotate(1deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+.revelacion__acuerdo {
+  font-size: 1.0625rem;
+  line-height: 1.45;
+  max-width: 22rem;
+  padding: var(--e-4);
+  border-radius: var(--radio-tarjeta);
+  background: rgba(255, 255, 255, .08);
+}
+.revelacion__pie {
+  font-size: var(--t-chico);
+  line-height: 1.5;
+  max-width: 22rem;
+  color: rgba(255, 255, 255, .78);
+}
+.revelacion__boton { margin-top: var(--e-4); max-width: 22rem; }
+
+/* --- «And The Winner Is», que es de donde sale el nombre ---------------------
+   Las cuatro iniciales van grandes y en lavanda; el resto de cada palabra, más
+   pequeño y tenue. Entran primero las iniciales, una a una, así que durante un
+   instante en pantalla se lee A T W I y después se completa la frase. */
+.revelacion__frase { display: flex; flex-wrap: wrap; justify-content: center; gap: .45em; }
+
+.fm__palabra { display: inline-flex; align-items: baseline; }
+
+.fm__ini {
+  font-size: 2.1em;
+  line-height: .9;
+  color: var(--lavanda-claro);
+  text-shadow: 0 2px 14px rgba(168, 154, 240, .55);
+  animation: fm-ini 620ms var(--rebote) both;
+}
+.fm__resto {
+  font-size: .82em;
+  opacity: .72;
+  animation: fm-resto 420ms var(--suave) both;
+}
+
+@keyframes fm-ini {
+  0% { opacity: 0; transform: translateY(10px) scale(.4) rotate(-8deg); }
+  60% { transform: translateY(0) scale(1.14) rotate(2deg); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes fm-resto {
+  from { opacity: 0; transform: translateX(-6px); }
+  to { opacity: .72; transform: none; }
+}
+
+/* Ya revelado: se queda pequeña arriba, pero las iniciales siguen destacando */
+.revelacion__frase--hecha { gap: .35em; }
+.revelacion__frase--hecha .fm__ini { font-size: 1.7em; text-shadow: none; animation: none; }
+.revelacion__frase--hecha .fm__resto { animation: none; }
