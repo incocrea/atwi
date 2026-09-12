@@ -1430,7 +1430,11 @@ body.app {
 
 .encuentro {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
-  height: clamp(240px, 46%, 430px);
+  /* Un 25% más alta de lo que hace falta para las figuras: el pelo de Kai le
+     llegaba justo al techo y se lo cortaba en seco. El alto de más es aire
+     arriba, no figura más grande —eso lo fija `--alto-fig`—, así que no se ve
+     nada nuevo: solo deja de verse un corte. */
+  height: clamp(300px, 58%, 538px);
   overflow: hidden; pointer-events: none;
 }
 /* El botón queda POR ENCIMA del dibujo, y sin fondo: el suelo se lo da su
@@ -1460,10 +1464,13 @@ body.app {
 
    Van ANCLADAS ARRIBA y no abajo. Así, al crecer, lo que sobra se va por abajo y
    por los lados —fuera de la pantalla, que es donde se acordó que podían
-   salirse— y no por arriba, que es donde está el nombre. */
+   salirse— y no por arriba, que es donde está el nombre.
+
+   Los porcentajes están medidos contra la banda ya crecida, para que las figuras
+   se queden EXACTAMENTE donde estaban: lo que se movió es el techo, no ellas. */
 .encuentro__fig .retrato__fig {
-  position: absolute; top: var(--sube, 0); bottom: auto;
-  height: var(--alto-fig, 120%); width: auto; max-width: none;
+  position: absolute; top: var(--sube, 20%); bottom: auto;
+  height: var(--alto-fig, 95%); width: auto; max-width: none;
 }
 /* Kai es más ALTO que Luna, que no es lo mismo que más grande. La diferencia la
    hace la POSICIÓN, no el tamaño: los dos se dibujan igual de grandes y él se
@@ -1474,7 +1481,7 @@ body.app {
    Efecto secundario asumido: su puño queda ese 4% por encima del de Luna. En un
    choque de puños eso no desentona —tampoco se chocan a escuadra en la vida
    real— y es el precio de que se le note la altura. */
-.encuentro__fig[data-quien="kai"] .retrato__fig { --sube: -4%; }
+.encuentro__fig[data-quien="kai"] .retrato__fig { --sube: 17%; }
 .encuentro__lado--izq .retrato__fig { right: 0; }
 .encuentro__lado--der .retrato__fig { left: 0; }
 .retrato--volteado .retrato__fig { transform: scaleX(-1); }
