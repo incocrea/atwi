@@ -209,6 +209,19 @@ window.ATWI = window.ATWI || {};
       return this.tema(id);
     },
 
+    /**
+     * Cambia SOLO los campos que se le pasen, sea el tema del catálogo o
+     * propio. Es lo que usa el retoque de una sección suelta: quien está a
+     * punto de empezar y quiere afinar una postura no debería tener que abrir
+     * el editor entero ni volver a escribir lo que ya estaba bien.
+     */
+    retocarTema: function (id, campos) {
+      var t = this.tema(id);
+      if (!t) return null;
+      if (t.propio) return this.guardarTemaPropio(Object.assign({}, t, campos));
+      return this.reescribir(id, campos);
+    },
+
     /** Devuelve un tema reescrito a como estaba en el catálogo. */
     devolverAlOriginal: function (id) {
       delete cargarTemas().reescritos[id];

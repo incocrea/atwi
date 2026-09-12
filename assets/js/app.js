@@ -313,7 +313,7 @@
           /* Directo al editor, sin pasar por el detalle: quien ve un tema que
              no encaja con su discusión quiere arreglarlo ahí mismo. */
           '<button class="chip chip--editar" data-editar-tema="' + esc(t.id) + '">' +
-            window.ATWI.iconoSVG('lapiz', 13) +
+            window.ATWI.pegatina('lapiz', 15) +
             (tocado ? 'Editar' : 'Personalizar') + '</button>' +
         '</div>' +
       '</div>';
@@ -868,52 +868,114 @@
     if (!propuesta.modo) propuesta.modo = 'debate';
     if (!propuesta.turnos) propuesta.turnos = cfg.reglas.turnosPorDefecto;
 
-    var tocado = t.propio || datos.estaReescrito(id);
-
     /* El tema ya lleva el color del modo: desde que se elige, el flujo entero
        va teñido y no hay que recordarlo de memoria. */
     $('#m-tema').className = 'modal modal--' + propuesta.modo;
     $('#m-tema .modal__pie button').className =
       'boton boton--bloque boton--grande boton--' + propuesta.modo;
     $('#m-tema .modal__titulo').textContent = t.titulo;
+
+    /* CADA TROZO SE RETOCA POR SEPARADO. El enunciado y las dos posturas se
+       tocan y se editan solos, sin abrir el editor entero. Es el último
+       momento antes de empezar y lo que se quiere ahí es afinar una frase, no
+       reescribir el tema; obligar a pasar por el formulario completo para
+       cambiar media línea hacía que nadie la cambiara. */
     $('#m-tema .modal__cuerpo').innerHTML =
-      '<div class="tarjeta tarjeta--aire" style="margin-bottom:var(--e-3)">' +
-        '<p style="font-family:var(--display);font-weight:800;font-size:var(--t-h3);line-height:1.25">' + esc(t.enunciado) + '</p>' +
-      '</div>' +
+      '<button class="tarjeta tarjeta--aire retocable" data-retocar="enunciado" ' +
+              'style="margin-bottom:var(--e-3)">' +
+        '<span class="retocable__texto" style="font-family:var(--display);font-weight:800;' +
+          'font-size:var(--t-h3);line-height:1.25">' + esc(t.enunciado) + '</span>' +
+        '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
+      '</button>' +
 
-      /* Reescribir el tema de una discusión es algo que la otra persona tiene
-         derecho a ver, así que la marca dice quién y cuándo. */
-      (tocado
-        ? '<div class="reescrito" style="margin-bottom:var(--e-3)">' +
-            window.ATWI.iconoSVG('lapiz', 16) +
-            '<span>' + (t.propio ? 'Tema suyo' : 'Editado') +
-            ', por <strong>' + esc(t.editadoPor || 'alguien') + '</strong>' +
-            (t.editado ? ' · ' + haceCuanto(t.editado) : '') + '</span>' +
-          '</div>'
-        : '') +
-
-      '<div class="fila fila--entre" style="margin-bottom:var(--e-2)">' +
-        '<h3>Las dos posturas</h3>' +
-        '<button class="boton boton--suave boton--chico" data-accion="editar-tema">' +
-          window.ATWI.iconoSVG('lapiz', 16) + 'Editar tema</button>' +
-      '</div>' +
+      /* Ya no hay boton de «Editar tema»: cada trozo se toca y se edita solo,
+         asi que abrir el formulario entero sobra y ademas competia con los
+         lapices que tiene al lado. */
+      '<h3 style="margin-bottom:var(--e-2)">Las dos posturas</h3>' +
       '<div class="apilado" style="margin-bottom:var(--e-5)">' +
-        posturaCaja('A', t.a) +
-        posturaCaja('B', t.b) +
+        posturaCaja('A', t.a, 'a') +
+        posturaCaja('B', t.b, 'b') +
       '</div>' +
       '<div class="aviso-ia">' + icono('aviso', 20) +
         '<span>Las dos se pueden defender. Si una no encaja con la discusión de ustedes, ' +
-        'reescríbela: el tema es una plantilla, no una sentencia.</span>' +
+        'toca y reescríbela: el tema es una plantilla, no una sentencia.</span>' +
       '</div>';
 
     abrirModal('m-tema');
   }
 
-  function posturaCaja(letra, texto) {
-    return '<div class="tarjeta" style="display:grid;grid-template-columns:28px 1fr;gap:var(--e-3);align-items:start">' +
+  function posturaCaja(letra, texto, campo) {
+    return '<button class="tarjeta retocable retocable--postura" data-retocar="' + campo + '">' +
         '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
-        '<span class="chico">' + esc(texto) + '</span>' +
-      '</div>';
+        '<span class="chico retocable__texto">' + esc(texto) + '</span>' +
+        '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
+      '</button>';
+  }
+
+  /* ======================================================================
+     Retocar una sección suelta del tema
+     ====================================================================== */
+  var SECCIONES = {
+    enunciado: { titulo: 'El enunciado', minimo: 15, max: 240,
+                 pista: 'La disputa, en una frase, con las dos salidas dentro.',
+                 corto: 'El enunciado se queda corto: tiene que plantear la disputa entera.' },
+    a: { titulo: 'Postura A', minimo: 5, max: 240,
+         pista: 'Lo que defiende quien está de un lado.',
+         corto: 'Falta lo que defiende esta postura.' },
+    b: { titulo: 'Postura B', minimo: 5, max: 240,
+         pista: 'Lo que defiende quien está del otro.',
+         corto: 'Falta lo que defiende esta postura.' }
+  };
+  var retocando = null;
+
+  function abrirRetocar(campo) {
+    var t = datos.tema(propuesta.temaId);
+    var s = SECCIONES[campo];
+    if (!t || !s) return;
+    retocando = campo;
+
+    $('#m-retocar').className = 'modal modal--' + propuesta.modo;
+    $('#m-retocar .modal__titulo').textContent = s.titulo;
+    $('#m-retocar .modal__cuerpo').innerHTML =
+      '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
+        'Cambia solo esto. Lo demás del tema se queda como está.</p>' +
+      '<textarea class="campo campo--parrafo" id="r-texto" rows="4" maxlength="' + s.max + '">' +
+        esc(t[campo]) + '</textarea>' +
+      '<p class="chico tenue" style="margin-top:6px">' + esc(s.pista) + '</p>' +
+      '<p class="chico" id="r-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+
+    $('#m-retocar .modal__pie button').className =
+      'boton boton--bloque boton--grande boton--' + propuesta.modo;
+    abrirModal('m-retocar');
+    setTimeout(function () { var c = $('#r-texto'); if (c) { c.focus(); c.setSelectionRange(c.value.length, c.value.length); } }, 80);
+  }
+
+  function guardarRetoque() {
+    var s = SECCIONES[retocando];
+    var valor = ($('#r-texto').value || '').trim();
+    if (valor.length < s.minimo) { $('#r-error').textContent = s.corto; return; }
+
+    var campos = {};
+    campos[retocando] = valor;
+    var guardado = datos.retocarTema(propuesta.temaId, campos);
+
+    cerrarModal('m-retocar');
+    pintarCatalogo();
+    if (!guardado) return;
+
+    /* Se vuelve a donde se estaba. Si el retoque salió de «Antes de empezar»,
+       esa pantalla se repinta conservando la postura elegida y los nombres ya
+       escritos: quien está a un toque de grabar no debería perder nada por
+       corregir una frase. */
+    if (!$('#m-preparar').hidden) {
+      var yoActual = ($('#p-yo') && $('#p-yo').value || '').trim();
+      abrirPreparar(true);
+      if (yoActual && $('#p-yo')) $('#p-yo').value = yoActual;
+      if (propuesta.miPostura) elegirPostura(propuesta.miPostura);
+      revisarPreparar();
+    } else if (!$('#m-tema').hidden) {
+      abrirTema(guardado.id);
+    }
   }
 
   /* ======================================================================
@@ -968,17 +1030,6 @@
                      'Lo que defiende quien está del otro.', 240) +
         '</div>' +
 
-        '<div>' +
-          '<span class="chico" style="font-weight:700">¿Cuánto pesa?</span>' +
-          '<div class="filtros" style="margin-top:var(--e-2)">' +
-            [['ligera', 'Ligera'], ['media', 'Media'], ['profunda', 'Profunda']].map(function (x) {
-              var puesta = (t ? t.intensidad : 'media') === x[0];
-              return '<button class="chip chip--filtro" data-intensidad="' + x[0] + '"' +
-                     (puesta ? ' aria-pressed="true"' : '') + '>' + x[1] + '</button>';
-            }).join('') +
-          '</div>' +
-        '</div>' +
-
         '<p class="chico" id="e-error" style="color:var(--peligro)"></p>' +
       '</div>' +
 
@@ -997,11 +1048,13 @@
           'style="margin-top:var(--e-3);color:var(--peligro)">Borrar este tema</button>'
         : '');
 
-    intensidadElegida = (t && t.intensidad) || 'media';
     abrirModal('m-escribir');
     setTimeout(function () { var n = $('#e-titulo'); if (n && !t) n.focus(); }, 60);
   }
 
+  /* El peso del tema —ligera, media, profunda— ya no se elige al escribirlo:
+     todos valen lo mismo a la hora de jugarlos. Se conserva el que traiga el
+     tema del catálogo para no perder el dato, y los propios nacen en «media». */
   var intensidadElegida = 'media';
 
   function campoTexto(id, etiqueta, valor, tipo, pista, max) {
@@ -1026,7 +1079,9 @@
       a.toLowerCase() === b.toLowerCase() ? 'Las dos posturas dicen lo mismo: entonces no hay debate.' : '';
     if (fallo) { $('#e-error').textContent = fallo; return; }
 
-    var campos = { titulo: titulo, enunciado: enunciado, a: a, b: b, intensidad: intensidadElegida };
+    var t = datos.tema(escribiendo.id);
+    var campos = { titulo: titulo, enunciado: enunciado, a: a, b: b,
+                   intensidad: (t && t.intensidad) || intensidadElegida };
     var guardado = escribiendo.propio
       ? datos.guardarTemaPropio(Object.assign({ id: escribiendo.id }, campos))
       : datos.reescribir(escribiendo.id, campos);
@@ -1067,11 +1122,16 @@
     return COLORES_FICHA[0];
   }
 
-  function abrirPreparar() {
+  /**
+   * `repintando` vuelve a dibujar la pantalla SIN reabrirla: se usa al retocar
+   * un texto desde aquí. Reabrirla apilaría otra entrada de historial y
+   * perdería la postura ya elegida y los nombres escritos.
+   */
+  function abrirPreparar(repintando) {
     var t = datos.tema(propuesta.temaId);
     if (!t) return;
     var p = datos.perfil();
-    propuesta.miPostura = null;
+    if (!repintando) propuesta.miPostura = null;
     propuesta.otro = propuesta.otro || '';
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
@@ -1079,8 +1139,16 @@
 
     $('#m-preparar').className = 'modal modal--' + propuesta.modo;
     $('#m-preparar .modal__cuerpo').innerHTML =
-      '<p class="sala__enunciado" style="color:var(--tinta);margin-bottom:var(--e-4)">' +
-        esc(t.enunciado) + '</p>' +
+      /* El enunciado y las dos posturas se retocan AQUÍ MISMO. Es el último
+         momento antes de grabar y es cuando se ve que una frase no dice lo que
+         se discute de verdad; obligar a volver atrás para cambiarla hacía que
+         se jugara con el texto que no era. */
+      '<button class="tarjeta retocable" data-retocar="enunciado" ' +
+              'style="width:100%;margin-bottom:var(--e-4)">' +
+        '<span class="retocable__texto sala__enunciado" style="color:var(--tinta)">' +
+          esc(t.enunciado) + '</span>' +
+        '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
+      '</button>' +
 
       '<h3 style="margin-bottom:var(--e-2)">¿Cuántos turnos?</h3>' +
       '<div class="turnos-fila">' +
@@ -1116,13 +1184,15 @@
       /* La ficha del invitado se toca para elegirle dibujo y color. No es una
          cuenta: es alguien que agarró este teléfono. Pero su ficha se recuerda,
          así que la próxima vez que juegue sale como salió. */
-      '<span class="chico" style="font-weight:700;display:block">Su nombre</span>' +
+      /* «Su nombre» se leía como «el nombre de uno» y había quien ponía el
+         suyo dos veces. «Nombre de invitado» no admite esa lectura. */
+      '<span class="chico" style="font-weight:700;display:block">Nombre de invitado</span>' +
       '<div class="con-ficha" style="margin-top:6px">' +
         '<button type="button" class="avatar avatar--chico" id="p-ficha-otro" ' +
           'data-accion="ficha-invitado" aria-label="Elegir su dibujo y su color" ' +
           'style="background:' + esc(propuesta.otroColor) + '">' + esc(propuesta.otroAvatar) + '</button>' +
         '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
-          'placeholder="Su nombre" value="' + esc(propuesta.otro) + '">' +
+          'placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
       '</div>' +
       '<span class="chico tenue" style="display:block;margin-top:6px">' +
         'Van a jugar los dos en este teléfono, por turnos. Toca el círculo para darle ' +
@@ -1148,17 +1218,24 @@
     var b = $('#m-preparar .modal__pie button');
     b.disabled = true;
     b.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
-    abrirModal('m-preparar');
+    if (!repintando) abrirModal('m-preparar');
   }
 
+  /* La opción elige; el lápiz de abajo edita. Van en la misma caja pero son
+     dos botones: uno dentro de otro no es HTML válido. */
   function opcionPostura(clave, letra, texto) {
-    return '<button class="opcion opcion--postura" data-postura="' + clave + '" aria-pressed="false">' +
-        '<span style="display:grid;grid-template-columns:32px 1fr;gap:var(--e-3);align-items:start">' +
-          '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
-          '<span class="chico" style="line-height:1.45">' + esc(texto) + '</span>' +
-        '</span>' +
-        '<span class="opcion__marca">' + icono('listo', 16) + '</span>' +
-      '</button>';
+    return '<div class="opcion-caja">' +
+        '<button class="opcion opcion--postura" data-postura="' + clave + '" aria-pressed="false">' +
+          '<span style="display:grid;grid-template-columns:32px 1fr;gap:var(--e-3);align-items:start">' +
+            '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
+            '<span class="chico" style="line-height:1.45">' + esc(texto) + '</span>' +
+          '</span>' +
+          '<span class="opcion__marca">' + icono('listo', 16) + '</span>' +
+        '</button>' +
+        '<button class="opcion__editar" data-retocar="' + clave + '" ' +
+                'aria-label="Editar la postura ' + letra + '">' +
+          window.ATWI.pegatina('lapiz', 15) + 'Editar</button>' +
+      '</div>';
   }
 
   function elegirPostura(clave) {
@@ -1289,6 +1366,9 @@
     var cat = e.target.closest('[data-categoria]');
     if (cat) { categoriaAbierta = cat.dataset.categoria; entrar(); pintarCatalogo(); return; }
 
+    var ret = e.target.closest('[data-retocar]');
+    if (ret) { abrirRetocar(ret.dataset.retocar); return; }
+
     var expli = e.target.closest('[data-explicar]');
     if (expli) { abrirExplicar(expli.dataset.explicar); return; }
 
@@ -1365,16 +1445,6 @@
       return;
     }
 
-    var inten = e.target.closest('[data-intensidad]');
-    if (inten) {
-      intensidadElegida = inten.dataset.intensidad;
-      $$('#m-escribir [data-intensidad]').forEach(function (x) {
-        if (x.dataset.intensidad === intensidadElegida) x.setAttribute('aria-pressed', 'true');
-        else x.removeAttribute('aria-pressed');
-      });
-      return;
-    }
-
     var cerrar = e.target.closest('[data-cerrar]');
     if (cerrar) { cerrarModal(cerrar.dataset.cerrar); return; }
 
@@ -1433,6 +1503,7 @@
     else if (a === 'tema-nuevo') { abrirEscribir(null); }
     else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId); }
     else if (a === 'guardar-tema') { guardarTema(); }
+    else if (a === 'guardar-retoque') { guardarRetoque(); }
     else if (a === 'devolver-tema') {
       datos.devolverAlOriginal(escribiendo.id);
       cerrarModal('m-escribir');
@@ -1469,9 +1540,12 @@
   var reponerFoco = false;
   document.addEventListener('input', function (e) {
     if (e.target.id === 'p-otro') {
+      /* Se guarda según se escribe: un repintado —al retocar un texto desde
+         aquí— dejaba el campo vacío porque solo se leía al sortear. */
+      propuesta.otro = e.target.value.trim();
       /* Si el nombre escrito es de alguien con quien ya se jugó, vuelve su
          ficha: la gracia de recordarla es no tener que elegirla otra vez. */
-      var g = datos.invitado(e.target.value.trim());
+      var g = datos.invitado(propuesta.otro);
       if (g) {
         propuesta.otroAvatar = g.avatar;
         propuesta.otroColor = g.color;

@@ -842,6 +842,44 @@ body.app {
 .postura-campo--a { border-left-color: var(--voz-a); }
 .postura-campo--b { border-left-color: var(--voz-b); }
 
+/* --- Trozos que se retocan sueltos --------------------------------------------
+   El enunciado y cada postura son botones: se tocan y se editan solos. El lápiz
+   de la esquina es lo que lo anuncia; sin él, una tarjeta que además es botón
+   no se distingue de una que solo se lee. */
+.retocable {
+  position: relative; width: 100%; border: 0; font: inherit; color: inherit;
+  text-align: left; cursor: pointer;
+  padding-right: calc(var(--e-4) + 22px);
+  transition: box-shadow var(--dur-corta) var(--suave);
+}
+.retocable--postura {
+  display: grid; grid-template-columns: 28px 1fr; gap: var(--e-3); align-items: start;
+}
+.retocable__lapiz {
+  position: absolute; top: var(--e-3); right: var(--e-3);
+  color: var(--tinta-tenue); line-height: 0;
+}
+.retocable:hover { box-shadow: var(--sombra-2); }
+.retocable:hover .retocable__lapiz { color: var(--lavanda); }
+.retocable:active { transform: scale(.99); }
+.retocable__texto { display: block; }
+
+/* En «Antes de empezar» la postura se ELIGE tocándola, así que el lápiz no
+   puede ser la tarjeta entera: va aparte, abajo a la izquierda, alineado con
+   el texto y lejos de la marca de elegido, que vive arriba a la derecha. */
+.opcion-caja { position: relative; }
+.opcion-caja .opcion--postura { padding-bottom: calc(var(--e-4) + 24px); }
+.opcion__editar {
+  position: absolute; left: var(--e-4); bottom: var(--e-3);
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 11px; border-radius: var(--radio-pastilla);
+  border: 1.5px dashed var(--linea-fuerte); background: transparent;
+  font: inherit; font-size: var(--t-mini); font-weight: 800;
+  color: var(--tinta-suave); cursor: pointer;
+}
+.opcion__editar:hover { border-color: var(--lavanda); color: var(--lavanda-oscuro); }
+.opcion__editar:active { transform: scale(.94); }
+
 /* Quién tocó el tema y cuándo. Reescribir el tema de una discusión es algo que
    la otra persona tiene derecho a ver. */
 .reescrito {

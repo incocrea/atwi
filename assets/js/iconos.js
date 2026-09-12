@@ -68,6 +68,38 @@ window.ATWI = window.ATWI || {};
     return window.ATWI.iconoSVG(nombre, tam);
   };
 
+  /* ==========================================================================
+     PEGATINAS
+     Iconos con el aspecto de los ilustrados —color plano y perfil blanco— pero
+     dibujados en SVG en vez de generados como PNG. Sirven para las piezas que
+     no están en la lámina y que no justifican gastar una tanda de la API de
+     imagen: se ven de la misma familia, escalan sin pesar y se pueden recolorear.
+
+     El perfil blanco sale de `paint-order: stroke`, que pinta el trazo DETRÁS
+     del relleno; sin eso el trazo se comería la mitad del dibujo.
+     ========================================================================== */
+  var PEGATINAS = {
+    /* Lápiz: goma rosa arriba, cuerpo ámbar, madera y mina abajo. */
+    lapiz:
+      '<g transform="rotate(45 12 12)">' +
+        '<rect x="9.1" y="2.6" width="5.8" height="13.4" rx="1.4" fill="#F0B429"/>' +
+        '<path d="M10.5 2.6h3a1.4 1.4 0 0 1 1.4 1.4v2.1H9.1V4a1.4 1.4 0 0 1 1.4-1.4Z" fill="#EE7FA8"/>' +
+        '<path d="M9.1 16h5.8L12 21.2Z" fill="#E7D9C3"/>' +
+        '<path d="M10.75 19h2.5L12 21.2Z" fill="#2E2A3F"/>' +
+      '</g>'
+  };
+
+  /** Un icono con aspecto de pegatina: color plano y perfil blanco. */
+  window.ATWI.pegatina = function (nombre, tam) {
+    var d = PEGATINAS[nombre];
+    if (!d) return window.ATWI.iconoSVG(nombre, tam);
+    var t = tam || 24;
+    return '<svg viewBox="0 0 24 24" width="' + t + '" height="' + t + '" ' +
+      'style="paint-order:stroke" stroke="#FFFFFF" stroke-width="2.1" ' +
+      'stroke-linejoin="round" stroke-linecap="round" ' +
+      'aria-hidden="true" focusable="false">' + d + '</svg>';
+  };
+
   /** El juego de líneas, para lo que aún no tiene ilustración. */
   window.ATWI.iconoSVG = function (nombre, tam) {
     var d = TRAZOS[nombre];
