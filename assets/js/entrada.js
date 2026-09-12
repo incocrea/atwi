@@ -126,6 +126,7 @@ window.ATWI = window.ATWI || {};
           'Ya tengo cuenta</button>' +
         AVISO_IA;
       montarCaptcha();
+      avisarSiFaltaElCaptcha();
       enfocar('#c-nombre', !estado.nombre);
       boton.textContent = 'Mandarme el enlace';
 
@@ -169,6 +170,7 @@ window.ATWI = window.ATWI || {};
         '<button class="boton boton--fantasma boton--bloque" data-accion="ir-datos" style="margin-top:var(--e-4)">' +
           'Es mi primera vez</button>';
       montarCaptcha();
+      avisarSiFaltaElCaptcha();
       enfocar('#c-correo2', !estado.correo);
       boton.textContent = 'Entrar';
     }
@@ -191,6 +193,51 @@ window.ATWI = window.ATWI || {};
   }
 
   function valeCorreo(c) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c); }
+
+  function enLocalhost() {
+    return /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  }
+
+  /**
+   * Qué salió mal, DE VERDAD.
+   *
+   * Supabase Auth contesta 400 a casi todo, y esto traducía cualquier 400 a
+   * «correo o contraseña incorrectos». Es la peor mentira posible: manda a
+   * cambiar la contraseña a quien la tenía bien. El caso real que lo destapó
+   * fue `captcha_failed` en localhost, donde Turnstile ni siquiera dibuja el
+   * widget porque la clave de sitio solo admite atwi.app.
+   */
+  function porQue(e) {
+    var codigo = (e.cuerpo && e.cuerpo.error_code) || '';
+    if (e.estado === 429 || codigo === 'over_request_rate_limit') {
+      return 'Demasiados intentos seguidos. Espera unos minutos.';
+    }
+    if (codigo === 'captcha_failed') {
+      return enLocalhost()
+        ? 'La verificación antirrobots no funciona en localhost: la clave de ' +
+          'Cloudflare solo admite atwi.app. No es tu contraseña. Para probar ' +
+          'aquí, añade localhost a los dominios del widget en Cloudflare, o ' +
+          'usa la app publicada.'
+        : 'No se pudo completar la verificación antirrobots. Recarga e inténtalo otra vez.';
+    }
+    if (codigo === 'invalid_credentials') return 'Correo o contraseña incorrectos.';
+    if (codigo === 'email_not_confirmed') return 'Falta confirmar el correo. Mira tu bandeja.';
+    if (codigo === 'user_not_found') return 'No hay ninguna cuenta con ese correo.';
+    return e.message || 'No se pudo entrar.';
+  }
+
+  /* Si el antirrobots no llega a dibujarse, se dice ANTES de que alguien teclee
+     su contraseña tres veces. Solo pasa en local, y ahí conviene saberlo. */
+  function avisarSiFaltaElCaptcha() {
+    if (!cfg.turnstileSiteKey || !enLocalhost()) return;
+    setTimeout(function () {
+      var hueco = $('#captcha');
+      if (hueco && !hueco.querySelector('iframe')) {
+        error('Aviso de local: el antirrobots no cargó (la clave solo admite ' +
+              'atwi.app), así que entrar con contraseña va a fallar aquí.');
+      }
+    }, 2500);
+  }
 
   /* --- Acciones --------------------------------------------------------------- */
   function mandarEnlace() {
@@ -217,9 +264,7 @@ window.ATWI = window.ATWI || {};
       .then(function () { estado.paso = 'revisa'; ocupado(false, 'Volver a mandarlo'); pintar(); })
       .catch(function (e) {
         ocupado(false, 'Mandarme el enlace');
-        error(e.estado === 429
-          ? 'Demasiados intentos seguidos. Espera unos minutos.'
-          : (e.message || 'No se pudo mandar el enlace.'));
+        error(porQue(e));
         refrescarCaptcha();
       });
   }
@@ -264,7 +309,7 @@ window.ATWI = window.ATWI || {};
       })
       .catch(function (e) {
         ocupado(false, 'Entrar');
-        error(e.estado === 400 ? 'Correo o contraseña incorrectos.' : (e.message || 'No se pudo entrar.'));
+        error(porQue(e));
         refrescarCaptcha();
       });
   }
