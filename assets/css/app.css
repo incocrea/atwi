@@ -1043,7 +1043,14 @@ body.app {
   padding: var(--e-4); box-shadow: var(--sombra-1);
 }
 .sala__enunciado { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); line-height: 1.3; }
-.sala__chips { display: flex; gap: var(--e-2); flex-wrap: wrap; margin-top: var(--e-3); }
+/* El rótulo del modo y la píldora de turnos van CENTRADOS en el ancho de la
+   tarjeta, no pegados a la izquierda: son dos piezas de igual peso que dicen de
+   qué va la partida, y alineadas al margen quedaban como una nota al pie. */
+.sala__chips {
+  display: flex; gap: var(--e-2); flex-wrap: wrap;
+  align-items: center; justify-content: center; margin-top: var(--e-3);
+}
+.sala__rotulo { height: 34px; width: auto; max-width: 100%; display: block; }
 .sala__recordatorio { font-size: var(--t-chico); color: var(--ctx-tenue-2); line-height: 1.4; text-align: center; }
 .sala__posturas { display: grid; gap: var(--e-2); }
 .sala__posturas p { color: var(--ctx-tenue); line-height: 1.45; }
@@ -1404,4 +1411,101 @@ body.app {
 .avatar--pj.avatar--cabecera-cara {
   position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit;
   box-shadow: none;
+}
+
+/* --- EL ENCUENTRO -------------------------------------------------------------
+   Los dos, cara a cara, en el hueco que queda entre el sorteo y el botón de
+   empezar. Entran desde fuera del lienzo 1,5 s después de que para la ficha, se
+   encuentran con un golpe, y AHÍ SE QUEDAN.
+
+   Se probó primero como cortinilla a pantalla completa que se desvanecía a los
+   dos segundos, y el problema no era la cortinilla: era que al irse dejaba la
+   pantalla vacía justo después del momento más vistoso. Puestos, la pantalla
+   del sorteo deja de tener un agujero.
+
+   LA GEOMETRÍA. Se ven de la CINTURA PARA ARRIBA, y eso lo hace la caja, no la
+   imagen: una caja más baja que la figura, `overflow: hidden`, y la imagen
+   pegada arriba. Con `object-fit: cover` se habría deformado; así se corta sin
+   tocar la proporción. Y ocupan bastante más de media banda cada uno, porque
+   repartidos al 50% de un lienzo de 375 px salen del tamaño de un sello: se
+   solapan en el centro y cada uno se recorta contra su borde. */
+.sala--sorteo { display: flex; flex-direction: column; min-height: 100%; }
+.sala--sorteo .encuentro { flex: 1 0 auto; }
+
+.encuentro {
+  position: relative; overflow: hidden;
+  min-height: 190px; margin-top: var(--e-3);
+}
+.encuentro__lado {
+  position: absolute; bottom: 0;
+  width: 74%; height: 100%;
+  overflow: hidden;
+}
+/* Quien abre va a la izquierda Y DELANTE: se solapan, y el de delante es el que
+   el sorteo acaba de nombrar. */
+.encuentro__lado--izq { left: -12%; z-index: 2; transform: translateX(-160%); }
+.encuentro__lado--der { right: -12%; z-index: 1; transform: translateX(160%); }
+.encuentro--llegado .encuentro__lado--izq { transform: translateX(var(--fin-izq, 0)); }
+.encuentro--llegado .encuentro__lado--der { transform: translateX(var(--fin-der, 0)); }
+.encuentro--llegado .encuentro__lado {
+  transition: transform 620ms cubic-bezier(.16, .84, .3, 1.06);
+}
+
+.encuentro__fig { position: absolute; inset: 0; display: block; }
+.encuentro__fig .retrato__fig {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; height: auto; max-width: none;
+  filter: drop-shadow(0 8px 18px rgba(46, 42, 63, .16));
+}
+.retrato--volteado .retrato__fig { transform: translateX(-50%) scaleX(-1); }
+
+.encuentro__vs, .encuentro__chispa {
+  position: absolute; z-index: 3; left: 50%; top: var(--alto-golpe, 46%);
+  transform: translate(-50%, -50%) scale(0); opacity: 0;
+}
+/* El VS cae a la altura del pecho, donde se cruzan las miradas. La chispa NO:
+   tiene que caer donde se tocan los nudillos, que está más abajo. */
+.encuentro__chispa { --alto-golpe: 56%; }
+.encuentro__vs {
+  font-family: var(--display); font-weight: 800; font-size: 3.6rem; line-height: 1;
+  color: var(--ctx-banda, var(--tinta));
+  -webkit-text-stroke: 6px var(--ctx-fondo, var(--crema)); paint-order: stroke;
+}
+/* Ocho rayos. Sale de un `repeating-conic-gradient` y no de uno normal: con el
+   normal hay que escribir los ocho tramos a mano y basta equivocarse en un
+   ángulo para que salga un solo rayo, que fue lo que pasó. */
+.encuentro__chispa {
+  width: 96px; height: 96px; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg,
+    var(--dorado, #F5C243) 0deg 6deg, transparent 6deg 45deg);
+  -webkit-mask: radial-gradient(closest-side, transparent 26%, #000 29%);
+  mask: radial-gradient(closest-side, transparent 26%, #000 29%);
+}
+.encuentro--llegado .encuentro__vs,
+.encuentro--llegado .encuentro__chispa { animation: encuentro-golpe 460ms var(--rebote) both; }
+@keyframes encuentro-golpe {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(2.2) rotate(-12deg); }
+  55% { opacity: 1; transform: translate(-50%, -50%) scale(.88) rotate(3deg); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+
+/* En Negociación no se plantan: siguen hasta juntarse y chocan el puño. Misma
+   entrada, lo contrario contado.
+
+   Para que los puños se toquen de verdad, cada lado se ancla AL CENTRO y no a
+   su borde: el puño está en el borde interior de cada figura, así que pegando
+   ese borde al centro se encuentran solos. El 4% extra es el grosor del perfil
+   blanco, que si no deja los nudillos separados por una rayita. */
+.encuentro--pacto { --fin-izq: 4%; --fin-der: -4%; }
+.encuentro--pacto .encuentro__lado { width: 62%; }
+.encuentro--pacto .encuentro__lado--izq { left: auto; right: 50%; }
+.encuentro--pacto .encuentro__lado--der { right: auto; left: 50%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .encuentro__lado--izq { transform: translateX(var(--fin-izq, 0)); }
+  .encuentro__lado--der { transform: translateX(var(--fin-der, 0)); }
+  .encuentro--llegado .encuentro__lado { transition: none; }
+  .encuentro--llegado .encuentro__vs, .encuentro--llegado .encuentro__chispa {
+    animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1);
+  }
 }

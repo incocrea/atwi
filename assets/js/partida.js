@@ -143,6 +143,7 @@ window.ATWI = window.ATWI || {};
   function cerrar() {
     var m = $('#m-partida');
     if (m) { m.hidden = true; m.removeAttribute('data-ctx'); }
+    if (P && P.limpiarEncuentro) P.limpiarEncuentro();
     cerrarReproductor();
     tirarBorrador();
     if (P) P.intervenciones.forEach(function (v) { if (v.url) URL.revokeObjectURL(v.url); });
@@ -396,12 +397,14 @@ window.ATWI = window.ATWI || {};
      ========================================================================== */
   function pintarAviso() {
     caja().innerHTML =
-      '<div class="sala">' +
+      '<div class="sala sala--sorteo">' +
         '<div class="sala__tema">' +
           '<p class="sala__enunciado">' + esc(P.tema.enunciado) + '</p>' +
+          /* El modo va DIBUJADO, como en el home y en la cinta del catálogo.
+             Escrito aquí quedaba como una etiqueta más al lado de la de turnos,
+             y no es una etiqueta: es de qué se está jugando. */
           '<div class="sala__chips">' +
-            '<span class="chip chip--' + P.modo + '">' +
-              nombreModo(P.modo) + '</span>' +
+            window.ATWI.rotuloModo(P.modo, 'sala__rotulo') +
             '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>' +
           '</div>' +
         '</div>' +
@@ -420,16 +423,16 @@ window.ATWI = window.ATWI || {};
             (P.modo === 'debate' ? 'revancha' : 'próxima') + ' abre ' +
             esc(P.jugadores[P.orden[1]].nombre) + '.</p>' +
         '</div>' +
-        /* Quién defiende qué NO lo decide el sorteo: lo eligió quien propuso.
-           Se enseña aquí para que no haya dudas después. */
-        '<div class="sala__posturas">' +
-          P.jugadores.map(function (j, i) {
-            return '<p class="chico voz">' +
-              window.ATWI.fichaHTML(j.avatar, 'voz__cara', j.color) +
-              '<span><strong>' + esc(j.nombre) + '</strong> defiende la ' + j.letra + ': ' +
-              esc(j.texto) + '</span></p>';
-          }).join('') +
-        '</div>' +
+        /* EL ENCUENTRO. Ocupa el hueco que queda entre el sorteo y el botón, y
+           ahí se QUEDAN: entran desde fuera, chocan y no se van. Se probó como
+           cortinilla a pantalla completa que se desvanecía, y lo que dejaba era
+           una pantalla vacía justo después del momento más vistoso.
+
+           El resumen de quién defiende qué vivía aquí y se fue: lo mismo se
+           lee en cada turno, y encima del botón pedía leer tres cosas antes de
+           poder empezar. */
+        '<div class="encuentro' + (P.modo === 'debate' ? '' : ' encuentro--pacto') +
+          '" id="encuentro" aria-hidden="true"></div>' +
       '</div>';
     /* El botón espera al sorteo: si no, se puede pasar de largo y el juego
        habría decidido quién abre sin que nadie lo viera. */
@@ -501,7 +504,64 @@ window.ATWI = window.ATWI || {};
       var b = $('#m-partida [data-accion="p-listo"]');
       if (b) b.disabled = false;
       if (sonido.hay()) sonido.campana();
+      /* Segundo y medio de silencio antes del encuentro. Encadenarlo a la
+         campana pisaría el momento en que se lee quién abre, que es lo que se
+         acaba de ganar con cuatro segundos de sorteo. */
+      setTimeout(entrarAlEncuentro, MS_ANTES_DEL_ENCUENTRO);
     }
+  }
+
+  /* ==========================================================================
+     EL ENCUENTRO
+     Una cortinilla POR ENCIMA DE TODO, como la de un juego de pelea: los dos
+     grandes, encuadrados de la cintura para arriba, entrando cada uno desde
+     fuera del lienzo. Aguanta dos segundos y se va con un fundido.
+
+     A la IZQUIERDA va SIEMPRE quien abre. El sorteo acaba de decirlo y la
+     escena lo repite sin tener que escribirlo otra vez.
+
+     Los dos modos usan la misma entrada para contar lo contrario: en
+     Controversia se quedan separados y el VS cae en medio; en Negociación
+     siguen hasta juntarse y chocan el puño. No es un versus, es un equipo.
+
+     No lleva velo oscuro: en esta app no hay fondos oscuros. El que hay es un
+     lavado del color del modo, que además dice de qué modo es la partida.
+     ========================================================================== */
+  var MS_ANTES_DEL_ENCUENTRO = 1500;   // desde que para la ficha del sorteo
+  var MS_VIAJE = 620;                  // lo que tardan en llegar
+
+  function entrarAlEncuentro() {
+    if (!P || P.estado !== 'aviso') return;
+    var caja = $('#encuentro');
+    if (!caja || caja.firstChild) return;
+
+    var pacto = P.modo !== 'debate';
+    var pose = pacto ? 'puno' : 'plante';
+    var izq = P.jugadores[P.orden[0]];         // quien abre, a la izquierda
+    var der = P.jugadores[P.orden[1]];
+
+    caja.innerHTML =
+      '<span class="encuentro__lado encuentro__lado--izq">' +
+        window.ATWI.retrato(izq.avatar, pose, { fondo: null, mira: 'derecha',
+                                                clase: 'encuentro__fig' }) +
+      '</span>' +
+      '<span class="encuentro__lado encuentro__lado--der">' +
+        window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
+                                                clase: 'encuentro__fig' }) +
+      '</span>' +
+      (pacto
+        ? '<span class="encuentro__chispa"></span>'
+        : '<span class="encuentro__vs">VS</span>');
+
+    /* El golpe suena cuando LLEGAN, no al salir: es el sonido del encuentro, y
+       adelantarlo lo convierte en el de arrancar. */
+    var alLlegar = setTimeout(function () {
+      if (!P || P.estado !== 'aviso') return;
+      caja.classList.add('encuentro--llegado');
+      if (sonido.hay()) sonido.choque();
+    }, MS_VIAJE);
+
+    P.limpiarEncuentro = function () { clearTimeout(alLlegar); };
   }
 
   /* ==========================================================================

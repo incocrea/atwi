@@ -44,6 +44,8 @@
     return '<img class="' + clase + '" src="../assets/img/rotulos/' + clave + '.png" ' +
            'alt="' + esc(modoLlano(clave)) + '" decoding="async">';
   }
+  /* La sala también lo pinta, y no tiene por qué saber dónde viven los PNG. */
+  window.ATWI.rotuloModo = rotuloModo;
 
   /* ======================================================================
      Navegación entre vistas

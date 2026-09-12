@@ -201,6 +201,42 @@ window.ATWI = window.ATWI || {};
       });
     },
 
+    /**
+     * El choque del encuentro: un golpe seco y grave. No vale el `clac` de la
+     * ruleta —ese es un trinquete, agudo y sin cuerpo— ni el platillo, que es
+     * de premio y aquí todavía no hay nada premiado. Esto es un impacto: ruido
+     * filtrado grave, y debajo un tono que cae, que es lo que le da peso.
+     */
+    choque: function () {
+      var c = contexto();
+      if (!c) return;
+      var t = c.currentTime;
+
+      var f = c.createBufferSource();
+      f.buffer = ruido(c);
+      f.playbackRate.value = 0.6;
+      var paso = c.createBiquadFilter();
+      paso.type = 'lowpass';
+      paso.frequency.value = 900;
+      var g = c.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.5, t + 0.005);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
+      f.connect(paso); paso.connect(g); g.connect(c.destination);
+      f.start(t); f.stop(t + 0.3);
+
+      var o = c.createOscillator();
+      var og = c.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(180, t);
+      o.frequency.exponentialRampToValueAtTime(52, t + 0.22);
+      og.gain.setValueAtTime(0.0001, t);
+      og.gain.linearRampToValueAtTime(0.34, t + 0.008);
+      og.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      o.connect(og); og.connect(c.destination);
+      o.start(t); o.stop(t + 0.32);
+    },
+
     /** Un tic por cada número de la cuenta atrás. */
     tic: function () {
       var c = contexto();

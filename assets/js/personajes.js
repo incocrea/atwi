@@ -90,18 +90,35 @@ window.ATWI = window.ATWI || {};
       f[0](c) + '</svg>';
   };
 
+  /* HACIA DÓNDE MIRA CADA POSE. Hace falta para poder ponerlas cara a cara: en
+     un encuentro quien va a la izquierda tiene que mirar a la derecha y al
+     revés, y si no coincide con cómo se dibujó, la figura se voltea.
+
+     No todas se dibujaron igual a propósito: las de guardia miran las dos a la
+     derecha, pero las del puño se dibujaron ya enfrentadas —Kai a la derecha y
+     Luna a la izquierda— porque ahí los puños tienen que encontrarse y el
+     dibujo del brazo no es simétrico. */
+  var MIRA = {
+    plante: { kai: 'derecha', luna: 'derecha' },
+    puno: { kai: 'derecha', luna: 'izquierda' },
+    hablando: { kai: 'derecha', luna: 'izquierda' }
+  };
+
   /**
    * El personaje entero: la mancha detrás y la figura encima.
    * @param quien 'kai' o 'luna'
-   * @param pose  'frente', 'plante' o 'hablando'
-   * @param op    { fondo: 'disco'|'estela'|null, clase: '' }
+   * @param pose  una clave de POSES
+   * @param op    { fondo: 'disco'|'estela'|null, clase: '', mira: 'derecha'|'izquierda' }
    */
   window.ATWI.retrato = function (quien, pose, op) {
     var c = GENTE[quien];
     if (!c || !POSES[pose]) return '';
     op = op || {};
     var fondo = op.fondo === null ? '' : window.ATWI.fondoPersonaje(quien, op.fondo || 'disco');
-    return '<span class="retrato ' + (op.clase || '') + '" data-quien="' + quien + '">' +
+    var natural = (MIRA[pose] || {})[quien];
+    var voltea = op.mira && natural && op.mira !== natural;
+    return '<span class="retrato ' + (op.clase || '') + (voltea ? ' retrato--volteado' : '') +
+        '" data-quien="' + quien + '">' +
         fondo +
         '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-' + pose + '.png" ' +
           'alt="' + esc(c.nombre + ', ' + POSES[pose]) + '" loading="lazy" decoding="async">' +
