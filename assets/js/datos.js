@@ -54,6 +54,28 @@ window.ATWI = window.ATWI || {};
     try { localStorage.setItem(CLAVE, JSON.stringify(perfil)); } catch (e) { /* modo incógnito */ }
   }
 
+  /* Buzón de mentira para poder trabajar el diseño sin backend. */
+  function demoAvisos() {
+    if (!demoAvisos.cache) {
+      demoAvisos.cache = [
+        { id: 'd1', tipo: 'invitacion', titulo: 'Marta te propone un debate',
+          cuerpo: 'Los platos, ¿ya o luego? · Modo Debate · 3 turnos', leido: null,
+          creado: new Date(Date.now() - 3 * 60000).toISOString() },
+        { id: 'd2', tipo: 'tu_turno', titulo: 'Te toca grabar',
+          cuerpo: 'Marta ya grabó su turno 2 en «El teléfono en el dormitorio»', leido: null,
+          creado: new Date(Date.now() - 90 * 60000).toISOString() },
+        { id: 'd3', tipo: 'revancha', titulo: 'Marta te pide la revancha',
+          cuerpo: 'Sobre «La propina». Tú decides si la aceptas.', leido: null,
+          creado: new Date(Date.now() - 26 * 3600000).toISOString() },
+        { id: 'd4', tipo: 'resultado', titulo: 'Ya hay acta',
+          cuerpo: 'Firmaron el acuerdo sobre «El botón de posponer la alarma»',
+          leido: new Date(Date.now() - 50 * 3600000).toISOString(),
+          creado: new Date(Date.now() - 52 * 3600000).toISOString() }
+      ];
+    }
+    return demoAvisos.cache;
+  }
+
   /* --- Catálogo ------------------------------------------------------------ */
   var catalogo = null;
 
@@ -131,6 +153,27 @@ window.ATWI = window.ATWI || {};
         if (catalogo.temas[i].id === id) return catalogo.temas[i];
       }
       return null;
+    },
+
+    /* --- Buzón -------------------------------------------------------------
+       Con servidor se lee de la base; sin servidor se inventa algo para poder
+       ver el diseño. Los avisos los CREAN las funciones de borde, nunca el
+       navegador: si no, cualquiera podría meter mensajes en el buzón ajeno. */
+    avisos: function () {
+      if (!this.enLinea() || !window.ATWI.auth || !window.ATWI.auth.dentro()) {
+        return Promise.resolve(demoAvisos());
+      }
+      return window.ATWI.auth.pedirBuzon().catch(function () { return []; });
+    },
+
+    marcarLeidos: function (ids) {
+      if (!this.enLinea() || !window.ATWI.auth || !window.ATWI.auth.dentro()) {
+        (demoAvisos.cache || []).forEach(function (a) {
+          if (ids.indexOf(a.id) !== -1) a.leido = new Date().toISOString();
+        });
+        return Promise.resolve();
+      }
+      return window.ATWI.auth.marcarLeidos(ids).catch(function () {});
     },
 
     /** Borra todo lo local. Solo lo llama el botón de ajustes. */

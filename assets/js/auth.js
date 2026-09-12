@@ -203,6 +203,23 @@ window.ATWI = window.ATWI || {};
       }).then(function (filas) { return (filas && filas[0]) || null; });
     },
 
+    /** Los últimos avisos de mi buzón. */
+    pedirBuzon: function () {
+      return pedir('/rest/v1/avisos?select=*&order=creado.desc&limit=50', {
+        method: 'GET', headers: cabeceras(true)
+      });
+    },
+
+    /** Marcar como leídos. Es lo único que el navegador puede cambiar aquí. */
+    marcarLeidos: function (ids) {
+      if (!ids || !ids.length) return Promise.resolve();
+      return pedir('/rest/v1/avisos?id=in.(' + ids.join(',') + ')', {
+        method: 'PATCH',
+        headers: cabeceras(true),
+        body: JSON.stringify({ leido: new Date().toISOString() })
+      });
+    },
+
     correo: function () {
       var s = sesion();
       return (s && s.user && s.user.email) || '';

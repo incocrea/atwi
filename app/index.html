@@ -28,7 +28,10 @@
     </div>
     <div class="monedero">
       <span class="monedero__dato" title="Puntos de razón">⚡ <span id="dato-puntos">0</span></span>
-      <span class="monedero__dato monedero__dato--acuerdo" title="Sellos de acuerdo">🕊️ <span id="dato-sellos">0</span></span>
+      <button class="buzon-boton" data-accion="buzon" aria-label="Buzón">
+        <span data-icono="buzon" data-tam="24"></span>
+        <span class="buzon-punto" id="buzon-punto" hidden></span>
+      </button>
     </div>
   </header>
 
@@ -58,6 +61,15 @@
   </div>
 
   <!-- ================= Modales a pantalla completa ================= -->
+
+  <!-- El buzón: invitaciones, turnos, resultados y avisos del juego -->
+  <div class="modal" id="m-buzon" hidden role="dialog" aria-modal="true" aria-labelledby="t-buzon">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-buzon" aria-label="Cerrar" data-icono="cerrar"></button>
+      <span class="modal__titulo" id="t-buzon">Buzón</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+  </div>
 
   <!-- Detalle de un tema -->
   <div class="modal" id="m-tema" hidden role="dialog" aria-modal="true" aria-labelledby="t-tema">

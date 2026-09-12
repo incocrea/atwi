@@ -483,3 +483,42 @@ body.app {
 .chip--hecho { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
 .chip--hecho svg { width: 13px; height: 13px; }
 .chip--nuevo { background: var(--premio-tinte); color: var(--premio-hondo); }
+
+/* --- El buzón ------------------------------------------------------------------ */
+.buzon-boton {
+  position: relative;
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  border: 0; cursor: pointer;
+  border-radius: var(--radio-pastilla);
+  background: var(--superficie);
+  color: var(--tinta-suave);
+  box-shadow: var(--sombra-1);
+}
+.buzon-boton:active { transform: scale(.94); }
+
+/* El punto del buzón va en coral: avisa, no premia */
+.buzon-punto {
+  position: absolute; top: -3px; right: -3px;
+  min-width: 18px; height: 18px; padding: 0 4px;
+  display: grid; place-items: center;
+  border-radius: var(--radio-pastilla);
+  background: var(--debate); color: var(--blanco);
+  font-family: var(--display); font-weight: 800; font-size: 11px;
+  border: 2px solid var(--ctx-fondo);
+}
+
+.aviso {
+  display: grid; grid-template-columns: 42px 1fr; gap: var(--e-3);
+  width: 100%; padding: var(--e-3) var(--e-4);
+  border: 0; border-radius: var(--radio-tarjeta);
+  background: var(--superficie); box-shadow: var(--sombra-1);
+  text-align: left; font: inherit; color: inherit; cursor: pointer;
+}
+.aviso:active { transform: scale(.99); }
+.aviso--nuevo { border-left: 4px solid var(--debate); }
+.aviso__icono { font-size: 1.5rem; align-self: start; }
+.aviso__texto { display: grid; gap: 2px; min-width: 0; }
+.aviso__titulo { font-family: var(--display); font-weight: 800; }
+.aviso__cuerpo { font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4; }
+.aviso__cuando { font-size: var(--t-mini); color: var(--tinta-tenue); margin-top: 2px; }

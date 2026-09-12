@@ -29,7 +29,8 @@ window.ATWI = window.ATWI || {};
     cerrar: '<path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5"/>',
     listo: '<path d="M5 12.6 9.7 17 19 6.8"/>',
     candado: '<rect x="4.8" y="10.5" width="14.4" height="9.2" rx="2.6"/><path d="M8.4 10.5V8a3.6 3.6 0 0 1 7.2 0v2.5"/>',
-    aviso: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.8v4.6M12 15.9v.2"/>'
+    aviso: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.8v4.6M12 15.9v.2"/>',
+    buzon: '<path d="M18 9.2a6 6 0 1 0-12 0c0 4.3-1.4 5.6-2 6.3h16c-.6-.7-2-2-2-6.3Z"/><path d="M10 18.6a2.3 2.3 0 0 0 4 0"/>'
   };
 
   /* Iconos ILUSTRADOS. Son PNG de pegatina generados con la API de imagen y

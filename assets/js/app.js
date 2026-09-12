@@ -348,6 +348,63 @@
   }
 
   /* ======================================================================
+     El buzón
+     ====================================================================== */
+  var ICONO_AVISO = {
+    invitacion: '📨', tu_turno: '🎙️', resultado: '🏁', revancha: '⚔️',
+    revision: '🤝', acuerdo: '🤝', vinculo: '💞', plataforma: '📣'
+  };
+
+  function haceCuanto(iso) {
+    var m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 1) return 'ahora mismo';
+    if (m < 60) return 'hace ' + m + ' min';
+    var h = Math.floor(m / 60);
+    if (h < 24) return 'hace ' + h + ' h';
+    var d = Math.floor(h / 24);
+    return d === 1 ? 'ayer' : 'hace ' + d + ' días';
+  }
+
+  function refrescarPunto() {
+    datos.avisos().then(function (lista) {
+      var sinLeer = lista.filter(function (a) { return !a.leido; }).length;
+      var p = $('#buzon-punto');
+      if (!p) return;
+      p.hidden = sinLeer === 0;
+      p.textContent = sinLeer > 9 ? '9+' : String(sinLeer);
+    });
+  }
+
+  function abrirBuzon() {
+    var caja = $('#m-buzon .modal__cuerpo');
+    caja.innerHTML = '<p class="chico tenue centrado" style="padding:var(--e-6) 0">Un momento…</p>';
+    abrirModal('m-buzon');
+
+    datos.avisos().then(function (lista) {
+      if (!lista.length) {
+        caja.innerHTML = estadoVacio('📭', 'Buzón vacío',
+          'Aquí llegan las invitaciones a debatir, los avisos de que te toca grabar y los resultados.');
+        return;
+      }
+      caja.innerHTML = '<div class="apilado">' + lista.map(function (a) {
+        return '<button class="aviso' + (a.leido ? '' : ' aviso--nuevo') + '" ' +
+            (a.debate ? 'data-ir-debate="' + esc(a.debate) + '"' : '') + '>' +
+            '<span class="aviso__icono">' + (ICONO_AVISO[a.tipo] || '•') + '</span>' +
+            '<span class="aviso__texto">' +
+              '<span class="aviso__titulo">' + esc(a.titulo) + '</span>' +
+              (a.cuerpo ? '<span class="aviso__cuerpo">' + esc(a.cuerpo) + '</span>' : '') +
+              '<span class="aviso__cuando">' + haceCuanto(a.creado) + '</span>' +
+            '</span>' +
+          '</button>';
+      }).join('') + '</div>';
+
+      /* Abrir el buzón es leerlo. Se marca todo lo que hay dentro. */
+      var nuevos = lista.filter(function (a) { return !a.leido; }).map(function (a) { return a.id; });
+      if (nuevos.length) datos.marcarLeidos(nuevos).then(refrescarPunto);
+    });
+  }
+
+  /* ======================================================================
      Flujo: proponer un debate
      ====================================================================== */
   var propuesta = { temaId: null, modo: null };
@@ -485,7 +542,8 @@
     if (!acc) return;
     var a = acc.dataset.accion;
 
-    if (a === 'nuevo') { irA('catalogo'); }
+    if (a === 'buzon') { abrirBuzon(); }
+    else if (a === 'nuevo') { irA('catalogo'); }
     else if (a === 'demo-debate') {
       window.ATWI.veredicto.revelar({
         modo: 'debate', publico: 'pareja',
@@ -540,6 +598,7 @@
     });
     $$('[data-icono]').forEach(function (el) { el.innerHTML = icono(el.dataset.icono, Number(el.dataset.tam) || 22); });
     irA('jugar');
+    refrescarPunto();
     // El catálogo llega por red: al tenerlo hay que repintar la portada, que
     // enseña el siguiente tema del recorrido.
     datos.catalogo().then(function () {
