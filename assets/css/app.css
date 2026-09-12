@@ -463,8 +463,12 @@ body.app {
 .categoria__emoji { align-self: center; }
 .categoria__n { align-self: center; }
 
-/* --- Buscador del catálogo ---------------------------------------------------- */
-.buscador { display: grid; gap: var(--e-2); }
+/* --- Buscador del catálogo ----------------------------------------------------
+   El hueco es el MISMO que hay entre tarjeta y tarjeta (--e-3). Estaba en
+   --e-2 y la primera píldora de filtro quedaba pegada al campo de búsqueda,
+   rompiendo el ritmo de la columna: campo · filtros · tarjeta · tarjeta, todos
+   al mismo aire. */
+.buscador { display: grid; gap: var(--e-3); }
 .buscador .campo { background: var(--superficie); }
 .filtros { display: flex; gap: var(--e-2); flex-wrap: wrap; }
 
@@ -523,46 +527,70 @@ body.app {
 .aviso__cuerpo { font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4; }
 .aviso__cuando { font-size: var(--t-mini); color: var(--tinta-tenue); margin-top: 2px; }
 
+/* --- La cuenta, en Perfil y a la vista ---------------------------------------- */
+.cuenta {
+  display: flex; align-items: center; gap: var(--e-3);
+  background: var(--crema-hondo); border-radius: var(--radio-tarjeta);
+  padding: var(--e-3) var(--e-3) var(--e-3) var(--e-4);
+}
+.cuenta__quien { display: grid; gap: 1px; min-width: 0; flex: 1; }
+.cuenta__eti { font-size: var(--t-mini); color: var(--tinta-tenue); }
+.cuenta__correo {
+  font-size: var(--t-chico); font-weight: 700; color: var(--tinta-suave);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.cuenta__salir { flex: 0 0 auto; padding: var(--e-2) var(--e-3); gap: 6px; font-size: var(--t-chico); }
+
 /* ==========================================================================
    LA SALA
    Va a oscuras y a sangre: entrar a jugar tiene que sentirse distinto de
    navegar por el catálogo. El juez está presente todo el rato.
+
+   NINGÚN COLOR EN CRUDO AQUÍ DENTRO. Todo sale de --ctx-*, que lo pone
+   `data-ctx="sala-debate"` o `"sala-negociacion"` en el propio modal. Es lo
+   que hace que las dos salas sean la misma sala con dos temperaturas, y no
+   dos pantallas distintas: en Juicio todo tira a coral, en Pacto a menta.
    ========================================================================== */
 .sala { display: grid; gap: var(--e-4); align-content: start; padding-top: var(--e-2); }
 .sala--centrada { align-content: center; justify-items: center; min-height: 60vh; }
 
-.sala__tema { background: rgba(255,255,255,.07); border-radius: var(--radio-tarjeta); padding: var(--e-4); }
+.sala__tema { background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta); padding: var(--e-4); }
 .sala__enunciado { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); line-height: 1.3; }
 .sala__chips { display: flex; gap: var(--e-2); flex-wrap: wrap; margin-top: var(--e-3); }
-.sala__recordatorio { font-size: var(--t-chico); color: rgba(255,255,255,.6); line-height: 1.4; text-align: center; }
+.sala__recordatorio { font-size: var(--t-chico); color: var(--ctx-tenue-2); line-height: 1.4; text-align: center; }
 .sala__posturas { display: grid; gap: var(--e-2); }
-.sala__posturas p { color: rgba(255,255,255,.78); line-height: 1.45; }
-.sala__nota { font-size: var(--t-chico); color: rgba(255,255,255,.55); text-align: center; }
+.sala__posturas p { color: var(--ctx-tenue); line-height: 1.45; }
+.sala__nota { font-size: var(--t-chico); color: var(--ctx-tenue-2); text-align: center; }
 
 /* --- El sorteo de quién abre ------------------------------------------------- */
 .sorteo { text-align: center; padding: var(--e-4) 0; }
-.sorteo__que { font-size: var(--t-chico); color: rgba(255,255,255,.6); }
+.sorteo__que { font-size: var(--t-chico); color: var(--ctx-tenue); }
 .sorteo__quien {
   font-family: var(--display); font-weight: 800; font-size: 2.25rem;
-  color: var(--lavanda-claro); line-height: 1.1; margin-top: 2px;
+  color: var(--ctx-acento); line-height: 1.1; margin-top: 2px;
   animation: ganador var(--dur-larga) var(--rebote);
 }
-.sorteo__como { font-size: var(--t-mini); color: rgba(255,255,255,.45); margin-top: var(--e-2); }
+.sorteo__como { font-size: var(--t-mini); color: var(--ctx-tenue-2); margin-top: var(--e-2); }
 
-/* --- El juez, presente todo el rato ------------------------------------------ */
+/* --- El juez, presente todo el rato ------------------------------------------
+   La cara es el icono ILUSTRADO del modo —la balanza en Juicio, las manos en
+   Pacto—, no un emoji del sistema: el emoji lo dibuja cada teléfono a su manera
+   y rompía lo único que tiene que ser igual en todas partes, que es el juez. */
 .juez { display: grid; justify-items: center; gap: var(--e-2); }
 .juez__cara {
-  width: 84px; height: 84px; border-radius: var(--radio-pastilla);
-  display: grid; place-items: center; font-size: 2.6rem;
-  background: rgba(255,255,255,.10);
+  width: 92px; height: 92px; border-radius: var(--radio-pastilla);
+  display: grid; place-items: center;
+  background: var(--ctx-vidrio);
+  box-shadow: inset 0 0 0 2px var(--ctx-linea), 0 0 34px var(--ctx-halo);
   transition: transform var(--dur-media) var(--suave), background var(--dur-media) var(--suave);
 }
+.juez__cara .ico { width: 46px; height: 46px; }
 .juez__dice {
-  font-size: var(--t-chico); color: rgba(255,255,255,.8);
+  font-size: var(--t-chico); color: var(--ctx-tenue);
   text-align: center; max-width: 20rem; line-height: 1.45; min-height: 2.4em;
 }
 /* Escuchando: respira. Asintiendo: cabecea una vez. Pensando: gira despacio. */
-.juez--escuchando .juez__cara { animation: escucha 2.2s ease-in-out infinite; background: rgba(255,255,255,.16); }
+.juez--escuchando .juez__cara { animation: escucha 2.2s ease-in-out infinite; background: var(--ctx-vidrio-mas); }
 .juez--asiente .juez__cara { animation: asiente 620ms var(--suave); }
 .juez--pensando .juez__cara { animation: piensa 2.6s linear infinite; }
 
@@ -573,22 +601,134 @@ body.app {
 /* --- De quién es el turno ----------------------------------------------------- */
 .turno { text-align: center; }
 .turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.75rem; }
-.turno__cual { font-size: var(--t-chico); color: rgba(255,255,255,.55); }
+.turno__cual { font-size: var(--t-chico); color: var(--ctx-tenue-2); }
 .turno__postura {
   margin-top: var(--e-3); padding: var(--e-3) var(--e-4);
-  background: rgba(255,255,255,.07); border-radius: var(--radio-tarjeta);
-  font-size: var(--t-chico); line-height: 1.45; color: rgba(255,255,255,.82);
+  background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
+  font-size: var(--t-chico); line-height: 1.45; color: var(--ctx-tenue);
 }
 
 /* --- El reloj ----------------------------------------------------------------- */
 .reloj { text-align: center; font-family: var(--display); font-weight: 800; }
 .reloj span:first-child { font-size: 2.5rem; }
-.reloj__tope { display: block; font-size: var(--t-chico); font-weight: 700; color: rgba(255,255,255,.45); }
-.reloj--corriendo span:first-child { color: var(--debate); }
+.reloj__tope { display: block; font-size: var(--t-chico); font-weight: 700; color: var(--ctx-tenue-2); }
+.reloj--corriendo span:first-child { color: var(--ctx-acento); }
 
-/* El botón de grabar late mientras graba */
+/* UN SOLO BOTÓN PARA TRES COSAS: grabar, parar y agregar. No son tres botones
+   en tres sitios: es el mismo control, en el mismo lugar, cambiando de estado.
+   Grabar y agregar llevan el color del modo; parar se apaga a vidrio y late,
+   para que a un metro se vea de un vistazo si el micro está abierto. */
+.boton--parar {
+  background: var(--ctx-vidrio-mas); color: var(--ctx-tinta);
+  box-shadow: inset 0 0 0 2px var(--ctx-linea);
+}
+.boton--parar:hover { background: var(--ctx-vidrio-mas); filter: brightness(1.25); }
 .boton.grabando { animation: late 1.2s ease-in-out infinite; }
 @keyframes late { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+
+/* El punto rojo de «está grabando», delante del reloj. Rojo de verdad y no el
+   color del modo: es la convención universal de «esto se está grabando», y no
+   debe confundirse con el coral de Juicio. */
+.reloj--corriendo::before {
+  content: ''; display: inline-block; vertical-align: middle;
+  width: 12px; height: 12px; border-radius: 50%; background: #E4574A;
+  margin-right: var(--e-2); animation: late 1.2s ease-in-out infinite;
+}
+
+.pie-nota { color: var(--ctx-tenue-2); margin-top: var(--e-2); }
+
+/* --- Las pistas: todo lo que se puede volver a escuchar -------------------------
+   El mismo componente para el borrador sin mandar (grande, manda en la
+   pantalla) y para las intervenciones ya entregadas (compactas, en lista). Un
+   solo <audio> en la sala: si suena una, no suena otra. */
+.pista {
+  display: grid; grid-template-columns: auto 1fr; align-items: center;
+  column-gap: var(--e-3); row-gap: 6px;
+  background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
+  padding: var(--e-3);
+  transition: background var(--dur-corta) var(--suave);
+}
+.pista--grande { padding: var(--e-4); column-gap: var(--e-4); }
+.pista--sonando { background: var(--ctx-vidrio-mas); }
+
+.pista__play {
+  grid-row: span 2; border: 0; cursor: pointer; font: inherit;
+  width: 42px; height: 42px; border-radius: var(--radio-pastilla);
+  display: grid; place-items: center;
+  color: var(--ctx-fondo); background: var(--ctx-acento);
+  transition: transform var(--dur-corta) var(--suave);
+}
+.pista--grande .pista__play { width: 58px; height: 58px; }
+.pista__play:active { transform: scale(.92); }
+.pista--sonando .pista__play { box-shadow: 0 0 0 4px var(--ctx-halo); }
+
+.pista__quien { display: grid; gap: 1px; min-width: 0; align-self: end; }
+.pista__titulo {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  color: var(--ctx-tinta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.pista--grande .pista__titulo { font-size: var(--t-h3); }
+.pista__meta {
+  font-size: var(--t-mini); color: var(--ctx-tenue-2);
+  font-variant-numeric: tabular-nums;
+}
+.pista--grande .pista__meta { font-size: var(--t-chico); color: var(--ctx-tenue); }
+
+.pista__barra {
+  height: 6px; border-radius: 999px; background: var(--ctx-vidrio-mas);
+  overflow: hidden; align-self: start;
+}
+.pista--grande .pista__barra { height: 8px; }
+.pista__barra span {
+  display: block; height: 100%; width: 0%; border-radius: 999px;
+  background: var(--ctx-acento); transition: width 120ms linear;
+}
+
+/* --- Lo que se dijo hasta ahora ------------------------------------------------
+   Se oye antes de contestar, y se puede volver a oír. Es la misma idea que los
+   turnos en vivo: nadie responde de memoria a algo que escuchó una sola vez. */
+.dicho { display: grid; gap: var(--e-2); }
+.dicho__titulo {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ctx-tenue-2);
+  margin-top: var(--e-2);
+}
+.dicho__nueva {
+  display: inline-block; margin-left: 4px; padding: 1px 7px;
+  border-radius: var(--radio-pastilla); background: var(--ctx-halo);
+  color: var(--ctx-acento); font-weight: 800; text-transform: none; letter-spacing: 0;
+}
+.pista--ultima { box-shadow: inset 0 0 0 2px var(--ctx-linea); }
+
+/* Agregar y borrar: secundarias, una al lado de la otra y nunca del tamaño de
+   mandar. Mandar es lo que se hace; las otras dos son la salvaguarda. */
+.revision__otras { display: flex; gap: var(--e-2); margin-top: var(--e-2); }
+.revision__otras .boton {
+  flex: 1; gap: 6px; font-size: var(--t-chico);
+  padding: var(--e-3) var(--e-2); white-space: nowrap;
+}
+/* Borrar es lo único destructivo de la sala y se ve: nada de rojo de alarma
+   —esto es un juego, no un formulario—, pero sí un tono aparte del modo.
+   Va con `.modal--inmersivo` delante para ganarle a la regla que pinta de
+   blanco todos los botones suaves a oscuras. */
+.modal--inmersivo .boton.boton--borrar {
+  color: #FFB4AE; border-color: rgba(255, 180, 174, .34);
+}
+
+/* La confirmación de borrar NO es un `confirm()` del navegador: eso rompe la
+   pantalla completa y saca a la persona del juego. Se pregunta aquí mismo. */
+.confirmar {
+  display: grid; gap: var(--e-2); margin-top: var(--e-2);
+  background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
+  padding: var(--e-3) var(--e-4) var(--e-4);
+  animation: entra var(--dur-corta) var(--suave);
+}
+.confirmar__que { font-size: var(--t-chico); color: var(--ctx-tinta); text-align: center; }
+.confirmar__opciones { display: flex; gap: var(--e-2); }
+.confirmar__opciones .boton { flex: 1; font-size: var(--t-chico); padding: var(--e-3) var(--e-2); }
+
+.sala__nota--ojo { color: var(--sol); }
 
 /* --- Las fichas de número de turnos -------------------------------------------- */
 .turnos-fila { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--e-2); }

@@ -308,14 +308,29 @@
     var caja = $('#v-perfil');
     var insignias = ['🦷', '🍽️', '🐕', '🎬', '💶', '⏰', '😄', '🛋️'];
 
+    var dentro = window.ATWI.auth && window.ATWI.auth.dentro();
+
     caja.innerHTML =
-      '<div class="centrado" style="padding:var(--e-4) 0 var(--e-5)">' +
+      '<div class="centrado" style="padding:var(--e-4) 0 var(--e-4)">' +
         '<div class="avatar" style="width:104px;height:104px;font-size:3rem;margin:0 auto var(--e-3)">' + esc(p.avatar) + '</div>' +
         '<h1>' + (p.nombre ? esc(p.nombre) : 'Sin nombre todavía') + '</h1>' +
         '<p class="chico suave">Nivel ' + p.nivel + '</p>' +
       '</div>' +
 
-      '<div class="contadores">' +
+      /* La cuenta va ARRIBA, no enterrada bajo las insignias: quien busca
+         cambiar de cuenta no debería tener que hacer scroll para encontrarlo. */
+      (dentro
+        ? '<div class="cuenta">' +
+            '<span class="cuenta__quien">' +
+              '<span class="cuenta__eti">Sesión iniciada</span>' +
+              '<span class="cuenta__correo">' + esc(window.ATWI.auth.correo()) + '</span>' +
+            '</span>' +
+            '<button class="boton boton--suave cuenta__salir" data-accion="salir">' +
+              window.ATWI.iconoSVG('salir', 18) + 'Salir</button>' +
+          '</div>'
+        : '') +
+
+      '<div class="contadores" style="margin-top:var(--e-4)">' +
         contador(p.debates, 'Debates', 'debate') +
         contador(p.acuerdos, 'Acuerdos', 'acuerdo') +
         contador(p.semanasActivas, 'Semanas', 'premio') +
@@ -337,10 +352,6 @@
       '</div>' +
 
       '<div class="apilado" style="margin-top:var(--e-6)">' +
-        (window.ATWI.auth && window.ATWI.auth.dentro()
-          ? '<p class="chico tenue centrado">Sesión de ' + esc(window.ATWI.auth.correo()) + '</p>' +
-            '<button class="boton boton--suave boton--bloque" data-accion="salir">Cerrar sesión</button>'
-          : '') +
         '<button class="boton boton--fantasma boton--bloque" data-accion="olvidar">Borrar mis datos de este dispositivo</button>' +
       '</div>';
   }

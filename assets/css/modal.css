@@ -46,10 +46,33 @@
   gap: var(--e-2);
 }
 
-/* Variante inmersiva: la partida y el veredicto. Sin barra, a sangre. */
-.modal--inmersivo { background: var(--tinta); color: var(--blanco); }
+/* Variante inmersiva: la partida y el veredicto. Sin barra, a sangre.
+   El color NO es fijo: lo pone el `data-ctx` del propio modal, que en la sala
+   es el del modo —coral en Juicio, menta en Pacto— y en el veredicto el
+   ciruela. El degradado deja un halo del color del modo arriba, donde está el
+   juez, para que la pantalla no sea un rectángulo plano. */
+.modal--inmersivo {
+  background: var(--ctx-fondo, var(--tinta));
+  color: var(--ctx-tinta, var(--blanco));
+  background-image: radial-gradient(120% 55% at 50% 0%, var(--ctx-halo, transparent) 0%, transparent 70%);
+}
 .modal--inmersivo .modal__pie { background: transparent; border-top: 0; }
-.modal--inmersivo .suave { color: rgba(255, 255, 255, .72); }
+.modal--inmersivo .suave { color: var(--ctx-tenue, rgba(255, 255, 255, .72)); }
+/* A oscuras, «suave» no puede ser un botón blanco: sería más llamativo que el
+   principal. Se invierte a vidrio sobre el fondo oscuro. */
+.modal--inmersivo .boton--suave {
+  background: var(--ctx-vidrio, rgba(255, 255, 255, .10));
+  color: var(--ctx-tinta, var(--blanco));
+  border-color: var(--ctx-linea, rgba(255, 255, 255, .18)); box-shadow: none;
+}
+.modal--inmersivo .boton--suave:hover { background: var(--ctx-vidrio-mas, rgba(255, 255, 255, .17)); }
+.modal--inmersivo .boton[disabled] { opacity: .45; pointer-events: none; }
+.modal--inmersivo .boton-icono { color: var(--ctx-tinta, var(--blanco)); background: var(--ctx-vidrio, transparent); }
+.modal--inmersivo .chip { background: var(--ctx-vidrio-mas); color: var(--ctx-tinta); }
+/* El chip del modo sí lleva color: es lo que dice en qué se está jugando. */
+.modal--inmersivo .chip--debate,
+.modal--inmersivo .chip--negociacion { background: var(--ctx-halo); color: var(--ctx-acento); }
+.modal--inmersivo audio { display: none; }
 
 /* Pasos de un flujo (elegir tema, proponer modo, invitar) */
 .pasos { display: flex; gap: 6px; padding: 0 var(--borde-pantalla) var(--e-3); }

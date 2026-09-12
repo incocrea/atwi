@@ -81,7 +81,12 @@ window.ATWI = window.ATWI || {};
 
   function pedirCatalogo() {
     if (catalogo) return Promise.resolve(catalogo);
-    return fetch('../assets/datos/catalogo.json')
+    /* El sello de versión va también aquí. Los CSS y los JS los sella el
+       publicador en el HTML, pero este archivo lo pide el navegador por su
+       cuenta y se quedaría con la copia vieja del catálogo. `config.version`
+       la rellena tools/publicar.ps1; en local está vacía y no estorba. */
+    var v = (window.ATWI.config && window.ATWI.config.version) ? '?v=' + window.ATWI.config.version : '';
+    return fetch('../assets/datos/catalogo.json' + v)
       .then(function (r) {
         if (!r.ok) throw new Error('No se pudo cargar el catálogo');
         return r.json();

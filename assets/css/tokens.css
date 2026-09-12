@@ -157,6 +157,14 @@
   --ctx-tinta: var(--tinta);
   --ctx-barra: var(--superficie);
   --ctx-pastilla: var(--lavanda-oscuro);
+  /* Los de abajo solo los usan las pantallas oscuras; aquí van por si acaso. */
+  --ctx-acento: var(--lavanda);
+  --ctx-halo: transparent;
+  --ctx-vidrio: var(--crema-hondo);
+  --ctx-vidrio-mas: var(--linea);
+  --ctx-linea: var(--linea);
+  --ctx-tenue: var(--tinta-suave);
+  --ctx-tenue-2: var(--tinta-tenue);
 }
 [data-ctx="jugar"] {
   --ctx-fondo: #EFECFE; --ctx-banda: #5A49B4; --ctx-barra: #F6F3FE; --ctx-pastilla: #5A49B4;
@@ -178,4 +186,42 @@
 }
 [data-ctx="veredicto"] {
   --ctx-fondo: #2E2A3F; --ctx-banda: #14111F; --ctx-tinta: #FBF7F2;
+}
+
+/* --- La sala, a oscuras y con el color del modo ------------------------------
+   La sala va oscura porque entrar a jugar tiene que sentirse distinto de
+   navegar por el catálogo. Pero hasta ahora iba oscura Y NEUTRA, igual en los
+   dos modos: se perdía lo único que no se negocia del color en este juego, que
+   Juicio es coral y Pacto es menta. Así que el fondo no es gris: es el ciruela
+   de la marca empujado hacia el tono del modo.
+
+   El acento se aclara respecto al color de día (#F07F55 → #FF9B73 y #34B79B →
+   #5FD8B8) porque sobre un fondo oscuro el color de día se apaga y no llega al
+   contraste que pide un texto.
+
+   `--ctx-tenue-2` subió de .50 a .62 tras medirlo en el navegador: a .50 el
+   texto de 13 px daba 4,32 sobre los dos fondos, por debajo del 4,5 que exige
+   ese tamaño. Medido ahora, mezclando la transparencia contra su fondo real:
+   Pacto 5,78 · Juicio 6,00 lo tenue, y 7,23 / 7,55 lo que dice el juez. */
+[data-ctx="sala-debate"] {
+  --ctx-fondo: #38232E;
+  --ctx-tinta: #FDF2EC;
+  --ctx-acento: #FF9B73;
+  --ctx-halo: rgba(240, 127, 85, .20);
+  --ctx-vidrio: rgba(255, 235, 226, .08);
+  --ctx-vidrio-mas: rgba(255, 235, 226, .15);
+  --ctx-linea: rgba(255, 235, 226, .18);
+  --ctx-tenue: rgba(253, 242, 236, .72);
+  --ctx-tenue-2: rgba(253, 242, 236, .62);
+}
+[data-ctx="sala-negociacion"] {
+  --ctx-fondo: #1C3138;
+  --ctx-tinta: #EAF8F4;
+  --ctx-acento: #5FD8B8;
+  --ctx-halo: rgba(52, 183, 155, .22);
+  --ctx-vidrio: rgba(226, 248, 243, .08);
+  --ctx-vidrio-mas: rgba(226, 248, 243, .15);
+  --ctx-linea: rgba(226, 248, 243, .18);
+  --ctx-tenue: rgba(234, 248, 244, .72);
+  --ctx-tenue-2: rgba(234, 248, 244, .62);
 }

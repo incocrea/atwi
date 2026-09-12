@@ -11,6 +11,13 @@
 window.ATWI = window.ATWI || {};
 
 window.ATWI.config = {
+  /* Sello de la versión publicada. En el repositorio va VACÍO a propósito:
+     lo rellena tools/publicar.ps1 con el SHA corto del commit, en la copia que
+     sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
+     Sin esto el navegador del teléfono se queda con los archivos viejos aunque
+     el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
+  version: '24f6701',
+
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
      navegador y la seguridad la dan las políticas RLS de la base de datos.

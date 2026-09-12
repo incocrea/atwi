@@ -1,141 +1,197 @@
 /* ==========================================================================
    ATWI · grabadora.js
-   Grabar la voz en el navegador. Es la pieza con más trampas de todo el
-   proyecto, así que van escritas aquí.
+   Grabar la voz en el navegador. Es la pieza con más trampas del proyecto, así
+   que van escritas aquí.
 
    FORMATO. Cada navegador graba en lo suyo y no hay uno que valga en todos:
    Chrome y Firefox dan WebM con Opus, Safari da MP4 con AAC. No se puede fijar
-   un formato: se pregunta cuál admite y se manda lo que salga. El servidor de
-   transcripción acepta los dos.
+   un formato: se pregunta cuál admite y se manda lo que salga.
 
-   PERMISO. `getUserMedia` solo funciona en HTTPS o en localhost, y el permiso
-   hay que pedirlo DENTRO de un gesto de la persona. Si se pide al cargar la
-   pantalla, el navegador lo deniega sin preguntar.
+   PERMISO. `getUserMedia` solo funciona en HTTPS o en localhost, y hay que
+   pedirlo DENTRO de un gesto de la persona. Si se pide al cargar la pantalla,
+   el navegador lo deniega sin preguntar.
 
-   EL FLUJO SE MANTIENE VIVO. En iOS instalado hay un fallo conocido y viejo:
-   funciona la primera vez y al reabrir la app no arranca. La mitigación que
-   está documentada es no soltar el `MediaStream` entre turnos y no cambiar de
-   ruta mientras se graba. Por eso aquí el flujo se abre una vez y se conserva.
+   EL FLUJO SE MANTIENE VIVO. En iOS instalado hay un fallo viejo y conocido:
+   graba la primera vez y al reabrir la app no arranca. La mitigación
+   documentada es no soltar el `MediaStream` entre turnos y no cambiar de ruta
+   mientras se graba. Por eso el flujo se abre una vez y se conserva.
+
+   AÑADIR SIN ROMPER EL ARCHIVO. Para poder seguir hablando después de haber
+   parado NO se para y se vuelve a empezar: se usa `pause()` y `resume()` sobre
+   la MISMA grabación. Dos archivos pegados no dan un archivo válido; una
+   grabación pausada y reanudada, sí. Y como se graba por trozos, se puede
+   montar una copia para escucharla sin haber terminado.
    ========================================================================== */
 window.ATWI = window.ATWI || {};
 
 (function () {
   'use strict';
 
-  var flujo = null;         // el MediaStream, vivo entre turnos a propósito
+  var flujo = null;          // el MediaStream, vivo entre turnos a propósito
   var grabadora = null;
   var trozos = [];
-  var arrancado = 0;
+  var msAcumulados = 0;      // lo grabado antes de la última pausa
+  var desde = 0;             // cuándo arrancó el tramo actual
   var temporizador = null;
+  var alSegundo = null;
+  var tope = 0;
+  var alTope = null;
 
   function tipoQueAdmite() {
     if (!window.MediaRecorder) return '';
     var candidatos = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/mp4;codecs=mp4a.40.2',
-      'audio/mp4',
+      'audio/webm;codecs=opus', 'audio/webm',
+      'audio/mp4;codecs=mp4a.40.2', 'audio/mp4',
       'audio/ogg;codecs=opus'
     ];
     for (var i = 0; i < candidatos.length; i++) {
       if (MediaRecorder.isTypeSupported(candidatos[i])) return candidatos[i];
     }
-    return '';               // el navegador elegirá por su cuenta
+    return '';
+  }
+
+  function segundos() {
+    var enCurso = grabadora && grabadora.state === 'recording' ? Date.now() - desde : 0;
+    return Math.floor((msAcumulados + enCurso) / 1000);
+  }
+
+  function arrancarReloj() {
+    if (temporizador) clearInterval(temporizador);
+    temporizador = setInterval(function () {
+      var s = segundos();
+      if (alSegundo) alSegundo(s);
+      if (tope && s >= tope) {
+        clearInterval(temporizador);
+        temporizador = null;
+        if (alTope) alTope();
+      }
+    }, 250);
+  }
+
+  function pararReloj() {
+    if (temporizador) { clearInterval(temporizador); temporizador = null; }
+  }
+
+  function montar() {
+    var tipo = (grabadora && grabadora.mimeType) || tipoQueAdmite() || 'audio/webm';
+    return new Blob(trozos, { type: tipo });
   }
 
   window.ATWI.grabadora = {
-    /** ¿Se puede grabar aquí? */
     sePuede: function () {
-      return Boolean(navigator.mediaDevices &&
-                     navigator.mediaDevices.getUserMedia &&
-                     window.MediaRecorder);
+      return Boolean(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
     },
 
-    /** Por qué no se puede, en una frase que se le pueda enseñar a alguien. */
     porQueNo: function () {
-      if (!window.isSecureContext) {
-        return 'El navegador solo deja grabar en páginas seguras. Abre ATWI con https.';
-      }
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        return 'Este navegador no sabe grabar audio. Prueba con Chrome o Safari actualizados.';
-      }
-      if (!window.MediaRecorder) {
-        return 'Este navegador no tiene grabadora de audio.';
-      }
+      if (!window.isSecureContext) return 'El navegador solo deja grabar en páginas seguras. Abre ATWI con https.';
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return 'Este navegador no sabe grabar audio. Prueba con Chrome o Safari actualizados.';
+      if (!window.MediaRecorder) return 'Este navegador no tiene grabadora de audio.';
       return 'No se pudo abrir el micrófono.';
     },
 
-    /**
-     * Pide el micrófono. TIENE que llamarse dentro de un gesto de la persona.
-     * El flujo se conserva abierto para los turnos siguientes.
-     */
+    /** ¿El navegador sabe pausar y reanudar? Si no, «añadir» no se ofrece. */
+    sabeAnadir: function () {
+      return Boolean(window.MediaRecorder && MediaRecorder.prototype.pause && MediaRecorder.prototype.resume);
+    },
+
+    /** Pide el micrófono. Debe llamarse dentro de un gesto de la persona. */
     abrir: function () {
       if (flujo && flujo.active) return Promise.resolve(flujo);
       return navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
       }).then(function (f) { flujo = f; return f; });
     },
 
-    /**
-     * Empieza a grabar.
-     * @param alSegundo  se llama cada segundo con los segundos transcurridos
-     * @param tope       segundos máximos; al llegar, se para solo
-     * @param alTope     se llama si se paró por llegar al tope
-     */
-    empezar: function (alSegundo, tope, alTope) {
-      var yo = this;
+    /** Empieza una grabación NUEVA, desde cero. */
+    empezar: function (cadaSegundo, topeSegundos, alLlegarAlTope) {
+      alSegundo = cadaSegundo;
+      tope = topeSegundos;
+      alTope = alLlegarAlTope;
       return this.abrir().then(function (f) {
         var tipo = tipoQueAdmite();
         trozos = [];
+        msAcumulados = 0;
         grabadora = tipo ? new MediaRecorder(f, { mimeType: tipo }) : new MediaRecorder(f);
-        grabadora.ondataavailable = function (e) {
-          if (e.data && e.data.size) trozos.push(e.data);
-        };
-        grabadora.start(250);          // trozos de 250 ms: si algo falla, no se pierde todo
-        arrancado = Date.now();
-
-        temporizador = setInterval(function () {
-          var s = Math.floor((Date.now() - arrancado) / 1000);
-          if (alSegundo) alSegundo(s);
-          if (tope && s >= tope) {
-            clearInterval(temporizador);
-            temporizador = null;
-            if (alTope) alTope();
-          }
-        }, 250);
+        grabadora.ondataavailable = function (e) { if (e.data && e.data.size) trozos.push(e.data); };
+        grabadora.start(250);       // por trozos: permite oírlo sin terminar
+        desde = Date.now();
+        arrancarReloj();
         return true;
       });
     },
 
-    /** Para y devuelve el audio. El flujo del micrófono NO se cierra. */
-    parar: function () {
+    /**
+     * Pausa y devuelve una copia de lo grabado hasta ahora, para escucharla.
+     * NO termina la grabación: después se puede seguir añadiendo.
+     */
+    pausar: function () {
+      var yo = this;
+      return new Promise(function (resolver) {
+        if (!grabadora || grabadora.state !== 'recording') return resolver(null);
+        pararReloj();
+        msAcumulados += Date.now() - desde;
+        /* Se pide el trozo pendiente ANTES de pausar, o el último medio segundo
+           se queda sin escribir y la copia sale corta. */
+        var alLlegar = function () {
+          grabadora.removeEventListener('dataavailable', alLlegar);
+          setTimeout(function () {
+            try { grabadora.pause(); } catch (e) {}
+            resolver({ audio: montar(), tipo: grabadora.mimeType, segundos: segundos() });
+          }, 0);
+        };
+        grabadora.addEventListener('dataavailable', alLlegar);
+        grabadora.requestData();
+      });
+    },
+
+    /** Sigue grabando sobre lo mismo. El archivo sale entero, no pegado. */
+    reanudar: function () {
+      if (!grabadora || grabadora.state !== 'paused') return false;
+      grabadora.resume();
+      desde = Date.now();
+      arrancarReloj();
+      return true;
+    },
+
+    /** Cierra el turno y devuelve el audio definitivo. */
+    terminar: function () {
       return new Promise(function (resolver) {
         if (!grabadora || grabadora.state === 'inactive') return resolver(null);
-        if (temporizador) { clearInterval(temporizador); temporizador = null; }
-        var segundos = Math.round((Date.now() - arrancado) / 1000);
+        pararReloj();
+        if (grabadora.state === 'recording') msAcumulados += Date.now() - desde;
+        /* Hacia abajo, igual que el reloj: lo que se vio en la revisión y lo
+           que se manda tienen que ser el mismo número. */
+        var s = Math.floor(msAcumulados / 1000);
         grabadora.onstop = function () {
-          var tipo = grabadora.mimeType || 'audio/webm';
-          var trozo = new Blob(trozos, { type: tipo });
+          var r = { audio: montar(), tipo: grabadora.mimeType, segundos: s };
+          r.bytes = r.audio.size;
           trozos = [];
-          resolver({ audio: trozo, tipo: tipo, segundos: segundos, bytes: trozo.size });
+          msAcumulados = 0;
+          resolver(r);
         };
         grabadora.stop();
       });
     },
 
-    grabando: function () {
-      return Boolean(grabadora && grabadora.state === 'recording');
+    /** Tira lo grabado y deja todo listo para volver a empezar. */
+    descartar: function () {
+      pararReloj();
+      if (grabadora && grabadora.state !== 'inactive') {
+        grabadora.onstop = null;
+        try { grabadora.stop(); } catch (e) {}
+      }
+      grabadora = null;
+      trozos = [];
+      msAcumulados = 0;
     },
+
+    grabando: function () { return Boolean(grabadora && grabadora.state === 'recording'); },
+    pausada: function () { return Boolean(grabadora && grabadora.state === 'paused'); },
+    segundos: segundos,
 
     /** Suelta el micrófono. Solo al terminar la partida entera. */
     cerrar: function () {
-      if (temporizador) { clearInterval(temporizador); temporizador = null; }
-      if (grabadora && grabadora.state === 'recording') { try { grabadora.stop(); } catch (e) {} }
-      grabadora = null;
+      this.descartar();
       if (flujo) {
         flujo.getTracks().forEach(function (t) { t.stop(); });
         flujo = null;

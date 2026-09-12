@@ -26,6 +26,17 @@ window.ATWI = window.ATWI || {};
     micro: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/>',
     mas: '<path d="M12 5.5v13M5.5 12h13"/>',
     atras: '<path d="M14.5 5.5 8 12l6.5 6.5"/>',
+
+    /* Escuchar lo grabado antes de mandarlo */
+    play: '<path d="M8.5 5.6a.9.9 0 0 1 1.36-.78l8.1 6.4a.9.9 0 0 1 0 1.56l-8.1 6.4A.9.9 0 0 1 8.5 18.4Z"/>',
+    pausa: '<rect x="7.5" y="5" width="3.6" height="14" rx="1.6"/><rect x="12.9" y="5" width="3.6" height="14" rx="1.6"/>',
+    parar: '<rect x="6.2" y="6.2" width="11.6" height="11.6" rx="3"/>',
+    papelera: '<path d="M4.5 6.8h15"/><path d="M9.3 6.8V5.2a1.4 1.4 0 0 1 1.4-1.4h2.6a1.4 1.4 0 0 1 1.4 1.4v1.6"/><path d="M6.6 6.8 7.4 19a1.6 1.6 0 0 0 1.6 1.5h6a1.6 1.6 0 0 0 1.6-1.5l.8-12.2"/>',
+    repetir: '<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 3.5V8h-4.5"/>',
+
+    /* Cuenta */
+    ajustes: '<circle cx="12" cy="12" r="3.1"/><path d="M12 2.8v2.4M12 18.8v2.4M4.5 12H2.1M21.9 12h-2.4M6.7 6.7 5 5M19 19l-1.7-1.7M6.7 17.3 5 19M19 5l-1.7 1.7"/>',
+    salir: '<path d="M15 4.5h2.5A2 2 0 0 1 19.5 6.5v11a2 2 0 0 1-2 2H15"/><path d="M10.5 8 6.5 12l4 4"/><path d="M6.5 12H15"/>',
     cerrar: '<path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5"/>',
     listo: '<path d="M5 12.6 9.7 17 19 6.8"/>',
     candado: '<rect x="4.8" y="10.5" width="14.4" height="9.2" rx="2.6"/><path d="M8.4 10.5V8a3.6 3.6 0 0 1 7.2 0v2.5"/>',
