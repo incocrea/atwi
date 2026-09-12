@@ -308,6 +308,24 @@ body.app {
 .explica--debate .explica__clave { color: #A8431F; }
 .explica--negociacion .explica__clave { color: #176450; }
 
+/* --- Kai y Luna ---------------------------------------------------------------
+   La figura va recortada y sin fondo; la mancha de color la pone el SVG de
+   debajo. Van en la misma caja y no una al lado de la otra: el SVG cubre toda
+   la caja y la figura se apoya en el borde inferior, que es donde se paran los
+   pies y donde se corta el busto. */
+.retrato {
+  position: relative; display: block; overflow: hidden;
+  border-radius: var(--radio-carta);
+}
+.retrato__fondo { position: absolute; inset: 0; width: 100%; height: 100%; }
+.retrato__fig {
+  position: relative; display: block;
+  width: 100%; height: 100%; object-fit: contain; object-position: center bottom;
+}
+/* Redondo para el avatar; la figura se acerca para que la cara llene el disco. */
+.retrato--ficha { border-radius: 50%; aspect-ratio: 1; }
+.retrato--ficha .retrato__fig { transform: scale(1.25); transform-origin: 50% 22%; }
+
 /* --- La explicación de un modo ------------------------------------------------
    Hace juego con su carta: mismo rótulo dibujado, mismo color de fondo, que lo
    pone `modal--<modo>`. Es la misma cosa, en grande. */
