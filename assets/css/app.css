@@ -1432,9 +1432,28 @@ body.app {
 .sala--sorteo { display: flex; flex-direction: column; min-height: 100%; }
 .sala--sorteo .encuentro { flex: 1 0 auto; }
 
+/* El botón de empezar necesita suelo. Con el pie transparente quedaba posado
+   encima del dibujo, flotando, y el corte de las figuras caía justo detrás.
+   La sombra NO es un degradado de fondo: es el mismo color del modo difuminado
+   hacia arriba, y lo que hace es que el dibujo se funda con la barra en vez de
+   terminar en una raya. */
+#m-partida:has(.sala--sorteo) .modal__pie {
+  background: var(--ctx-fondo, var(--crema));
+  box-shadow: 0 -18px 22px -6px var(--ctx-fondo, var(--crema));
+  position: relative; z-index: 1;
+}
+
 .encuentro {
   position: relative; overflow: hidden;
   min-height: 190px; margin-top: var(--e-3);
+  /* Se sale del relleno del modal a propósito, por los lados Y POR ABAJO: quien
+     corta a las figuras tiene que ser el BORDE DE LA PANTALLA, no el margen de
+     la caja. Recortadas por el margen parecían pegadas dentro de un marco;
+     recortadas por la pantalla parece que entran en escena.
+     Los valores son los del relleno de `.modal__cuerpo`: si aquel cambia, este
+     tiene que cambiar con él. */
+  margin-inline: calc(-1 * var(--borde-pantalla));
+  margin-bottom: calc(-1 * var(--e-4));
 }
 .encuentro__lado {
   position: absolute; bottom: 0;
