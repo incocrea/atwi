@@ -132,11 +132,16 @@
   }
 
   function tarjetaTema(t) {
-    return '<button class="tarjeta tarjeta--pulsable tema" data-tema="' + esc(t.id) + '">' +
+    var hecho = datos.yaDebatido(t.id);
+    return '<button class="tarjeta tarjeta--pulsable tema' + (hecho ? ' tema--hecho' : '') + '" ' +
+        'data-tema="' + esc(t.id) + '">' +
         '<span class="tema__titulo">' + esc(t.titulo) + '</span>' +
         '<span class="tema__enunciado">' + esc(t.enunciado) + '</span>' +
         '<span class="tema__pie">' +
           '<span class="chip chip--' + esc(t.intensidad) + '">' + esc(t.intensidad) + '</span>' +
+          (hecho
+            ? '<span class="chip chip--hecho">' + icono('listo', 13) + ' Ya debatido</span>'
+            : '<span class="chip chip--nuevo">Sin estrenar</span>') +
         '</span>' +
       '</button>';
   }
@@ -146,6 +151,8 @@
      ====================================================================== */
   var categoriaAbierta = null;
   var modoPublico = null;   // 'pareja' | 'amigos'; null = todavia no ha elegido
+  var busqueda = '';        // texto del buscador
+  var filtro = 'todos';     // 'todos' | 'sin' | 'con'
 
   function pintarCatalogo() {
     var caja = $('#v-catalogo');
@@ -186,16 +193,41 @@
     }
 
     datos.catalogo().then(function (cat) {
+      var buscando = busqueda.trim() !== '' || filtro !== 'todos';
+
       if (categoriaAbierta) {
-        var temas = datos.temasDe(categoriaAbierta);
+        var temas = datos.temasDe(categoriaAbierta).filter(function (x) {
+          return datos.buscar(busqueda, filtro).indexOf(x) !== -1;
+        });
         var meta = cat.categorias.filter(function (c) { return c.nombre === categoriaAbierta; })[0] || {};
         caja.innerHTML =
-          '<div class="fila" style="margin-bottom:var(--e-4)">' +
+          '<div class="fila" style="margin-bottom:var(--e-3)">' +
             '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver a las categorías">' + icono('atras', 22) + '</button>' +
-            '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.corto || categoriaAbierta) + '</h1>' +
-            '<p class="chico suave">' + temas.length + ' temas</p></div>' +
+            '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.emoji || '') + ' ' + esc(categoriaAbierta) + '</h1>' +
+            '<p class="chico suave">' + temas.length + ' de ' + (meta.total || 0) + '</p></div>' +
           '</div>' +
-          '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>';
+          barraBusqueda() +
+          (temas.length
+            ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
+            : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+        devolverFoco();
+        return;
+      }
+
+      /* Con búsqueda o filtro activos se salta la lista de categorías y se
+         enseñan los temas directamente: quien busca quiere el tema, no la
+         carpeta donde vive. */
+      if (buscando) {
+        var hallados = datos.buscar(busqueda, filtro);
+        caja.innerHTML =
+          '<h1 style="margin-bottom:var(--e-3)">Catálogo</h1>' +
+          barraBusqueda() +
+          '<p class="chico suave" style="margin:var(--e-3) 0">' +
+            hallados.length + ' de ' + cat.total + ' temas</p>' +
+          (hallados.length
+            ? '<div class="apilado">' + hallados.map(tarjetaTema).join('') + '</div>'
+            : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+        devolverFoco();
         return;
       }
 
@@ -204,9 +236,12 @@
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Cambiar de modo">' + icono('atras', 22) + '</button>' +
           '<h1 style="font-size:var(--t-h2)">Con mi pareja</h1>' +
         '</div>' +
-        '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
-          cat.total + ' temas, ordenados por dónde y cuándo suele salir la discusión.' +
+        '<p class="chico suave" style="margin-bottom:var(--e-3)">' +
+          cat.total + ' temas, ordenados por dónde y cuándo suele salir la discusión. ' +
+          'Llevas ' + datos.perfil().temasJugados.length + ' debatidos.' +
         '</p>' +
+        barraBusqueda() +
+        '<div style="height:var(--e-3)"></div>' +
         '<div class="categorias">' +
           cat.categorias.map(function (c) {
             return '<button class="categoria" data-categoria="' + esc(c.nombre) + '">' +
@@ -238,6 +273,22 @@
       return;
     }
     caja.innerHTML = '<h1 style="margin-bottom:var(--e-4)">Historial</h1>';
+  }
+
+  /* Buscador y filtros. Van juntos porque responden a la misma pregunta:
+     «¿qué me queda por debatir de esto?». */
+  function barraBusqueda() {
+    var f = [['todos', 'Todos'], ['sin', 'Sin estrenar'], ['con', 'Ya debatidos']];
+    return '<div class="buscador">' +
+        '<input class="campo" id="q" type="search" inputmode="search" placeholder="Buscar un tema…" ' +
+          'value="' + esc(busqueda) + '" autocomplete="off">' +
+        '<div class="filtros">' +
+          f.map(function (x) {
+            return '<button class="chip chip--filtro" data-filtro="' + x[0] + '"' +
+                   (filtro === x[0] ? ' aria-pressed="true"' : '') + '>' + x[1] + '</button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
   }
 
   function estadoVacio(emoji, titulo, texto) {
@@ -412,6 +463,9 @@
     var b = e.target.closest('[data-vista]');
     if (b) { irA(b.dataset.vista); return; }
 
+    var fil = e.target.closest('[data-filtro]');
+    if (fil) { filtro = fil.dataset.filtro; pintarCatalogo(); return; }
+
     var pub = e.target.closest('[data-publico]');
     if (pub) { modoPublico = pub.dataset.publico; categoriaAbierta = null; pintarCatalogo(); return; }
 
@@ -461,6 +515,23 @@
       }
     }
   });
+
+  /* Escribir en el buscador repinta, pero el campo se recrea en cada pintado:
+     hay que devolverle el foco y el cursor donde estaba. */
+  var reponerFoco = false;
+  document.addEventListener('input', function (e) {
+    if (e.target.id !== 'q') return;
+    busqueda = e.target.value;
+    reponerFoco = true;
+    pintarCatalogo();
+  });
+
+  function devolverFoco() {
+    if (!reponerFoco) return;
+    reponerFoco = false;
+    var q = $('#q');
+    if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+  }
 
   /* --- Arranque ------------------------------------------------------------ */
   function arrancar() {

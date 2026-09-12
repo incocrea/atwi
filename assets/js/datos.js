@@ -106,6 +106,25 @@ window.ATWI = window.ATWI || {};
       return pendientes[0] || null;
     },
 
+    /** ¿Esta cuenta ya debatió este tema alguna vez? El resultado da igual:
+        lo que interesa es saber qué queda por estrenar. */
+    yaDebatido: function (id) {
+      return cargar().temasJugados.indexOf(id) !== -1;
+    },
+
+    /** Busca por palabra en el título, el enunciado y las dos posturas. */
+    buscar: function (texto, estado) {
+      if (!catalogo) return [];
+      var q = (texto || '').trim().toLowerCase();
+      var yo = this;
+      return catalogo.temas.filter(function (t) {
+        if (estado === 'sin' && yo.yaDebatido(t.id)) return false;
+        if (estado === 'con' && !yo.yaDebatido(t.id)) return false;
+        if (!q) return true;
+        return (t.titulo + ' ' + t.enunciado + ' ' + t.a + ' ' + t.b).toLowerCase().indexOf(q) !== -1;
+      });
+    },
+
     tema: function (id) {
       if (!catalogo) return null;
       for (var i = 0; i < catalogo.temas.length; i++) {

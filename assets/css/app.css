@@ -462,3 +462,24 @@ body.app {
 .categoria__que { display: block; font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.35; margin-top: 2px; }
 .categoria__emoji { align-self: center; }
 .categoria__n { align-self: center; }
+
+/* --- Buscador del catálogo ---------------------------------------------------- */
+.buscador { display: grid; gap: var(--e-2); }
+.buscador .campo { background: var(--superficie); }
+.filtros { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+
+.chip--filtro {
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  background: var(--superficie);
+  color: var(--tinta-suave);
+  box-shadow: var(--sombra-1);
+}
+.chip--filtro[aria-pressed="true"] { background: var(--ctx-pastilla); color: var(--blanco); box-shadow: none; }
+
+/* Un tema ya debatido se apaga un punto: lo que interesa es ver lo que falta */
+.tema--hecho { opacity: .72; }
+.chip--hecho { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
+.chip--hecho svg { width: 13px; height: 13px; }
+.chip--nuevo { background: var(--premio-tinte); color: var(--premio-hondo); }
