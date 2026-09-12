@@ -144,4 +144,4 @@ body.landing {
 body.landing .barra { display: none; }
 
 /* El logotipo es una palabra: en la barra va tal cual, sin disco detrás */
-.marca img { height: 29px; width: auto; display: block; }
+.marca img { height: 40px; width: auto; display: block; }
