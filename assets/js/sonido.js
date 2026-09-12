@@ -146,6 +146,61 @@ window.ATWI = window.ATWI || {};
       });
     },
 
+    /**
+     * El clac de la ruleta: un golpe seco y corto, como el trinquete que va
+     * pasando por los topes. Se dispara UNO POR CADA SALTO de la animación, no
+     * en un patrón propio, para que el oído y el ojo vayan juntos: si el sonido
+     * llevara su propio ritmo, al frenar se notaría que van por libre.
+     *
+     * `fuerza` baja de 1 a 0 según se frena, que es lo que hace que suene a
+     * rueda perdiendo impulso y no a metrónomo.
+     */
+    clac: function (fuerza) {
+      var c = contexto();
+      if (!c) return;
+      var t = c.currentTime;
+      var v = 0.05 + 0.13 * (fuerza == null ? 1 : fuerza);
+
+      var f = c.createBufferSource();
+      f.buffer = ruido(c);
+      f.playbackRate.value = 1.4;
+
+      var paso = c.createBiquadFilter();
+      paso.type = 'bandpass';
+      paso.frequency.value = 2600;
+      paso.Q.value = 3;
+
+      var g = c.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(v, t + 0.001);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.035);
+
+      f.connect(paso); paso.connect(g); g.connect(c.destination);
+      f.start(t); f.stop(t + 0.05);
+    },
+
+    /**
+     * La campana del final: dos parciales y una cola larga. Un solo tono suena
+     * a timbre de microondas; el segundo parcial, ligeramente desafinado y más
+     * corto, es lo que lo convierte en campana.
+     */
+    campana: function () {
+      var c = contexto();
+      if (!c) return;
+      var t = c.currentTime;
+      [[1318.5, 0.22, 1.8], [2637, 0.09, 0.9], [3956, 0.04, 0.5]].forEach(function (voz) {
+        var o = c.createOscillator();
+        var g = c.createGain();
+        o.type = 'sine';
+        o.frequency.value = voz[0];
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(voz[1], t + 0.004);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + voz[2]);
+        o.connect(g); g.connect(c.destination);
+        o.start(t); o.stop(t + voz[2] + 0.05);
+      });
+    },
+
     /** Un tic por cada número de la cuenta atrás. */
     tic: function () {
       var c = contexto();

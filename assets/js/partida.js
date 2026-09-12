@@ -405,12 +405,18 @@ window.ATWI = window.ATWI || {};
             '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>' +
           '</div>' +
         '</div>' +
+        /* EL SORTEO SE VE Y SE OYE. Antes ponía el resultado ya hecho, que es
+           como enseñar el dado en la mesa en vez de tirarlo: quién abre es la
+           primera cosa que el juego decide por ustedes y merece sus cuatro
+           segundos. La ficha salta entre las dos, va frenando, y para. */
         '<div class="sorteo">' +
-          '<p class="sorteo__que">Abre ' + (P.modo === 'debate' ? 'la controversia' : 'la negociación') + '</p>' +
-          '<p class="sorteo__quien">' + esc(P.jugadores[P.orden[0]].nombre) + '</p>' +
+          '<p class="sorteo__que">Quién inicia</p>' +
+          '<span class="avatar sorteo__ficha" id="sorteo-ficha"></span>' +
+          '<p class="sorteo__quien" id="sorteo-quien">&nbsp;</p>' +
           /* La revancha es cosa del modo Debate. En Negociación lo equivalente
-             no revierte un resultado: encadena otra ronda. */
-          '<p class="sorteo__como">Salió por sorteo. En la ' +
+             no revierte un resultado: encadena otra ronda. Se tapa hasta el
+             final: nombra a quien NO abre y destriparía el sorteo. */
+          '<p class="sorteo__como" id="sorteo-como" hidden>Salió por sorteo. En la ' +
             (P.modo === 'debate' ? 'revancha' : 'próxima') + ' abre ' +
             esc(P.jugadores[P.orden[1]].nombre) + '.</p>' +
         '</div>' +
@@ -426,7 +432,78 @@ window.ATWI = window.ATWI || {};
           }).join('') +
         '</div>' +
       '</div>';
-    pie().innerHTML = principal('p-listo', 'Empezar');
+    /* El botón espera al sorteo: si no, se puede pasar de largo y el juego
+       habría decidido quién abre sin que nadie lo viera. */
+    pie().innerHTML = principal('p-listo', 'Empezar', '', true);
+    correrSorteo();
+  }
+
+  /**
+   * LA TIRADA. Cuatro segundos: la ficha salta entre las dos personas, cada vez
+   * más despacio, y se para en quien abre.
+   *
+   * Los saltos se calculan ANTES de empezar para saber cuántos van a ser, y con
+   * eso se elige por cuál empezar: así el último cae exactamente en quien tiene
+   * que caer. Forzar el resultado al final produciría un salto final que se ve,
+   * justo cuando la vista está más atenta.
+   */
+  var DURACION_SORTEO = 4000;
+
+  function saltosDelSorteo() {
+    var t = 0, lista = [];
+    while (t < DURACION_SORTEO) {
+      /* De 55 ms a 655 ms. La potencia 2.4 concentra el frenado al final, que
+         es donde está la gracia: al principio es un borrón, al final se lee. */
+      t += 55 + 600 * Math.pow(t / DURACION_SORTEO, 2.4);
+      lista.push(Math.min(t, DURACION_SORTEO));
+    }
+    return lista;
+  }
+
+  function correrSorteo() {
+    var ficha = $('#sorteo-ficha');
+    var quien = $('#sorteo-quien');
+    if (!ficha) return;
+    if (sonido.hay()) sonido.despertar();
+
+    var tiempos = saltosDelSorteo();
+    var total = tiempos.length;
+    var gana = P.orden[0];
+    /* Con dos jugadores basta la paridad para aterrizar donde toca. */
+    var inicio = (gana - total % 2 + 2) % 2;
+
+    function pinta(i) {
+      var j = P.jugadores[i];
+      ficha.textContent = j.avatar;
+      ficha.style.background = j.color;
+      quien.textContent = j.nombre;
+    }
+    pinta(inicio);
+
+    var k = 0;
+    var t0 = Date.now();
+    (function siguiente() {
+      if (k >= total) return aterrizar();
+      var espera = tiempos[k] - (Date.now() - t0);
+      setTimeout(function () {
+        if (!P || P.estado !== 'aviso') return;      // se salió de la sala
+        k++;
+        pinta((inicio + k) % 2);
+        if (sonido.hay()) sonido.clac(1 - k / total);
+        siguiente();
+      }, Math.max(0, espera));
+    })();
+
+    function aterrizar() {
+      if (!P || P.estado !== 'aviso') return;
+      ficha.classList.add('sorteo__ficha--parada');
+      quien.classList.add('sorteo__quien--parada');
+      var como = $('#sorteo-como');
+      if (como) como.hidden = false;
+      var b = $('#m-partida [data-accion="p-listo"]');
+      if (b) b.disabled = false;
+      if (sonido.hay()) sonido.campana();
+    }
   }
 
   /* ==========================================================================
