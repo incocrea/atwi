@@ -42,9 +42,9 @@ window.ATWI.config = {
      aplica el servidor; estas son solo para no enseñar botones imposibles.
      Vienen de docs/02-modos-y-catalogo.md. */
   reglas: {
-    /* El turno único está PROHIBIDO en los dos modos (docs/03 §14). En Juicio,
+    /* El turno único está PROHIBIDO en los dos modos (docs/03 §14). En Debate,
        porque sin réplica el criterio de escucha no tiene sobre qué puntuarse;
-       en Pacto, porque dos turnos son el bucle completo de la mediación. */
+       en Negociación, porque dos turnos son el bucle completo de la mediación. */
     turnosMin: 2,
     turnosMax: 5,
     turnosPorDefecto: 3,
@@ -54,6 +54,26 @@ window.ATWI.config = {
     revanchasPorTemporada: 4,
     revanchaVentanaHoras: [24, 336],   // de 24 horas a 14 días
     actasActivasMax: 1,
-    actasVisiblesMax: 3
-  }
+    actasVisiblesMax: 3,
+
+    /* En modo Negociación el juez propone SIEMPRE tres acuerdos posibles y las
+       dos partes votan. El que ambas eligen queda editable por quien creó el
+       debate, y solo queda en firme cuando los dos pulsan aceptar. */
+    propuestasDeAcuerdo: 3
+  },
+
+  /* Lo que dice el juez al cerrar una intervención. Son frases FIJAS: no las
+     escribe el modelo. Dos razones. Una, que los modelos son malos decidiendo
+     cuándo intervenir, y aquí el cuándo lo fija el producto. Y dos, que si el
+     juez comentara lo que acabas de decir estaría evaluando a mitad de partida,
+     que es justo lo que no debe hacer hasta el final.
+
+     Ninguna valora ni da la razón: solo acusan recibo y pasan el turno. */
+  frasesDelJuez: [
+    'Te he escuchado. Veamos qué dice la otra parte.',
+    'Anotado tal cual lo has dicho. Turno de enfrente.',
+    'Lo tengo. Ahora escucho a la otra persona.',
+    'Registrado. Que hable la otra parte.',
+    'Hasta aquí lo tuyo. Escuchemos el otro lado.'
+  ]
 };

@@ -28,8 +28,8 @@ window.ATWI = window.ATWI || {};
     nivel: 1,
     puntos: 0,
     puntosNivel: 100,
-    juicios: 0,          // partidas jugadas en modo Juicio
-    pactos: 0,           // actas registradas en modo Pacto
+    debates: 0,          // partidas jugadas en modo Debate
+    acuerdos: 0,         // acuerdos firmados en modo Negociación
     semanasActivas: 0,   // sustituye a la racha: solo sube, nunca se rompe
     insignias: [],
     temasJugados: [],

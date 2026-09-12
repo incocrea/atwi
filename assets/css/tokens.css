@@ -6,7 +6,7 @@
    La dirección gráfica es la de Finch: neutros cálidos tirando a crema,
    un lavanda de marca, colores pastel saturados pero suaves, formas muy
    redondeadas y sombras difusas. Cada modo de juego tiene su color y no se
-   mezclan nunca: Pacto es menta, Juicio es coral.
+   mezclan nunca: Negociación es menta, Debate es coral.
    ========================================================================== */
 :root {
   /* --- Marca ------------------------------------------------------------- */
@@ -16,12 +16,12 @@
   --lavanda-tinte: #EFECFE;
 
   /* --- Los dos modos (nunca se mezclan) ---------------------------------- */
-  --pacto: #34B79B;           /* menta: modo Pacto, el mediador */
-  --pacto-oscuro: #21876F;
-  --pacto-tinte: #DDF4EE;
-  --juicio: #F07F55;          /* coral: modo Juicio, el árbitro */
-  --juicio-oscuro: #C75B33;
-  --juicio-tinte: #FDEAE1;
+  --negociacion: #34B79B;           /* menta: modo Pacto, el mediador */
+  --negociacion-oscuro: #21876F;
+  --negociacion-tinte: #DDF4EE;
+  --debate: #F07F55;          /* coral: modo Debate, el árbitro */
+  --debate-oscuro: #C75B33;
+  --debate-tinte: #FDEAE1;
 
   /* --- Apoyo ------------------------------------------------------------- */
   --cielo: #63AEEF;
@@ -42,7 +42,7 @@
   --blanco: #FFFFFF;
 
   /* --- Estados ----------------------------------------------------------- */
-  --exito: var(--pacto);
+  --exito: var(--negociacion);
   --alerta: #E4A11B;
   --peligro: #D45B5B;
   --peligro-tinte: #FBE8E8;

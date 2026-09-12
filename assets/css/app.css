@@ -186,8 +186,8 @@ body.app {
 }
 .modo:active { transform: scale(.985); box-shadow: var(--sombra-2); }
 .modo__icono { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; }
-.modo--juicio .modo__icono { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
-.modo--pacto .modo__icono { background: var(--pacto-tinte); color: var(--pacto-oscuro); }
+.modo--debate .modo__icono { background: var(--debate-tinte); color: var(--debate-oscuro); }
+.modo--negociacion .modo__icono { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
 .modo__nombre { display: block; font-family: var(--display); font-weight: 800; font-size: var(--t-h3); }
 .modo__que { display: block; font-size: var(--t-chico); color: var(--tinta-suave); margin-top: 2px; line-height: 1.35; }
 

@@ -82,8 +82,8 @@ body.landing {
 
 .ficha-modo { padding: var(--e-5); border-radius: var(--radio-modal); background: var(--superficie); box-shadow: var(--sombra-1); }
 .ficha-modo__icono { width: 60px; height: 60px; border-radius: 20px; display: grid; place-items: center; margin-bottom: var(--e-4); }
-.ficha-modo--juicio .ficha-modo__icono { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
-.ficha-modo--pacto .ficha-modo__icono { background: var(--pacto-tinte); color: var(--pacto-oscuro); }
+.ficha-modo--debate .ficha-modo__icono { background: var(--debate-tinte); color: var(--debate-oscuro); }
+.ficha-modo--negociacion .ficha-modo__icono { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
 .ficha-modo__lista { margin: var(--e-4) 0 0; padding: 0; list-style: none; display: grid; gap: var(--e-2); }
 .ficha-modo__lista li { display: grid; grid-template-columns: 1.25rem 1fr; gap: var(--e-2); font-size: var(--t-chico); color: var(--tinta-suave); }
 

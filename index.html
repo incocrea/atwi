@@ -48,13 +48,13 @@
         </p>
         <p class="chico suave" style="margin-top:6px">Tareas del hogar · ligera</p>
       </div>
-      <div class="tarjeta" style="background:var(--juicio-tinte);box-shadow:none">
-        <p class="chico" style="color:var(--juicio-oscuro);font-weight:800">⚔️ Modo Juicio</p>
-        <p class="chico" style="color:var(--juicio-oscuro)">Hay ganador</p>
+      <div class="tarjeta" style="background:var(--debate-tinte);box-shadow:none">
+        <p class="chico" style="color:var(--debate-oscuro);font-weight:800">🎤 Modo Debate</p>
+        <p class="chico" style="color:var(--debate-oscuro)">Hay ganador</p>
       </div>
-      <div class="tarjeta" style="background:var(--pacto-tinte);box-shadow:none">
-        <p class="chico" style="color:var(--pacto-oscuro);font-weight:800">🕊️ Modo Pacto</p>
-        <p class="chico" style="color:var(--pacto-oscuro)">Ganáis los dos</p>
+      <div class="tarjeta" style="background:var(--negociacion-tinte);box-shadow:none">
+        <p class="chico" style="color:var(--negociacion-oscuro);font-weight:800">🤝 Modo Negociación</p>
+        <p class="chico" style="color:var(--negociacion-oscuro)">Ganáis los dos</p>
       </div>
     </div>
   </header>
@@ -67,27 +67,33 @@
     </p>
 
     <div class="rejilla-modos">
-      <article class="ficha-modo ficha-modo--juicio">
-        <div class="ficha-modo__icono" style="font-size:1.75rem">⚔️</div>
-        <h3>Modo Juicio</h3>
-        <p class="suave chico" style="margin-top:var(--e-2)">La IA hace de árbitro.</p>
+      <article class="ficha-modo ficha-modo--debate">
+        <div class="ficha-modo__icono" style="font-size:1.75rem">🎤</div>
+        <h3>Modo Debate</h3>
+        <p class="suave chico" style="margin-top:var(--e-2)">
+          Un tema central, dos partes que compiten por quién argumenta mejor su opinión,
+          y un juez imparcial que evalúa, declara ganador y explica por qué.
+        </p>
         <ul class="ficha-modo__lista">
+          <li><span>·</span> Competencia sana, divertida y amigable</li>
+          <li><span>·</span> No va de hacer sentir mal a quien tienes enfrente: va de probar hasta dónde sabes defender tus ideas</li>
           <li><span>·</span> Puntúa con una rúbrica que tenéis a la vista desde el principio</li>
-          <li><span>·</span> Declara ganador o empate, y explica por qué</li>
-          <li><span>·</span> Suma victorias y derrotas a tu perfil</li>
           <li><span>·</span> Quien pierde puede pedir la revancha</li>
         </ul>
       </article>
 
-      <article class="ficha-modo ficha-modo--pacto">
-        <div class="ficha-modo__icono" style="font-size:1.75rem">🕊️</div>
-        <h3>Modo Pacto</h3>
-        <p class="suave chico" style="margin-top:var(--e-2)">La IA hace de mediador.</p>
+      <article class="ficha-modo ficha-modo--negociacion">
+        <div class="ficha-modo__icono" style="font-size:1.75rem">🤝</div>
+        <h3>Modo Negociación</h3>
+        <p class="suave chico" style="margin-top:var(--e-2)">
+          Un tema en el que no estáis de acuerdo. Exponéis por turnos y al final un
+          negociador de IA propone acuerdos que puedan dejar satisfechas a las dos partes.
+        </p>
         <ul class="ficha-modo__lista">
-          <li><span>·</span> No hay ganador: aquí ganáis los dos</li>
-          <li><span>·</span> Busca lo que ya tenéis en común y lo pone por escrito</li>
-          <li><span>·</span> El acta queda guardada en las cuentas de los dos</li>
-          <li><span>·</span> Se puede revisar las veces que haga falta</li>
+          <li><span>·</span> Aquí no gana uno: ganáis los dos, o no gana nadie</li>
+          <li><span>·</span> Propone tres acuerdos posibles y vosotros votáis</li>
+          <li><span>·</span> El que elijáis queda editable antes de que los dos lo firméis</li>
+          <li><span>·</span> Y podéis acordar seguir en desacuerdo: no hay que cerrarlo en una sola ronda, se puede alargar o repetir</li>
         </ul>
       </article>
     </div>
@@ -124,7 +130,7 @@
   <section class="honesto">
     <h2>Lo que ATWI no hace</h2>
     <p>
-      <strong>No promete que el tema quede resuelto.</strong> Cuando llegáis a un pacto,
+      <strong>No promete que el tema quede resuelto.</strong> Cuando llegáis a un acuerdo,
       lo que queda guardado es un recordatorio de lo que acordasteis, nada más.
       Cumplirlo es cosa vuestra, no nuestra.
     </p>

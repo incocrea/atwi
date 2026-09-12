@@ -4,7 +4,7 @@
    redondeados, formas simples y llenas de aire. Nada de librerías externas:
    son ocho iconos y pesan menos que una petición.
 
-   Uso:  ATWI.icono('pacto', 28)  ->  cadena de SVG
+   Uso:  ATWI.icono('negociacion', 28)  ->  cadena de SVG
    ========================================================================== */
 window.ATWI = window.ATWI || {};
 
@@ -19,8 +19,8 @@ window.ATWI = window.ATWI || {};
     perfil: '<circle cx="12" cy="8.5" r="3.8"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/>',
 
     /* Los dos modos */
-    juicio: '<path d="M12 4v16"/><path d="M5 7h14"/><path d="M5 7 2.8 12.2a3.4 3.4 0 0 0 4.4 0Z"/><path d="M19 7l-2.2 5.2a3.4 3.4 0 0 0 4.4 0Z"/><path d="M8.5 20h7"/>',
-    pacto: '<path d="M12 19.5s-7-4.2-7-9A3.9 3.9 0 0 1 12 7.6 3.9 3.9 0 0 1 19 10.5c0 4.8-7 9-7 9Z"/>',
+    debate: '<path d="M12 4v16"/><path d="M5 7h14"/><path d="M5 7 2.8 12.2a3.4 3.4 0 0 0 4.4 0Z"/><path d="M19 7l-2.2 5.2a3.4 3.4 0 0 0 4.4 0Z"/><path d="M8.5 20h7"/>',
+    negociacion: '<path d="M12 19.5s-7-4.2-7-9A3.9 3.9 0 0 1 12 7.6 3.9 3.9 0 0 1 19 10.5c0 4.8-7 9-7 9Z"/>',
 
     /* Acciones */
     micro: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/>',

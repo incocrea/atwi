@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#FBF7F2">
 <title>ATWI</title>
-<meta name="description" content="Juego de debate para parejas. Modo Juicio y modo Pacto.">
+<meta name="description" content="Juego de debate para parejas. Modo Debate y modo Negociación.">
 
 <link rel="stylesheet" href="../assets/css/tokens.css">
 <link rel="stylesheet" href="../assets/css/base.css">
@@ -25,7 +25,7 @@
     </div>
     <div class="monedero">
       <span class="monedero__dato" title="Puntos de razón">⚡ <span id="dato-puntos">0</span></span>
-      <span class="monedero__dato" title="Sellos de pacto">🕊️ <span id="dato-sellos">0</span></span>
+      <span class="monedero__dato" title="Sellos de acuerdo">🕊️ <span id="dato-sellos">0</span></span>
     </div>
   </header>
 
@@ -42,6 +42,17 @@
     <button class="barra-item" data-vista="historial" data-etiqueta="Historial"></button>
     <button class="barra-item" data-vista="perfil" data-etiqueta="Perfil"></button>
   </nav>
+
+  <!-- La puerta: registro y entrada. Solo nombre y correo. -->
+  <div class="modal" id="puerta" hidden role="dialog" aria-modal="true" aria-labelledby="t-puerta">
+    <div class="modal__cabecera">
+      <span class="modal__titulo" id="t-puerta">ATWI</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <button class="boton boton--bloque boton--grande" data-accion="continuar">Mandarme el código</button>
+    </div>
+  </div>
 
   <!-- ================= Modales a pantalla completa ================= -->
 
@@ -88,6 +99,8 @@
 <script src="../assets/js/config.js"></script>
 <script src="../assets/js/iconos.js"></script>
 <script src="../assets/js/datos.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script src="../assets/js/entrada.js"></script>
 <script src="../assets/js/app.js"></script>
 </body>
 </html>

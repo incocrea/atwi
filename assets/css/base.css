@@ -49,10 +49,10 @@ a { color: var(--lavanda-oscuro); text-decoration-thickness: 2px; text-underline
 .boton--suave:hover { background: var(--crema-hondo); }
 .boton--fantasma { background: transparent; color: var(--tinta-suave); box-shadow: none; font-weight: 700; }
 .boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); }
-.boton--juicio { background: var(--juicio); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
-.boton--juicio:hover { background: var(--juicio-oscuro); }
-.boton--pacto { background: var(--pacto); box-shadow: 0 8px 20px rgba(52,183,155,.34); }
-.boton--pacto:hover { background: var(--pacto-oscuro); }
+.boton--debate { background: var(--debate); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
+.boton--debate:hover { background: var(--debate-oscuro); }
+.boton--negociacion { background: var(--negociacion); box-shadow: 0 8px 20px rgba(52,183,155,.34); }
+.boton--negociacion:hover { background: var(--negociacion-oscuro); }
 .boton[disabled] { background: var(--linea-fuerte); color: var(--blanco); box-shadow: none; cursor: not-allowed; }
 
 /* Botón redondo de icono (cerrar, atrás) */
@@ -70,13 +70,13 @@ a { color: var(--lavanda-oscuro); text-decoration-thickness: 2px; text-underline
   font-size: var(--t-chico); font-weight: 700; line-height: 1.3;
   background: var(--crema-hondo); color: var(--tinta-suave);
 }
-.chip--juicio { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
-.chip--pacto  { background: var(--pacto-tinte);  color: var(--pacto-oscuro); }
+.chip--debate { background: var(--debate-tinte); color: var(--debate-oscuro); }
+.chip--negociacion  { background: var(--negociacion-tinte);  color: var(--negociacion-oscuro); }
 .chip--marca  { background: var(--lavanda-tinte); color: var(--lavanda-oscuro); }
 .chip--sol    { background: var(--sol-tinte); color: #8A6A0B; }
-.chip--ligera   { background: var(--pacto-tinte); color: var(--pacto-oscuro); }
+.chip--ligera   { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
 .chip--media    { background: var(--sol-tinte); color: #8A6A0B; }
-.chip--profunda { background: var(--juicio-tinte); color: var(--juicio-oscuro); }
+.chip--profunda { background: var(--debate-tinte); color: var(--debate-oscuro); }
 
 /* --- Tarjetas ------------------------------------------------------------- */
 .tarjeta {
