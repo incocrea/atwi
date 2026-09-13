@@ -55,6 +55,7 @@
      Si el widget no se dibuja, se dice y no se deja intentar a ciegas: el error
      de Supabase sería `captcha_failed`, que no le explica nada a nadie. */
   var captcha = '';
+  var trasto = null;          // el id del widget, para poder preguntarle luego
 
   function montarCaptcha() {
     if (!cfg.turnstileSiteKey) return;
@@ -72,13 +73,41 @@
       return;
     }
     hueco.innerHTML = '';
-    window.turnstile.render(hueco, {
+    /* VISIBLE, no `interaction-only`. En el juego va invisible porque ahí hay
+       que escribir nombre y correo y al llegar al botón el token lleva rato
+       hecho. Aquí el navegador rellena las dos casillas de golpe y se pulsa
+       enseguida: si el widget es invisible, lo que se ve es un botón que no
+       hace nada. Viéndolo, se entiende que hay algo comprobándose. */
+    trasto = window.turnstile.render(hueco, {
       sitekey: cfg.turnstileSiteKey,
       language: 'es', theme: 'light', size: 'flexible',
-      appearance: 'interaction-only',
       callback: function (t) { captcha = t; },
       'expired-callback': function () { captcha = ''; },
       'error-callback': function () { captcha = ''; }
+    });
+  }
+
+  /** Espera al token en vez de mandar la petición sin él.
+      Se mandaba `if (captcha)` y, si todavía no había llegado, salía SIN token
+      y Supabase contestaba `captcha_failed`: un fallo que parecía del captcha
+      cuando en realidad era prisa nuestra. Turnstile tarda uno o dos segundos
+      en pasar en silencio, y el navegador rellena correo y contraseña de golpe.
+      Se le dan ocho segundos, que es de sobra, y solo entonces se dice que no. */
+  function conElToken() {
+    return new Promise(function (listo, no) {
+      var hasta = Date.now() + 8000;
+      (function mirar() {
+        if (captcha) return listo(captcha);
+        if (window.turnstile && trasto !== null) {
+          var t = window.turnstile.getResponse(trasto);
+          if (t) { captcha = t; return listo(t); }
+        }
+        if (Date.now() > hasta) {
+          return no(new Error('El antirrobots no respondió. Recargá la página; si ' +
+            'sigue igual, revisá que este dominio esté en la lista del widget de Turnstile.'));
+        }
+        setTimeout(mirar, 250);
+      })();
     });
   }
 
@@ -89,13 +118,21 @@
     $('#error').textContent = '';
     if (!correo || !clave) { $('#error').textContent = 'Faltan datos.'; return; }
 
-    var cuerpo = { email: correo, password: clave };
-    if (captcha) cuerpo.gotrue_meta_security = { captcha_token: captcha };
+    $('#entrar').disabled = true;
+    $('#error').textContent = 'Comprobando que no sos un robot…';
+    $('#error').style.color = 'var(--suave)';
 
-    fetch(cfg.supabaseUrl + '/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: cfg.supabaseAnon },
-      body: JSON.stringify(cuerpo)
+    conElToken().then(function (t) {
+      $('#error').textContent = '';
+      $('#error').style.color = 'var(--mal)';
+      return fetch(cfg.supabaseUrl + '/auth/v1/token?grant_type=password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: cfg.supabaseAnon },
+        body: JSON.stringify({
+          email: correo, password: clave,
+          gotrue_meta_security: { captcha_token: t }
+        })
+      });
     }).then(function (r) { return r.json(); }).then(function (s) {
       if (!s || !s.access_token) {
         var msg = (s && (s.error_description || s.msg)) || 'No se pudo entrar.';
@@ -113,8 +150,16 @@
       return comprobarQueEsAdmin();
     }).catch(function (e) {
       $('#error').textContent = e.message;
+      $('#error').style.color = 'var(--mal)';
       sesion = null;
-    });
+      /* El token de Turnstile es DE UN SOLO USO. Si el intento falló --por la
+         contraseña o por lo que sea-- el siguiente saldría sin token y el error
+         cambiaría a uno del captcha, que despista. Se pide uno nuevo. */
+      captcha = '';
+      if (window.turnstile && trasto !== null) {
+        try { window.turnstile.reset(trasto); } catch (x) {}
+      }
+    }).then(function () { $('#entrar').disabled = false; });
   }
 
   /** Que la cuenta esté en `admins`. Lo dice la BASE, no esta página: se pide la
