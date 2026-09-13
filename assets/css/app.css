@@ -1373,7 +1373,12 @@ body.app {
 .avatar--mini { width: 26px; height: 26px; font-size: .85rem; box-shadow: inset 0 0 0 2px rgba(255,255,255,.55); }
 
 /* Con quién se jugó antes en este teléfono. No son cuentas: son fichas. */
-.invitados { display: flex; gap: var(--e-2); flex-wrap: wrap; }
+/* Centrados: son tres atajos, no una lista. Alineados a la izquierda parecían
+   el principio de un historial que sigue más abajo. */
+.invitados { display: flex; gap: var(--e-2); flex-wrap: wrap; justify-content: center; }
+/* El aviso de aro ocupado se lee: no es una nota al pie, es algo que acaba de
+   pasar y que hay que resolver ahí mismo. */
+.aviso-aro { color: var(--gancho, #A8431F); font-weight: 700; }
 .invitado {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 12px 4px 4px; border-radius: var(--radio-pastilla);

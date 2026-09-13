@@ -302,7 +302,17 @@ window.ATWI = window.ATWI || {};
     recordarInvitado: function (ficha) {
       if (!ficha || !ficha.nombre) return null;
       var lista = cargarInvitados();
-      var guardado = this.invitado(ficha.nombre);
+      /* El mismo cuenta como el mismo cuando repite NOMBRE Y PERSONAJE. Una
+         Diana que juega como Luna y una Diana que juega como Kai son dos fichas
+         distintas, y las dos tienen que poder estar en la lista. */
+      var guardado = null;
+      for (var k = 0; k < lista.length; k++) {
+        if (mismoNombre(lista[k].nombre, ficha.nombre) &&
+            (!ficha.avatar || !lista[k].avatar || lista[k].avatar === ficha.avatar)) {
+          guardado = lista[k];
+          break;
+        }
+      }
       if (guardado) {
         guardado.nombre = ficha.nombre;      // respeta mayúsculas nuevas
         if (ficha.avatar) guardado.avatar = ficha.avatar;
@@ -312,7 +322,9 @@ window.ATWI = window.ATWI || {};
         lista.push(guardado);
       }
       /* El último con quien se jugó primero: es casi siempre el de la próxima. */
-      invitados = [guardado].concat(lista.filter(function (x) { return x !== guardado; })).slice(0, 12);
+      /* Tres. Es una lista para tocar de un vistazo antes de empezar, no un
+         historial: con doce, la cuarta en adelante no la mira nadie. */
+      invitados = [guardado].concat(lista.filter(function (x) { return x !== guardado; })).slice(0, 3);
       guardarInvitados();
       return guardado;
     },

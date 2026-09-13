@@ -673,6 +673,14 @@
     personajeElegido = deInvitado ? g.avatar : p.avatar;
     colorElegido = deInvitado ? g.color : (p.avatarBorde || COLORES_FICHA[0]);
     var vetado = deInvitado ? (p.avatarBorde || '').toLowerCase() : '';
+    /* Si el invitado llega con MI aro —porque lo eligió antes de que yo cambiara
+       el mío, o porque se lo asignó el reparto— no se le deja así en silencio:
+       se le mueve a uno libre y se le dice por qué. Dos aros iguales en la misma
+       sala hacen indistinguibles las dos fichas, que es justo para lo que
+       sirven. */
+    var chocaba = deInvitado && colorElegido &&
+                  colorElegido.toLowerCase() === vetado;
+    if (chocaba) colorElegido = colorLibre();
 
     $('#m-perfil .modal__titulo').textContent = deInvitado
       ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
@@ -742,8 +750,12 @@
             }).join('') +
           '</div>' +
           (deInvitado
-            ? '<p class="chico tenue" style="margin-top:6px">El tuyo está apartado: ' +
-              'dos aros del mismo color no se distinguen en la sala.</p>'
+            ? '<p class="chico' + (chocaba ? ' aviso-aro' : ' tenue') + '" style="margin-top:6px">' +
+              (chocaba
+                ? 'Ese aro ya es el tuyo, así que le pusimos otro. Elige el que quieras ' +
+                  'de los que quedan.'
+                : 'El tuyo está apartado: dos aros del mismo color no se distinguen ' +
+                  'en la sala.') + '</p>'
             : '') +
         '</div>' +
 
@@ -1161,7 +1173,10 @@
     if (!t) return;
     var p = datos.perfil();
     if (!repintando) propuesta.miPostura = null;
-    propuesta.otro = propuesta.otro || '';
+    /* El último con quien se jugó viene puesto: nombre, personaje y aro. En un
+       teléfono compartido se repite casi siempre la misma pareja, y escribir el
+       mismo nombre cada vez es trabajo que la app ya sabe hacer. */
+    propuesta.otro = propuesta.otro || (invitadosPrevios()[0] || {}).nombre || '';
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
     propuesta.otroColor = g.color;
@@ -1229,9 +1244,12 @@
         'Van a jugar los dos en este teléfono, por turnos. Toca el círculo para elegirle ' +
         'personaje y aro.</span>' +
 
+      /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no
+         un historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE;
+         el mismo nombre con otro personaje es otra ficha. */
       (invitadosPrevios().length
         ? '<div class="invitados" style="margin-top:var(--e-3)">' +
-            invitadosPrevios().map(function (g) {
+            invitadosPrevios().slice(0, 3).map(function (g) {
               return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
                   window.ATWI.fichaHTML(g.avatar || propuesta.otroAvatar, 'avatar--mini', g.color) +
                   esc(g.nombre) +
