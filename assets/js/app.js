@@ -920,28 +920,23 @@
         '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
       '</button>' +
 
-      /* Ya no hay boton de «Editar tema»: cada trozo se toca y se edita solo,
+      /* Aquí iban «las dos posturas», una debajo de otra, y se fueron con el
+         reparto: el tema es lo que se discute, no dos lados entre los que
+         elegir. Siguen existiendo en el catálogo y se editan desde
+         «Personalizar», porque son el material del filtro de seguridad —un tema
+         que no admite dos posturas defendibles no es un desacuerdo— pero ya no
+         se enseñan antes de jugar.
+
+         Ya no hay boton de «Editar tema»: cada trozo se toca y se edita solo,
          asi que abrir el formulario entero sobra y ademas competia con los
          lapices que tiene al lado. */
-      '<h3 style="margin-bottom:var(--e-2)">Las dos posturas</h3>' +
-      '<div class="apilado" style="margin-bottom:var(--e-5)">' +
-        posturaCaja('A', t.a, 'a') +
-        posturaCaja('B', t.b, 'b') +
-      '</div>' +
       '<div class="aviso-ia">' + icono('aviso', 20) +
-        '<span>Las dos se pueden defender. Si una no encaja con la discusión de ustedes, ' +
-        'toca y reescríbela: el tema es una plantilla, no una sentencia.</span>' +
+        '<span>Hablen libre: no hay lados asignados. Si el enunciado no se parece a la ' +
+        'discusión de ustedes, tócalo y reescríbelo — el tema es una plantilla, no una ' +
+        'sentencia.</span>' +
       '</div>';
 
     abrirModal('m-tema');
-  }
-
-  function posturaCaja(letra, texto, campo) {
-    return '<button class="tarjeta retocable retocable--postura" data-retocar="' + campo + '">' +
-        '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
-        '<span class="chico retocable__texto">' + esc(texto) + '</span>' +
-        '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
-      '</button>';
   }
 
   /* ======================================================================
@@ -1065,7 +1060,9 @@
       '</div>' +
 
       '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
-        '<span>Las dos posturas tienen que poder defenderse. Si una es indefendible, ' +
+        '<span>Las dos posturas NO se reparten: nadie las elige y no se enseñan antes de ' +
+        'jugar. Están para que el tema se entienda y para una comprobación: si una de las ' +
+        'dos no se puede defender, el tema no es un desacuerdo. Si una es indefendible, ' +
         'el árbitro no tiene nada que arbitrar y el resultado no vale nada.</span>' +
       '</div>' +
 
@@ -1205,19 +1202,12 @@
       '</div>' +
       '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">4 y 5 turnos necesitan cupo.</p>' +
 
-      /* AQUÍ NO SE REPARTEN POSTURAS. Se repartían —A y B, elegías una y la
-         defendías tres turnos— y eso obligaba a sostener algo que a lo mejor no
-         piensas solo porque te tocó ese lado. El tema plantea la discusión y
-         cada quien va fijando su posición al hablar, que es como pasa de
-         verdad. Las dos posturas del catálogo siguen ahí, pero como PISTA de
-         por dónde suele ir, no como reparto. */
-      '<h3 style="margin-bottom:var(--e-2)">Por dónde suele ir</h3>' +
-      '<div class="apilado-3" style="margin-bottom:var(--e-2)">' +
-        pistaPostura('A', t.a) +
-        pistaPostura('B', t.b) +
-      '</div>' +
-      '<p class="chico tenue" style="margin-bottom:var(--e-5)">Son ejemplos, no lados ' +
-        'asignados: cada uno dice lo suyo y el juez evalúa cómo lo argumentaron.</p>' +
+      /* AQUÍ NO SE ENSEÑA NINGUNA POSTURA. Ni para elegir ni como ejemplo: se
+         probó a dejarlas de pista y siguen siendo punteros —leerlas antes de
+         hablar ya te coloca en un lado—. El tema se plantea y cada quien opina
+         libre. Si los dos acaban a favor de lo mismo con palabras distintas,
+         vale igual, y el juez lo dice: es la discusión de horas en la que los
+         dos defendían la misma idea sin enterarse. */
 
       '<h3 style="margin-bottom:var(--e-2)">¿Quiénes juegan?</h3>' +
 
@@ -1278,15 +1268,6 @@
        para encenderlo salvo tocar un campo. */
     revisarPreparar();
     if (!repintando) abrirModal('m-preparar');
-  }
-
-  /** Una de las dos posturas del tema, como ejemplo y no como opción. */
-  function pistaPostura(letra, texto) {
-    if (!texto) return '';
-    return '<p class="pista-postura">' +
-        '<span class="pista-postura__letra">' + letra + '</span>' +
-        '<span>' + esc(texto) + '</span>' +
-      '</p>';
   }
 
   function revisarPreparar() {
