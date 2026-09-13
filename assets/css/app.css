@@ -1649,7 +1649,7 @@ body.app {
 .encuentro__rotulos {
   position: absolute; left: 0; right: 0; top: 17%; z-index: 4;
   transform: translateY(-100%);
-  display: flex; justify-content: center; gap: 38px;
+  display: flex; justify-content: center; gap: 38px; padding: 0 10px;
 }
 .encuentro__quien {
   display: inline-flex; align-items: center; gap: 8px;
@@ -1659,7 +1659,22 @@ body.app {
      figura que ocupa media pantalla. */
   font-family: var(--display); font-weight: 800; font-size: 0.9rem;
   color: var(--tinta); white-space: nowrap;
+  /* LA LÍNEA NO SE SALE, PASE LO QUE PASE. El nombre está limitado a 16 letras,
+     pero 16 letras no son un ancho: «Maximilianoooooo» mide el doble que «Ana»,
+     y dos largos juntos se salían 51 px de los 375. Con `min-width: 0` los dos
+     rótulos pueden encogerse y el nombre que no quepa se corta con puntos
+     suspensivos. Es el último recurso y solo lo ve quien se pone un nombre de
+     récord; salirse de la pantalla no es una opción.
+
+     Se encogen POR REPARTO y no con un tope fijo a la mitad. Con el tope, un
+     «Ana» al lado de un nombre largo dejaba su mitad sin usar y el largo se
+     cortaba igual. Encogiendo, el corto se queda entero —no le sobra nada que
+     quitarle— y todo el aire va al que lo necesita. */
+  min-width: 0;
 }
+.encuentro__quien > span { overflow: hidden; text-overflow: ellipsis; }
+/* La ficha no se encoge: es un círculo, y encogido sale un huevo. */
+.encuentro__quien .avatar { flex: none; }
 /* Y la ficha crece lo mismo. Va aquí y no en `.avatar--mini`, que es de 26 px y
    lo usan también el reproductor y las casillas de turno. */
 .encuentro__quien .avatar--mini { width: 34px; height: 34px; font-size: 1.1rem; }

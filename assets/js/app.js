@@ -705,11 +705,14 @@
               '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
               '<span class="con-ficha" style="margin-top:6px">' +
                 muestraFicha() +
-                '<input class="campo" id="f-nombre" type="text" maxlength="40" autocomplete="given-name" ' +
-                  'placeholder="Tu nombre" value="' + esc(p.nombre) + '">' +
+                '<input class="campo" id="f-nombre" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                  'autocomplete="given-name" placeholder="Tu nombre" value="' + esc(p.nombre) + '">' +
               '</span>' +
+              /* Se dice ANTES de escribir, no al rechazar: la razón del límite
+                 —el rótulo de la sala— se explica sola con «así te ve». */
               '<span class="chico tenue" style="display:block;margin-top:6px">' +
-                'Así te ve la otra persona en la sala y en el resultado.</span>' +
+                'Tu primer nombre o un apodo, una sola palabra: así te ve la otra ' +
+                'persona en la sala y en el resultado.</span>' +
             '</label>') +
 
         /* El invitado elige igual que yo, y puede elegir el MISMO personaje: en
@@ -785,8 +788,9 @@
       return;
     }
 
-    var nombre = ($('#f-nombre').value || '').trim();
-    if (nombre.length < 2) { $('#f-error').textContent = 'Escribe un nombre de al menos dos letras.'; return; }
+    var nombre = datos.limpiarNombre($('#f-nombre').value);
+    var mal = datos.errorDeNombre(nombre);
+    if (mal) { $('#f-error').textContent = mal; return; }
 
     var fichaElegida = personajeElegido;
     datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarBorde: colorElegido });
@@ -1208,8 +1212,9 @@
          cambiarlo sin irse a Perfil. Lo que se escriba aquí actualiza la ficha. */
       '<label style="display:block;margin-bottom:var(--e-3)">' +
         '<span class="chico" style="font-weight:700">Tu nombre</span>' +
-        '<input class="campo" id="p-yo" type="text" maxlength="24" autocomplete="given-name" ' +
-          'placeholder="Tu nombre" value="' + esc(p.nombre) + '" style="margin-top:6px">' +
+        '<input class="campo" id="p-yo" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+          'autocomplete="given-name" placeholder="Tu nombre" value="' + esc(p.nombre) + '" ' +
+          'style="margin-top:6px">' +
       '</label>' +
 
       /* La ficha del invitado se toca para elegirle dibujo y color. No es una
@@ -1224,12 +1229,12 @@
           window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
             .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
         '</button>' +
-        '<input class="campo" id="p-otro" type="text" maxlength="24" autocomplete="off" ' +
-          'placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
+        '<input class="campo" id="p-otro" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+          'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
       '</div>' +
       '<span class="chico tenue" style="display:block;margin-top:6px">' +
-        'Van a jugar los dos en este teléfono, por turnos. Toca el círculo para elegirle ' +
-        'personaje y aro.</span>' +
+        'Su primer nombre o un apodo, una sola palabra. Van a jugar los dos en este ' +
+        'teléfono, por turnos: toca el círculo para elegirle personaje y aro.</span>' +
 
       /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no
          un historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE;
@@ -1262,10 +1267,12 @@
   }
 
   function revisarPreparar() {
-    var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
-    var yo = ($('#p-yo') && $('#p-yo').value || '').trim();
-    $('#m-preparar .modal__pie button').disabled =
-      !(otro.length >= 2 && yo.length >= 2);
+    /* El botón se apaga con la MISMA regla con la que se rechaza al pulsarlo.
+       Tenía la suya —dos letras y nada más— y eso dejaba encender el botón con
+       un nombre que luego no pasaba, que es la peor de las dos opciones. */
+    var mal = datos.errorDeNombre($('#p-otro') && $('#p-otro').value) ||
+              datos.errorDeNombre($('#p-yo') && $('#p-yo').value);
+    $('#m-preparar .modal__pie button').disabled = Boolean(mal);
   }
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
@@ -1273,11 +1280,16 @@
      falta el servidor y llega después. */
   function sortearYJugar() {
     var t = datos.tema(propuesta.temaId);
-    var otro = ($('#p-otro').value || '').trim();
-    var yo = ($('#p-yo').value || '').trim();
+    var otro = datos.limpiarNombre($('#p-otro').value);
+    var yo = datos.limpiarNombre($('#p-yo').value);
 
-    if (yo.length < 2) { $('#p-error').textContent = 'Escribe tu nombre.'; return; }
-    if (otro.length < 2) { $('#p-error').textContent = 'Escribe con quién juegas.'; return; }
+    var malYo = datos.errorDeNombre(yo);
+    if (malYo) { $('#p-error').textContent = malYo; return; }
+    var malOtro = datos.errorDeNombre(otro);
+    if (malOtro) {
+      $('#p-error').textContent = malOtro.replace('Escribe tu nombre.', 'Escribe con quién juegas.');
+      return;
+    }
     if (otro.toLowerCase() === yo.toLowerCase()) {
       $('#p-error').textContent = 'Se llaman igual: ponle otro nombre para no confundirse en la sala.';
       return;

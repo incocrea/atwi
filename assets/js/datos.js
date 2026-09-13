@@ -30,6 +30,52 @@ window.ATWI = window.ATWI || {};
      perfil de oponente al que colgarla. */
   var CLAVE_INVITADOS = 'atwi.invitados.v1';
 
+  /* --- El nombre: UNA SOLA PALABRA, 16 LETRAS COMO MUCHO -------------------
+     No es un capricho de formulario. El nombre sale en el rótulo que flota
+     sobre cada figura en la sala, y esos dos rótulos van uno al lado del otro
+     en 375 px de ancho: «María Fernanda» y «Juan Sebastián» juntos no caben y
+     se salen de la pantalla, que es el único fallo que en este proyecto no se
+     negocia. Así que se pide el primer nombre o un apodo y ya está.
+
+     Dieciséis es lo que mide el rótulo más largo que cabe con el otro al lado,
+     medido a 375 px con la ficha de 34 px dentro.
+
+     La regla vive AQUÍ, en la capa de datos, y no en cada formulario: se pide
+     el nombre en cuatro sitios —el registro, el paso de la contraseña, la ficha
+     del perfil y la preparación de la partida local— y cuatro copias de la
+     misma comprobación es una que se queda vieja. */
+  var NOMBRE_MAX = 16;
+  var NOMBRE_MIN = 2;
+
+  /** Quita los espacios de los bordes y junta los de dentro. No corta ni parte:
+      solo deja el texto en su forma canónica para poder juzgarlo. */
+  function limpiarNombre(s) {
+    return String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+  }
+
+  /** El nombre RECORTADO a la fuerza: primera palabra y 16 letras. Es lo que se
+      le aplica a lo que ya estaba guardado —un perfil o un invitado de antes de
+      esta regla traen el nombre entero— y por eso no puede rechazar nada: nadie
+      lo está escribiendo, así que no hay a quién pedirle que lo corrija. */
+  function recortarNombre(s) {
+    return limpiarNombre(s).split(' ')[0].slice(0, NOMBRE_MAX);
+  }
+
+  /** El motivo por el que este nombre no vale, o '' si vale. El texto se enseña
+      tal cual, así que dice qué hacer y no solo qué está mal. */
+  function errorDeNombre(s) {
+    var n = limpiarNombre(s);
+    if (!n) return 'Escribe tu nombre.';
+    if (n.length < NOMBRE_MIN) return 'Escribe un nombre de al menos dos letras.';
+    if (n.indexOf(' ') !== -1) {
+      return 'Va una sola palabra: tu primer nombre o un apodo.';
+    }
+    if (n.length > NOMBRE_MAX) {
+      return 'Máximo ' + NOMBRE_MAX + ' letras. Usa tu primer nombre o un apodo.';
+    }
+    return '';
+  }
+
   /* --- Estado de la persona ------------------------------------------------
      Contadores SEPARADOS y sin marcador comparativo entre los dos miembros de
      la pareja: es una decisión de diseño con evidencia detrás, no un descuido.
@@ -75,6 +121,10 @@ window.ATWI = window.ATWI || {};
        encuentra donde toca y no de vuelta en el de por defecto. */
     if (!perfil.avatarBorde) perfil.avatarBorde = perfil.avatarFondo || PERFIL_NUEVO.avatarBorde;
     delete perfil.avatarFondo;
+    /* Lo guardado antes de la regla del nombre viene entero. Aquí se recorta, y
+       no se le pide a nadie que lo arregle: el rótulo de la sala tiene que caber
+       hoy, con lo que haya, sin pasar por un formulario. */
+    perfil.nombre = recortarNombre(perfil.nombre);
     return perfil;
   }
 
@@ -144,6 +194,9 @@ window.ATWI = window.ATWI || {};
     try { invitados = JSON.parse(localStorage.getItem(CLAVE_INVITADOS) || '[]'); }
     catch (e) { invitados = []; }
     if (!Array.isArray(invitados)) invitados = [];
+    /* Por lo mismo que el perfil: los invitados recordados de antes traen el
+       nombre como se escribió, y también salen en un rótulo. */
+    invitados.forEach(function (g) { if (g) g.nombre = recortarNombre(g.nombre); });
     return invitados;
   }
 
@@ -176,6 +229,12 @@ window.ATWI = window.ATWI || {};
   window.ATWI.datos = {
     /** ¿Estamos hablando con un servidor o todo es local? */
     enLinea: function () { return Boolean(cfg.supabaseUrl && cfg.supabaseAnon); },
+
+    /* La regla del nombre, para los cuatro formularios que lo piden. */
+    NOMBRE_MAX: NOMBRE_MAX,
+    limpiarNombre: limpiarNombre,
+    recortarNombre: recortarNombre,
+    errorDeNombre: errorDeNombre,
 
     perfil: cargar,
 

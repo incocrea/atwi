@@ -113,8 +113,14 @@ window.ATWI = window.ATWI || {};
       caja.innerHTML =
         cabeza(null, 'Entra a jugar', 'Solo el nombre y el correo. Nada más.') +
         '<div class="apilado-5">' +
+          /* UNA SOLA PALABRA Y 16 LETRAS. El nombre acaba en el rótulo que
+             flota sobre la figura en la sala, y los dos rótulos van uno al
+             lado del otro: con nombre y apellido se salen de la pantalla. La
+             regla y el porqué están en datos.js. */
           campo('c-nombre', '¿Cómo te llamamos?',
-                'type="text" autocomplete="given-name" maxlength="40" placeholder="Tu nombre" value="' + esc(estado.nombre) + '"') +
+                'type="text" autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'placeholder="Tu nombre" value="' + esc(estado.nombre) + '"',
+                'Tu primer nombre o un apodo: una sola palabra.') +
           campo('c-correo', 'Tu correo',
                 'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"',
                 'Te mandamos un enlace para entrar. La contraseña la eliges después.') +
@@ -147,7 +153,9 @@ window.ATWI = window.ATWI || {};
                'Elige una contraseña para la próxima vez. El navegador te la va a guardar.') +
         '<div class="apilado-5">' +
           campo('c-nombre2', 'Tu nombre',
-                'type="text" autocomplete="given-name" maxlength="40" placeholder="Tu nombre" value="' + esc(estado.nombre) + '"') +
+                'type="text" autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'placeholder="Tu nombre" value="' + esc(estado.nombre) + '"',
+                'Tu primer nombre o un apodo: una sola palabra.') +
           campo('c-clave', 'Contraseña',
                 'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
                 'Que puedas recordar. No hace falta que sea rara.') +
@@ -244,9 +252,10 @@ window.ATWI = window.ATWI || {};
 
   /* --- Acciones --------------------------------------------------------------- */
   function mandarEnlace() {
-    var nombre = ($('#c-nombre') ? $('#c-nombre').value : estado.nombre || '').trim();
+    var nombre = datos.limpiarNombre($('#c-nombre') ? $('#c-nombre').value : estado.nombre);
     var correo = ($('#c-correo') ? $('#c-correo').value : estado.correo || '').trim().toLowerCase();
-    if (nombre.length < 2) return error('Escribe tu nombre.');
+    var malElNombre = datos.errorDeNombre(nombre);
+    if (malElNombre) return error(malElNombre);
     if (!valeCorreo(correo)) return error('Ese correo no parece válido.');
 
     estado.nombre = nombre;
@@ -273,9 +282,10 @@ window.ATWI = window.ATWI || {};
   }
 
   function guardarContrasena() {
-    var nombre = ($('#c-nombre2').value || '').trim();
+    var nombre = datos.limpiarNombre($('#c-nombre2').value);
     var clave = $('#c-clave').value || '';
-    if (nombre.length < 2) return error('Escribe tu nombre.');
+    var malElNombre = datos.errorDeNombre(nombre);
+    if (malElNombre) return error(malElNombre);
     if (clave.length < 8) return error('La contraseña necesita al menos 8 caracteres.');
     error('');
     ocupado(true);
