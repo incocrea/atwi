@@ -1,1 +1,1472 @@
-{"version":"borrador-v0","fecha":"2026-09-11","total":105,"categorias":[{"nombre":"En mitad de la discusión","corto":"En mitad de la discusión","emoji":"💬","descripcion":"El tono, las interrupciones, las disculpas: cuando ya están discutiendo","total":13},{"nombre":"En la cocina y la mesa","corto":"En la cocina y la mesa","emoji":"🍽️","descripcion":"Los platos, la nevera, las sobras, la cena","total":7},{"nombre":"En la alcoba","corto":"En la alcoba","emoji":"🛏️","descripcion":"La cama, el sueño, la alarma, la luz de la noche","total":13},{"nombre":"En el sofá","corto":"En el sofá","emoji":"🛋️","descripcion":"La tele, las series, el mando, los dos teléfonos","total":7},{"nombre":"Las tareas y los arreglos","corto":"Las tareas y los arreglos","emoji":"🧺","descripcion":"Quién hace qué, cuándo, y la bombilla que lleva meses","total":10},{"nombre":"Manías y orden","corto":"Manías y orden","emoji":"🧽","descripcion":"Dónde va cada cosa y cómo se deja: el sitio de las cosas","total":10},{"nombre":"Al salir y al volver","corto":"Al salir y al volver","emoji":"🚪","descripcion":"La puerta, la puntualidad, los zapatos, llegar a casa","total":5},{"nombre":"Cuando salen las cuentas","corto":"Cuando salen las cuentas","emoji":"🧾","descripcion":"La cuenta, la propina, el súper, lo que cuesta cada cosa","total":8},{"nombre":"Las decisiones de dinero","corto":"Las decisiones de dinero","emoji":"💸","descripcion":"Ahorrar, regalos, suscripciones, en qué se gasta","total":7},{"nombre":"Con gente delante","corto":"Con gente delante","emoji":"🥂","descripcion":"Amigos, familia, visitas y lo que se cuenta por ahí","total":7},{"nombre":"En el calendario","corto":"En el calendario","emoji":"📅","descripcion":"Los planes, las vacaciones, el tiempo que es de los dos","total":10},{"nombre":"Por el móvil","corto":"Por el móvil","emoji":"📱","descripcion":"Mensajes, audios y la discusión que sigue por ahí","total":8}],"temas":[{"id":"T001","categoria":"Por el móvil","titulo":"El audio de tres minutos","enunciado":"Cuando una discusión sigue por el móvil, ¿vale seguirla con un audio largo o hay que llamar?","a":"Prefiero el audio: digo la idea entera de una vez, sin que me corten y sin quedarme a medias.","b":"Prefiero la llamada: un audio de tres minutos se escucha como un discurso y no puedo contestar hasta el final.","interesA":"Necesito ordenar una idea completa antes de que nadie la interrumpa; si me cortan a la mitad acabo diciéndolo peor de lo que lo pienso.","interesB":"Necesito que esto sea una conversación y no una sentencia; escuchar tres minutos sin poder decir nada me deja en el sitio del acusado.","ejemplo":"A: «Si grabo un audio largo desde la calle, entonces escribo antes el titular». B: «Si abro un audio largo en el trabajo, entonces contesto con mi hora libre».","insignia":"Micrófono Abierto","intensidad":"ligera"},{"id":"T002","categoria":"Por el móvil","titulo":"El «vale.» con punto","enunciado":"¿El tono existe también en un mensaje escrito, o lo pone quien lo lee?","a":"Un «vale.» seco, sin emoji y con punto final, comunica enfado igual que una cara. El tono también está en el texto.","b":"En un mensaje no hay tono: hay prisa y teclado. Leer enfado donde no lo hay abre discusiones que no existían.","interesA":"Necesito poder fiarme de lo que leo; si cada mensaje admite dos lecturas, me paso el día reconstruyendo qué quiso decir y no me entero de nada.","interesB":"Necesito escribir rápido sin que cada palabra se mida con lupa; si todo mensaje corto es sospechoso, acabo no escribiendo por miedo a sonar mal.","ejemplo":"A: «Si leo un mensaje seco en el chat, entonces pregunto antes de responder». B: «Si contesto con una palabra desde el trabajo, entonces añado cuándo puedo hablar».","insignia":"Perito Forense del Punto Final","intensidad":"ligera"},{"id":"T003","categoria":"En mitad de la discusión","titulo":"El chiste en mitad de la discusión","enunciado":"Hacer una broma en mitad de una discusión, ¿baja la tensión o esquiva el tema?","a":"Una broma corta el bucle y nos devuelve a ser nosotros. Si no nos reímos nunca discutiendo, esto se vuelve insoportable.","b":"Cuando estoy diciendo algo que me importa y llega el chiste, lo que entiendo es que el tema no merece atención.","interesA":"Necesito una salida de la tensión antes de que se nos vaya de las manos; el humor es mi forma de decir que seguimos siendo un equipo.","interesB":"Necesito que lo que estoy diciendo se trate como serio al menos una vez, antes de que se convierta en anécdota.","ejemplo":"A: «Si suelto una broma y nadie se ríe, entonces vuelvo al tema sin insistir». B: «Si una broma me sienta mal, entonces lo digo en el momento».","insignia":"Humorista de Guardia","intensidad":"ligera","inicial":7},{"id":"T004","categoria":"En mitad de la discusión","titulo":"Sentados o de pasada","enunciado":"Un tema importante, ¿se puede hablar mientras se hace otra cosa o hay que parar y sentarse?","a":"Se habla mejor fregando o conduciendo: sin mirarse fijo sale más fácil y no parece un interrogatorio.","b":"Si el tema importa, que sea sentados y sin ruido de fondo. Decirlo de pasada es decir que importa poco.","interesA":"Necesito bajar la solemnidad; cuando alguien para todo y me mira fijo, me pongo a la defensiva antes de que empiece la frase.","interesB":"Necesito señales de que se me está escuchando; hablando de espaldas nunca sé si me han oído o solo han asentido.","ejemplo":"A: «Si sacamos el tema mientras cocino, entonces apago el fuego y me giro». B: «Si pido sentarnos en el salón, entonces propongo yo la hora».","insignia":"Ceremonia de la Silla","intensidad":"ligera"},{"id":"T005","categoria":"En mitad de la discusión","titulo":"«No te enfades, pero...»","enunciado":"Avisar antes de decir algo incómodo, ¿prepara al otro o lo pone en guardia?","a":"Aviso porque no quiero soltarlo de golpe. El preámbulo es una cortesía, no una trampa.","b":"Ese aviso es justo lo que me pone nervioso: ya sé que viene algo malo y me defiendo antes de saber de qué.","interesA":"Necesito no sentirme brusco; si lo digo sin preparar parece que ataco, y no es lo que quiero transmitir.","interesB":"Necesito saber a qué atenerme cuanto antes; los segundos de suspense me ponen en alerta y luego escucho peor de lo que escucharía.","ejemplo":"A: «Si voy a decir algo incómodo en la cena, entonces empiezo por el hecho». B: «Si me avisan de algo incómodo, entonces escucho la frase entera antes de contestar».","insignia":"Maestro del Preámbulo","intensidad":"ligera"},{"id":"T006","categoria":"Por el móvil","titulo":"«Luego hablamos»","enunciado":"Cuando llega un mensaje sobre un tema pendiente, ¿hay que contestar en el momento o vale dejarlo para después?","a":"Si no contesto en el momento es porque estoy ocupado, no porque pase del tema. Contestar mal por contestar rápido es peor.","b":"Ver el mensaje y no responder me deja colgado toda la tarde. Con dos palabras diciendo cuándo, se arregla.","interesA":"Necesito elegir cuándo entro en una conversación difícil; si respondo entre dos cosas, respondo peor y luego lo pago dos veces.","interesB":"Necesito saber que hay una respuesta en camino; el silencio largo lo leo como que esto no es importante para el otro.","ejemplo":"A: «Si leo un mensaje del tema en el trabajo, entonces escribo «esta noche»». B: «Si no me contestan antes de comer, entonces espero a la noche».","insignia":"Guardián del Doble Tic","intensidad":"ligera"},{"id":"T007","categoria":"En mitad de la discusión","titulo":"Interrumpir para matizar","enunciado":"Cuando el otro cuenta su versión y dice algo que no es exacto, ¿se corrige en el momento o se espera al final?","a":"Si no lo corrijo ahí, el relato entero se construye sobre un dato falso y luego ya no hay quien lo desmonte.","b":"Si me cortan a la tercera frase, nunca llego a explicar lo que importaba y acabamos discutiendo por una fecha.","interesA":"Necesito que lo que se dé por hecho sea cierto; si dejo pasar el error, después parece que lo acepté.","interesB":"Necesito terminar una idea entera al menos una vez; si no, nunca se oye lo que quería decir, solo las correcciones.","ejemplo":"A: «Si oigo un dato que no cuadra, entonces lo apunto y espero al final». B: «Si termino mi versión en la mesa, entonces pregunto qué he contado mal».","insignia":"Cronometrador de Turnos","intensidad":"ligera"},{"id":"T008","categoria":"En mitad de la discusión","titulo":"De una habitación a otra","enunciado":"Hablar a voces de una habitación a otra, ¿es lo normal en una casa o hay que ir donde está el otro?","a":"Si estamos en casa, hablo desde donde estoy. Levantarse para cada frase es perder media tarde.","b":"Desde la otra punta no sé si me hablas a mí ni entiendo la mitad, y acabamos repitiéndolo todo más alto.","interesA":"Necesito que la casa se pueda usar sin protocolo; si contar algo pequeño exige desplazarse, dejo de contar cosas pequeñas.","interesB":"Necesito enterarme a la primera; si empezamos a subir el volumen por una tontería, cinco minutos después parece que discutimos aunque no sea así.","ejemplo":"A: «Si tengo que repetir una frase a voces, entonces voy hasta la puerta». B: «Si me hablan desde otra habitación, entonces digo que no oigo bien».","insignia":"Megafonía del Pasillo","intensidad":"ligera"},{"id":"T009","categoria":"Al salir y al volver","titulo":"Nada más entrar por la puerta","enunciado":"¿Se puede sacar un tema pendiente en cuanto el otro llega a casa, o hay que dejar un margen?","a":"Si no lo saco al llegar, se pasa la noche y mañana ya no toca. Y llevo todo el día con ello dentro.","b":"Entrar por la puerta y recibir el tema es lo que hace que no apetezca llegar a casa. Un rato de margen no es huir.","interesA":"Necesito soltar lo que llevo aguantando; si lo aplazo se me acumula y luego sale peor de lo que era.","interesB":"Necesito un rato para aterrizar y llegar entero a la conversación; si entro directo, contesto en automático y a la defensiva.","ejemplo":"A: «Si tengo un tema pendiente, entonces lo saco después de cenar». B: «Si entro por la puerta y hay tema, entonces digo a qué hora lo hablamos».","insignia":"Comité de Bienvenida","intensidad":"media"},{"id":"T010","categoria":"En la alcoba","titulo":"Antes de apagar la luz","enunciado":"Si la discusión llega a la hora de dormir, ¿se sigue hasta el final o se deja para mañana?","a":"Irse a la cama con esto abierto es no dormir. Prefiero una hora más de conversación y despertarme tranquilo.","b":"A las dos de la mañana no se arregla nada: se dice lo que no se piensa. Con ocho horas de sueño, mañana dura veinte minutos.","interesA":"Necesito acabar el día sin un tema suelto; si me acuesto con esto lo repaso en bucle y no descanso.","interesB":"Necesito llegar a la conversación con la cabeza despejada; cansado digo cosas que no siento y después hay que arreglar también eso.","ejemplo":"A: «Si dejamos el tema para mañana, entonces apago la luz sin añadir nada». B: «Si aplazo el tema en la cama, entonces propongo yo la hora de mañana».","insignia":"Turno de Noche","intensidad":"media"},{"id":"T011","categoria":"En mitad de la discusión","titulo":"«Esto es una tontería»","enunciado":"Cuando a uno el asunto le parece menor y al otro no, ¿quién decide si da para conversación?","a":"Hay cosas que no merecen media hora. Decir que es una tontería es poner las cosas en su sitio, no cortar la conversación.","b":"Si el tamaño del tema lo decide quien no lo ha sacado, lo que se me está diciendo es que lo que me molesta no cuenta.","interesA":"Necesito que no todo se convierta en conversación larga; si cada detalle se debate, no queda energía para lo que sí importa.","interesB":"Necesito que lo que me molesta se trate como real aunque sea pequeño; si se descarta por tonto, la próxima vez me lo callo y eso sí es un problema.","ejemplo":"A: «Si algo me parece una tontería, entonces lo escucho entero antes de opinar». B: «Si saco un tema pequeño, entonces digo en la misma frase por qué me importa».","insignia":"Departamento de Asuntos Menores","intensidad":"media"},{"id":"T012","categoria":"Con gente delante","titulo":"Con gente delante","enunciado":"Si el tema sale estando con amigos o familia, ¿se habla ahí o se guarda para cuando estemos solos?","a":"Si sale, sale. Callarse y poner buena cara durante tres horas es peor, y encima se nota igual.","b":"Delante de gente no se discute. Se pone a todo el mundo incómodo y además cada uno acaba actuando para el público.","interesA":"Necesito no fingir; aguantar con la sonrisa puesta toda la noche me deja peor que hablarlo, y además se me nota en la cara.","interesB":"Necesito que nadie más tenga una opinión sobre lo nuestro; en cuanto hay público, los dos discutimos para el público y no entre nosotros.","ejemplo":"A: «Si el tema sale con gente delante, entonces lo saco luego en el coche». B: «Si pido dejarlo para luego, entonces lo saco yo esa misma noche».","insignia":"Testigo Presencial","intensidad":"media"},{"id":"T013","categoria":"En mitad de la discusión","titulo":"Lo del año pasado","enunciado":"Cuando se discute algo de hoy, ¿vale traer lo que pasó hace meses o hay que quedarse en lo de ahora?","a":"No traigo el pasado por gusto: sin el contexto, lo de hoy parece una minucia y mi reacción parece desproporcionada.","b":"Si cada discusión arrastra todo el historial, no hay forma de arreglar la de hoy: se convierte en un juicio por todo a la vez.","interesA":"Necesito que se entienda por qué esto me afecta tanto; contado suelto, cualquiera diría que estoy exagerando por una tontería.","interesB":"Necesito poder arreglar algo concreto y que se note; si se juzga todo junto, nada acaba nunca y no hay forma visible de mejorar.","ejemplo":"A: «Si traigo algo antiguo, entonces digo primero qué pido para hoy». B: «Si aparece algo antiguo, entonces pregunto qué se repite en concreto».","insignia":"Archivero Emérito","intensidad":"media"},{"id":"T014","categoria":"En mitad de la discusión","titulo":"«Siempre» y «nunca»","enunciado":"Decir «siempre haces esto» o «nunca me escuchas», ¿expresa un hartazgo acumulado o descarrila la conversación?","a":"Cuando digo «siempre» no estoy contando veces: estoy diciendo que llevo mucho tiempo con esto y que ya no es un caso suelto.","b":"En cuanto oigo «siempre», me pongo a buscar el día que no fue así y dejamos de hablar del tema real.","interesA":"Necesito que no se me conteste con la excepción; si nos ponemos a buscar el día que no pasó, no hablamos de todos los demás días.","interesB":"Necesito discutir sobre algo concreto que pueda reconocer o desmentir; contra una afirmación total no hay ninguna respuesta posible que no suene a excusa.","ejemplo":"A: «Si me sale un «siempre», entonces lo cambio por el último ejemplo concreto». B: «Si oigo un «siempre», entonces pregunto por el ejemplo antes de negarlo».","insignia":"Oficina de Estadística del «Siempre»","intensidad":"media"},{"id":"T015","categoria":"En mitad de la discusión","titulo":"Decirlo o dejarlo caer","enunciado":"Cuando quieres algo del otro, ¿hay que pedirlo con todas las letras o vale dejarlo caer?","a":"Pedir algo de frente suena a exigencia. Dejarlo caer deja margen para decir que no sin que se monte nada.","b":"Si no se pide claro, no lo adivino. Dejarlo caer es ponerme un examen que ni siquiera sé que estoy haciendo.","interesA":"Necesito que el otro conserve la opción de negarse; si pido de frente, cualquier «no» se convierte automáticamente en un conflicto.","interesB":"Necesito saber qué se espera de mí para poder hacerlo; adivinando fallo, y fallar sin haberme enterado de nada es lo que me desgasta.","ejemplo":"A: «Si quiero algo del fin de semana, entonces lo pido con todas las letras». B: «Si noto una indirecta en casa, entonces pregunto qué me está pidiendo».","insignia":"Cátedra de la Indirecta","intensidad":"media"},{"id":"T016","categoria":"En mitad de la discusión","titulo":"Qué cuenta como disculpa","enunciado":"¿Un «perdón» a secas basta, o una disculpa tiene que decir por qué se pide?","a":"Si pido perdón, es que lo siento. Obligarme a detallar qué hice mal convierte la disculpa en una confesión firmada.","b":"Un «perdón» suelto puede querer decir «vamos a dejarlo». Si no dice de qué, no sé si me ha entendido o solo quiere pasar página.","interesA":"Necesito que se acepte el gesto sin examen; si cada disculpa se corrige, dejo de pedir perdón para no volver a equivocarme al pedirlo.","interesB":"Necesito saber que hemos entendido lo mismo; sin eso vuelve a pasar igual y la disculpa no habrá significado nada para ninguno de los dos.","ejemplo":"A: «Si pido perdón, entonces digo en la misma frase por qué lo pido». B: «Si me piden perdón, entonces lo acepto antes de pedir ningún detalle».","insignia":"Notario del Perdón","intensidad":"profunda"},{"id":"T017","categoria":"En mitad de la discusión","titulo":"La pausa con hora","enunciado":"Cuando uno pide parar la conversación, ¿hace falta fijar cuándo se retoma o la pausa es solo pausa?","a":"Pedir parar ya cuesta bastante. Si además tengo que dar una hora, sigo negociando justo en el peor momento.","b":"Una pausa sin ninguna referencia se parece demasiado a no volver. No pido seguir ahora, pido saber cuándo.","interesA":"Necesito recuperar el control de lo que digo; si sigo pasado cierto punto hablo desde el enfado y después hay que arreglar también eso.","interesB":"Necesito la garantía de que la conversación vuelve; sin ninguna referencia, el «luego» se me convierte en «nunca» y no puedo soltarlo.","ejemplo":"A: «Si pido parar, entonces digo esa misma noche cuándo lo retomamos». B: «Si me piden parar en casa, entonces no añado ninguna frase más».","insignia":"Semáforo en Ámbar","intensidad":"profunda"},{"id":"T018","categoria":"En mitad de la discusión","titulo":"Hablarlo otra vez","enunciado":"Un tema que ya se habló y no quedó bien, ¿se puede volver a abrir o se respeta lo que se habló?","a":"Si me quedé con la sensación de que no se entendió, tengo que poder volver. Callármelo no lo arregla, lo aplaza.","b":"Si cualquier conversación se puede reabrir, ninguna sirve de nada y me paso la semana esperando la segunda parte.","interesA":"Necesito que valga más quedar de acuerdo de verdad que quedar de acuerdo rápido; si no, acabo diciendo que sí solo para salir del paso.","interesB":"Necesito algo estable de lo que fiarme; si todo puede volver, dejo de tomarme en serio lo que hablamos y me guardo la mitad.","ejemplo":"A: «Si quiero reabrir un tema, entonces aviso el día antes por escrito». B: «Si me piden reabrir un tema, entonces doy una hora esta semana».","insignia":"Segunda Vista","intensidad":"profunda"},{"id":"T019","categoria":"En mitad de la discusión","titulo":"Lo que dijiste y cómo lo dijiste","enunciado":"Cuando algo se dice en mal tono, ¿se responde primero al tono o primero a lo que se dijo?","a":"Si me lo dices así, no puedo entrar en el contenido. El tono es parte del mensaje y no se separa de él.","b":"Si cada vez que digo algo incómodo se discute mi tono, el asunto nunca llega a hablarse. El fondo no desaparece porque salga torcido.","interesA":"Necesito sentir que se me habla con respeto para poder escuchar; en cuanto el tono me duele, lo demás ya no me entra aunque quiera.","interesB":"Necesito que lo que planteo no quede anulado por la forma; si la forma descalifica el fondo, hay temas que no podré sacar nunca.","ejemplo":"A: «Si el tono me molesta, entonces contesto primero al fondo». B: «Si me señalan el tono, entonces repito la misma frase mejor dicha».","insignia":"Doble Lectura","intensidad":"profunda"},{"id":"T020","categoria":"En la cocina y la mesa","titulo":"Los platos, ¿ya o luego?","enunciado":"Al terminar de comer, ¿los platos se lavan en ese momento o pueden esperar a más tarde?","a":"Se lavan al terminar: son cinco minutos y la cocina queda libre para lo siguiente.","b":"Pueden esperar: después de comer toca parar un rato, y luego se lavan todos de una vez.","interesA":"Necesito no tener cosas a medias a la vista, porque si no me siguen ocupando la cabeza.","interesB":"Necesito un rato en el que no haya nada obligatorio encadenado a lo anterior.","ejemplo":"A: «Si me levanto de la mesa después de comer, entonces llevo mi plato al fregadero». B: «Si veo un plato en la cocina por la mañana, entonces lo lavo yo».","insignia":"Orden Suprema de la Esponja","intensidad":"ligera","inicial":2},{"id":"T021","categoria":"En la cocina y la mesa","titulo":"La basura, ¿llena o a su hora?","enunciado":"¿La basura se saca cuando la bolsa ya está llena o cuando toca según el horario de la casa?","a":"Cuando está llena: si ya no cierra, se saca aunque no sea el momento previsto.","b":"Cuando toca: hay un momento del día para bajarla, y sacarla a medias son viajes de más.","interesA":"Necesito que no se acumulen cosas encima, porque lo acumulado me pesa más de lo que parece.","interesB":"Necesito que lo de casa tenga un momento previsible y no me interrumpa a cualquier hora.","ejemplo":"A: «Si al tirar algo en la cocina la bolsa no cierra, entonces la ato». B: «Si salgo de casa por la mañana y hay bolsa atada, entonces la bajo».","insignia":"Gremio de la Bolsa y el Nudo","intensidad":"ligera"},{"id":"T022","categoria":"Las tareas y los arreglos","titulo":"¿Separar la ropa o todo junto?","enunciado":"¿La ropa se separa por colores y programas antes de lavar o puede ir casi todo en el mismo lavado?","a":"Se separa: es lo único que evita que una prenda tiña, encoja o se estropee para siempre.","b":"Casi todo junto: la ropa de hoy aguanta, se ahorran lavados y esperar a llenar cada montón es peor.","interesA":"Necesito cuidar cosas que me importan y no perderlas por ir deprisa.","interesB":"Necesito que lo de casa funcione con pasos simples, porque si se complica acabo no haciéndolo.","ejemplo":"A: «Si cargo la lavadora entre semana, entonces aparto en el cesto lo que destiñe». B: «Si veo una prenda nueva en el cesto, entonces la aparto para lavarla sola».","insignia":"Cátedra de Colores y Grados","intensidad":"ligera"},{"id":"T023","categoria":"En la cocina y la mesa","titulo":"Las sobras, ¿se guardan o se tiran?","enunciado":"Lo que sobra de una comida, ¿se guarda por si acaso o se tira lo que se sabe que nadie va a comerse?","a":"Se guarda: tirar comida no está bien y en dos días eso es una cena resuelta.","b":"Se tira: si no, la nevera se llena de recipientes que acaban igual en la basura, pero peor.","interesA":"Necesito sentir que no se pierde lo que cuesta conseguir.","interesB":"Necesito abrir la nevera y entender qué hay sin tener que investigar.","ejemplo":"A: «Si guardo comida en la nevera, entonces le escribo la fecha en la tapa». B: «Si el viernes abro la nevera por la noche, entonces tiro yo lo caducado».","insignia":"Instituto Superior del Táper","intensidad":"ligera"},{"id":"T024","categoria":"Manías y orden","titulo":"El baño después de usarlo","enunciado":"Después de usar el baño, ¿se deja listo para el siguiente o se repasa cuando toque limpiarlo?","a":"Listo para el siguiente: treinta segundos evitan que el baño esté siempre a medio limpiar.","b":"Cuando toque: el baño se limpia un día concreto y repasar cada vez es limpiar todo el rato.","interesA":"Necesito no encontrarme por sorpresa con lo que dejó la vez anterior.","interesB":"Necesito que las tareas ocupen un rato acotado y no se cuelen en todos los momentos del día.","ejemplo":"A: «Si salgo de la ducha, entonces recojo mi pelo del desagüe antes de vestirme». B: «Si me lavo los dientes por la noche, entonces enjuago el lavabo después».","insignia":"Hermandad del Lavabo","intensidad":"ligera"},{"id":"T025","categoria":"Las tareas y los arreglos","titulo":"Repaso diario o limpieza a fondo","enunciado":"¿Funciona mejor un repaso corto cada día o dejar la limpieza a fondo para un día fijo de la semana?","a":"Un poco cada día: así no se acumula nada y ningún día se convierte en una jornada de trabajo.","b":"A fondo un día: en un par de horas queda limpio de verdad y el resto de la semana no se piensa en ello.","interesA":"Necesito que la casa esté siempre en un estado aceptable, sin sobresaltos ni acumulaciones.","interesB":"Necesito tener días libres de verdad, sin tareas pequeñas sembradas por todos los días.","ejemplo":"A: «Si termino de cenar entre semana, entonces paso un paño por la encimera». B: «Si el sábado a las once estoy en casa, entonces limpio yo el baño».","insignia":"Doble Escuela del Trapo","intensidad":"media"},{"id":"T026","categoria":"Manías y orden","titulo":"Mis cosas en la mesa común","enunciado":"Las cosas de cada uno que se quedan en las zonas comunes, ¿se retiran al final del día o pueden quedarse donde están?","a":"Se retiran: la mesa y la encimera son de los dos, y ahí no vive nada de nadie.","b":"Pueden quedarse: son cosas que uso a diario, y sacarlas y guardarlas cada día es tiempo perdido.","interesA":"Necesito espacios comunes despejados para sentir que la casa también es mía.","interesB":"Necesito tener a mano lo que uso y no vivir como de visita en mi propia casa.","ejemplo":"A: «Si apago la luz del salón por la noche, entonces retiro mis cosas antes». B: «Si el domingo por la noche ceno en casa, entonces guardo mis cosas del salón».","insignia":"Aduana de la Encimera","intensidad":"media"},{"id":"T027","categoria":"Las tareas y los arreglos","titulo":"La bombilla que lleva meses","enunciado":"Los arreglos pequeños pendientes, ¿se hacen en el primer rato libre o cuando de verdad molesten?","a":"En el primer rato libre: son diez minutos y llevan meses recordándonos que siguen ahí.","b":"Cuando molesten: el tiempo libre es escaso y hay cosas que se pueden vivir perfectamente sin arreglar.","interesA":"Necesito sentir que la casa está terminada y que vivimos en ella, no de paso.","interesB":"Necesito proteger el poco tiempo de descanso que me queda.","ejemplo":"A: «Si el sábado desayuno en casa, entonces cambio la bombilla del pasillo después». B: «Si paso por la ferretería del barrio, entonces compro la pieza que falta».","insignia":"Gremio del Grifo que Gotea","intensidad":"media"},{"id":"T028","categoria":"Al salir y al volver","titulo":"El paseo de la noche","enunciado":"Los cuidados diarios de la mascota, ¿se organizan con turnos fijos o los hace quien esté más libre ese día?","a":"Turnos fijos: si está claro de antemano, nadie tiene que pedirlo ni recordarlo cada noche.","b":"Quien esté libre: los días no son iguales y un turno rígido acaba cayendo siempre en el peor momento.","interesA":"Necesito previsibilidad para poder organizar mi día sin sorpresas de última hora.","interesB":"Necesito margen para adaptarme los días en que todo se me complica.","ejemplo":"A: «Si a las once sigo en el sofá, entonces saco yo al perro». B: «Si por la mañana salgo de casa sabiendo que llegaré tarde, entonces aviso».","insignia":"Colegio de Paseos Nocturnos","intensidad":"media"},{"id":"T029","categoria":"Las tareas y los arreglos","titulo":"¿La máquina o a mano?","enunciado":"Con los aparatos que ahorran trabajo, ¿se usan siempre que se pueda o hay cosas que salen más rápido a mano?","a":"Se usan: para eso están, y lo que hace la máquina es tiempo que recuperamos nosotros.","b":"A mano cuando es poco: preparar la máquina para cuatro cosas cuesta más que hacerlo directamente.","interesA":"Necesito quitarme de encima lo repetitivo para que nos quede tiempo para lo demás.","interesB":"Necesito empezar y terminar sin preparativos, porque si hay preparativos lo voy dejando.","ejemplo":"A: «Si salgo de casa entre semana por la mañana, entonces dejo el robot puesto». B: «Si oigo el robot en el salón, entonces recojo del suelo lo que pueda atascarlo».","insignia":"Junta de Electrodomésticos Opinables","intensidad":"media"},{"id":"T030","categoria":"Con gente delante","titulo":"Cuando viene gente a casa","enunciado":"Antes de que venga alguien a casa, ¿se hace una limpieza extra o se enseña la casa como está normalmente?","a":"Se limpia antes: recibir a alguien con la casa recogida forma parte de invitarlo.","b":"Como está: si viene gente de confianza, montar un operativo cada vez hace que apetezca menos invitar.","interesA":"Necesito sentir que la casa habla bien de los dos y no pasar un mal rato mientras hay gente.","interesB":"Necesito que traer gente a casa sea fácil y no una fuente de tensión la tarde anterior.","ejemplo":"A: «Si viene alguien a cenar, entonces dejo listo el baño antes de las siete». B: «Si quedamos con alguien sobre la marcha, entonces recojo yo el salón».","insignia":"Protocolo de Visita Inminente","intensidad":"media"},{"id":"T031","categoria":"Las tareas y los arreglos","titulo":"¿Limpiar juntos o por libre?","enunciado":"Las tareas del fin de semana, ¿se hacen a la vez los dos o cada uno las suyas cuando le venga bien?","a":"A la vez: se tarda menos, se hace más llevadero y no parece que cada uno vaya por su lado.","b":"Cada uno cuando pueda: obligar a coincidir convierte una tarea de veinte minutos en una cita a la que hay que llegar.","interesA":"Necesito que esto lo llevemos entre los dos, no solo que acabe hecho.","interesB":"Necesito manejar mis tiempos y no depender de la agenda del otro para algo pequeño.","ejemplo":"A: «Si el sábado empiezo a limpiar la casa, entonces lo digo en voz alta». B: «Si el sábado por la mañana suena música en casa, entonces me sumo a limpiar».","insignia":"Liga del Sábado por la Mañana","intensidad":"media"},{"id":"T032","categoria":"Las tareas y los arreglos","titulo":"El último rollo de papel","enunciado":"Cuando se acaba algo de uso común, ¿lo repone en el momento quien lo termina o se anota para resolverlo todo junto?","a":"Quien lo termina lo repone en el momento: dejarlo vacío traslada el problema a quien venga detrás.","b":"Se anota y se resuelve junto: ir a por una cosa suelta cada vez no tiene ningún sentido.","interesA":"Necesito no llevarme sorpresas y poder fiarme de que las cosas están donde deben.","interesB":"Necesito que la casa funcione con un sistema y no a base de urgencias sueltas.","ejemplo":"A: «Si gasto el último rollo en el baño, entonces pongo otro antes de salir». B: «Si abro el armario de la cocina y falta algo, entonces lo anoto ahí».","insignia":"Custodia del Último Rollo","intensidad":"media","inicial":11},{"id":"T033","categoria":"Las tareas y los arreglos","titulo":"¿Hace falta poner hora?","enunciado":"Cuando una tarea de casa se deja para más tarde, ¿conviene decir a qué hora se hará o basta con que quede dicho que se hará?","a":"Conviene decir cuándo: sin una referencia me quedo pendiente y acabo recordándolo, que es justo lo que no quiero hacer.","b":"Basta con que quede dicho: poner hora convierte una tarea de casa en una entrega con plazo.","interesA":"Necesito poder soltar el tema y dejar de estar encima de nada.","interesB":"Necesito llevar mi propio ritmo sin sentir que hay alguien supervisando.","ejemplo":"A: «Si pido algo de casa por la mañana, entonces no lo repito ese día». B: «Si aplazo algo de casa en el momento, entonces digo yo a qué hora».","insignia":"Sociedad del «Ahora No»","intensidad":"profunda"},{"id":"T034","categoria":"Las tareas y los arreglos","titulo":"Cada uno viene de una casa","enunciado":"Cada uno trae de su casa una forma de hacer las cosas. ¿Conviene adoptar una sola forma para esta casa o pueden convivir las dos?","a":"Una sola: si cada uno hace las cosas a su manera, nunca sabes en qué estado te vas a encontrar nada.","b":"Las dos: no hay una forma correcta, y obligar a cambiar cómo haces las cosas cansa más que el desorden.","interesA":"Necesito poder dar algo por supuesto en mi propia casa sin preguntarlo cada vez.","interesB":"Necesito seguir reconociéndome en cómo hago las cosas, no sentirme corregido en todo.","ejemplo":"A: «Si el domingo cocino en casa, entonces sigo la forma que acordamos». B: «Si algo en casa se hace distinto a lo mío, entonces pregunto antes de cambiarlo».","insignia":"Museo de las Dos Casas","intensidad":"profunda","inicial":12},{"id":"T035","categoria":"Al salir y al volver","titulo":"Los diez minutos de cortesía","enunciado":"Cuando hay una cita a una hora concreta, ¿diez minutos de más son un retraso o son el margen normal de cualquier día?","a":"La hora acordada es la hora. Con el margen abierto, cualquier plan se convierte en una espera de duración desconocida.","b":"Diez minutos son el margen normal de un día con imprevistos. Medir al minuto añade tensión a algo que no la necesita.","interesA":"Necesito poder fiarme de lo que acordamos para organizar mi día sin dejar huecos por si acaso.","interesB":"Necesito que un día normal no se lea como falta de respeto, porque casi nunca depende solo de mí.","ejemplo":"A — Si llego el primero al sitio, entonces yo me siento y pido algo. B — Si salgo de casa, entonces yo te mando mi hora de llegada.","insignia":"Los Diez Minutos Eternos","intensidad":"ligera"},{"id":"T036","categoria":"En el sofá","titulo":"El capítulo adelantado","enunciado":"Una serie empezada en pareja, ¿se ve solo cuando están los dos o cada uno puede seguir por su cuenta?","a":"Una serie empezada juntos es un plan de los dos. Verla por delante deja al otro fuera de lo único que la hacía nuestra.","b":"Ver un capítulo suelto no le quita nada a nadie: el rato juntos sigue existiendo y siempre se puede volver a ver.","interesA":"Necesito que existan cosas que sean solo nuestras y que no dependan de a qué hora llego a casa.","interesB":"Necesito disfrutar de mi rato libre sin tener que pedir turno para todo lo que me gusta.","ejemplo":"A — Si empezamos una serie en el sofá, entonces yo digo que es de los dos. B — Si veo un capítulo sin ti, entonces yo te lo cuento en la cena.","insignia":"Cofradía del Capítulo Suelto","intensidad":"ligera"},{"id":"T037","categoria":"Al salir y al volver","titulo":"El margen del aeropuerto","enunciado":"Para tomar un avión, un tren o un autobús, ¿se llega con mucho margen o se llega con lo justo?","a":"Con margen. El viaje empieza bien si nadie corre, y lo que se pierde esperando no se parece a lo que se pierde perdiendo el transporte.","b":"Con lo justo. Tres horas de sala de espera son tres horas de viaje tiradas, y el margen se puede calcular sin dramatismo.","interesA":"Necesito quitarme de encima el miedo a que algo salga mal para poder disfrutar del viaje desde el primer minuto.","interesB":"Necesito no pasarme el día esperando, porque el tiempo de mis vacaciones también cuenta antes de llegar.","ejemplo":"A — Si llegamos con adelanto a la terminal, entonces yo propongo desayunar allí mismo. B — Si es la noche antes del viaje, entonces yo digo a qué hora salgo.","insignia":"Orden de la Sala de Embarque","intensidad":"ligera"},{"id":"T038","categoria":"Con gente delante","titulo":"La despedida de veinte minutos","enunciado":"Cuando ya se ha dicho «nos vamos», ¿la despedida se hace corta o despedirse bien lleva su tiempo?","a":"Cuando se dice nos vamos, se va uno. Alargar la despedida media hora convierte cada salida en una negociación en la puerta.","b":"Irse de golpe queda frío. Despedirse es parte del plan y no se puede cronometrar sin quedar mal con quien te ha recibido.","interesA":"Necesito saber que cuando acordamos algo se cumple, para no quedarme esperando sin saber cuánto falta.","interesB":"Necesito no sentir que me arrancan de una conversación y poder quedar bien con la gente que nos ha recibido.","ejemplo":"A — Si digo en el salón que nos vamos, entonces yo me siento a esperar. B — Si ya me despedí en la puerta, entonces yo salgo sin volver a entrar.","insignia":"Doctores en Despedidas","intensidad":"ligera"},{"id":"T039","categoria":"En el sofá","titulo":"Quién elige la película","enunciado":"Elegir qué se ve juntos, ¿se decide entre los dos aunque se tarde, o elige uno y se empieza ya?","a":"Se decide entre los dos. Si elige siempre quien decide rápido, el plan acaba siendo de uno y el otro solo acompaña.","b":"Que elija alguien y se empiece. Media hora de catálogo se come justo el rato que se venía a pasar juntos.","interesA":"Necesito que lo que hacemos juntos me interese a mí también, y no limitarme a estar presente.","interesB":"Necesito que el rato de descanso sea descanso y no una decisión más que tomar al final del día.","ejemplo":"A — Si nos sentamos en el sofá, entonces yo llevo una opción ya pensada. B — Si no me convence lo que sale, entonces yo lo digo antes del play.","insignia":"Custodios del Catálogo","intensidad":"ligera","inicial":4},{"id":"T040","categoria":"En el sofá","titulo":"El reloj del sofá","enunciado":"Cuando acaba un capítulo o una partida, ¿se para a la hora que se había dicho o se sigue mientras los dos tengan ganas?","a":"Si la hora de parar no vale para nada, no hemos acordado nada. Parar a la hora es lo que hace que mañana se repita el plan.","b":"Parar en mitad de lo bueno estropea el plan. Si los dos siguen enganchados, la hora se puede mover sin que pase nada.","interesA":"Necesito que lo que decidimos juntos siga en pie cuando llega el momento de cumplirlo.","interesB":"Necesito que un rato bueno no se corte por un horario que pusimos sin saber cómo iba a ir.","ejemplo":"A — Si empezamos algo en el sofá, entonces yo digo a qué hora quiero parar. B — Si quiero seguir pasada la hora, entonces yo lo pregunto antes de continuar.","insignia":"El Reloj del Sofá","intensidad":"ligera"},{"id":"T041","categoria":"En el calendario","titulo":"Anochece a las seis","enunciado":"Cuando los días se acortan, ¿los planes de después del trabajo siguen igual o el plan se muda a casa hasta la primavera?","a":"Que sea de noche no cancela nada. Si se deja de salir en noviembre, no se vuelve a salir hasta marzo.","b":"El cuerpo pide otra cosa en invierno. Un plan de casa también es un plan, y forzar la salida solo consigue salir de mal humor.","interesA":"Necesito que no se nos apague la vida cuatro meses al año y seguir teniendo cosas que contar.","interesB":"Necesito que el descanso de invierno no tenga que justificarse ni parezca que me estoy dejando llevar por la pereza.","ejemplo":"A — Si propongo salir un día de invierno, entonces yo digo día, hora y sitio. B — Si el viernes nos quedamos en casa, entonces yo dejo la cena lista.","insignia":"Temporada de Sofá","intensidad":"ligera"},{"id":"T042","categoria":"En el calendario","titulo":"El domingo","enunciado":"El domingo, ¿es un día para no hacer nada o un día para hacer algo?","a":"El domingo es el único día sin obligaciones. Si se llena de planes, no se descansa nunca.","b":"Un domingo entero en casa se hace largo y acaba en mal cuerpo. Un plan pequeño cambia la semana entera.","interesA":"Necesito un día sin nada pendiente para llegar al lunes con algo de batería.","interesB":"Necesito que el fin de semana deje algún recuerdo y no se me pase mirando el techo.","ejemplo":"A — Si me proponen plan para el domingo, entonces yo contesto ese mismo día. B — Si quiero plan de domingo, entonces yo lo propongo el viernes en la cena.","insignia":"Orden del Domingo","intensidad":"ligera"},{"id":"T043","categoria":"En el calendario","titulo":"El plan se cierra el miércoles","enunciado":"Los planes del fin de semana, ¿se cierran con días de antelación o se deciden sobre la marcha?","a":"Si no se cierra antes, no pasa nada: se agotan las entradas, la gente se compromete con otros y se acaba en casa por descarte.","b":"Cerrarlo todo el martes quita lo mejor del fin de semana, que es decidir según cómo se llegue el viernes.","interesA":"Necesito tener algo a lo que agarrarme durante la semana y no llegar al viernes con la sensación de que no hay nada.","interesB":"Necesito margen para no llegar obligado a un plan que acepté cuando estaba de otro humor.","ejemplo":"A — Si propongo plan de fin de semana, entonces yo digo día, hora y sitio. B — Si llega el miércoles por la noche, entonces yo digo qué día tengo libre.","insignia":"Agenda contra Brújula","intensidad":"media","inicial":9},{"id":"T044","categoria":"En el calendario","titulo":"Apuntado o dicho","enunciado":"Lo que se acuerda de la agenda de los dos, ¿se anota en un calendario común o basta con decirlo en voz alta?","a":"Si no está anotado, no existe. La memoria de los dos falla igual y después no hay forma de saber quién entendió qué.","b":"Anotarlo todo convierte la vida en una oficina. Lo que se dice se oye, y se puede preguntar sin abrir una aplicación.","interesA":"Necesito poder consultar lo que hay sin depender de acordarme ni de volver a preguntar.","interesB":"Necesito que organizarnos no se convierta en una tarea administrativa más al final del día.","ejemplo":"A — Si acordamos una fecha en la cocina, entonces yo la anoto en el calendario. B — Si me entero de una fecha nueva, entonces yo la digo en la cena.","insignia":"Ministerio de la Agenda Común","intensidad":"media"},{"id":"T045","categoria":"Con gente delante","titulo":"Ir por acompañar","enunciado":"A los cumpleaños, cenas y bodas de la gente de uno, ¿se va acompañado siempre o cada uno va a los planes de los suyos?","a":"Aparecer importa. Ir juntos a los planes del otro es parte de estar en pareja, aunque el plan no sea tuyo.","b":"Llevar a alguien donde no quiere estar no le hace un favor a nadie, y además se nota toda la noche.","interesA":"Necesito sentir que somos un equipo también delante de mi gente y no tener que explicar una ausencia cada vez.","interesB":"Necesito que mi tiempo libre no se llene de planes que no elegí y poder decir que no sin ser el malo.","ejemplo":"A — Si un plan mío me importa, entonces yo te lo digo al invitarte. B — Si digo que voy a un plan tuyo, entonces yo llego a la hora.","insignia":"Insignia de Acompañante Oficial","intensidad":"media"},{"id":"T046","categoria":"En el calendario","titulo":"Parar o recorrer","enunciado":"Las vacaciones, ¿son para parar en un sitio y descansar o para moverse y ver cosas?","a":"Vacaciones es parar: un sitio, sin despertador y sin itinerario. Si se vuelve más cansado, no han sido vacaciones.","b":"Son los pocos días del año en que se puede ver algo distinto. Estar quieto ya se puede hacer en casa cualquier fin de semana.","interesA":"Necesito recuperarme de verdad, porque es el único tramo del año en el que puedo parar del todo.","interesB":"Necesito volver con algo que contar y sentir que el año no ha sido rutina de principio a fin.","ejemplo":"A — Si preparamos el viaje en casa, entonces yo propongo una excursión concreta. B — Si llegamos al destino, entonces yo dejo un día entero sin nada apuntado.","insignia":"Reposo contra Ruta","intensidad":"media"},{"id":"T047","categoria":"En el calendario","titulo":"El sitio de siempre","enunciado":"¿Se vuelve al sitio que ya se conoce y que funciona, o se prueba uno nuevo cada vez?","a":"Volver es garantía: ya se sabe dónde comer, dónde estacionar y qué esperar. Nadie quiere gastar días de vacaciones investigando.","b":"Si se repite siempre, dentro de diez años habrá las mismas diez fotos. Lo que se recuerda es justo lo que no se conocía.","interesA":"Necesito que el descanso esté asegurado y no depender de que el sitio nuevo salga bien.","interesB":"Necesito que lo nuestro siga teniendo primeras veces y no se convierta en una repetición.","ejemplo":"A — Si volvemos al sitio de siempre, entonces yo propongo algo que no hayamos hecho. B — Si propongo un sitio nuevo, entonces yo reservo y llevo la dirección.","insignia":"Club del Sitio de Siempre","intensidad":"media"},{"id":"T048","categoria":"Con gente delante","titulo":"Diciembre lleno o diciembre en blanco","enunciado":"En las fiestas, ¿se dice que sí a todos los planes o se reservan días sin nada apuntado?","a":"Son dos semanas al año y es cuando coincide todo el mundo. Decir que no a todo es quedarse fuera hasta el año que viene.","b":"Si el calendario se llena entero, se llega a enero peor que en noviembre. Hacen falta días en blanco.","interesA":"Necesito ver a la gente que quiero mientras se puede, porque el resto del año no coincidimos nunca.","interesB":"Necesito que queden días nuestros sin obligaciones para no terminar las fiestas más cansado que al empezar.","ejemplo":"A — Si nos llega una invitación de fiestas, entonces yo la cuento esa misma noche. B — Si miramos el calendario de diciembre, entonces yo marco dos días libres.","insignia":"Maratón de Diciembre","intensidad":"media"},{"id":"T049","categoria":"En el calendario","titulo":"Reservado o que salga solo","enunciado":"El tiempo de los dos, ¿se reserva en el calendario como cualquier otra cosa o se deja que salga solo?","a":"Si no se reserva, no existe. La semana se llena sola y lo nuestro es siempre lo último que queda.","b":"Meter el tiempo juntos en el calendario lo convierte en una obligación más, y entonces se parece a cualquier otra cita pendiente.","interesA":"Necesito saber que hay un rato que es nuestro y que no depende de que sobre tiempo al final de la semana.","interesB":"Necesito que estar contigo no se sienta como una tarea que se cumple o se incumple.","ejemplo":"A — Si llega el domingo por la noche, entonces yo digo qué rato quiero. B — Si surge otro plan encima del rato acordado, entonces yo lo propongo para otro día.","insignia":"Reserva de los Dos","intensidad":"profunda"},{"id":"T050","categoria":"En el calendario","titulo":"Los días que no coinciden","enunciado":"Cuando los días libres de cada uno no coinciden, ¿se guardan para un viaje de los dos o se usan por separado?","a":"Se usan. Los días libres son pocos y cada uno tiene planes que al otro no le dicen nada: usarlos por separado no le quita nada a la pareja.","b":"Se guardan. Las vacaciones son de los pocos tramos largos que hay juntos, y repartirlos es renunciar a lo mejor del año.","interesA":"Necesito conservar cosas que son mías y no llegar a fin de año sin haber hecho nada de lo mío.","interesB":"Necesito tener por delante un tramo largo contigo, porque el resto del año vamos con prisa los dos.","ejemplo":"A — Si miro fechas para un viaje mío, entonces yo las digo antes de reservar. B — Si cuadramos el calendario de vacaciones, entonces yo propongo las fechas del viaje.","insignia":"Cada Uno Su Mapa","intensidad":"profunda"},{"id":"T051","categoria":"En el calendario","titulo":"La afición que ocupa el sábado","enunciado":"Cuando una afición propia ocupa buena parte del fin de semana, ¿esas horas se reparten entre los dos o cada uno dispone de las suyas?","a":"Cada uno dispone de las suyas. Lo que a uno lo mantiene entero no se negocia por horas, y sin eso se llega peor a la semana.","b":"Se reparten. Cuando una afición ocupa los dos días, lo que queda para los dos son las horas sobrantes.","interesA":"Necesito conservar algo que es mío y que no depende de nadie, porque es de donde saco la energía.","interesB":"Necesito que lo nuestro no sea siempre lo que se encaja en los huecos que sobran.","ejemplo":"A — Si empieza la semana, entonces yo digo en la cena qué sábado ocupo entero. B — Si el sábado me quedo sin plan común, entonces yo hago un plan mío.","insignia":"Insignia de Sábado Ocupado","intensidad":"profunda"},{"id":"T052","categoria":"En el calendario","titulo":"Los dos relojes","enunciado":"Cuando uno funciona de mañana y el otro de noche, ¿alrededor de qué horas se organiza lo que se hace juntos?","a":"Mis horas buenas son las primeras del día. Si el plan empieza a las once de la noche, estoy pero no estoy.","b":"Yo no arranco hasta la tarde. Si todo lo nuestro se hace por la mañana, siempre me toca estar a medio gas.","interesA":"Necesito que lo importante caiga cuando puedo dar lo mejor, y no llegar a todo arrastrando.","interesB":"Necesito que mis mejores horas también cuenten como horas buenas para los dos.","ejemplo":"A — Si hay plan de noche fuera de casa, entonces yo digo a qué hora me voy. B — Si el plan es de mañana, entonces yo estoy en la puerta a la hora.","insignia":"Dos Husos Horarios","intensidad":"profunda"},{"id":"T053","categoria":"Manías y orden","titulo":"El tubo de pasta de dientes","enunciado":"El tubo de pasta se aprieta desde el final y se tapa, o se usa por donde salga y se deja como quede.","a":"Cuidar las cosas pequeñas cuesta dos segundos, hace que el tubo dure hasta el final y deja el baño listo para quien entre después.","b":"La pasta sale igual se apriete por donde se apriete. Ponerle una forma correcta a un gesto automático de las siete de la mañana es pedir atención donde no hace falta.","interesA":"Necesito sentir que las cosas de casa se tratan con cuidado; cuando encuentro algo maltratado, se me va la cabeza a todo lo demás.","interesB":"Necesito conservar gestos que pueda hacer sin pensar. Si cada acción mínima tiene una forma correcta, acabo revisándome a mí mismo dentro de mi propia casa.","ejemplo":"A — «Si entro al baño y veo el tubo arrugado, entonces lo estiro yo». B — «Si termino de lavarme los dientes en el baño, entonces tapo el tubo».","insignia":"Expediente Tubo, Tomo I","intensidad":"ligera","inicial":1},{"id":"T054","categoria":"En la cocina y la mesa","titulo":"La bolsa de las bolsas","enunciado":"Las bolsas que entran en casa se guardan por si hacen falta, o se tiran en cuanto se vacían.","a":"Guardarlas no cuesta nada y siempre acaban haciendo falta: para la basura, para ropa mojada, para llevar algo. Tirar una bolsa útil es comprar mañana lo que ya tenías hoy.","b":"La bolsa de bolsas crece mucho más rápido de lo que se vacía. Un cajón entero ocupado por algo que «ya usaremos» es espacio que no se recupera nunca.","interesA":"Necesito sentir que estoy preparado; tener a mano lo que puede hacer falta me ahorra el agobio de resolver las cosas a última hora.","interesB":"Necesito ver hueco libre. Cuando los armarios están llenos de cosas en reserva, la casa me parece más pequeña y más pesada de lo que es.","ejemplo":"A — «Si guardo la compra en la cocina, entonces tiro las bolsas de más». B — «Si veo una bolsa suelta en el salón, entonces la llevo yo al cajón».","insignia":"La Bolsa Madre: caso abierto","intensidad":"ligera"},{"id":"T055","categoria":"En la alcoba","titulo":"Hacer la cama al levantarse","enunciado":"La cama se hace nada más levantarse, o puede quedarse deshecha hasta la noche.","a":"Hacerla cuesta un minuto y cambia la habitación entera: entrar durante el día en un cuarto recogido da una sensación de orden que se nota en todo lo demás.","b":"La cama se va a deshacer igual esta noche, y dejar airear las sábanas un rato no es dejadez. La mañana es corta y hay cosas que rinden más que estirar una cama.","interesA":"Necesito empezar el día con algo terminado; ver la cama hecha me quita ruido de la cabeza durante el resto de la jornada.","interesB":"Necesito que las mañanas no arranquen con un trámite obligatorio; voy justo de tiempo y quiero elegir yo en qué lo gasto.","ejemplo":"A — «Si entro en el dormitorio a media mañana, entonces estiro la cama yo». B — «Si me levanto el último de la cama, entonces la estiro antes de salir».","insignia":"Perito Colchonero","intensidad":"ligera"},{"id":"T056","categoria":"Manías y orden","titulo":"Cajones y puertas abiertas","enunciado":"Los cajones y las puertas de los armarios se cierran nada más usarlos, o pueden quedarse abiertos mientras se está en mitad de algo.","a":"Cerrar es parte del gesto. Un armario abierto es un golpe en la cabeza esperando su momento y deja la habitación con aspecto de tarea a medias.","b":"Si voy a volver en un minuto, cerrar y abrir es trabajo doble. Mientras cocino o me visto, el mueble abierto es una herramienta, no un descuido.","interesA":"Necesito que las cosas queden terminadas: mientras veo algo a medio cerrar, mi cabeza sigue enganchada a esa tarea y no descansa.","interesB":"Necesito concentrarme en lo que estoy haciendo sin ir cerrando detrás de mí cada paso intermedio del proceso.","ejemplo":"A — «Si veo un cajón abierto en la cocina, entonces lo cierro sin comentarlo». B — «Si salgo de la habitación donde estaba, entonces cierro lo que dejé abierto».","insignia":"Orden del Cajón Entornado","intensidad":"ligera"},{"id":"T057","categoria":"En la cocina y la mesa","titulo":"La taza que espera «un rato»","enunciado":"Una taza usada se enjuaga en el momento, o puede esperar «un rato» en el fregadero.","a":"Puede esperar. Lavar cada vaso en el segundo en que se usa interrumpe todo lo demás, y una taza sola no ensucia una cocina.","b":"«Un rato» nunca es un rato: al final del día hay cinco cosas, y lo que eran diez segundos se ha convertido en algo que alguien tiene que empezar.","interesA":"Necesito no vivir la casa como una cadena de tareas inmediatas; si todo se hace al instante, no existe ningún momento de descanso.","interesB":"Necesito ver la cocina despejada para sentir que el día está bajo control; los pendientes pequeños acumulados me dejan una tensión que no se va sola.","ejemplo":"A — «Si apago la tele para acostarme, entonces llevo mis tazas a la cocina». B — «Si veo una taza sola en el fregadero, entonces la enjuago yo».","insignia":"Cronometrador del «Un Rato»","intensidad":"ligera"},{"id":"T058","categoria":"Manías y orden","titulo":"Las luces de las habitaciones vacías","enunciado":"Las luces se apagan al salir de una habitación, o pueden quedarse encendidas si se va a volver enseguida.","a":"Apagar al salir es automático y evita tener la casa entera iluminada para una sola persona que además está en otro cuarto.","b":"Encender y apagar cada vez que cruzo un pasillo es absurdo, y volver a una habitación a oscuras me corta justo lo que estaba haciendo.","interesA":"Necesito sentir que la casa no se me va de las manos; cuando todo está en marcha y no hay nadie dentro, me queda una sensación de descontrol que no sé explicar.","interesB":"Necesito moverme por mi propia casa sin hacer un control de salida en cada puerta por la que paso.","ejemplo":"A — «Si me acuesto, entonces apago yo las luces del pasillo sin comentarlo». B — «Si salgo de una habitación por la noche, entonces apago su luz».","insignia":"Guardia Nocturna del Interruptor","intensidad":"ligera"},{"id":"T059","categoria":"Al salir y al volver","titulo":"Los zapatos en la entrada","enunciado":"Los zapatos se quitan al entrar en casa, o se puede entrar con ellos puestos.","a":"Descalzarse deja fuera lo que se pisa en la calle y convierte la entrada en el punto donde se deja el día atrás: dentro, el suelo es otra cosa.","b":"Obligar a descalzarse incomoda al que llega con prisa y a quien viene de visita. El suelo se limpia; la casa está para vivirla, no para protegerla.","interesA":"Necesito que la casa esté limpia de verdad y no solo en apariencia; es el único sitio donde puedo bajar la guardia del todo.","interesB":"Necesito que entrar en casa sea fácil y no un protocolo, y me incomoda poner condiciones a quien viene a vernos.","ejemplo":"A — «Si tenemos visita en casa, entonces me dejo los zapatos puestos». B — «Si entro por la puerta de casa, entonces dejo los zapatos en la entrada».","insignia":"Aduana de la Entrada","intensidad":"media"},{"id":"T060","categoria":"En el sofá","titulo":"El volumen de la tele","enunciado":"El volumen de la tele lo decide quien la está viendo, o se ajusta a lo que se oye en el resto de la casa.","a":"Si no se oye bien, no se entiende nada. Bajarlo hasta tener que adivinar los diálogos arruina exactamente lo que estabas viendo.","b":"Un volumen alto ocupa la casa entera. Quien no está viendo la tele no puede leer, ni hablar por teléfono, ni descansar, y con vecinos cerca es incómodo.","interesA":"Necesito enterarme sin esfuerzo; forzar el oído me cansa y me saca de lo que estoy viendo, que era justo mi rato del día.","interesB":"Necesito que en casa haya un nivel de ruido en el que quepa algo más que la tele, incluido no hacer nada.","ejemplo":"A — «Si veo la tele de noche en el salón, entonces pongo los subtítulos». B — «Si empieza su serie en el salón, entonces no pido bajar el volumen».","insignia":"Perito en Decibelios de Salón","intensidad":"media"},{"id":"T061","categoria":"En la alcoba","titulo":"La silla de la ropa","enunciado":"La ropa que se ha usado una vez va al armario o al cesto, o puede quedarse en la silla.","a":"La silla es un limbo que no se vacía nunca. Lo que empieza con un jersey acaba siendo un montón que hay que deshacer entero de una sentada.","b":"La ropa puesta una vez no está limpia ni sucia. Meterla al armario ensucia lo que está guardado y lavarla otra vez es gastar por gastar.","interesA":"Necesito que el dormitorio esté despejado para poder descansar en él; el montón me recuerda algo pendiente cada vez que entro.","interesB":"Necesito una zona intermedia donde las cosas puedan estar sin decidir; si todo tiene que estar guardado o lavado, acabo tomando decisiones absurdas por no tener dónde dejarlo.","ejemplo":"A — «Si la silla del dormitorio tiene una prenda, entonces la dejo ahí». B — «Si me acuesto, entonces guardo o llevo al cesto una prenda de la silla».","insignia":"Custodio de la Silla","intensidad":"media"},{"id":"T062","categoria":"Manías y orden","titulo":"Cada cosa en su sitio","enunciado":"Las cosas de uso diario tienen un sitio fijo al que vuelven siempre, o cada uno las deja donde termina de usarlas.","a":"Un sitio fijo se traduce en no buscar nada nunca. El tiempo que se pierde buscando las llaves o el cargador se pierde entre los dos, no solo el de quien los dejó.","b":"Los sistemas de sitios fijos son fáciles de proponer y difíciles de vivir. Yo encuentro mis cosas donde las dejé porque recuerdo lo que estaba haciendo en ese momento.","interesA":"Necesito no empezar el día buscando; cada búsqueda me pone en tensión y me hace salir de casa con la sensación de ir ya tarde.","interesB":"Necesito que mi forma de organizarme siga valiendo en mi propia casa y no tener que aprenderme un mapa de sitios que no he elegido yo.","ejemplo":"A — «Si no encuentro algo en casa, entonces lo busco yo antes de preguntar». B — «Si entro por la puerta de casa, entonces dejo las llaves en el cuenco».","insignia":"Brigada de Objetos Perdidos","intensidad":"media"},{"id":"T063","categoria":"En la cocina y la mesa","titulo":"El orden de la nevera","enunciado":"En la nevera cada cosa tiene su estante, o se guarda donde quepa.","a":"Con un orden ves lo que hay, no se queda nada caducando al fondo y encuentras lo que buscas en dos segundos. Eso no es manía, es que funciona.","b":"Guardar la compra es rápido cuando no hay que resolver un tetris. El orden de la nevera dura exactamente hasta la siguiente comida.","interesA":"Necesito saber qué tenemos sin vaciarla entera; cuando no lo sé, compro repetido y luego acabo tirando comida, que es lo que peor llevo.","interesB":"Necesito que guardar la compra no se convierta en una tarea larga justo después de haber ido a comprar y haberla subido a casa.","ejemplo":"A — «Si guardo la compra en la cocina, entonces pongo delante lo que caduca antes». B — «Si guardo sobras en la nevera, entonces las pongo en el estante de arriba».","insignia":"Inspección Anual de Estantes","intensidad":"media"},{"id":"T064","categoria":"En el sofá","titulo":"Comer en el sofá","enunciado":"Se come y se bebe solo en la mesa o la cocina, o también se puede comer en el sofá y delante de la tele.","a":"Comer fuera de la mesa deja migas, manchas y vasos olvidados, y los restos aparecen días después justo donde te ibas a sentar a descansar.","b":"Cenar en el sofá viendo algo es uno de los pequeños placeres de estar en casa. La casa es para usarla, no para conservarla como si fuera de otro.","interesA":"Necesito que los sitios donde me tumbo estén limpios; encontrarme restos ahí me quita directamente las ganas de usar ese espacio.","interesB":"Necesito que la casa sea cómoda de verdad y no tenga zonas prohibidas; comer relajado delante de algo es mi forma de desconectar del día.","ejemplo":"A — «Si veo migas en el sofá por la mañana, entonces las limpio yo». B — «Si ceno en el sofá, entonces llevo mi plato a la cocina».","insignia":"Expediente Migas","intensidad":"media","inicial":8},{"id":"T065","categoria":"Manías y orden","titulo":"Mi rincón en zona común","enunciado":"Cada uno puede tener un rincón a su manera aunque esté en una zona común, o en las zonas comunes vale lo que funcione para los dos.","a":"Cada uno debería poder tener un sitio propio a su manera aunque esté en el salón: una mesa, un estante, una esquina que nadie ordene ni comente.","b":"Lo que está en una zona común lo ve y lo vive el otro a todas horas. Un espacio propio tiene sentido donde no ocupe el sitio que compartimos los dos.","interesA":"Necesito un sitio donde no rendir cuentas. Si absolutamente todo se negocia, acabo sintiéndome un poco invitado en mi propia casa.","interesB":"Necesito que el espacio que compartimos también me descanse a mí; no consigo desconectar en una habitación que siempre está a medio recoger.","ejemplo":"A — «Si dejo cosas mías fuera de mi mesa, entonces las recojo al acostarme». B — «Si veo la mesa del salón desordenada, entonces no la toco ni comento».","insignia":"Mapa de Fronteras Domésticas","intensidad":"profunda"},{"id":"T066","categoria":"Manías y orden","titulo":"Tus cosas, mi orden","enunciado":"Al ordenar se pueden mover de sitio cosas del otro, o no se toca nada de nadie sin avisar.","a":"Si hubiera que preguntar por cada objeto, no se ordenaría nunca. Mover algo de sitio para dejar despejado no es quitárselo a nadie.","b":"Cuando mueven mis cosas dejo de encontrarlas, y además la decisión la ha tomado otro por mí. No es el objeto: es enterarme después.","interesA":"Necesito poder avanzar cuando me pongo a ordenar; si cada objeto abre una conversación, ordenar deja de ser algo que se pueda terminar.","interesB":"Necesito saber dónde está lo mío y que se cuente conmigo antes de moverlo; si no, tengo la sensación de ir siempre por detrás en mi propia casa.","ejemplo":"A — «Si ordeno y encuentro algo no mío, entonces lo dejo en su silla». B — «Si veo cosas mías apartadas en la silla, entonces las coloco antes del domingo».","insignia":"Archivo de Objetos en Tránsito","intensidad":"profunda"},{"id":"T067","categoria":"Manías y orden","titulo":"¿Todo se puede pedir?","enunciado":"Una costumbre muy arraigada se acepta tal cual, o cualquier costumbre de casa se puede poner sobre la mesa.","a":"Hay cosas que uno hace desde siempre y no se cambian sin dejar de ser uno mismo. Convivir incluye aceptar unas cuantas rarezas del otro sin pedir explicaciones.","b":"Si una costumbre se declara intocable, deja de poder hablarse. En una casa compartida, lo que afecta a los dos tendría que poder revisarse al menos una vez.","interesA":"Necesito que se me acepte como soy en lo pequeño; si mis costumbres son un problema permanente, empiezo a sentir que estorbo en mi propia casa.","interesB":"Necesito poder decir lo que me molesta sin que parezca un ataque; si hay temas cerrados de antemano, acabo guardándomelo todo.","ejemplo":"A — «Si cenamos en casa el domingo, entonces digo una costumbre mía que sí negocio». B — «Si cenamos en casa el domingo, entonces digo una costumbre suya que acepto».","insignia":"Catálogo de Rarezas, edición ampliable","intensidad":"profunda"},{"id":"T068","categoria":"Manías y orden","titulo":"Cosas que se guardan por recuerdo","enunciado":"Los objetos que ya no se usan pero tienen recuerdo se conservan, o llega un punto en que ocupan más de lo que devuelven.","a":"Un objeto guardado no es un trasto: es lo que queda de algo que pasó. Ocupa una caja y te devuelve un recuerdo entero el día que la abres.","b":"Una casa no es un almacén. Si cada etapa deja su caja, el espacio para lo que estamos haciendo ahora se va reduciendo por cosas que no se miran nunca.","interesA":"Necesito no perder el rastro de lo que he vivido; deshacerme de esas cosas se me parece demasiado a borrarlo.","interesB":"Necesito sitio para lo de ahora. Vivir rodeado de etapas antiguas me deja la sensación de que estamos parados en algún punto del pasado.","ejemplo":"A — «Si guardo algo por recuerdo, entonces lo meto en mi caja». B — «Si veo la caja de recuerdos en el armario, entonces la dejo donde está».","insignia":"Depósito de Pruebas Sentimentales","intensidad":"profunda"},{"id":"T069","categoria":"Cuando salen las cuentas","titulo":"La cuenta: a medias o por turnos","enunciado":"Cuando salimos a comer los dos: la cuenta se parte a medias cada vez, o invita uno y la siguiente vez el otro.","a":"A medias siempre: se resuelve en un segundo, es transparente y nadie tiene que llevar la cuenta de nada.","b":"Por turnos: invitar forma parte del gesto de salir, y dividir cada cuenta convierte la cita en un trámite.","interesA":"Necesito que entre nosotros no se acumule una contabilidad invisible en la que alguien acabe sintiéndose en deuda.","interesB":"Necesito poder regalarle el rato de vez en cuando y que salir siga pareciendo un plan y no un reparto.","ejemplo":"A: «Si nos traen la cuenta al final de la cena, entonces digo cómo la pago». B: «Si invito yo en un restaurante, entonces no lo menciono el resto de la noche».","insignia":"Pistoleros de la cuenta","intensidad":"ligera"},{"id":"T070","categoria":"Cuando salen las cuentas","titulo":"Pagar por ahorrarse el rato","enunciado":"Pagar un poco más para no tener que ir, esperar o comparar —un envío, un servicio a domicilio—, o dedicarle el rato y quedarse ese dinero.","a":"Pagarlo: ese dinero compra tiempo libre y un recado menos, y el tiempo no se recupera.","b":"Hacerlo uno mismo: pagar por algo que se resuelve en un rato es dinero que se va sin que nadie lo decida.","interesA":"Necesito que mis pocas horas libres no se llenen de recados; cuando pago por eso siento que compro descanso, no lujo.","interesB":"Necesito notar que las cosas pequeñas cuentan y que no pagamos de más por inercia; el goteo que no se ve me inquieta.","ejemplo":"A: «Si veo el coste de envío en la pantalla al pagar, entonces miro la recogida en tienda». B: «Si llega un paquete a casa por la tarde, entonces no comento el envío».","insignia":"Cronómetro y calculadora","intensidad":"ligera"},{"id":"T071","categoria":"Cuando salen las cuentas","titulo":"El café de fuera de cada día","enunciado":"El café o el capricho diario que se compra fuera: un gasto pequeño sin importancia, o un goteo que suma a final de mes.","a":"Sin importancia: son monedas que alegran la mañana y no son las que descuadran nada.","b":"Suma: los gastos pequeños de todos los días pesan más que los grandes y no se ven venir.","interesA":"Necesito conservar un placer diario que es solo mío y no tener que justificarlo cada mañana.","interesB":"Necesito sentir que sabemos por dónde se nos va el dinero; lo que se escapa sin decidirlo me deja intranquilo.","ejemplo":"A: «Si compro café fuera un día de diario, entonces lo digo al llegar a casa». B: «Si por la mañana veo un vaso de café en la cocina, entonces no comento».","insignia":"Vaso de cartón, taza de casa","intensidad":"ligera"},{"id":"T072","categoria":"Cuando salen las cuentas","titulo":"Marca blanca o marca de siempre","enunciado":"En la compra del súper: marca blanca en casi todo, o hay productos en los que compensa la marca de siempre.","a":"Marca blanca: muchas veces sale de la misma fábrica y lo que se paga de más es el envase.","b":"La de siempre en algunas cosas: hay productos donde la diferencia se nota cada día y ahorrar ahí sale caro en disgustos.","interesA":"Necesito sentir que cuido lo nuestro y que no nos cobran de más por lo mismo; que se me escape un sobreprecio me deja sensación de descuido.","interesB":"Necesito que las cosas de casa me gusten de verdad; usar a diario algo que no me convence me estropea un momento del día.","ejemplo":"A: «Si dudo en el súper con algo que yo no uso, entonces elijo la conocida». B: «Si abro un producto en casa y no me convence, entonces lo digo ese día».","insignia":"Catadores de pasillo","intensidad":"ligera"},{"id":"T073","categoria":"Cuando salen las cuentas","titulo":"Las ofertas y el 2x1","enunciado":"Aprovechar promociones, cupones y descuentos siempre que aparezcan, o comprar solo lo que se iba a comprar.","a":"Aprovecharlos: si el descuento está ahí, no usarlo es regalar dinero.","b":"Ignorarlos: la promoción está pensada para que compres lo que no ibas a comprar; salir con «ahorro» no es ahorrar.","interesA":"Necesito la pequeña victoria de haber pagado menos que el precio de la etiqueta; me hace sentir que gestiono bien lo nuestro.","interesB":"Necesito que la casa no se llene de cosas que nadie decidió tener; comprar por el descuento y no por la falta me deja una sensación fea.","ejemplo":"A: «Si veo una promoción en la caja, entonces solo la llevo si ya la traía». B: «Si veo una compra en promoción en la cocina, entonces no cuento las unidades».","insignia":"Doctorado en 2x1","intensidad":"ligera"},{"id":"T074","categoria":"Las tareas y los arreglos","titulo":"La luz, el aire y la calefacción","enunciado":"En casa: apagar y ajustar para que no suba la factura, o tenerla a gusto aunque cueste algo más.","a":"Ajustar: la factura sube por los detalles, y hay consumo encendido que nadie está disfrutando.","b":"A gusto: pasar frío o calor en tu propia casa para ahorrar un poco no compensa; para eso está la casa.","interesA":"Necesito que el dinero no se vaya en algo que nadie aprovecha; el derroche automático me pone nervioso.","interesB":"Necesito estar cómodo en el único sitio donde puedo estarlo; si en casa lo paso mal, el día entero se resiente.","ejemplo":"A: «Si al acostarme veo una luz encendida en el salón, entonces la apago sin comentarlo». B: «Si por la noche subo la calefacción en casa, entonces lo digo en voz alta».","insignia":"Guardianes del termostato","intensidad":"ligera"},{"id":"T075","categoria":"Cuando salen las cuentas","titulo":"La propina","enunciado":"Cuando nos atienden bien: dejar propina generosa, o dejar lo justo porque el precio ya está en la carta.","a":"Generosa: cuesta poco y significa mucho para quien nos ha atendido.","b":"Lo justo: la propina no debería funcionar como un suplemento obligatorio que se decide de pie y con prisa.","interesA":"Necesito no salir de un sitio sintiéndome tacaño con alguien que ha hecho bien su trabajo; me importa cómo trato a la gente.","interesB":"Necesito que el gasto de la noche sea el que habíamos pensado y no un extra variable que aparece al final.","ejemplo":"A: «Si dejo propina en la mesa al salir, entonces lo digo antes de levantarnos». B: «Si salimos del restaurante después de pagar, entonces no comento la propina».","insignia":"Escuela de propinas","intensidad":"ligera","inicial":5},{"id":"T076","categoria":"Cuando salen las cuentas","titulo":"La compra grande o ir cada dos días","enunciado":"Hacer una compra grande para varios días, o ir comprando poco y a menudo lo que va haciendo falta.","a":"Compra grande: se va una vez, se planifica y se evitan las entradas sueltas al súper, que siempre acaban en más cosas.","b":"Poco y a menudo: se compra lo que de verdad se va a comer, sobra menos y no hay que adivinar el jueves lo que apetecerá el lunes.","interesA":"Necesito quitarme de encima una tarea repetida y saber que la casa está abastecida; improvisar cada día me carga la cabeza.","interesB":"Necesito no llenar la casa de cosas por si acaso; comprar de más y acabar tirándolo me deja la sensación de haber hecho mal las cuentas.","ejemplo":"A: «Si el sábado hago la compra grande, entonces escribo la lista antes de salir». B: «Si paso por el súper entre semana, entonces compro solo lo de esos días».","insignia":"Expedición al súper","intensidad":"ligera"},{"id":"T077","categoria":"Las decisiones de dinero","titulo":"Las suscripciones que no usamos","enunciado":"Las suscripciones que apenas se usan: se cancelan ya, o se dejan y se revisan más adelante.","a":"Cancelar ya: cada mes que pasa es dinero por algo que nadie está usando.","b":"No cancelar en caliente: hay cosas que se usan a rachas, y volver a darse de alta suele salir más caro.","interesA":"Necesito que no haya cobros en piloto automático que nadie ha decidido este mes; lo que se cobra solo me genera desconfianza.","interesB":"Necesito no perder de golpe cosas que sí disfruto por una limpieza hecha de un tirón; deshacer y arrepentirse me da rabia.","ejemplo":"A: «Si el primer domingo de mes estoy en el sofá, entonces reviso los cobros». B: «Si veo la lista de cobros en la mesa, entonces digo cuál quiero conservar».","insignia":"Auditores de sofá","intensidad":"media"},{"id":"T078","categoria":"Las tareas y los arreglos","titulo":"Se repara o se cambia","enunciado":"El aparato de casa que ha empezado a fallar: se lleva a reparar, o se cambia por uno nuevo.","a":"Repararlo: tirar algo que todavía funciona es caro y además absurdo.","b":"Cambiarlo: las reparaciones se encadenan y al final se paga dos veces por lo mismo.","interesA":"Necesito no sentir que tiramos dinero ni cosas útiles; el derroche me pesa más que la incomodidad.","interesB":"Necesito que lo de casa funcione sin sobresaltos; vivir pendiente de si aguanta un mes más me cansa.","ejemplo":"A: «Si un aparato falla en casa un día laborable, entonces pido yo el presupuesto». B: «Si el mismo aparato vuelve a fallar en casa, entonces digo que quiero cambiarlo».","insignia":"Peritaje de electrodoméstico","intensidad":"media"},{"id":"T079","categoria":"Las decisiones de dinero","titulo":"Un plan o algo que se queda","enunciado":"Cuando podemos darnos un gusto: gastarlo en un plan que se vive, o en algo para casa que se queda.","a":"Un plan: lo que queda después es el recuerdo y el rato juntos, no el objeto.","b":"Algo que se queda: un plan se acaba esa noche y la casa la vivimos todos los días.","interesA":"Necesito que nuestra vida tenga momentos que contar; me da miedo que todo se convierta en rutina y mantenimiento.","interesB":"Necesito que el sitio donde vivimos me dé calma; lo cotidiano me sostiene más que un día suelto.","ejemplo":"A: «Si en casa oigo una propuesta de compra, entonces pregunto qué le cambia del día». B: «Si en la cena oigo una propuesta de plan fuera, entonces digo qué me apetece».","insignia":"Recuerdo o estantería","intensidad":"media"},{"id":"T080","categoria":"Las decisiones de dinero","titulo":"Los regalos entre nosotros","enunciado":"Los regalos que nos hacemos el uno al otro: gastar de verdad, o algo pequeño y pensado porque el dinero sale del mismo sitio.","a":"Gastar: un regalo se nota cuando cuesta, y rebajarlo a un detalle simbólico le quita la emoción.","b":"Pequeño y pensado: si el dinero sale del mismo bolsillo, el regalo caro es más gesto de cara a la galería que otra cosa.","interesA":"Necesito sentir que soy una prioridad y que alguien ha hecho un esfuerzo por mí, no solo cumplido un trámite.","interesB":"Necesito que el cariño no se mida en dinero; recibir algo caro me deja la sensación de que ahora debo algo.","ejemplo":"A: «Si es el cumpleaños en casa, entonces escribo a mano por qué elegí el regalo». B: «Si abro un regalo en casa, entonces digo qué me gustó y no el precio».","insignia":"Escuela de envolver","intensidad":"media"},{"id":"T081","categoria":"Las decisiones de dinero","titulo":"La tarifa barata o la cancelable","enunciado":"Al reservar un viaje o unas entradas: la tarifa barata sin derecho a cancelar, o pagar más por poder echarse atrás.","a":"La barata: casi nunca cancelamos, y pagar por si acaso es pagar por un miedo que no llega a cumplirse.","b":"La cancelable: la vida se tuerce, y quedarnos sin el plan y sin el dinero es la peor de las dos opciones.","interesA":"Necesito que el dinero se note en el plan y no en un seguro que casi nunca se usa.","interesB":"Necesito poder cambiar de idea sin que salga caro; comprometerme sin salida me tiene en tensión desde que reservo.","ejemplo":"A: «Si reservo un viaje desde casa, entonces digo qué tarifa he elegido antes de pagar». B: «Si al final no podemos usar una reserva, entonces no menciono la tarifa».","insignia":"Tarifa con paracaídas","intensidad":"media"},{"id":"T082","categoria":"Las decisiones de dinero","titulo":"De segunda mano o a estrenar","enunciado":"Comprar algo usado y pagar bastante menos, o comprarlo nuevo con garantía y sin sorpresas.","a":"Usado: por la mitad tienes lo mismo, y además dejas de tirar cosas que funcionan.","b":"Nuevo: garantía, sin averías heredadas y sin quedar con un desconocido para comprobar si va.","interesA":"Necesito que nuestro dinero cunda y me gusta la sensación de haber hecho un buen negocio.","interesB":"Necesito no cargar con el riesgo ni con la gestión; si sale mal, el ahorro se convierte en un problema que acabo resolviendo yo.","ejemplo":"A: «Si encuentro algo usado en internet, entonces voy yo a verlo y probarlo». B: «Si entra en casa algo usado que funciona, entonces no digo cuánto costaría nuevo».","insignia":"Segunda mano, primera opinión","intensidad":"media"},{"id":"T083","categoria":"Las decisiones de dinero","titulo":"Guardarlo o disfrutarlo ahora","enunciado":"Cuando a final de mes sobra algo: guardarlo entero para tener un colchón, o usar una parte en algo que se disfrute ahora.","a":"Guardarlo: tener margen por si pasa algo vale más que cualquier gusto puntual.","b":"Usar una parte: dejarlo todo para un futuro que no se conoce es no vivir ninguno de los dos momentos.","interesA":"Necesito sentir que si viene un imprevisto no nos hundimos; la incertidumbre me quita el sueño de verdad.","interesB":"Necesito que nuestra vida tenga cosas buenas mientras las podemos disfrutar; vivir siempre en modo espera me apaga.","ejemplo":"A: «Si oigo una propuesta de gasto no previsto, entonces digo una vez qué me preocupa». B: «Si quiero que nos demos un gusto, entonces lo digo en casa el día antes».","insignia":"Dos relojes, un bolsillo","intensidad":"profunda"},{"id":"T084","categoria":"Con gente delante","titulo":"Gastar delante de los demás","enunciado":"Cuando hay gente delante —una ronda, un regalo, una cena de grupo—: gastar lo que se espera en esa situación, o gastar lo mismo que se gastaría sin nadie mirando.","a":"Lo que se espera: no es aparentar, es cuidar a la gente a la que queremos en los momentos que importan.","b":"Lo mismo que sin nadie: estirar la cuenta por lo que van a pensar sale caro y no lo agradece nadie de verdad.","interesA":"Necesito que la gente que quiero se sienta cuidada y no quedar como el que nunca aporta; me importa lo que representamos juntos fuera de casa.","interesB":"Necesito que nuestras decisiones sean nuestras y no una respuesta a lo que se espera; gastar por presión me deja una sensación fea que dura días.","ejemplo":"A: «Si vamos a una celebración y quiero poner más, entonces lo digo en casa antes». B: «Si en una celebración se pone dinero de más, entonces no lo comento allí».","insignia":"Dos formas de quedar bien","intensidad":"profunda"},{"id":"T085","categoria":"Cuando salen las cuentas","titulo":"Qué es caro","enunciado":"Cuando uno dice que algo es carísimo y el otro no lo ve así: hay cosas que son caras se mire como se mire, o cada uno mide con su propia vara.","a":"Hay precios que son una locura se mire como se mire, y decirlo en voz alta no es juzgar a nadie.","b":"Caro o barato depende de lo que te aporte a ti; no existe una tabla universal de lo que vale cada cosa.","interesA":"Necesito poder nombrar lo que me parece desproporcionado sin que se lea como un ataque; si no puedo decirlo, acabo callándome todo.","interesB":"Necesito que lo que a mí me importa no quede descalificado con un número; cuando se decide por mí lo que vale, me siento poco tomado en serio.","ejemplo":"A: «Si en una tienda algo me parece caro, entonces digo qué haría con ese dinero». B: «Si oigo que algo mío es caro, entonces cuento para qué lo quiero».","insignia":"Tasadores de salón","intensidad":"profunda"},{"id":"T086","categoria":"Las decisiones de dinero","titulo":"Cada cuánto se habla de dinero","enunciado":"Sentarnos a mirar los números con una rutina fija, o hablar de dinero solo cuando hay algo concreto que decidir.","a":"Con rutina: mirarlo a menudo quita sustos y hace que la conversación no llegue siempre con un problema debajo.","b":"Solo cuando toca: convertirlo en una reunión fija hace que el dinero ocupe un sitio que no necesita ocupar.","interesA":"Necesito anticiparme para estar tranquilo; enterarme de las cosas cuando ya no hay margen me pone en alerta.","interesB":"Necesito que lo nuestro no gire alrededor del dinero; hablar de números sin motivo me deja con una preocupación que no tenía.","ejemplo":"A: «Si quiero mirar los números, entonces lo propongo en casa el día antes». B: «Si me proponen mirar los números en casa, entonces digo cuándo me viene bien».","insignia":"Consejo de administración doméstico","intensidad":"profunda"},{"id":"T087","categoria":"En la cocina y la mesa","titulo":"El teléfono encima de la mesa","enunciado":"Durante la cena, ¿el teléfono se queda encima de la mesa o se deja fuera de la mesa?","a":"Que esté encima de la mesa no molesta a nadie. Está ahí, se mira si vibra y ya está: quitarlo es una norma que no hace falta.","b":"Mejor que no esté en la mesa. Con la pantalla delante, cada vez que se enciende la conversación se corta, aunque nadie llegue a cogerlo.","interesA":"Necesito que en mi propia casa no se conviertan en norma cosas que hago sin pensar, porque si todo se regula dejo de estar cómodo en ella.","interesB":"Necesito que quede en el día un rato con atención completa, porque la cena es de los pocos momentos en que estamos los dos parados a la vez.","ejemplo":"A: «Si me siento a cenar, entonces dejo el teléfono boca abajo en la cocina». B: «Si cenamos y suena un teléfono, entonces sigo contando lo que estaba contando».","insignia":"Perito del Mantel","intensidad":"ligera"},{"id":"T088","categoria":"Por el móvil","titulo":"El vídeo que hay que ver ahora mismo","enunciado":"Cuando uno encuentra algo gracioso en el teléfono, ¿se enseña en el momento o se guarda para luego?","a":"Si hay algo que le va a encantar, se enseña en el momento. La gracia es compartirlo en caliente; guardarlo para después es casi como no compartirlo.","b":"Mejor cuando el otro no esté a otra cosa. Que te pongan una pantalla delante mientras estás concentrado corta, y luego cuesta volver.","interesA":"Necesito que lo que ofrezco se reciba como lo que es, un gesto y no una molestia, porque si se recibe mal acabo dejando de ofrecerlo.","interesB":"Necesito poder terminar lo que tengo entre manos sin que me corten, y que decir «ahora no» no se lea como un rechazo a la persona.","ejemplo":"A: «Si veo un vídeo y mi pareja está trabajando, entonces se lo mando sin llamarla». B: «Si me siento en el sofá después de cenar, entonces abro lo que me mandó».","insignia":"Corresponsal de Última Hora","intensidad":"ligera"},{"id":"T089","categoria":"Por el móvil","titulo":"Buscarlo en el teléfono para ver quién acierta","enunciado":"Cuando hay desacuerdo sobre un dato, ¿se busca en el teléfono en ese momento o se deja que la conversación siga?","a":"Si hay un dato en discusión, se mira y se acaba. Son diez segundos y ahorran media hora de «que sí, que no».","b":"Sacar el teléfono convierte una charla en un juicio. Mejor seguir hablando y, si hace falta, mirarlo después.","interesA":"Necesito cerrar lo que queda abierto, porque un dato sin comprobar se me queda dando vueltas y ya no atiendo a nada más de lo que se está diciendo.","interesB":"Necesito que lo que estamos contando no se pare para dirimir quién acierta, porque entonces la conversación deja de ir de lo que iba.","ejemplo":"A: «Si quiero comprobar un dato durante la cena, entonces lo apunto y lo miro después». B: «Si se mira un dato en la mesa, entonces leo el resultado en voz alta».","insignia":"Verificador de Sobremesa","intensidad":"ligera"},{"id":"T090","categoria":"En la alcoba","titulo":"Una manta para los dos o una para cada uno","enunciado":"Para dormir, ¿se comparte una sola manta o cada uno tiene la suya?","a":"Una para los dos. Dormir bajo la misma manta es parte de dormir juntos; con dos parece que hay una frontera en medio de la cama.","b":"Cada uno con la suya. Así nadie se queda destapado a las cuatro de la mañana y cada uno se tapa lo que necesita.","interesA":"Necesito conservar los gestos pequeños que hacen que la cama sea de los dos y no dos camas pegadas.","interesB":"Necesito dormir de un tirón, porque cada vez que me despierto de madrugada tardo muchísimo en volver a dormirme y al día siguiente lo noto entero.","ejemplo":"A: «Si me acuesto, entonces dejo estirada a mi lado la manta pequeña». B: «Si me destapo de madrugada, entonces uso mi manta pequeña».","insignia":"Perito en Metros de Manta","intensidad":"ligera"},{"id":"T091","categoria":"En la alcoba","titulo":"La ventana del dormitorio, abierta o cerrada","enunciado":"Por la noche, ¿la ventana del dormitorio se queda abierta o cerrada?","a":"Abierta. Con la ventana cerrada el aire se queda parado y uno se levanta atontado; hace falta notar que corre algo.","b":"Cerrada. Con la ventana abierta entra el ruido de la calle y el frío, y la noche se pasa a trozos.","interesA":"Necesito notar que la habitación no está cargada, porque si me agobio no me duermo por mucho que lo intente.","interesB":"Necesito que nada de fuera me despierte, porque cuando me despierto de madrugada ya no vuelvo a dormirme y el día siguiente lo pago entero.","ejemplo":"A: «Si apagamos la luz para dormir, entonces cierro yo la ventana del dormitorio». B: «Si termino de cenar, entonces abro la ventana del dormitorio de par en par».","insignia":"Inspector de Corrientes de Aire","intensidad":"ligera"},{"id":"T092","categoria":"En la alcoba","titulo":"La mascota duerme en la cama o fuera","enunciado":"¿El perro o el gato duerme en la cama o fuera de la cama?","a":"En la cama. Duerme ahí desde el primer día, es parte de la familia y no molesta.","b":"Fuera de la cama. Despierta cada vez que se mueve, y al final del día la cama debería ser solo de los dos.","interesA":"Necesito no tener que elegir entre mi pareja y un animal que también es de los dos, y que su sitio no se decida sin contar conmigo.","interesB":"Necesito una cama en la que quepa y descanse, y que quede al final del día un espacio que sea solo de los dos.","ejemplo":"A: «Si me acuesto y el perro está en la cama, entonces lo bajo yo». B: «Si el perro entra en el dormitorio por la mañana, entonces lo dejo subir».","insignia":"Perito en Inquilinos de Cuatro Patas","intensidad":"ligera","inicial":3},{"id":"T093","categoria":"En la alcoba","titulo":"El botón de posponer la alarma","enunciado":"Por la mañana, ¿la alarma se puede posponer varias veces o suena una sola vez?","a":"Ponerla antes y posponerla un par de veces es una forma legítima de despertarse. Levantarse de golpe deja el día torcido desde el primer minuto.","b":"Cada vez que suena despierta a los dos. Si la alarma suena cuatro veces, el que no la ha puesto ha madrugado cuatro veces sin ninguna necesidad.","interesA":"Necesito un rato de transición para arrancar, porque pasar de dormido a de pie de golpe me deja el día entero raro.","interesB":"Necesito que la hora a la que me despierto la marque mi alarma y no la de otra persona, porque esos minutos son justo los que me faltan.","ejemplo":"A: «Si me acuesto, entonces dejo la alarma en la silla, lejos de la cama». B: «Si suena una alarma que no es la mía, entonces me pongo el antifaz».","insignia":"Cátedra de las Alarmas Sucesivas","intensidad":"ligera","inicial":6},{"id":"T094","categoria":"Por el móvil","titulo":"Mensajes de trabajo a las once de la noche","enunciado":"Un mensaje de trabajo que llega a las once de la noche, ¿se contesta o se deja para el día siguiente?","a":"Se contesta. Son dos minutos y se cierra el tema; si se deja para mañana, la noche se pasa dándole vueltas y el descanso tampoco es descanso.","b":"No se contesta. Si contestas a las once, mañana te escriben a las once, y al final no queda ninguna hora del día que sea de los dos.","interesA":"Necesito llegar a la cama sin nada abierto en la cabeza, porque lo que dejo pendiente me quita más sueño que contestarlo.","interesB":"Necesito que haya una hora a partir de la cual estamos aquí y no en el trabajo, porque si no, no queda ningún rato del día que sea de los dos.","ejemplo":"A: «Si me escriben del trabajo después de cenar, entonces contesto de pie en la cocina». B: «Si mi pareja contesta trabajo de noche, entonces sigo con lo mío sin preguntar».","insignia":"Perito en Horas Intempestivas","intensidad":"media"},{"id":"T095","categoria":"Con gente delante","titulo":"Lo nuestro, ¿se cuenta en redes?","enunciado":"Los planes de los dos, ¿se cuentan en redes o se llevan en privado?","a":"Se cuentan. Contar lo que uno hace incluye a la persona con la que lo hace. Publicar un plan de los dos no es exponer nada: es estar contento.","b":"Se llevan en privado. No es esconder: es que en cuanto algo se publica deja de ser solo nuestro y pasa a ser algo que se comenta desde fuera.","interesA":"Necesito que lo que me hace feliz aparezca también en la parte de mi vida que se ve, porque si no está ahí parece que no existe.","interesB":"Necesito que lo que vivimos no dependa de cómo se ve desde fuera, porque en cuanto hay público empiezo a estar pendiente del público y ya no estoy en el plan.","ejemplo":"A: «Si voy a publicar un plan de los dos, entonces se lo enseño antes». B: «Si me enseñan algo para publicar, entonces contesto sí o no en ese momento».","insignia":"Cronista de la Vida Pública","intensidad":"media"},{"id":"T096","categoria":"En la alcoba","titulo":"El teléfono en el dormitorio","enunciado":"Por la noche, ¿el teléfono entra en el dormitorio o se queda fuera?","a":"Entra. Es el rato de mirar cosas tranquilo antes de dormir, no molesta a nadie y ayuda a desconectar del día.","b":"Se queda fuera, el de los dos. Cuando hay pantallas en la cama, cada uno se va a lo suyo y ese rato deja de existir.","interesA":"Necesito un rato al final del día en el que nadie me pida nada, porque es el único momento en que no estoy pendiente de nadie.","interesB":"Necesito que quede un momento en que nos contamos lo del día, porque acostarse es el único rato en que estamos los dos quietos y sin prisa.","ejemplo":"A: «Si apagamos la luz del dormitorio, entonces dejo el teléfono en la mesita». B: «Si me meto en la cama, entonces cuento yo algo del día antes de dormirme».","insignia":"Vigía de la Mesita","intensidad":"media","inicial":10},{"id":"T097","categoria":"En la alcoba","titulo":"Los primeros minutos del día","enunciado":"Al despertarse, ¿cada uno mira su teléfono o los primeros minutos son sin pantallas?","a":"Se mira. Es la manera de arrancar el día que tiene cada uno y no significa nada sobre la relación.","b":"Los primeros minutos sin pantallas. Abrir los ojos y encontrarse a alguien mirando una pantalla marca el resto del día.","interesA":"Necesito saber qué me espera antes de empezar, porque si no lo miro arranco con la sensación de ir por detrás desde el primer minuto.","interesB":"Necesito que el primer contacto del día sea con una persona y no con una pantalla, porque eso decide con qué ánimo empiezo yo.","ejemplo":"A: «Si abro los ojos por la mañana, entonces doy los buenos días antes de mirar». B: «Si mi pareja mira el teléfono al despertarse, entonces me levanto y preparo el desayuno».","insignia":"Cronista del Primer Minuto","intensidad":"media"},{"id":"T098","categoria":"En el sofá","titulo":"Vídeos con sonido en la misma habitación","enunciado":"En una habitación compartida, ¿se pueden ver vídeos con sonido o se usan auriculares?","a":"Con sonido. Ponerse auriculares para ver dos vídeos de treinta segundos en el sofá es incómodo y convierte cualquier tontería en un trámite.","b":"Con auriculares. El sonido de otra pantalla se mete en la cabeza aunque no la estés mirando, y entonces ya no se puede leer ni pensar.","interesA":"Necesito poder estar en casa sin preparativos para algo que dura un minuto, porque si cada cosa cuesta, acabo no haciéndola y la casa deja de ser cómoda.","interesB":"Necesito poder elegir a qué presto atención, porque el sonido no se puede dejar de oír y me quita el único sitio donde estoy tranquilo.","ejemplo":"A: «Si veo vídeos en el sofá con mi pareja delante, entonces me pongo los auriculares». B: «Si veo que mi pareja va a poner un vídeo, entonces le acerco los auriculares».","insignia":"Comisión de Ruidos Domésticos","intensidad":"media"},{"id":"T099","categoria":"En la alcoba","titulo":"Cuando el ruido no deja dormir","enunciado":"Cuando el ruido de uno no deja dormir al otro, ¿se le despierta para que cambie de postura o se busca otra salida?","a":"Se le toca el hombro y se gira. Es un segundo, los dos vuelven a dormirse enseguida y no hay más drama.","b":"Que te despierten varias veces por noche deja peor que el ruido. Antes de eso hay que probar tapones, ruido de fondo o lo que haga falta.","interesA":"Necesito poder dormir sin tener que irme de mi propia cama ni montar un operativo cada noche antes de acostarme.","interesB":"Necesito que el sueño que ya tengo no se rompa, porque cuando me despiertan del todo tardo horas en volver y el día siguiente lo pago entero.","ejemplo":"A: «Si me despierta el ruido de madrugada, entonces me pongo los tapones de la mesita». B: «Si me acuesto por la noche, entonces me pongo de lado desde el principio».","insignia":"Sociedad Acústica Nocturna","intensidad":"media"},{"id":"T100","categoria":"En la alcoba","titulo":"A qué hora se apaga la luz","enunciado":"Cuando uno ya tiene sueño y el otro sigue leyendo o viendo algo, ¿se apaga la luz o cada uno sigue a lo suyo?","a":"Se apaga. Con luz o con una pantalla encendida al lado no hay manera de dormirse, y el que madruga madruga igual.","b":"Cada uno sigue a lo suyo. Ese rato antes de dormir es lo único que uno hace para sí mismo en todo el día.","interesA":"Necesito dormirme justo cuando me entra el sueño, porque si se me pasa esa ventana ya no caigo hasta muy tarde.","interesB":"Necesito un rato al final del día que no le deba a nadie, porque la jornada entera va para fuera y no queda nada más.","ejemplo":"A: «Si me entra el sueño en la cama, entonces me pongo el antifaz». B: «Si mi pareja se duerme antes, entonces me llevo el libro a la otra habitación».","insignia":"Guardián del Interruptor","intensidad":"media"},{"id":"T101","categoria":"Por el móvil","titulo":"Grabar el plan o vivirlo","enunciado":"En un plan de los dos, ¿se hacen fotos y vídeos o se deja el teléfono guardado?","a":"Se hacen fotos. Dentro de cinco años, de este día solo van a quedar esas fotos, y entonces se van a querer tener.","b":"Se vive y ya está. Cuando uno está pendiente de grabar, el plan pasa por detrás de la pantalla y al final no ha estado ahí del todo.","interesA":"Necesito guardar lo que vivimos, porque lo que no queda registrado se me borra y luego siento que lo he perdido de verdad.","interesB":"Necesito estar donde estoy sin posar ni esperar, porque si no, después no me acuerdo del sitio: me acuerdo de las fotos.","ejemplo":"A: «Si nos sentamos a comer en un plan de los dos, entonces guardo el teléfono». B: «Si vamos a un sitio nuevo, entonces hago yo una foto de los dos».","insignia":"Cronista Oficial de la Galería","intensidad":"media"},{"id":"T102","categoria":"Por el móvil","titulo":"¿Se puede escuchar y mirar el teléfono a la vez?","enunciado":"Mientras uno cuenta algo, ¿se puede mirar el teléfono a la vez o eso ya es dejar de escuchar?","a":"Se puede. No mirar a los ojos no significa no escuchar: quien lo hace puede repetir después lo que se ha dicho, palabra por palabra.","b":"No se puede. Aunque se esté escuchando, el que habla no lo sabe, y hablarle a alguien que mira una pantalla es hablar solo.","interesA":"Necesito que no se lea cada gesto mío como una señal de lo que siento, porque si todo significa algo ya no puedo estar tranquilo en mi casa.","interesB":"Necesito alguna señal de que lo que cuento le llega a alguien, porque si no la hay dejo de contarlo, y eso sí que separa de verdad.","ejemplo":"A: «Si mi pareja empieza a contarme algo, entonces dejo el teléfono boca abajo». B: «Si quiero contar algo largo, entonces aviso antes de empezar y espero un momento».","insignia":"Cátedra del «Sigue, que te escucho»","intensidad":"profunda"},{"id":"T103","categoria":"En la alcoba","titulo":"Dormir algunas noches en camas separadas","enunciado":"Cuando una noche no se duerme bien, ¿cada uno se va a dormir donde descanse o se sigue durmiendo en la misma cama?","a":"Cada uno donde duerma. Dormir mal los dos no acerca a nadie: solo deja dos personas cansadas al día siguiente.","b":"En la misma cama. Lo que empieza siendo una noche suelta acaba siendo lo normal, y dormir juntos es de las pocas cosas que se hacen todas las noches sin falta.","interesA":"Necesito llegar al día siguiente habiendo dormido, porque cuando no duermo todo lo demás me sale peor, incluido cómo estoy en casa.","interesB":"Necesito mantener las costumbres que nos hacen pareja, porque se pierden de una en una y no se nota hasta que un día ya no queda ninguna.","ejemplo":"A: «Si me voy a la otra habitación de madrugada, entonces vuelvo antes de levantarme». B: «Si hemos dormido separados, entonces llevo yo el desayuno a la cama».","insignia":"Perito en Geografía Nocturna","intensidad":"profunda"},{"id":"T104","categoria":"En la alcoba","titulo":"Acostarse a la vez o cada uno a su hora","enunciado":"¿Conviene acostarse los dos a la misma hora o cada uno cuando le entra el sueño?","a":"Cada uno cuando le entre el sueño. Meterse en la cama a una hora que no es la tuya son dos horas mirando al techo y molestando al de al lado.","b":"A la misma hora. Si uno se acuesta a las once y el otro a la una, hay días enteros en que no coinciden ni despiertos ni dormidos.","interesA":"Necesito respetar el horario con el que funciona mi cuerpo, porque forzarlo me pasa factura al día siguiente y además no engaño a nadie fingiendo sueño.","interesB":"Necesito que haya un momento fijo del día en el que sé que vamos a coincidir, porque si depende de que surja, no surge.","ejemplo":"A: «Si mi pareja se va a la cama entre semana, entonces la acompaño al dormitorio». B: «Si son las once y mi pareja sigue despierta, entonces me acuesto yo solo».","insignia":"Cátedra del Búho y la Alondra","intensidad":"profunda"},{"id":"T105","categoria":"En el sofá","titulo":"Dos teléfonos en el mismo sofá","enunciado":"Estar los dos en el sofá, cada uno con su teléfono, ¿cuenta como estar juntos?","a":"Cuenta. Estar cómodos en silencio, cada uno con lo suyo, también es estar juntos: no hay que estar hablando todo el rato para hacerse compañía.","b":"No cuenta. Terminar el día los dos mirando pantallas distintas es haber estado en la misma habitación, no juntos.","interesA":"Necesito poder estar en casa sin tener que rendir socialmente, porque ese silencio tranquilo es justo lo bueno de vivir con alguien.","interesB":"Necesito que quede algún rato del día en el que nos hagamos caso, porque si no, la convivencia se va pareciendo cada vez más a compartir casa con cualquiera.","ejemplo":"A: «Si nos sentamos en el sofá después de cenar, entonces cuento yo cómo me fue». B: «Si el sábado por la tarde estamos en casa, entonces propongo yo un plan fuera».","insignia":"Ilustre Colegio del Sofá Paralelo","intensidad":"profunda"}],"eje":"situacional"}
+{
+ "version": "v1-preguntas",
+ "fecha": "2026-09-11",
+ "total": 105,
+ "categorias": [
+  {
+   "nombre": "En mitad de la discusión",
+   "corto": "En mitad de la discusión",
+   "emoji": "💬",
+   "descripcion": "El tono, las interrupciones, las disculpas: cuando ya están discutiendo",
+   "total": 13
+  },
+  {
+   "nombre": "En la cocina y la mesa",
+   "corto": "En la cocina y la mesa",
+   "emoji": "🍽️",
+   "descripcion": "Los platos, la nevera, las sobras, la cena",
+   "total": 7
+  },
+  {
+   "nombre": "En la alcoba",
+   "corto": "En la alcoba",
+   "emoji": "🛏️",
+   "descripcion": "La cama, el sueño, la alarma, la luz de la noche",
+   "total": 13
+  },
+  {
+   "nombre": "En el sofá",
+   "corto": "En el sofá",
+   "emoji": "🛋️",
+   "descripcion": "La tele, las series, el mando, los dos teléfonos",
+   "total": 7
+  },
+  {
+   "nombre": "Las tareas y los arreglos",
+   "corto": "Las tareas y los arreglos",
+   "emoji": "🧺",
+   "descripcion": "Quién hace qué, cuándo, y la bombilla que lleva meses",
+   "total": 10
+  },
+  {
+   "nombre": "Manías y orden",
+   "corto": "Manías y orden",
+   "emoji": "🧽",
+   "descripcion": "Dónde va cada cosa y cómo se deja: el sitio de las cosas",
+   "total": 10
+  },
+  {
+   "nombre": "Al salir y al volver",
+   "corto": "Al salir y al volver",
+   "emoji": "🚪",
+   "descripcion": "La puerta, la puntualidad, los zapatos, llegar a casa",
+   "total": 5
+  },
+  {
+   "nombre": "Cuando salen las cuentas",
+   "corto": "Cuando salen las cuentas",
+   "emoji": "🧾",
+   "descripcion": "La cuenta, la propina, el súper, lo que cuesta cada cosa",
+   "total": 8
+  },
+  {
+   "nombre": "Las decisiones de dinero",
+   "corto": "Las decisiones de dinero",
+   "emoji": "💸",
+   "descripcion": "Ahorrar, regalos, suscripciones, en qué se gasta",
+   "total": 7
+  },
+  {
+   "nombre": "Con gente delante",
+   "corto": "Con gente delante",
+   "emoji": "🥂",
+   "descripcion": "Amigos, familia, visitas y lo que se cuenta por ahí",
+   "total": 7
+  },
+  {
+   "nombre": "En el calendario",
+   "corto": "En el calendario",
+   "emoji": "📅",
+   "descripcion": "Los planes, las vacaciones, el tiempo que es de los dos",
+   "total": 10
+  },
+  {
+   "nombre": "Por el móvil",
+   "corto": "Por el móvil",
+   "emoji": "📱",
+   "descripcion": "Mensajes, audios y la discusión que sigue por ahí",
+   "total": 8
+  }
+ ],
+ "temas": [
+  {
+   "id": "T001",
+   "categoria": "Por el móvil",
+   "titulo": "El audio de tres minutos",
+   "enunciado": "Cuando una discusión sigue por el móvil, ¿vale seguirla con un audio largo o hay que llamar?",
+   "ejemplo": "A: «Si grabo un audio largo desde la calle, entonces escribo antes el titular». B: «Si abro un audio largo en el trabajo, entonces contesto con mi hora libre».",
+   "insignia": "Micrófono Abierto",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito ordenar una idea completa antes de que nadie la interrumpa; si me cortan a la mitad acabo diciéndolo peor de lo que lo pienso.",
+    "Necesito que esto sea una conversación y no una sentencia; escuchar tres minutos sin poder decir nada me deja en el sitio del acusado."
+   ]
+  },
+  {
+   "id": "T002",
+   "categoria": "Por el móvil",
+   "titulo": "El «vale.» con punto",
+   "enunciado": "¿El tono existe también en un mensaje escrito, o lo pone quien lo lee?",
+   "ejemplo": "A: «Si leo un mensaje seco en el chat, entonces pregunto antes de responder». B: «Si contesto con una palabra desde el trabajo, entonces añado cuándo puedo hablar».",
+   "insignia": "Perito Forense del Punto Final",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder fiarme de lo que leo; si cada mensaje admite dos lecturas, me paso el día reconstruyendo qué quiso decir y no me entero de nada.",
+    "Necesito escribir rápido sin que cada palabra se mida con lupa; si todo mensaje corto es sospechoso, acabo no escribiendo por miedo a sonar mal."
+   ]
+  },
+  {
+   "id": "T003",
+   "categoria": "En mitad de la discusión",
+   "titulo": "El chiste en mitad de la discusión",
+   "enunciado": "Hacer una broma en mitad de una discusión, ¿baja la tensión o esquiva el tema?",
+   "ejemplo": "A: «Si suelto una broma y nadie se ríe, entonces vuelvo al tema sin insistir». B: «Si una broma me sienta mal, entonces lo digo en el momento».",
+   "insignia": "Humorista de Guardia",
+   "intensidad": "ligera",
+   "inicial": 7,
+   "intereses": [
+    "Necesito una salida de la tensión antes de que se nos vaya de las manos; el humor es mi forma de decir que seguimos siendo un equipo.",
+    "Necesito que lo que estoy diciendo se trate como serio al menos una vez, antes de que se convierta en anécdota."
+   ]
+  },
+  {
+   "id": "T004",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Sentados o de pasada",
+   "enunciado": "Un tema importante, ¿se puede hablar mientras se hace otra cosa o hay que parar y sentarse?",
+   "ejemplo": "A: «Si sacamos el tema mientras cocino, entonces apago el fuego y me giro». B: «Si pido sentarnos en el salón, entonces propongo yo la hora».",
+   "insignia": "Ceremonia de la Silla",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito bajar la solemnidad; cuando alguien para todo y me mira fijo, me pongo a la defensiva antes de que empiece la frase.",
+    "Necesito señales de que se me está escuchando; hablando de espaldas nunca sé si me han oído o solo han asentido."
+   ]
+  },
+  {
+   "id": "T005",
+   "categoria": "En mitad de la discusión",
+   "titulo": "«No te enfades, pero...»",
+   "enunciado": "Avisar antes de decir algo incómodo, ¿prepara al otro o lo pone en guardia?",
+   "ejemplo": "A: «Si voy a decir algo incómodo en la cena, entonces empiezo por el hecho». B: «Si me avisan de algo incómodo, entonces escucho la frase entera antes de contestar».",
+   "insignia": "Maestro del Preámbulo",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no sentirme brusco; si lo digo sin preparar parece que ataco, y no es lo que quiero transmitir.",
+    "Necesito saber a qué atenerme cuanto antes; los segundos de suspense me ponen en alerta y luego escucho peor de lo que escucharía."
+   ]
+  },
+  {
+   "id": "T006",
+   "categoria": "Por el móvil",
+   "titulo": "«Luego hablamos»",
+   "enunciado": "Cuando llega un mensaje sobre un tema pendiente, ¿hay que contestar en el momento o vale dejarlo para después?",
+   "ejemplo": "A: «Si leo un mensaje del tema en el trabajo, entonces escribo «esta noche»». B: «Si no me contestan antes de comer, entonces espero a la noche».",
+   "insignia": "Guardián del Doble Tic",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito elegir cuándo entro en una conversación difícil; si respondo entre dos cosas, respondo peor y luego lo pago dos veces.",
+    "Necesito saber que hay una respuesta en camino; el silencio largo lo leo como que esto no es importante para el otro."
+   ]
+  },
+  {
+   "id": "T007",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Interrumpir para matizar",
+   "enunciado": "Cuando el otro cuenta su versión y dice algo que no es exacto, ¿se corrige en el momento o se espera al final?",
+   "ejemplo": "A: «Si oigo un dato que no cuadra, entonces lo apunto y espero al final». B: «Si termino mi versión en la mesa, entonces pregunto qué he contado mal».",
+   "insignia": "Cronometrador de Turnos",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que lo que se dé por hecho sea cierto; si dejo pasar el error, después parece que lo acepté.",
+    "Necesito terminar una idea entera al menos una vez; si no, nunca se oye lo que quería decir, solo las correcciones."
+   ]
+  },
+  {
+   "id": "T008",
+   "categoria": "En mitad de la discusión",
+   "titulo": "De una habitación a otra",
+   "enunciado": "Hablar a voces de una habitación a otra, ¿es lo normal en una casa o hay que ir donde está el otro?",
+   "ejemplo": "A: «Si tengo que repetir una frase a voces, entonces voy hasta la puerta». B: «Si me hablan desde otra habitación, entonces digo que no oigo bien».",
+   "insignia": "Megafonía del Pasillo",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que la casa se pueda usar sin protocolo; si contar algo pequeño exige desplazarse, dejo de contar cosas pequeñas.",
+    "Necesito enterarme a la primera; si empezamos a subir el volumen por una tontería, cinco minutos después parece que discutimos aunque no sea así."
+   ]
+  },
+  {
+   "id": "T009",
+   "categoria": "Al salir y al volver",
+   "titulo": "Nada más entrar por la puerta",
+   "enunciado": "¿Se puede sacar un tema pendiente en cuanto el otro llega a casa, o hay que dejar un margen?",
+   "ejemplo": "A: «Si tengo un tema pendiente, entonces lo saco después de cenar». B: «Si entro por la puerta y hay tema, entonces digo a qué hora lo hablamos».",
+   "insignia": "Comité de Bienvenida",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito soltar lo que llevo aguantando; si lo aplazo se me acumula y luego sale peor de lo que era.",
+    "Necesito un rato para aterrizar y llegar entero a la conversación; si entro directo, contesto en automático y a la defensiva."
+   ]
+  },
+  {
+   "id": "T010",
+   "categoria": "En la alcoba",
+   "titulo": "Antes de apagar la luz",
+   "enunciado": "Si la discusión llega a la hora de dormir, ¿se sigue hasta el final o se deja para mañana?",
+   "ejemplo": "A: «Si dejamos el tema para mañana, entonces apago la luz sin añadir nada». B: «Si aplazo el tema en la cama, entonces propongo yo la hora de mañana».",
+   "insignia": "Turno de Noche",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito acabar el día sin un tema suelto; si me acuesto con esto lo repaso en bucle y no descanso.",
+    "Necesito llegar a la conversación con la cabeza despejada; cansado digo cosas que no siento y después hay que arreglar también eso."
+   ]
+  },
+  {
+   "id": "T011",
+   "categoria": "En mitad de la discusión",
+   "titulo": "«Esto es una tontería»",
+   "enunciado": "Cuando a uno el asunto le parece menor y al otro no, ¿quién decide si da para conversación?",
+   "ejemplo": "A: «Si algo me parece una tontería, entonces lo escucho entero antes de opinar». B: «Si saco un tema pequeño, entonces digo en la misma frase por qué me importa».",
+   "insignia": "Departamento de Asuntos Menores",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que no todo se convierta en conversación larga; si cada detalle se debate, no queda energía para lo que sí importa.",
+    "Necesito que lo que me molesta se trate como real aunque sea pequeño; si se descarta por tonto, la próxima vez me lo callo y eso sí es un problema."
+   ]
+  },
+  {
+   "id": "T012",
+   "categoria": "Con gente delante",
+   "titulo": "Con gente delante",
+   "enunciado": "Si el tema sale estando con amigos o familia, ¿se habla ahí o se guarda para cuando estemos solos?",
+   "ejemplo": "A: «Si el tema sale con gente delante, entonces lo saco luego en el coche». B: «Si pido dejarlo para luego, entonces lo saco yo esa misma noche».",
+   "insignia": "Testigo Presencial",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no fingir; aguantar con la sonrisa puesta toda la noche me deja peor que hablarlo, y además se me nota en la cara.",
+    "Necesito que nadie más tenga una opinión sobre lo nuestro; en cuanto hay público, los dos discutimos para el público y no entre nosotros."
+   ]
+  },
+  {
+   "id": "T013",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Lo del año pasado",
+   "enunciado": "Cuando se discute algo de hoy, ¿vale traer lo que pasó hace meses o hay que quedarse en lo de ahora?",
+   "ejemplo": "A: «Si traigo algo antiguo, entonces digo primero qué pido para hoy». B: «Si aparece algo antiguo, entonces pregunto qué se repite en concreto».",
+   "insignia": "Archivero Emérito",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que se entienda por qué esto me afecta tanto; contado suelto, cualquiera diría que estoy exagerando por una tontería.",
+    "Necesito poder arreglar algo concreto y que se note; si se juzga todo junto, nada acaba nunca y no hay forma visible de mejorar."
+   ]
+  },
+  {
+   "id": "T014",
+   "categoria": "En mitad de la discusión",
+   "titulo": "«Siempre» y «nunca»",
+   "enunciado": "Decir «siempre haces esto» o «nunca me escuchas», ¿expresa un hartazgo acumulado o descarrila la conversación?",
+   "ejemplo": "A: «Si me sale un «siempre», entonces lo cambio por el último ejemplo concreto». B: «Si oigo un «siempre», entonces pregunto por el ejemplo antes de negarlo».",
+   "insignia": "Oficina de Estadística del «Siempre»",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que no se me conteste con la excepción; si nos ponemos a buscar el día que no pasó, no hablamos de todos los demás días.",
+    "Necesito discutir sobre algo concreto que pueda reconocer o desmentir; contra una afirmación total no hay ninguna respuesta posible que no suene a excusa."
+   ]
+  },
+  {
+   "id": "T015",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Decirlo o dejarlo caer",
+   "enunciado": "Cuando quieres algo del otro, ¿hay que pedirlo con todas las letras o vale dejarlo caer?",
+   "ejemplo": "A: «Si quiero algo del fin de semana, entonces lo pido con todas las letras». B: «Si noto una indirecta en casa, entonces pregunto qué me está pidiendo».",
+   "insignia": "Cátedra de la Indirecta",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el otro conserve la opción de negarse; si pido de frente, cualquier «no» se convierte automáticamente en un conflicto.",
+    "Necesito saber qué se espera de mí para poder hacerlo; adivinando fallo, y fallar sin haberme enterado de nada es lo que me desgasta."
+   ]
+  },
+  {
+   "id": "T016",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Qué cuenta como disculpa",
+   "enunciado": "¿Un «perdón» a secas basta, o una disculpa tiene que decir por qué se pide?",
+   "ejemplo": "A: «Si pido perdón, entonces digo en la misma frase por qué lo pido». B: «Si me piden perdón, entonces lo acepto antes de pedir ningún detalle».",
+   "insignia": "Notario del Perdón",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito que se acepte el gesto sin examen; si cada disculpa se corrige, dejo de pedir perdón para no volver a equivocarme al pedirlo.",
+    "Necesito saber que hemos entendido lo mismo; sin eso vuelve a pasar igual y la disculpa no habrá significado nada para ninguno de los dos."
+   ]
+  },
+  {
+   "id": "T017",
+   "categoria": "En mitad de la discusión",
+   "titulo": "La pausa con hora",
+   "enunciado": "Cuando uno pide parar la conversación, ¿hace falta fijar cuándo se retoma o la pausa es solo pausa?",
+   "ejemplo": "A: «Si pido parar, entonces digo esa misma noche cuándo lo retomamos». B: «Si me piden parar en casa, entonces no añado ninguna frase más».",
+   "insignia": "Semáforo en Ámbar",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito recuperar el control de lo que digo; si sigo pasado cierto punto hablo desde el enfado y después hay que arreglar también eso.",
+    "Necesito la garantía de que la conversación vuelve; sin ninguna referencia, el «luego» se me convierte en «nunca» y no puedo soltarlo."
+   ]
+  },
+  {
+   "id": "T018",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Hablarlo otra vez",
+   "enunciado": "Un tema que ya se habló y no quedó bien, ¿se puede volver a abrir o se respeta lo que se habló?",
+   "ejemplo": "A: «Si quiero reabrir un tema, entonces aviso el día antes por escrito». B: «Si me piden reabrir un tema, entonces doy una hora esta semana».",
+   "insignia": "Segunda Vista",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito que valga más quedar de acuerdo de verdad que quedar de acuerdo rápido; si no, acabo diciendo que sí solo para salir del paso.",
+    "Necesito algo estable de lo que fiarme; si todo puede volver, dejo de tomarme en serio lo que hablamos y me guardo la mitad."
+   ]
+  },
+  {
+   "id": "T019",
+   "categoria": "En mitad de la discusión",
+   "titulo": "Lo que dijiste y cómo lo dijiste",
+   "enunciado": "Cuando algo se dice en mal tono, ¿se responde primero al tono o primero a lo que se dijo?",
+   "ejemplo": "A: «Si el tono me molesta, entonces contesto primero al fondo». B: «Si me señalan el tono, entonces repito la misma frase mejor dicha».",
+   "insignia": "Doble Lectura",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito sentir que se me habla con respeto para poder escuchar; en cuanto el tono me duele, lo demás ya no me entra aunque quiera.",
+    "Necesito que lo que planteo no quede anulado por la forma; si la forma descalifica el fondo, hay temas que no podré sacar nunca."
+   ]
+  },
+  {
+   "id": "T020",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "Los platos, ¿ya o luego?",
+   "enunciado": "Al terminar de comer, ¿los platos se lavan en ese momento o pueden esperar a más tarde?",
+   "ejemplo": "A: «Si me levanto de la mesa después de comer, entonces llevo mi plato al fregadero». B: «Si veo un plato en la cocina por la mañana, entonces lo lavo yo».",
+   "insignia": "Orden Suprema de la Esponja",
+   "intensidad": "ligera",
+   "inicial": 2,
+   "intereses": [
+    "Necesito no tener cosas a medias a la vista, porque si no me siguen ocupando la cabeza.",
+    "Necesito un rato en el que no haya nada obligatorio encadenado a lo anterior."
+   ]
+  },
+  {
+   "id": "T021",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "La basura, ¿llena o a su hora?",
+   "enunciado": "¿La basura se saca cuando la bolsa ya está llena o cuando toca según el horario de la casa?",
+   "ejemplo": "A: «Si al tirar algo en la cocina la bolsa no cierra, entonces la ato». B: «Si salgo de casa por la mañana y hay bolsa atada, entonces la bajo».",
+   "insignia": "Gremio de la Bolsa y el Nudo",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que no se acumulen cosas encima, porque lo acumulado me pesa más de lo que parece.",
+    "Necesito que lo de casa tenga un momento previsible y no me interrumpa a cualquier hora."
+   ]
+  },
+  {
+   "id": "T022",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "¿Separar la ropa o todo junto?",
+   "enunciado": "¿La ropa se separa por colores y programas antes de lavar o puede ir casi todo en el mismo lavado?",
+   "ejemplo": "A: «Si cargo la lavadora entre semana, entonces aparto en el cesto lo que destiñe». B: «Si veo una prenda nueva en el cesto, entonces la aparto para lavarla sola».",
+   "insignia": "Cátedra de Colores y Grados",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito cuidar cosas que me importan y no perderlas por ir deprisa.",
+    "Necesito que lo de casa funcione con pasos simples, porque si se complica acabo no haciéndolo."
+   ]
+  },
+  {
+   "id": "T023",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "Las sobras, ¿se guardan o se tiran?",
+   "enunciado": "Lo que sobra de una comida, ¿se guarda por si acaso o se tira lo que se sabe que nadie va a comerse?",
+   "ejemplo": "A: «Si guardo comida en la nevera, entonces le escribo la fecha en la tapa». B: «Si el viernes abro la nevera por la noche, entonces tiro yo lo caducado».",
+   "insignia": "Instituto Superior del Táper",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito sentir que no se pierde lo que cuesta conseguir.",
+    "Necesito abrir la nevera y entender qué hay sin tener que investigar."
+   ]
+  },
+  {
+   "id": "T024",
+   "categoria": "Manías y orden",
+   "titulo": "El baño después de usarlo",
+   "enunciado": "Después de usar el baño, ¿se deja listo para el siguiente o se repasa cuando toque limpiarlo?",
+   "ejemplo": "A: «Si salgo de la ducha, entonces recojo mi pelo del desagüe antes de vestirme». B: «Si me lavo los dientes por la noche, entonces enjuago el lavabo después».",
+   "insignia": "Hermandad del Lavabo",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no encontrarme por sorpresa con lo que dejó la vez anterior.",
+    "Necesito que las tareas ocupen un rato acotado y no se cuelen en todos los momentos del día."
+   ]
+  },
+  {
+   "id": "T025",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "Repaso diario o limpieza a fondo",
+   "enunciado": "¿Funciona mejor un repaso corto cada día o dejar la limpieza a fondo para un día fijo de la semana?",
+   "ejemplo": "A: «Si termino de cenar entre semana, entonces paso un paño por la encimera». B: «Si el sábado a las once estoy en casa, entonces limpio yo el baño».",
+   "insignia": "Doble Escuela del Trapo",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que la casa esté siempre en un estado aceptable, sin sobresaltos ni acumulaciones.",
+    "Necesito tener días libres de verdad, sin tareas pequeñas sembradas por todos los días."
+   ]
+  },
+  {
+   "id": "T026",
+   "categoria": "Manías y orden",
+   "titulo": "Mis cosas en la mesa común",
+   "enunciado": "Las cosas de cada uno que se quedan en las zonas comunes, ¿se retiran al final del día o pueden quedarse donde están?",
+   "ejemplo": "A: «Si apago la luz del salón por la noche, entonces retiro mis cosas antes». B: «Si el domingo por la noche ceno en casa, entonces guardo mis cosas del salón».",
+   "insignia": "Aduana de la Encimera",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito espacios comunes despejados para sentir que la casa también es mía.",
+    "Necesito tener a mano lo que uso y no vivir como de visita en mi propia casa."
+   ]
+  },
+  {
+   "id": "T027",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "La bombilla que lleva meses",
+   "enunciado": "Los arreglos pequeños pendientes, ¿se hacen en el primer rato libre o cuando de verdad molesten?",
+   "ejemplo": "A: «Si el sábado desayuno en casa, entonces cambio la bombilla del pasillo después». B: «Si paso por la ferretería del barrio, entonces compro la pieza que falta».",
+   "insignia": "Gremio del Grifo que Gotea",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito sentir que la casa está terminada y que vivimos en ella, no de paso.",
+    "Necesito proteger el poco tiempo de descanso que me queda."
+   ]
+  },
+  {
+   "id": "T028",
+   "categoria": "Al salir y al volver",
+   "titulo": "El paseo de la noche",
+   "enunciado": "Los cuidados diarios de la mascota, ¿se organizan con turnos fijos o los hace quien esté más libre ese día?",
+   "ejemplo": "A: «Si a las once sigo en el sofá, entonces saco yo al perro». B: «Si por la mañana salgo de casa sabiendo que llegaré tarde, entonces aviso».",
+   "insignia": "Colegio de Paseos Nocturnos",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito previsibilidad para poder organizar mi día sin sorpresas de última hora.",
+    "Necesito margen para adaptarme los días en que todo se me complica."
+   ]
+  },
+  {
+   "id": "T029",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "¿La máquina o a mano?",
+   "enunciado": "Con los aparatos que ahorran trabajo, ¿se usan siempre que se pueda o hay cosas que salen más rápido a mano?",
+   "ejemplo": "A: «Si salgo de casa entre semana por la mañana, entonces dejo el robot puesto». B: «Si oigo el robot en el salón, entonces recojo del suelo lo que pueda atascarlo».",
+   "insignia": "Junta de Electrodomésticos Opinables",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito quitarme de encima lo repetitivo para que nos quede tiempo para lo demás.",
+    "Necesito empezar y terminar sin preparativos, porque si hay preparativos lo voy dejando."
+   ]
+  },
+  {
+   "id": "T030",
+   "categoria": "Con gente delante",
+   "titulo": "Cuando viene gente a casa",
+   "enunciado": "Antes de que venga alguien a casa, ¿se hace una limpieza extra o se enseña la casa como está normalmente?",
+   "ejemplo": "A: «Si viene alguien a cenar, entonces dejo listo el baño antes de las siete». B: «Si quedamos con alguien sobre la marcha, entonces recojo yo el salón».",
+   "insignia": "Protocolo de Visita Inminente",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito sentir que la casa habla bien de los dos y no pasar un mal rato mientras hay gente.",
+    "Necesito que traer gente a casa sea fácil y no una fuente de tensión la tarde anterior."
+   ]
+  },
+  {
+   "id": "T031",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "¿Limpiar juntos o por libre?",
+   "enunciado": "Las tareas del fin de semana, ¿se hacen a la vez los dos o cada uno las suyas cuando le venga bien?",
+   "ejemplo": "A: «Si el sábado empiezo a limpiar la casa, entonces lo digo en voz alta». B: «Si el sábado por la mañana suena música en casa, entonces me sumo a limpiar».",
+   "insignia": "Liga del Sábado por la Mañana",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que esto lo llevemos entre los dos, no solo que acabe hecho.",
+    "Necesito manejar mis tiempos y no depender de la agenda del otro para algo pequeño."
+   ]
+  },
+  {
+   "id": "T032",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "El último rollo de papel",
+   "enunciado": "Cuando se acaba algo de uso común, ¿lo repone en el momento quien lo termina o se anota para resolverlo todo junto?",
+   "ejemplo": "A: «Si gasto el último rollo en el baño, entonces pongo otro antes de salir». B: «Si abro el armario de la cocina y falta algo, entonces lo anoto ahí».",
+   "insignia": "Custodia del Último Rollo",
+   "intensidad": "media",
+   "inicial": 11,
+   "intereses": [
+    "Necesito no llevarme sorpresas y poder fiarme de que las cosas están donde deben.",
+    "Necesito que la casa funcione con un sistema y no a base de urgencias sueltas."
+   ]
+  },
+  {
+   "id": "T033",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "¿Hace falta poner hora?",
+   "enunciado": "Cuando una tarea de casa se deja para más tarde, ¿conviene decir a qué hora se hará o basta con que quede dicho que se hará?",
+   "ejemplo": "A: «Si pido algo de casa por la mañana, entonces no lo repito ese día». B: «Si aplazo algo de casa en el momento, entonces digo yo a qué hora».",
+   "insignia": "Sociedad del «Ahora No»",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito poder soltar el tema y dejar de estar encima de nada.",
+    "Necesito llevar mi propio ritmo sin sentir que hay alguien supervisando."
+   ]
+  },
+  {
+   "id": "T034",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "Cada uno viene de una casa",
+   "enunciado": "Cada uno trae de su casa una forma de hacer las cosas. ¿Conviene adoptar una sola forma para esta casa o pueden convivir las dos?",
+   "ejemplo": "A: «Si el domingo cocino en casa, entonces sigo la forma que acordamos». B: «Si algo en casa se hace distinto a lo mío, entonces pregunto antes de cambiarlo».",
+   "insignia": "Museo de las Dos Casas",
+   "intensidad": "profunda",
+   "inicial": 12,
+   "intereses": [
+    "Necesito poder dar algo por supuesto en mi propia casa sin preguntarlo cada vez.",
+    "Necesito seguir reconociéndome en cómo hago las cosas, no sentirme corregido en todo."
+   ]
+  },
+  {
+   "id": "T035",
+   "categoria": "Al salir y al volver",
+   "titulo": "Los diez minutos de cortesía",
+   "enunciado": "Cuando hay una cita a una hora concreta, ¿diez minutos de más son un retraso o son el margen normal de cualquier día?",
+   "ejemplo": "A — Si llego el primero al sitio, entonces yo me siento y pido algo. B — Si salgo de casa, entonces yo te mando mi hora de llegada.",
+   "insignia": "Los Diez Minutos Eternos",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder fiarme de lo que acordamos para organizar mi día sin dejar huecos por si acaso.",
+    "Necesito que un día normal no se lea como falta de respeto, porque casi nunca depende solo de mí."
+   ]
+  },
+  {
+   "id": "T036",
+   "categoria": "En el sofá",
+   "titulo": "El capítulo adelantado",
+   "enunciado": "Una serie empezada en pareja, ¿se ve solo cuando están los dos o cada uno puede seguir por su cuenta?",
+   "ejemplo": "A — Si empezamos una serie en el sofá, entonces yo digo que es de los dos. B — Si veo un capítulo sin ti, entonces yo te lo cuento en la cena.",
+   "insignia": "Cofradía del Capítulo Suelto",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que existan cosas que sean solo nuestras y que no dependan de a qué hora llego a casa.",
+    "Necesito disfrutar de mi rato libre sin tener que pedir turno para todo lo que me gusta."
+   ]
+  },
+  {
+   "id": "T037",
+   "categoria": "Al salir y al volver",
+   "titulo": "El margen del aeropuerto",
+   "enunciado": "Para tomar un avión, un tren o un autobús, ¿se llega con mucho margen o se llega con lo justo?",
+   "ejemplo": "A — Si llegamos con adelanto a la terminal, entonces yo propongo desayunar allí mismo. B — Si es la noche antes del viaje, entonces yo digo a qué hora salgo.",
+   "insignia": "Orden de la Sala de Embarque",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito quitarme de encima el miedo a que algo salga mal para poder disfrutar del viaje desde el primer minuto.",
+    "Necesito no pasarme el día esperando, porque el tiempo de mis vacaciones también cuenta antes de llegar."
+   ]
+  },
+  {
+   "id": "T038",
+   "categoria": "Con gente delante",
+   "titulo": "La despedida de veinte minutos",
+   "enunciado": "Cuando ya se ha dicho «nos vamos», ¿la despedida se hace corta o despedirse bien lleva su tiempo?",
+   "ejemplo": "A — Si digo en el salón que nos vamos, entonces yo me siento a esperar. B — Si ya me despedí en la puerta, entonces yo salgo sin volver a entrar.",
+   "insignia": "Doctores en Despedidas",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito saber que cuando acordamos algo se cumple, para no quedarme esperando sin saber cuánto falta.",
+    "Necesito no sentir que me arrancan de una conversación y poder quedar bien con la gente que nos ha recibido."
+   ]
+  },
+  {
+   "id": "T039",
+   "categoria": "En el sofá",
+   "titulo": "Quién elige la película",
+   "enunciado": "Elegir qué se ve juntos, ¿se decide entre los dos aunque se tarde, o elige uno y se empieza ya?",
+   "ejemplo": "A — Si nos sentamos en el sofá, entonces yo llevo una opción ya pensada. B — Si no me convence lo que sale, entonces yo lo digo antes del play.",
+   "insignia": "Custodios del Catálogo",
+   "intensidad": "ligera",
+   "inicial": 4,
+   "intereses": [
+    "Necesito que lo que hacemos juntos me interese a mí también, y no limitarme a estar presente.",
+    "Necesito que el rato de descanso sea descanso y no una decisión más que tomar al final del día."
+   ]
+  },
+  {
+   "id": "T040",
+   "categoria": "En el sofá",
+   "titulo": "El reloj del sofá",
+   "enunciado": "Cuando acaba un capítulo o una partida, ¿se para a la hora que se había dicho o se sigue mientras los dos tengan ganas?",
+   "ejemplo": "A — Si empezamos algo en el sofá, entonces yo digo a qué hora quiero parar. B — Si quiero seguir pasada la hora, entonces yo lo pregunto antes de continuar.",
+   "insignia": "El Reloj del Sofá",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que lo que decidimos juntos siga en pie cuando llega el momento de cumplirlo.",
+    "Necesito que un rato bueno no se corte por un horario que pusimos sin saber cómo iba a ir."
+   ]
+  },
+  {
+   "id": "T041",
+   "categoria": "En el calendario",
+   "titulo": "Anochece a las seis",
+   "enunciado": "Cuando los días se acortan, ¿los planes de después del trabajo siguen igual o el plan se muda a casa hasta la primavera?",
+   "ejemplo": "A — Si propongo salir un día de invierno, entonces yo digo día, hora y sitio. B — Si el viernes nos quedamos en casa, entonces yo dejo la cena lista.",
+   "insignia": "Temporada de Sofá",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que no se nos apague la vida cuatro meses al año y seguir teniendo cosas que contar.",
+    "Necesito que el descanso de invierno no tenga que justificarse ni parezca que me estoy dejando llevar por la pereza."
+   ]
+  },
+  {
+   "id": "T042",
+   "categoria": "En el calendario",
+   "titulo": "El domingo",
+   "enunciado": "El domingo, ¿es un día para no hacer nada o un día para hacer algo?",
+   "ejemplo": "A — Si me proponen plan para el domingo, entonces yo contesto ese mismo día. B — Si quiero plan de domingo, entonces yo lo propongo el viernes en la cena.",
+   "insignia": "Orden del Domingo",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito un día sin nada pendiente para llegar al lunes con algo de batería.",
+    "Necesito que el fin de semana deje algún recuerdo y no se me pase mirando el techo."
+   ]
+  },
+  {
+   "id": "T043",
+   "categoria": "En el calendario",
+   "titulo": "El plan se cierra el miércoles",
+   "enunciado": "Los planes del fin de semana, ¿se cierran con días de antelación o se deciden sobre la marcha?",
+   "ejemplo": "A — Si propongo plan de fin de semana, entonces yo digo día, hora y sitio. B — Si llega el miércoles por la noche, entonces yo digo qué día tengo libre.",
+   "insignia": "Agenda contra Brújula",
+   "intensidad": "media",
+   "inicial": 9,
+   "intereses": [
+    "Necesito tener algo a lo que agarrarme durante la semana y no llegar al viernes con la sensación de que no hay nada.",
+    "Necesito margen para no llegar obligado a un plan que acepté cuando estaba de otro humor."
+   ]
+  },
+  {
+   "id": "T044",
+   "categoria": "En el calendario",
+   "titulo": "Apuntado o dicho",
+   "enunciado": "Lo que se acuerda de la agenda de los dos, ¿se anota en un calendario común o basta con decirlo en voz alta?",
+   "ejemplo": "A — Si acordamos una fecha en la cocina, entonces yo la anoto en el calendario. B — Si me entero de una fecha nueva, entonces yo la digo en la cena.",
+   "insignia": "Ministerio de la Agenda Común",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder consultar lo que hay sin depender de acordarme ni de volver a preguntar.",
+    "Necesito que organizarnos no se convierta en una tarea administrativa más al final del día."
+   ]
+  },
+  {
+   "id": "T045",
+   "categoria": "Con gente delante",
+   "titulo": "Ir por acompañar",
+   "enunciado": "A los cumpleaños, cenas y bodas de la gente de uno, ¿se va acompañado siempre o cada uno va a los planes de los suyos?",
+   "ejemplo": "A — Si un plan mío me importa, entonces yo te lo digo al invitarte. B — Si digo que voy a un plan tuyo, entonces yo llego a la hora.",
+   "insignia": "Insignia de Acompañante Oficial",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito sentir que somos un equipo también delante de mi gente y no tener que explicar una ausencia cada vez.",
+    "Necesito que mi tiempo libre no se llene de planes que no elegí y poder decir que no sin ser el malo."
+   ]
+  },
+  {
+   "id": "T046",
+   "categoria": "En el calendario",
+   "titulo": "Parar o recorrer",
+   "enunciado": "Las vacaciones, ¿son para parar en un sitio y descansar o para moverse y ver cosas?",
+   "ejemplo": "A — Si preparamos el viaje en casa, entonces yo propongo una excursión concreta. B — Si llegamos al destino, entonces yo dejo un día entero sin nada apuntado.",
+   "insignia": "Reposo contra Ruta",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito recuperarme de verdad, porque es el único tramo del año en el que puedo parar del todo.",
+    "Necesito volver con algo que contar y sentir que el año no ha sido rutina de principio a fin."
+   ]
+  },
+  {
+   "id": "T047",
+   "categoria": "En el calendario",
+   "titulo": "El sitio de siempre",
+   "enunciado": "¿Se vuelve al sitio que ya se conoce y que funciona, o se prueba uno nuevo cada vez?",
+   "ejemplo": "A — Si volvemos al sitio de siempre, entonces yo propongo algo que no hayamos hecho. B — Si propongo un sitio nuevo, entonces yo reservo y llevo la dirección.",
+   "insignia": "Club del Sitio de Siempre",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el descanso esté asegurado y no depender de que el sitio nuevo salga bien.",
+    "Necesito que lo nuestro siga teniendo primeras veces y no se convierta en una repetición."
+   ]
+  },
+  {
+   "id": "T048",
+   "categoria": "Con gente delante",
+   "titulo": "Diciembre lleno o diciembre en blanco",
+   "enunciado": "En las fiestas, ¿se dice que sí a todos los planes o se reservan días sin nada apuntado?",
+   "ejemplo": "A — Si nos llega una invitación de fiestas, entonces yo la cuento esa misma noche. B — Si miramos el calendario de diciembre, entonces yo marco dos días libres.",
+   "insignia": "Maratón de Diciembre",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito ver a la gente que quiero mientras se puede, porque el resto del año no coincidimos nunca.",
+    "Necesito que queden días nuestros sin obligaciones para no terminar las fiestas más cansado que al empezar."
+   ]
+  },
+  {
+   "id": "T049",
+   "categoria": "En el calendario",
+   "titulo": "Reservado o que salga solo",
+   "enunciado": "El tiempo de los dos, ¿se reserva en el calendario como cualquier otra cosa o se deja que salga solo?",
+   "ejemplo": "A — Si llega el domingo por la noche, entonces yo digo qué rato quiero. B — Si surge otro plan encima del rato acordado, entonces yo lo propongo para otro día.",
+   "insignia": "Reserva de los Dos",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito saber que hay un rato que es nuestro y que no depende de que sobre tiempo al final de la semana.",
+    "Necesito que estar contigo no se sienta como una tarea que se cumple o se incumple."
+   ]
+  },
+  {
+   "id": "T050",
+   "categoria": "En el calendario",
+   "titulo": "Los días que no coinciden",
+   "enunciado": "Cuando los días libres de cada uno no coinciden, ¿se guardan para un viaje de los dos o se usan por separado?",
+   "ejemplo": "A — Si miro fechas para un viaje mío, entonces yo las digo antes de reservar. B — Si cuadramos el calendario de vacaciones, entonces yo propongo las fechas del viaje.",
+   "insignia": "Cada Uno Su Mapa",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito conservar cosas que son mías y no llegar a fin de año sin haber hecho nada de lo mío.",
+    "Necesito tener por delante un tramo largo contigo, porque el resto del año vamos con prisa los dos."
+   ]
+  },
+  {
+   "id": "T051",
+   "categoria": "En el calendario",
+   "titulo": "La afición que ocupa el sábado",
+   "enunciado": "Cuando una afición propia ocupa buena parte del fin de semana, ¿esas horas se reparten entre los dos o cada uno dispone de las suyas?",
+   "ejemplo": "A — Si empieza la semana, entonces yo digo en la cena qué sábado ocupo entero. B — Si el sábado me quedo sin plan común, entonces yo hago un plan mío.",
+   "insignia": "Insignia de Sábado Ocupado",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito conservar algo que es mío y que no depende de nadie, porque es de donde saco la energía.",
+    "Necesito que lo nuestro no sea siempre lo que se encaja en los huecos que sobran."
+   ]
+  },
+  {
+   "id": "T052",
+   "categoria": "En el calendario",
+   "titulo": "Los dos relojes",
+   "enunciado": "Cuando uno funciona de mañana y el otro de noche, ¿alrededor de qué horas se organiza lo que se hace juntos?",
+   "ejemplo": "A — Si hay plan de noche fuera de casa, entonces yo digo a qué hora me voy. B — Si el plan es de mañana, entonces yo estoy en la puerta a la hora.",
+   "insignia": "Dos Husos Horarios",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito que lo importante caiga cuando puedo dar lo mejor, y no llegar a todo arrastrando.",
+    "Necesito que mis mejores horas también cuenten como horas buenas para los dos."
+   ]
+  },
+  {
+   "id": "T053",
+   "categoria": "Manías y orden",
+   "titulo": "El tubo de pasta de dientes",
+   "enunciado": "¿El tubo de pasta se aprieta desde el final y se tapa, o se usa por donde salga y se deja como quede?",
+   "ejemplo": "A — «Si entro al baño y veo el tubo arrugado, entonces lo estiro yo». B — «Si termino de lavarme los dientes en el baño, entonces tapo el tubo».",
+   "insignia": "Expediente Tubo, Tomo I",
+   "intensidad": "ligera",
+   "inicial": 1,
+   "intereses": [
+    "Necesito sentir que las cosas de casa se tratan con cuidado; cuando encuentro algo maltratado, se me va la cabeza a todo lo demás.",
+    "Necesito conservar gestos que pueda hacer sin pensar. Si cada acción mínima tiene una forma correcta, acabo revisándome a mí mismo dentro de mi propia casa."
+   ]
+  },
+  {
+   "id": "T054",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "La bolsa de las bolsas",
+   "enunciado": "Las bolsas que entran en casa, ¿se guardan por si hacen falta o se tiran en cuanto se vacían?",
+   "ejemplo": "A — «Si guardo la compra en la cocina, entonces tiro las bolsas de más». B — «Si veo una bolsa suelta en el salón, entonces la llevo yo al cajón».",
+   "insignia": "La Bolsa Madre: caso abierto",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito sentir que estoy preparado; tener a mano lo que puede hacer falta me ahorra el agobio de resolver las cosas a última hora.",
+    "Necesito ver hueco libre. Cuando los armarios están llenos de cosas en reserva, la casa me parece más pequeña y más pesada de lo que es."
+   ]
+  },
+  {
+   "id": "T055",
+   "categoria": "En la alcoba",
+   "titulo": "Hacer la cama al levantarse",
+   "enunciado": "¿La cama se hace nada más levantarse o puede quedarse deshecha hasta la noche?",
+   "ejemplo": "A — «Si entro en el dormitorio a media mañana, entonces estiro la cama yo». B — «Si me levanto el último de la cama, entonces la estiro antes de salir».",
+   "insignia": "Perito Colchonero",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito empezar el día con algo terminado; ver la cama hecha me quita ruido de la cabeza durante el resto de la jornada.",
+    "Necesito que las mañanas no arranquen con un trámite obligatorio; voy justo de tiempo y quiero elegir yo en qué lo gasto."
+   ]
+  },
+  {
+   "id": "T056",
+   "categoria": "Manías y orden",
+   "titulo": "Cajones y puertas abiertas",
+   "enunciado": "Los cajones y las puertas de los armarios, ¿se cierran nada más usarlos o pueden quedarse abiertos mientras estás en mitad de algo?",
+   "ejemplo": "A — «Si veo un cajón abierto en la cocina, entonces lo cierro sin comentarlo». B — «Si salgo de la habitación donde estaba, entonces cierro lo que dejé abierto».",
+   "insignia": "Orden del Cajón Entornado",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que las cosas queden terminadas: mientras veo algo a medio cerrar, mi cabeza sigue enganchada a esa tarea y no descansa.",
+    "Necesito concentrarme en lo que estoy haciendo sin ir cerrando detrás de mí cada paso intermedio del proceso."
+   ]
+  },
+  {
+   "id": "T057",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "La taza que espera «un rato»",
+   "enunciado": "Una taza usada, ¿se enjuaga en el momento o puede esperar «un rato» en el fregadero?",
+   "ejemplo": "A — «Si apago la tele para acostarme, entonces llevo mis tazas a la cocina». B — «Si veo una taza sola en el fregadero, entonces la enjuago yo».",
+   "insignia": "Cronometrador del «Un Rato»",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no vivir la casa como una cadena de tareas inmediatas; si todo se hace al instante, no existe ningún momento de descanso.",
+    "Necesito ver la cocina despejada para sentir que el día está bajo control; los pendientes pequeños acumulados me dejan una tensión que no se va sola."
+   ]
+  },
+  {
+   "id": "T058",
+   "categoria": "Manías y orden",
+   "titulo": "Las luces de las habitaciones vacías",
+   "enunciado": "Las luces, ¿se apagan al salir de una habitación o pueden quedarse encendidas si vas a volver enseguida?",
+   "ejemplo": "A — «Si me acuesto, entonces apago yo las luces del pasillo sin comentarlo». B — «Si salgo de una habitación por la noche, entonces apago su luz».",
+   "insignia": "Guardia Nocturna del Interruptor",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito sentir que la casa no se me va de las manos; cuando todo está en marcha y no hay nadie dentro, me queda una sensación de descontrol que no sé explicar.",
+    "Necesito moverme por mi propia casa sin hacer un control de salida en cada puerta por la que paso."
+   ]
+  },
+  {
+   "id": "T059",
+   "categoria": "Al salir y al volver",
+   "titulo": "Los zapatos en la entrada",
+   "enunciado": "¿Los zapatos se quitan al entrar en casa o se puede entrar con ellos puestos?",
+   "ejemplo": "A — «Si tenemos visita en casa, entonces me dejo los zapatos puestos». B — «Si entro por la puerta de casa, entonces dejo los zapatos en la entrada».",
+   "insignia": "Aduana de la Entrada",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que la casa esté limpia de verdad y no solo en apariencia; es el único sitio donde puedo bajar la guardia del todo.",
+    "Necesito que entrar en casa sea fácil y no un protocolo, y me incomoda poner condiciones a quien viene a vernos."
+   ]
+  },
+  {
+   "id": "T060",
+   "categoria": "En el sofá",
+   "titulo": "El volumen de la tele",
+   "enunciado": "El volumen de la tele, ¿lo decide quien la está viendo o se ajusta a lo que se oye en el resto de la casa?",
+   "ejemplo": "A — «Si veo la tele de noche en el salón, entonces pongo los subtítulos». B — «Si empieza su serie en el salón, entonces no pido bajar el volumen».",
+   "insignia": "Perito en Decibelios de Salón",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito enterarme sin esfuerzo; forzar el oído me cansa y me saca de lo que estoy viendo, que era justo mi rato del día.",
+    "Necesito que en casa haya un nivel de ruido en el que quepa algo más que la tele, incluido no hacer nada."
+   ]
+  },
+  {
+   "id": "T061",
+   "categoria": "En la alcoba",
+   "titulo": "La silla de la ropa",
+   "enunciado": "La ropa que se ha usado una vez, ¿va al armario o al cesto, o puede quedarse en la silla?",
+   "ejemplo": "A — «Si la silla del dormitorio tiene una prenda, entonces la dejo ahí». B — «Si me acuesto, entonces guardo o llevo al cesto una prenda de la silla».",
+   "insignia": "Custodio de la Silla",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el dormitorio esté despejado para poder descansar en él; el montón me recuerda algo pendiente cada vez que entro.",
+    "Necesito una zona intermedia donde las cosas puedan estar sin decidir; si todo tiene que estar guardado o lavado, acabo tomando decisiones absurdas por no tener dónde dejarlo."
+   ]
+  },
+  {
+   "id": "T062",
+   "categoria": "Manías y orden",
+   "titulo": "Cada cosa en su sitio",
+   "enunciado": "Las cosas de uso diario, ¿tienen un sitio fijo al que vuelven siempre o cada uno las deja donde termina de usarlas?",
+   "ejemplo": "A — «Si no encuentro algo en casa, entonces lo busco yo antes de preguntar». B — «Si entro por la puerta de casa, entonces dejo las llaves en el cuenco».",
+   "insignia": "Brigada de Objetos Perdidos",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no empezar el día buscando; cada búsqueda me pone en tensión y me hace salir de casa con la sensación de ir ya tarde.",
+    "Necesito que mi forma de organizarme siga valiendo en mi propia casa y no tener que aprenderme un mapa de sitios que no he elegido yo."
+   ]
+  },
+  {
+   "id": "T063",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "El orden de la nevera",
+   "enunciado": "En la nevera, ¿cada cosa tiene su estante o se guarda donde quepa?",
+   "ejemplo": "A — «Si guardo la compra en la cocina, entonces pongo delante lo que caduca antes». B — «Si guardo sobras en la nevera, entonces las pongo en el estante de arriba».",
+   "insignia": "Inspección Anual de Estantes",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito saber qué tenemos sin vaciarla entera; cuando no lo sé, compro repetido y luego acabo tirando comida, que es lo que peor llevo.",
+    "Necesito que guardar la compra no se convierta en una tarea larga justo después de haber ido a comprar y haberla subido a casa."
+   ]
+  },
+  {
+   "id": "T064",
+   "categoria": "En el sofá",
+   "titulo": "Comer en el sofá",
+   "enunciado": "¿Se come y se bebe solo en la mesa o la cocina, o también se puede comer en el sofá y delante de la tele?",
+   "ejemplo": "A — «Si veo migas en el sofá por la mañana, entonces las limpio yo». B — «Si ceno en el sofá, entonces llevo mi plato a la cocina».",
+   "insignia": "Expediente Migas",
+   "intensidad": "media",
+   "inicial": 8,
+   "intereses": [
+    "Necesito que los sitios donde me tumbo estén limpios; encontrarme restos ahí me quita directamente las ganas de usar ese espacio.",
+    "Necesito que la casa sea cómoda de verdad y no tenga zonas prohibidas; comer relajado delante de algo es mi forma de desconectar del día."
+   ]
+  },
+  {
+   "id": "T065",
+   "categoria": "Manías y orden",
+   "titulo": "Mi rincón en zona común",
+   "enunciado": "¿Cada uno puede tener un rincón a su manera aunque esté en una zona común, o en las zonas comunes vale lo que funcione para los dos?",
+   "ejemplo": "A — «Si dejo cosas mías fuera de mi mesa, entonces las recojo al acostarme». B — «Si veo la mesa del salón desordenada, entonces no la toco ni comento».",
+   "insignia": "Mapa de Fronteras Domésticas",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito un sitio donde no rendir cuentas. Si absolutamente todo se negocia, acabo sintiéndome un poco invitado en mi propia casa.",
+    "Necesito que el espacio que compartimos también me descanse a mí; no consigo desconectar en una habitación que siempre está a medio recoger."
+   ]
+  },
+  {
+   "id": "T066",
+   "categoria": "Manías y orden",
+   "titulo": "Tus cosas, mi orden",
+   "enunciado": "Al ordenar, ¿se pueden mover de sitio cosas del otro o no se toca nada de nadie sin avisar?",
+   "ejemplo": "A — «Si ordeno y encuentro algo no mío, entonces lo dejo en su silla». B — «Si veo cosas mías apartadas en la silla, entonces las coloco antes del domingo».",
+   "insignia": "Archivo de Objetos en Tránsito",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito poder avanzar cuando me pongo a ordenar; si cada objeto abre una conversación, ordenar deja de ser algo que se pueda terminar.",
+    "Necesito saber dónde está lo mío y que se cuente conmigo antes de moverlo; si no, tengo la sensación de ir siempre por detrás en mi propia casa."
+   ]
+  },
+  {
+   "id": "T067",
+   "categoria": "Manías y orden",
+   "titulo": "¿Todo se puede pedir?",
+   "enunciado": "Una costumbre muy arraigada, ¿se acepta tal cual o cualquier costumbre de casa se puede poner sobre la mesa?",
+   "ejemplo": "A — «Si cenamos en casa el domingo, entonces digo una costumbre mía que sí negocio». B — «Si cenamos en casa el domingo, entonces digo una costumbre suya que acepto».",
+   "insignia": "Catálogo de Rarezas, edición ampliable",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito que se me acepte como soy en lo pequeño; si mis costumbres son un problema permanente, empiezo a sentir que estorbo en mi propia casa.",
+    "Necesito poder decir lo que me molesta sin que parezca un ataque; si hay temas cerrados de antemano, acabo guardándomelo todo."
+   ]
+  },
+  {
+   "id": "T068",
+   "categoria": "Manías y orden",
+   "titulo": "Cosas que se guardan por recuerdo",
+   "enunciado": "Los objetos que ya no se usan pero tienen recuerdo, ¿se conservan o llega un punto en que ocupan más de lo que devuelven?",
+   "ejemplo": "A — «Si guardo algo por recuerdo, entonces lo meto en mi caja». B — «Si veo la caja de recuerdos en el armario, entonces la dejo donde está».",
+   "insignia": "Depósito de Pruebas Sentimentales",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito no perder el rastro de lo que he vivido; deshacerme de esas cosas se me parece demasiado a borrarlo.",
+    "Necesito sitio para lo de ahora. Vivir rodeado de etapas antiguas me deja la sensación de que estamos parados en algún punto del pasado."
+   ]
+  },
+  {
+   "id": "T069",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "La cuenta: a medias o por turnos",
+   "enunciado": "Cuando salimos a comer los dos, ¿la cuenta se parte a medias cada vez o invita uno y la siguiente vez el otro?",
+   "ejemplo": "A: «Si nos traen la cuenta al final de la cena, entonces digo cómo la pago». B: «Si invito yo en un restaurante, entonces no lo menciono el resto de la noche».",
+   "insignia": "Pistoleros de la cuenta",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que entre nosotros no se acumule una contabilidad invisible en la que alguien acabe sintiéndose en deuda.",
+    "Necesito poder regalarle el rato de vez en cuando y que salir siga pareciendo un plan y no un reparto."
+   ]
+  },
+  {
+   "id": "T070",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "Pagar por ahorrarse el rato",
+   "enunciado": "¿Pagar un poco más para no tener que ir, esperar o comparar —un envío, un servicio a domicilio—, o dedicarle el rato y quedarse ese dinero?",
+   "ejemplo": "A: «Si veo el coste de envío en la pantalla al pagar, entonces miro la recogida en tienda». B: «Si llega un paquete a casa por la tarde, entonces no comento el envío».",
+   "insignia": "Cronómetro y calculadora",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que mis pocas horas libres no se llenen de recados; cuando pago por eso siento que compro descanso, no lujo.",
+    "Necesito notar que las cosas pequeñas cuentan y que no pagamos de más por inercia; el goteo que no se ve me inquieta."
+   ]
+  },
+  {
+   "id": "T071",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "El café de fuera de cada día",
+   "enunciado": "El café o el capricho diario que se compra fuera, ¿es un gasto pequeño sin importancia o un goteo que suma a final de mes?",
+   "ejemplo": "A: «Si compro café fuera un día de diario, entonces lo digo al llegar a casa». B: «Si por la mañana veo un vaso de café en la cocina, entonces no comento».",
+   "insignia": "Vaso de cartón, taza de casa",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito conservar un placer diario que es solo mío y no tener que justificarlo cada mañana.",
+    "Necesito sentir que sabemos por dónde se nos va el dinero; lo que se escapa sin decidirlo me deja intranquilo."
+   ]
+  },
+  {
+   "id": "T072",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "Marca blanca o marca de siempre",
+   "enunciado": "En la compra del súper, ¿marca blanca en casi todo o hay productos en los que compensa la marca de siempre?",
+   "ejemplo": "A: «Si dudo en el súper con algo que yo no uso, entonces elijo la conocida». B: «Si abro un producto en casa y no me convence, entonces lo digo ese día».",
+   "insignia": "Catadores de pasillo",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito sentir que cuido lo nuestro y que no nos cobran de más por lo mismo; que se me escape un sobreprecio me deja sensación de descuido.",
+    "Necesito que las cosas de casa me gusten de verdad; usar a diario algo que no me convence me estropea un momento del día."
+   ]
+  },
+  {
+   "id": "T073",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "Las ofertas y el 2x1",
+   "enunciado": "¿Aprovechar promociones, cupones y descuentos siempre que aparezcan, o comprar solo lo que se iba a comprar?",
+   "ejemplo": "A: «Si veo una promoción en la caja, entonces solo la llevo si ya la traía». B: «Si veo una compra en promoción en la cocina, entonces no cuento las unidades».",
+   "insignia": "Doctorado en 2x1",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito la pequeña victoria de haber pagado menos que el precio de la etiqueta; me hace sentir que gestiono bien lo nuestro.",
+    "Necesito que la casa no se llene de cosas que nadie decidió tener; comprar por el descuento y no por la falta me deja una sensación fea."
+   ]
+  },
+  {
+   "id": "T074",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "La luz, el aire y la calefacción",
+   "enunciado": "En casa, ¿apagar y ajustar para que no suba la factura o tenerla a gusto aunque cueste algo más?",
+   "ejemplo": "A: «Si al acostarme veo una luz encendida en el salón, entonces la apago sin comentarlo». B: «Si por la noche subo la calefacción en casa, entonces lo digo en voz alta».",
+   "insignia": "Guardianes del termostato",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que el dinero no se vaya en algo que nadie aprovecha; el derroche automático me pone nervioso.",
+    "Necesito estar cómodo en el único sitio donde puedo estarlo; si en casa lo paso mal, el día entero se resiente."
+   ]
+  },
+  {
+   "id": "T075",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "La propina",
+   "enunciado": "Cuando nos atienden bien, ¿dejar propina generosa o dejar lo justo porque el precio ya está en la carta?",
+   "ejemplo": "A: «Si dejo propina en la mesa al salir, entonces lo digo antes de levantarnos». B: «Si salimos del restaurante después de pagar, entonces no comento la propina».",
+   "insignia": "Escuela de propinas",
+   "intensidad": "ligera",
+   "inicial": 5,
+   "intereses": [
+    "Necesito no salir de un sitio sintiéndome tacaño con alguien que ha hecho bien su trabajo; me importa cómo trato a la gente.",
+    "Necesito que el gasto de la noche sea el que habíamos pensado y no un extra variable que aparece al final."
+   ]
+  },
+  {
+   "id": "T076",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "La compra grande o ir cada dos días",
+   "enunciado": "¿Hacer una compra grande para varios días o ir comprando poco y a menudo lo que va haciendo falta?",
+   "ejemplo": "A: «Si el sábado hago la compra grande, entonces escribo la lista antes de salir». B: «Si paso por el súper entre semana, entonces compro solo lo de esos días».",
+   "insignia": "Expedición al súper",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito quitarme de encima una tarea repetida y saber que la casa está abastecida; improvisar cada día me carga la cabeza.",
+    "Necesito no llenar la casa de cosas por si acaso; comprar de más y acabar tirándolo me deja la sensación de haber hecho mal las cuentas."
+   ]
+  },
+  {
+   "id": "T077",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "Las suscripciones que no usamos",
+   "enunciado": "Las suscripciones que apenas se usan, ¿se cancelan ya o se dejan y se revisan más adelante?",
+   "ejemplo": "A: «Si el primer domingo de mes estoy en el sofá, entonces reviso los cobros». B: «Si veo la lista de cobros en la mesa, entonces digo cuál quiero conservar».",
+   "insignia": "Auditores de sofá",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que no haya cobros en piloto automático que nadie ha decidido este mes; lo que se cobra solo me genera desconfianza.",
+    "Necesito no perder de golpe cosas que sí disfruto por una limpieza hecha de un tirón; deshacer y arrepentirse me da rabia."
+   ]
+  },
+  {
+   "id": "T078",
+   "categoria": "Las tareas y los arreglos",
+   "titulo": "Se repara o se cambia",
+   "enunciado": "El aparato de casa que ha empezado a fallar, ¿se lleva a reparar o se cambia por uno nuevo?",
+   "ejemplo": "A: «Si un aparato falla en casa un día laborable, entonces pido yo el presupuesto». B: «Si el mismo aparato vuelve a fallar en casa, entonces digo que quiero cambiarlo».",
+   "insignia": "Peritaje de electrodoméstico",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no sentir que tiramos dinero ni cosas útiles; el derroche me pesa más que la incomodidad.",
+    "Necesito que lo de casa funcione sin sobresaltos; vivir pendiente de si aguanta un mes más me cansa."
+   ]
+  },
+  {
+   "id": "T079",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "Un plan o algo que se queda",
+   "enunciado": "Cuando podemos darnos un gusto, ¿gastarlo en un plan que se vive o en algo para casa que se queda?",
+   "ejemplo": "A: «Si en casa oigo una propuesta de compra, entonces pregunto qué le cambia del día». B: «Si en la cena oigo una propuesta de plan fuera, entonces digo qué me apetece».",
+   "insignia": "Recuerdo o estantería",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que nuestra vida tenga momentos que contar; me da miedo que todo se convierta en rutina y mantenimiento.",
+    "Necesito que el sitio donde vivimos me dé calma; lo cotidiano me sostiene más que un día suelto."
+   ]
+  },
+  {
+   "id": "T080",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "Los regalos entre nosotros",
+   "enunciado": "Los regalos que nos hacemos el uno al otro, ¿gastar de verdad o algo pequeño y pensado porque el dinero sale del mismo sitio?",
+   "ejemplo": "A: «Si es el cumpleaños en casa, entonces escribo a mano por qué elegí el regalo». B: «Si abro un regalo en casa, entonces digo qué me gustó y no el precio».",
+   "insignia": "Escuela de envolver",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito sentir que soy una prioridad y que alguien ha hecho un esfuerzo por mí, no solo cumplido un trámite.",
+    "Necesito que el cariño no se mida en dinero; recibir algo caro me deja la sensación de que ahora debo algo."
+   ]
+  },
+  {
+   "id": "T081",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "La tarifa barata o la cancelable",
+   "enunciado": "Al reservar un viaje o unas entradas, ¿la tarifa barata sin derecho a cancelar o pagar más por poder echarse atrás?",
+   "ejemplo": "A: «Si reservo un viaje desde casa, entonces digo qué tarifa he elegido antes de pagar». B: «Si al final no podemos usar una reserva, entonces no menciono la tarifa».",
+   "insignia": "Tarifa con paracaídas",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el dinero se note en el plan y no en un seguro que casi nunca se usa.",
+    "Necesito poder cambiar de idea sin que salga caro; comprometerme sin salida me tiene en tensión desde que reservo."
+   ]
+  },
+  {
+   "id": "T082",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "De segunda mano o a estrenar",
+   "enunciado": "¿Comprar algo usado y pagar bastante menos, o comprarlo nuevo con garantía y sin sorpresas?",
+   "ejemplo": "A: «Si encuentro algo usado en internet, entonces voy yo a verlo y probarlo». B: «Si entra en casa algo usado que funciona, entonces no digo cuánto costaría nuevo».",
+   "insignia": "Segunda mano, primera opinión",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que nuestro dinero cunda y me gusta la sensación de haber hecho un buen negocio.",
+    "Necesito no cargar con el riesgo ni con la gestión; si sale mal, el ahorro se convierte en un problema que acabo resolviendo yo."
+   ]
+  },
+  {
+   "id": "T083",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "Guardarlo o disfrutarlo ahora",
+   "enunciado": "Cuando a final de mes sobra algo, ¿guardarlo entero para tener un colchón o usar una parte en algo que se disfrute ahora?",
+   "ejemplo": "A: «Si oigo una propuesta de gasto no previsto, entonces digo una vez qué me preocupa». B: «Si quiero que nos demos un gusto, entonces lo digo en casa el día antes».",
+   "insignia": "Dos relojes, un bolsillo",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito sentir que si viene un imprevisto no nos hundimos; la incertidumbre me quita el sueño de verdad.",
+    "Necesito que nuestra vida tenga cosas buenas mientras las podemos disfrutar; vivir siempre en modo espera me apaga."
+   ]
+  },
+  {
+   "id": "T084",
+   "categoria": "Con gente delante",
+   "titulo": "Gastar delante de los demás",
+   "enunciado": "Cuando hay gente delante —una ronda, un regalo, una cena de grupo—, ¿gastar lo que se espera en esa situación o gastar lo mismo que se gastaría sin nadie mirando?",
+   "ejemplo": "A: «Si vamos a una celebración y quiero poner más, entonces lo digo en casa antes». B: «Si en una celebración se pone dinero de más, entonces no lo comento allí».",
+   "insignia": "Dos formas de quedar bien",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito que la gente que quiero se sienta cuidada y no quedar como el que nunca aporta; me importa lo que representamos juntos fuera de casa.",
+    "Necesito que nuestras decisiones sean nuestras y no una respuesta a lo que se espera; gastar por presión me deja una sensación fea que dura días."
+   ]
+  },
+  {
+   "id": "T085",
+   "categoria": "Cuando salen las cuentas",
+   "titulo": "Qué es caro",
+   "enunciado": "Cuando uno dice que algo es carísimo y el otro no lo ve así, ¿hay cosas que son caras se mire como se mire o cada uno mide con su propia vara?",
+   "ejemplo": "A: «Si en una tienda algo me parece caro, entonces digo qué haría con ese dinero». B: «Si oigo que algo mío es caro, entonces cuento para qué lo quiero».",
+   "insignia": "Tasadores de salón",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito poder nombrar lo que me parece desproporcionado sin que se lea como un ataque; si no puedo decirlo, acabo callándome todo.",
+    "Necesito que lo que a mí me importa no quede descalificado con un número; cuando se decide por mí lo que vale, me siento poco tomado en serio."
+   ]
+  },
+  {
+   "id": "T086",
+   "categoria": "Las decisiones de dinero",
+   "titulo": "Cada cuánto se habla de dinero",
+   "enunciado": "¿Sentarnos a mirar los números con una rutina fija o hablar de dinero solo cuando hay algo concreto que decidir?",
+   "ejemplo": "A: «Si quiero mirar los números, entonces lo propongo en casa el día antes». B: «Si me proponen mirar los números en casa, entonces digo cuándo me viene bien».",
+   "insignia": "Consejo de administración doméstico",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito anticiparme para estar tranquilo; enterarme de las cosas cuando ya no hay margen me pone en alerta.",
+    "Necesito que lo nuestro no gire alrededor del dinero; hablar de números sin motivo me deja con una preocupación que no tenía."
+   ]
+  },
+  {
+   "id": "T087",
+   "categoria": "En la cocina y la mesa",
+   "titulo": "El teléfono encima de la mesa",
+   "enunciado": "Durante la cena, ¿el teléfono se queda encima de la mesa o se deja fuera de la mesa?",
+   "ejemplo": "A: «Si me siento a cenar, entonces dejo el teléfono boca abajo en la cocina». B: «Si cenamos y suena un teléfono, entonces sigo contando lo que estaba contando».",
+   "insignia": "Perito del Mantel",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que en mi propia casa no se conviertan en norma cosas que hago sin pensar, porque si todo se regula dejo de estar cómodo en ella.",
+    "Necesito que quede en el día un rato con atención completa, porque la cena es de los pocos momentos en que estamos los dos parados a la vez."
+   ]
+  },
+  {
+   "id": "T088",
+   "categoria": "Por el móvil",
+   "titulo": "El vídeo que hay que ver ahora mismo",
+   "enunciado": "Cuando uno encuentra algo gracioso en el teléfono, ¿se enseña en el momento o se guarda para luego?",
+   "ejemplo": "A: «Si veo un vídeo y mi pareja está trabajando, entonces se lo mando sin llamarla». B: «Si me siento en el sofá después de cenar, entonces abro lo que me mandó».",
+   "insignia": "Corresponsal de Última Hora",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que lo que ofrezco se reciba como lo que es, un gesto y no una molestia, porque si se recibe mal acabo dejando de ofrecerlo.",
+    "Necesito poder terminar lo que tengo entre manos sin que me corten, y que decir «ahora no» no se lea como un rechazo a la persona."
+   ]
+  },
+  {
+   "id": "T089",
+   "categoria": "Por el móvil",
+   "titulo": "Buscarlo en el teléfono para ver quién acierta",
+   "enunciado": "Cuando hay desacuerdo sobre un dato, ¿se busca en el teléfono en ese momento o se deja que la conversación siga?",
+   "ejemplo": "A: «Si quiero comprobar un dato durante la cena, entonces lo apunto y lo miro después». B: «Si se mira un dato en la mesa, entonces leo el resultado en voz alta».",
+   "insignia": "Verificador de Sobremesa",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito cerrar lo que queda abierto, porque un dato sin comprobar se me queda dando vueltas y ya no atiendo a nada más de lo que se está diciendo.",
+    "Necesito que lo que estamos contando no se pare para dirimir quién acierta, porque entonces la conversación deja de ir de lo que iba."
+   ]
+  },
+  {
+   "id": "T090",
+   "categoria": "En la alcoba",
+   "titulo": "Una manta para los dos o una para cada uno",
+   "enunciado": "Para dormir, ¿se comparte una sola manta o cada uno tiene la suya?",
+   "ejemplo": "A: «Si me acuesto, entonces dejo estirada a mi lado la manta pequeña». B: «Si me destapo de madrugada, entonces uso mi manta pequeña».",
+   "insignia": "Perito en Metros de Manta",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito conservar los gestos pequeños que hacen que la cama sea de los dos y no dos camas pegadas.",
+    "Necesito dormir de un tirón, porque cada vez que me despierto de madrugada tardo muchísimo en volver a dormirme y al día siguiente lo noto entero."
+   ]
+  },
+  {
+   "id": "T091",
+   "categoria": "En la alcoba",
+   "titulo": "La ventana del dormitorio, abierta o cerrada",
+   "enunciado": "Por la noche, ¿la ventana del dormitorio se queda abierta o cerrada?",
+   "ejemplo": "A: «Si apagamos la luz para dormir, entonces cierro yo la ventana del dormitorio». B: «Si termino de cenar, entonces abro la ventana del dormitorio de par en par».",
+   "insignia": "Inspector de Corrientes de Aire",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito notar que la habitación no está cargada, porque si me agobio no me duermo por mucho que lo intente.",
+    "Necesito que nada de fuera me despierte, porque cuando me despierto de madrugada ya no vuelvo a dormirme y el día siguiente lo pago entero."
+   ]
+  },
+  {
+   "id": "T092",
+   "categoria": "En la alcoba",
+   "titulo": "La mascota duerme en la cama o fuera",
+   "enunciado": "¿El perro o el gato duerme en la cama o fuera de la cama?",
+   "ejemplo": "A: «Si me acuesto y el perro está en la cama, entonces lo bajo yo». B: «Si el perro entra en el dormitorio por la mañana, entonces lo dejo subir».",
+   "insignia": "Perito en Inquilinos de Cuatro Patas",
+   "intensidad": "ligera",
+   "inicial": 3,
+   "intereses": [
+    "Necesito no tener que elegir entre mi pareja y un animal que también es de los dos, y que su sitio no se decida sin contar conmigo.",
+    "Necesito una cama en la que quepa y descanse, y que quede al final del día un espacio que sea solo de los dos."
+   ]
+  },
+  {
+   "id": "T093",
+   "categoria": "En la alcoba",
+   "titulo": "El botón de posponer la alarma",
+   "enunciado": "Por la mañana, ¿la alarma se puede posponer varias veces o suena una sola vez?",
+   "ejemplo": "A: «Si me acuesto, entonces dejo la alarma en la silla, lejos de la cama». B: «Si suena una alarma que no es la mía, entonces me pongo el antifaz».",
+   "insignia": "Cátedra de las Alarmas Sucesivas",
+   "intensidad": "ligera",
+   "inicial": 6,
+   "intereses": [
+    "Necesito un rato de transición para arrancar, porque pasar de dormido a de pie de golpe me deja el día entero raro.",
+    "Necesito que la hora a la que me despierto la marque mi alarma y no la de otra persona, porque esos minutos son justo los que me faltan."
+   ]
+  },
+  {
+   "id": "T094",
+   "categoria": "Por el móvil",
+   "titulo": "Mensajes de trabajo a las once de la noche",
+   "enunciado": "Un mensaje de trabajo que llega a las once de la noche, ¿se contesta o se deja para el día siguiente?",
+   "ejemplo": "A: «Si me escriben del trabajo después de cenar, entonces contesto de pie en la cocina». B: «Si mi pareja contesta trabajo de noche, entonces sigo con lo mío sin preguntar».",
+   "insignia": "Perito en Horas Intempestivas",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito llegar a la cama sin nada abierto en la cabeza, porque lo que dejo pendiente me quita más sueño que contestarlo.",
+    "Necesito que haya una hora a partir de la cual estamos aquí y no en el trabajo, porque si no, no queda ningún rato del día que sea de los dos."
+   ]
+  },
+  {
+   "id": "T095",
+   "categoria": "Con gente delante",
+   "titulo": "Lo nuestro, ¿se cuenta en redes?",
+   "enunciado": "Los planes de los dos, ¿se cuentan en redes o se llevan en privado?",
+   "ejemplo": "A: «Si voy a publicar un plan de los dos, entonces se lo enseño antes». B: «Si me enseñan algo para publicar, entonces contesto sí o no en ese momento».",
+   "insignia": "Cronista de la Vida Pública",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que lo que me hace feliz aparezca también en la parte de mi vida que se ve, porque si no está ahí parece que no existe.",
+    "Necesito que lo que vivimos no dependa de cómo se ve desde fuera, porque en cuanto hay público empiezo a estar pendiente del público y ya no estoy en el plan."
+   ]
+  },
+  {
+   "id": "T096",
+   "categoria": "En la alcoba",
+   "titulo": "El teléfono en el dormitorio",
+   "enunciado": "Por la noche, ¿el teléfono entra en el dormitorio o se queda fuera?",
+   "ejemplo": "A: «Si apagamos la luz del dormitorio, entonces dejo el teléfono en la mesita». B: «Si me meto en la cama, entonces cuento yo algo del día antes de dormirme».",
+   "insignia": "Vigía de la Mesita",
+   "intensidad": "media",
+   "inicial": 10,
+   "intereses": [
+    "Necesito un rato al final del día en el que nadie me pida nada, porque es el único momento en que no estoy pendiente de nadie.",
+    "Necesito que quede un momento en que nos contamos lo del día, porque acostarse es el único rato en que estamos los dos quietos y sin prisa."
+   ]
+  },
+  {
+   "id": "T097",
+   "categoria": "En la alcoba",
+   "titulo": "Los primeros minutos del día",
+   "enunciado": "Al despertarse, ¿cada uno mira su teléfono o los primeros minutos son sin pantallas?",
+   "ejemplo": "A: «Si abro los ojos por la mañana, entonces doy los buenos días antes de mirar». B: «Si mi pareja mira el teléfono al despertarse, entonces me levanto y preparo el desayuno».",
+   "insignia": "Cronista del Primer Minuto",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito saber qué me espera antes de empezar, porque si no lo miro arranco con la sensación de ir por detrás desde el primer minuto.",
+    "Necesito que el primer contacto del día sea con una persona y no con una pantalla, porque eso decide con qué ánimo empiezo yo."
+   ]
+  },
+  {
+   "id": "T098",
+   "categoria": "En el sofá",
+   "titulo": "Vídeos con sonido en la misma habitación",
+   "enunciado": "En una habitación compartida, ¿se pueden ver vídeos con sonido o se usan auriculares?",
+   "ejemplo": "A: «Si veo vídeos en el sofá con mi pareja delante, entonces me pongo los auriculares». B: «Si veo que mi pareja va a poner un vídeo, entonces le acerco los auriculares».",
+   "insignia": "Comisión de Ruidos Domésticos",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder estar en casa sin preparativos para algo que dura un minuto, porque si cada cosa cuesta, acabo no haciéndola y la casa deja de ser cómoda.",
+    "Necesito poder elegir a qué presto atención, porque el sonido no se puede dejar de oír y me quita el único sitio donde estoy tranquilo."
+   ]
+  },
+  {
+   "id": "T099",
+   "categoria": "En la alcoba",
+   "titulo": "Cuando el ruido no deja dormir",
+   "enunciado": "Cuando el ruido de uno no deja dormir al otro, ¿se le despierta para que cambie de postura o se busca otra salida?",
+   "ejemplo": "A: «Si me despierta el ruido de madrugada, entonces me pongo los tapones de la mesita». B: «Si me acuesto por la noche, entonces me pongo de lado desde el principio».",
+   "insignia": "Sociedad Acústica Nocturna",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder dormir sin tener que irme de mi propia cama ni montar un operativo cada noche antes de acostarme.",
+    "Necesito que el sueño que ya tengo no se rompa, porque cuando me despiertan del todo tardo horas en volver y el día siguiente lo pago entero."
+   ]
+  },
+  {
+   "id": "T100",
+   "categoria": "En la alcoba",
+   "titulo": "A qué hora se apaga la luz",
+   "enunciado": "Cuando uno ya tiene sueño y el otro sigue leyendo o viendo algo, ¿se apaga la luz o cada uno sigue a lo suyo?",
+   "ejemplo": "A: «Si me entra el sueño en la cama, entonces me pongo el antifaz». B: «Si mi pareja se duerme antes, entonces me llevo el libro a la otra habitación».",
+   "insignia": "Guardián del Interruptor",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito dormirme justo cuando me entra el sueño, porque si se me pasa esa ventana ya no caigo hasta muy tarde.",
+    "Necesito un rato al final del día que no le deba a nadie, porque la jornada entera va para fuera y no queda nada más."
+   ]
+  },
+  {
+   "id": "T101",
+   "categoria": "Por el móvil",
+   "titulo": "Grabar el plan o vivirlo",
+   "enunciado": "En un plan de los dos, ¿se hacen fotos y vídeos o se deja el teléfono guardado?",
+   "ejemplo": "A: «Si nos sentamos a comer en un plan de los dos, entonces guardo el teléfono». B: «Si vamos a un sitio nuevo, entonces hago yo una foto de los dos».",
+   "insignia": "Cronista Oficial de la Galería",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito guardar lo que vivimos, porque lo que no queda registrado se me borra y luego siento que lo he perdido de verdad.",
+    "Necesito estar donde estoy sin posar ni esperar, porque si no, después no me acuerdo del sitio: me acuerdo de las fotos."
+   ]
+  },
+  {
+   "id": "T102",
+   "categoria": "Por el móvil",
+   "titulo": "¿Se puede escuchar y mirar el teléfono a la vez?",
+   "enunciado": "Mientras uno cuenta algo, ¿se puede mirar el teléfono a la vez o eso ya es dejar de escuchar?",
+   "ejemplo": "A: «Si mi pareja empieza a contarme algo, entonces dejo el teléfono boca abajo». B: «Si quiero contar algo largo, entonces aviso antes de empezar y espero un momento».",
+   "insignia": "Cátedra del «Sigue, que te escucho»",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito que no se lea cada gesto mío como una señal de lo que siento, porque si todo significa algo ya no puedo estar tranquilo en mi casa.",
+    "Necesito alguna señal de que lo que cuento le llega a alguien, porque si no la hay dejo de contarlo, y eso sí que separa de verdad."
+   ]
+  },
+  {
+   "id": "T103",
+   "categoria": "En la alcoba",
+   "titulo": "Dormir algunas noches en camas separadas",
+   "enunciado": "Cuando una noche no se duerme bien, ¿cada uno se va a dormir donde descanse o se sigue durmiendo en la misma cama?",
+   "ejemplo": "A: «Si me voy a la otra habitación de madrugada, entonces vuelvo antes de levantarme». B: «Si hemos dormido separados, entonces llevo yo el desayuno a la cama».",
+   "insignia": "Perito en Geografía Nocturna",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito llegar al día siguiente habiendo dormido, porque cuando no duermo todo lo demás me sale peor, incluido cómo estoy en casa.",
+    "Necesito mantener las costumbres que nos hacen pareja, porque se pierden de una en una y no se nota hasta que un día ya no queda ninguna."
+   ]
+  },
+  {
+   "id": "T104",
+   "categoria": "En la alcoba",
+   "titulo": "Acostarse a la vez o cada uno a su hora",
+   "enunciado": "¿Conviene acostarse los dos a la misma hora o cada uno cuando le entra el sueño?",
+   "ejemplo": "A: «Si mi pareja se va a la cama entre semana, entonces la acompaño al dormitorio». B: «Si son las once y mi pareja sigue despierta, entonces me acuesto yo solo».",
+   "insignia": "Cátedra del Búho y la Alondra",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito respetar el horario con el que funciona mi cuerpo, porque forzarlo me pasa factura al día siguiente y además no engaño a nadie fingiendo sueño.",
+    "Necesito que haya un momento fijo del día en el que sé que vamos a coincidir, porque si depende de que surja, no surge."
+   ]
+  },
+  {
+   "id": "T105",
+   "categoria": "En el sofá",
+   "titulo": "Dos teléfonos en el mismo sofá",
+   "enunciado": "Estar los dos en el sofá, cada uno con su teléfono, ¿cuenta como estar juntos?",
+   "ejemplo": "A: «Si nos sentamos en el sofá después de cenar, entonces cuento yo cómo me fue». B: «Si el sábado por la tarde estamos en casa, entonces propongo yo un plan fuera».",
+   "insignia": "Ilustre Colegio del Sofá Paralelo",
+   "intensidad": "profunda",
+   "intereses": [
+    "Necesito poder estar en casa sin tener que rendir socialmente, porque ese silencio tranquilo es justo lo bueno de vivir con alguien.",
+    "Necesito que quede algún rato del día en el que nos hagamos caso, porque si no, la convivencia se va pareciendo cada vez más a compartir casa con cualquiera."
+   ]
+  }
+ ],
+ "eje": "situacional",
+ "nota": "Cada tema es una PREGUNTA DE OPINION con dos salidas legitimas dentro. No hay posturas repartidas: quien juega fija la suya al hablar. `intereses` son las dos necesidades en tension del tema, sin dueno."
+}

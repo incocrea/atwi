@@ -942,16 +942,12 @@
   /* ======================================================================
      Retocar una sección suelta del tema
      ====================================================================== */
+  /* Ya solo se retoca el enunciado: las posturas se fueron del tema. */
   var SECCIONES = {
-    enunciado: { titulo: 'El enunciado', minimo: 15, max: 240,
-                 pista: 'La disputa, en una frase, con las dos salidas dentro.',
-                 corto: 'El enunciado se queda corto: tiene que plantear la disputa entera.' },
-    a: { titulo: 'Postura A', minimo: 5, max: 240,
-         pista: 'Lo que defiende quien está de un lado.',
-         corto: 'Falta lo que defiende esta postura.' },
-    b: { titulo: 'Postura B', minimo: 5, max: 240,
-         pista: 'Lo que defiende quien está del otro.',
-         corto: 'Falta lo que defiende esta postura.' }
+    enunciado: { titulo: 'La pregunta', minimo: 15, max: 240,
+                 pista: 'Una pregunta de opinión, con las dos salidas dentro y sin ' +
+                        'inclinarse por ninguna.',
+                 corto: 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.' }
   };
   var retocando = null;
 
@@ -1026,10 +1022,10 @@
     $('#m-escribir .modal__cuerpo').innerHTML =
       '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
         (t && !propio
-          ? 'Cambia el enunciado o las posturas para que se parezcan a la discusión de ustedes. ' +
+          ? 'Cambia la pregunta para que se parezca a la discusión de ustedes. ' +
             'El tema original del catálogo no se toca: puedes volver a él cuando quieras.'
-          : 'Escribe la discusión como es en casa. El enunciado plantea el desacuerdo; ' +
-            'las dos posturas son ejemplos de por dónde suele ir, no lados asignados.') +
+          : 'Escríbelo como una pregunta de opinión, con las dos salidas dentro. ' +
+            'Nadie elige lado: cada quien dice lo suyo al hablar.') +
       '</p>' +
 
       (reescrito
@@ -1043,27 +1039,22 @@
       '<div class="apilado-5">' +
         campoTexto('e-titulo', 'Título corto', t ? t.titulo : '', 'input',
                    'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».', 60) +
-        campoTexto('e-enunciado', 'El enunciado', t ? t.enunciado : '', 'textarea',
-                   'La disputa, en una frase, con las dos salidas dentro. ' +
-                   'Por ejemplo: «Los platos se lavan al terminar de comer, o pueden esperar a la mañana».', 240) +
-
-        '<div class="postura-campo postura-campo--a">' +
-          campoTexto('e-a', 'Postura A', t ? t.a : '', 'textarea',
-                     'Una de las dos maneras de verlo. Sirve de ejemplo, no se asigna.', 240) +
-        '</div>' +
-        '<div class="postura-campo postura-campo--b">' +
-          campoTexto('e-b', 'Postura B', t ? t.b : '', 'textarea',
-                     'Lo que defiende quien está del otro.', 240) +
-        '</div>' +
+        campoTexto('e-enunciado', 'La pregunta', t ? t.enunciado : '', 'textarea',
+                   'Una pregunta de opinión. Por ejemplo: «¿Los platos se lavan al ' +
+                   'terminar de comer o pueden esperar a la mañana?».', 240) +
 
         '<p class="chico" id="e-error" style="color:var(--peligro)"></p>' +
       '</div>' +
 
+      /* LA PRUEBA QUE ANTES HACÍAN LAS POSTURAS. Se pedían dos y si una era
+         indefendible el tema no valía. Sin ellas, la prueba se hace sobre la
+         propia pregunta, y por eso este aviso dice qué tiene que cumplir: si
+         solo admite una respuesta decente, no es un desacuerdo, es un acusado y
+         un fiscal, y el árbitro no tendría nada que arbitrar. */
       '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
-        '<span>Las dos posturas NO se reparten: nadie las elige y no se enseñan antes de ' +
-        'jugar. Están para que el tema se entienda y para una comprobación: si una de las ' +
-        'dos no se puede defender, el tema no es un desacuerdo. Si una es indefendible, ' +
-        'el árbitro no tiene nada que arbitrar y el resultado no vale nada.</span>' +
+        '<span>Escríbelo como <strong>pregunta</strong>, y que las dos respuestas se ' +
+        'puedan defender. Si solo hay una respuesta decente, eso no es un desacuerdo: ' +
+        'es una acusación, y el resultado no valdría nada.</span>' +
       '</div>' +
 
       (reescrito
@@ -1098,17 +1089,17 @@
 
   function guardarTema() {
     var v = function (id) { return ($('#' + id).value || '').trim(); };
-    var titulo = v('e-titulo'), enunciado = v('e-enunciado'), a = v('e-a'), b = v('e-b');
+    var titulo = v('e-titulo'), enunciado = v('e-enunciado');
     var fallo =
       titulo.length < 3 ? 'El título necesita al menos tres letras.' :
-      enunciado.length < 15 ? 'El enunciado se queda corto: tiene que plantear la disputa entera.' :
-      a.length < 5 ? 'Falta lo que defiende la postura A.' :
-      b.length < 5 ? 'Falta lo que defiende la postura B.' :
-      a.toLowerCase() === b.toLowerCase() ? 'Las dos posturas dicen lo mismo: entonces no hay debate.' : '';
+      enunciado.length < 15 ? 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.' :
+      /* No se exige el signo de interrogación —hay preguntas sin él— pero sí que
+         ofrezca dos salidas, que es lo que hace que haya algo que discutir. */
+      !/\bo\b/i.test(enunciado) ? 'Falta la otra salida: la pregunta tiene que ofrecer dos.' : '';
     if (fallo) { $('#e-error').textContent = fallo; return; }
 
     var t = datos.tema(escribiendo.id);
-    var campos = { titulo: titulo, enunciado: enunciado, a: a, b: b,
+    var campos = { titulo: titulo, enunciado: enunciado,
                    intensidad: (t && t.intensidad) || intensidadElegida };
     var guardado = escribiendo.propio
       ? datos.guardarTemaPropio(Object.assign({ id: escribiendo.id }, campos))

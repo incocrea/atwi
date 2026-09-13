@@ -933,9 +933,6 @@ body.app {
 /* --- Escribir un tema ---------------------------------------------------------- */
 .campo--parrafo { min-height: 5.5rem; resize: vertical; line-height: 1.45; font: inherit; }
 /* Cada postura lleva su letra al borde para no confundirse al escribir. */
-.postura-campo { border-left: 3px solid var(--linea-fuerte); padding-left: var(--e-3); }
-.postura-campo--a { border-left-color: var(--voz-a); }
-.postura-campo--b { border-left-color: var(--voz-b); }
 
 /* --- Trozos que se retocan sueltos --------------------------------------------
    El enunciado y cada postura son botones: se tocan y se editan solos. El lápiz
