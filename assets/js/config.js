@@ -23,9 +23,9 @@ window.ATWI.config = {
     debate: {
       nombre: 'Controversia',
       partido: ['Controvers', 'IA', ''],
-      que: '¿No se ponen de acuerdo? ¡Que la ciencia decida! Un juez IA escucha sus ' +
-           'argumentos, consulta qué dicen los expertos al respecto y evalúa quién ' +
-           'defiende mejor su posición. 100% neutral.',
+      que: 'Un tema en común, ambos pueden estar a favor o en contra. Un juez IA escucha ' +
+           'sus argumentos, consulta qué dicen los expertos al respecto y evalúa quién ' +
+           'argumenta mejor su posición frente al tema. 100% neutral.',
       clave: 'No va de quién tiene la razón (eso no sirve de nada), va de que aprendas a ' +
              'defender mejor tu punto de vista.'
     },
@@ -62,7 +62,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'd3cf407',
+  version: '3a0d523',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
