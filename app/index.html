@@ -11,10 +11,10 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo como adulto, Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=9c97898">
-<link rel="stylesheet" href="../assets/css/base.css?v=9c97898">
-<link rel="stylesheet" href="../assets/css/app.css?v=9c97898">
-<link rel="stylesheet" href="../assets/css/modal.css?v=9c97898">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=8f003e8">
+<link rel="stylesheet" href="../assets/css/base.css?v=8f003e8">
+<link rel="stylesheet" href="../assets/css/app.css?v=8f003e8">
+<link rel="stylesheet" href="../assets/css/modal.css?v=8f003e8">
 </head>
 
 <body class="app">
@@ -80,6 +80,10 @@
     <div class="modal__cabecera">
       <button class="boton-icono" data-accion="p-salir" aria-label="Salir de la partida" data-icono="cerrar"></button>
       <span class="modal__titulo" id="t-partida">La sala</span>
+      <!-- En qué turno va la partida. Vive en la cabecera y no en la tarjeta:
+           es un dato de estado, se consulta de refilón y no tiene por qué
+           robarle sitio a lo que hay que leer para hablar. -->
+      <span class="modal__estado" id="p-turno" hidden></span>
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie"></div>
@@ -174,16 +178,16 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=9c97898"></script>
-<script src="../assets/js/iconos.js?v=9c97898"></script>
-<script src="../assets/js/personajes.js?v=9c97898"></script>
-<script src="../assets/js/datos.js?v=9c97898"></script>
-<script src="../assets/js/sonido.js?v=9c97898"></script>
-<script src="../assets/js/veredicto.js?v=9c97898"></script>
-<script src="../assets/js/grabadora.js?v=9c97898"></script>
-<script src="../assets/js/partida.js?v=9c97898"></script>
-<script src="../assets/js/auth.js?v=9c97898"></script>
-<script src="../assets/js/entrada.js?v=9c97898"></script>
-<script src="../assets/js/app.js?v=9c97898"></script>
+<script src="../assets/js/config.js?v=8f003e8"></script>
+<script src="../assets/js/iconos.js?v=8f003e8"></script>
+<script src="../assets/js/personajes.js?v=8f003e8"></script>
+<script src="../assets/js/datos.js?v=8f003e8"></script>
+<script src="../assets/js/sonido.js?v=8f003e8"></script>
+<script src="../assets/js/veredicto.js?v=8f003e8"></script>
+<script src="../assets/js/grabadora.js?v=8f003e8"></script>
+<script src="../assets/js/partida.js?v=8f003e8"></script>
+<script src="../assets/js/auth.js?v=8f003e8"></script>
+<script src="../assets/js/entrada.js?v=8f003e8"></script>
+<script src="../assets/js/app.js?v=8f003e8"></script>
 </body>
 </html>

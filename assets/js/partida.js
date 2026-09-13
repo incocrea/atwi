@@ -172,6 +172,14 @@ window.ATWI = window.ATWI || {};
     };
   }
 
+  /** El turno, en la cabecera. Es estado, no contenido: se mira de refilón. */
+  function marcarTurno(t) {
+    var e = $('#p-turno');
+    if (!e) return;
+    e.textContent = t ? t.numero + '/' + P.turnos : '';
+    e.hidden = !t;
+  }
+
   /** A quién acaba de escuchar quien habla ahora. */
   function elOtro() {
     return P.jugadores[P.orden[(P.i + 1) % 2]];
@@ -415,6 +423,7 @@ window.ATWI = window.ATWI || {};
      1. EL SORTEO, ANTES DE EMPEZAR
      ========================================================================== */
   function pintarAviso() {
+    marcarTurno(null);
     caja().innerHTML =
       '<div class="sala sala--sorteo">' +
         /* EL MODO MANDA Y VA FUERA DE LA TARJETA. Dentro competía con el
@@ -553,12 +562,24 @@ window.ATWI = window.ATWI || {};
     caja.id = 'encuentro';
     caja.className = 'encuentro' + (pacto ? ' encuentro--pacto' : '');
     caja.setAttribute('aria-hidden', 'true');
+    /* Sobre cada figura, su ficha y su nombre. Sin esto hay que deducir quién
+       es cada uno por el dibujo, y si los dos eligieron el mismo personaje no
+       hay forma: se distinguen por el aro, y el aro solo se ve en la ficha. */
+    function rotulado(j) {
+      return '<span class="encuentro__quien">' +
+          window.ATWI.fichaHTML(j.avatar, 'avatar--mini', j.color) +
+          '<span>' + esc(j.nombre) + '</span>' +
+        '</span>';
+    }
+
     caja.innerHTML =
       '<span class="encuentro__lado encuentro__lado--izq">' +
+        rotulado(izq) +
         window.ATWI.retrato(izq.avatar, pose, { fondo: null, mira: 'derecha',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
       '<span class="encuentro__lado encuentro__lado--der">' +
+        rotulado(der) +
         window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
@@ -611,10 +632,6 @@ window.ATWI = window.ATWI || {};
     caja().innerHTML =
       '<div class="sala sala--turno">' +
         '<div class="turno">' +
-          /* Solo el número de turno. La letra de la postura —«defiendes la A»—
-             obligaba a recordar un rótulo para entender la frase de abajo, que
-             ya dice lo que hay que defender. */
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + '</p>' +
           '<p class="turno__que">' + esc(loSuyo) + '</p>' +
         '</div>' +
         /* EL ORDEN DE LA PANTALLA, de arriba abajo: qué toca, cómo va la
@@ -623,16 +640,20 @@ window.ATWI = window.ATWI || {};
            turno y el botón lo abre. Arriba quedaba lejos de su botón y con la
            lista de turnos metida en medio. */
         loDicho() +
+        /* El nombre y la frase van ENCIMA de la figura, no debajo: la figura
+           baja a tocar el botón de grabar —asoma por detrás de él, como si
+           saliera de ahí— y el texto entre medias rompía esa continuidad. */
         '<div class="hablante">' +
-          window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
-                                                      clase: 'hablante__fig' }) +
           '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
           '<p class="juez__dice" id="juez-dice">' +
             esc(t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') +
           '</p>' +
+          window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
+                                                      clase: 'hablante__fig' }) +
         '</div>' +
       '</div>';
 
+    marcarTurno(t);
     pie().innerHTML = botonDeGrabar('grabar') +
       '<p class="chico centrado pie-nota">Tocas para empezar y tocas para parar. ' +
         'Podrás escucharlo antes de mandarlo.</p>';

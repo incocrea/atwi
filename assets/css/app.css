@@ -1141,13 +1141,20 @@ body.app {
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
   box-shadow: var(--sombra-1);
 }
-.turno__cual {
-  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
-  text-transform: uppercase; color: var(--ctx-tenue-2);
+/* El turno vive en la cabecera. Aquí ocupaba un renglón entero de la tarjeta
+   para decir un número, y la tarjeta es lo que hay que leer antes de hablar. */
+.modal__estado {
+  flex: none; padding: 4px 10px; border-radius: var(--radio-pastilla);
+  background: var(--ctx-halo, var(--crema-hondo));
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+  color: var(--ctx-tenue, var(--tinta-suave));
 }
+.modal__estado[hidden] { display: none; }
+/* Dos píxeles menos que un h3: el enunciado de un tema puede ser largo y a
+   tamaño de titular se comía media pantalla. */
 .turno__que {
-  margin-top: 6px; font-family: var(--display); font-weight: 800;
-  font-size: var(--t-h3); line-height: 1.3;
+  font-family: var(--display); font-weight: 800;
+  font-size: calc(var(--t-h3) - 2px); line-height: 1.35;
 }
 
 /* QUIEN HABLA, ENTERO Y GRANDE. Estuvo recortado en un disco, de la cintura
@@ -1162,6 +1169,10 @@ body.app {
   height: clamp(190px, 33vh, 330px);
   border-radius: var(--radio-carta); box-shadow: none;
 }
+/* El botón de grabar se sube lo justo para taparle los pies a la figura. Es un
+   5%, y con eso deja de estar «encima de» y pasa a parecer que la figura sale
+   de detrás del botón. Más y se le come la ropa; menos y no se lee. */
+#m-partida:has(.sala--turno) .modal__pie { margin-top: -16px; }
 .hablante__fig .retrato__fig {
   object-fit: contain; object-position: center bottom; transform: none;
 }
@@ -1502,6 +1513,20 @@ body.app {
 .encuentro--llegado .encuentro__lado {
   transition: transform 620ms cubic-bezier(.16, .84, .3, 1.06);
 }
+
+/* El rótulo de cada uno, sobre su figura y del lado donde le tocó quedar. Va
+   dentro del lado y no suelto en la banda, así que viaja con él en la entrada:
+   nombre y personaje llegan juntos, que es lo que los relaciona. */
+.encuentro__quien {
+  position: absolute; top: 0; z-index: 4;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px 4px 4px; border-radius: var(--radio-pastilla);
+  background: var(--superficie); box-shadow: var(--sombra-1);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+  color: var(--tinta); white-space: nowrap;
+}
+.encuentro__lado--izq .encuentro__quien { right: 8%; }
+.encuentro__lado--der .encuentro__quien { left: 8%; }
 
 .encuentro__fig { position: absolute; inset: 0; display: block; }
 /* SIN sombra. Se le puso una y lo que hacía era delatar el contenedor: la
