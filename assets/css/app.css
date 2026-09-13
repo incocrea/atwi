@@ -1075,6 +1075,13 @@ body.app {
   animation: sorteo-late 340ms ease-in-out infinite alternate;
 }
 .sorteo__ficha--parada { animation: sorteo-para 620ms var(--rebote); }
+/* Quien abre sale de escena antes de que entren los dos: se desvanece y deja de
+   ocupar sitio, para que el encuentro tenga el centro entero. */
+.sorteo--fuera {
+  opacity: 0; transform: scale(.9);
+  transition: opacity 300ms var(--suave), transform 300ms var(--suave);
+  pointer-events: none;
+}
 @keyframes sorteo-late { from { transform: scale(1); } to { transform: scale(1.06); } }
 @keyframes sorteo-para {
   0% { transform: scale(1.18); }
@@ -1132,12 +1139,23 @@ body.app {
    son la misma cosa —uno dice de quién es el turno y el otro lo abre—, así que
    separarlos con la lista en medio era partir en dos lo que se lee junto. */
 .sala--turno {
-  display: flex; flex-direction: column; gap: var(--e-4);
+  /* El alto de la figura vive aquí y no en su regla, porque el botón de grabar
+     lo necesita para saber cuánto tiene que subirse: el solape es un 5% DE LA
+     FIGURA, no una cantidad fija. Con un valor fijo, al cambiar el alto de la
+     figura el solape dejaba de ser el que se había decidido. */
+  --alto-hablante: clamp(178px, 30vh, 300px);
+  display: flex; flex-direction: column; gap: var(--e-3);
   min-height: 100%;
 }
+/* Cuando encima de la figura hay algo —el reloj mientras se graba, la pista
+   mientras se revisa— la figura encoge para hacerle sitio. Es la misma pantalla
+   con una cosa más, no otra pantalla: lo que no puede pasar es que aparezca una
+   barra de scroll a mitad de grabación. */
+.sala--conmedio { --alto-hablante: clamp(120px, 19vh, 200px); }
+.sala--conmedio .reloj, .sala--conmedio .pista { width: 100%; margin: 2px 0 4px; }
 .sala--turno .hablante { margin-top: auto; }
 .turno {
-  text-align: center; padding: var(--e-3) var(--e-4);
+  text-align: center; padding: var(--e-3);
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
   box-shadow: var(--sombra-1);
 }
@@ -1163,20 +1181,30 @@ body.app {
    la postura— es justo lo que cuenta que está exponiendo su idea. El disco de
    color se queda detrás, ovalado y suelto, porque es lo que tiñe la escena del
    color de quien habla. */
-.hablante { display: grid; justify-items: center; gap: var(--e-2); }
+.hablante { display: grid; justify-items: center; gap: 2px; }
 .hablante__fig {
-  width: 100%; max-width: 300px;
-  height: clamp(190px, 33vh, 330px);
+  width: 100%; max-width: 285px;
+  height: var(--alto-hablante, 300px);
   border-radius: var(--radio-carta); box-shadow: none;
 }
-/* El botón de grabar se sube lo justo para taparle los pies a la figura. Es un
-   5%, y con eso deja de estar «encima de» y pasa a parecer que la figura sale
-   de detrás del botón. Más y se le come la ropa; menos y no se lee. */
-#m-partida:has(.sala--turno) .modal__pie { margin-top: -16px; }
+/* El botón de grabar se sube lo justo para taparle los pies a la figura: un 5%
+   de su alto. Con eso deja de estar «encima de» y pasa a parecer que la figura
+   sale de detrás del botón. Más y se le come la ropa; menos y no se lee.
+
+   Va con `top` y no con `margin-top`. Con margen negativo no pasaba nada: el
+   pie subía, sí, pero ese alto se lo devolvía al cuerpo, la figura bajaba con
+   él y el solape volvía a ser cero. `top` mueve el pie SIN repartir alto. */
+#m-partida:has(.sala--turno) .modal__pie {
+  top: calc(var(--alto-hablante, 300px) * -0.05);
+}
+/* Y el cuerpo pierde su relleno de abajo SOLO aquí: dejaba veinte píxeles de
+   aire bajo los pies de la figura, así que el pie subía quince y seguía sin
+   tocarla. El solape tiene que empezar donde acaba el dibujo. */
+#m-partida:has(.sala--turno) .modal__cuerpo { padding-bottom: 0; }
 .hablante__fig .retrato__fig {
   object-fit: contain; object-position: center bottom; transform: none;
 }
-.turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.75rem; }
+.turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.66rem; }
 
 /* --- El reloj ----------------------------------------------------------------- */
 .reloj { text-align: center; font-family: var(--display); font-weight: 800; }
@@ -1248,12 +1276,16 @@ body.app {
    en ruedas caben en dos líneas y se sigue viendo de quién es cada una por la
    inicial y el color del borde. */
 .dicho { display: grid; gap: var(--e-2); }
+/* Centrado y más chico. Es un rótulo de sección, no un titular, y a la
+   izquierda y con el aire de arriba se comía un renglón que aquí hace falta
+   para que la pantalla no scrollee. */
 .dicho__titulo {
-  display: flex; align-items: center; gap: 6px;
-  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  font-size: 10px; font-weight: 800; letter-spacing: .04em;
   text-transform: uppercase; color: var(--ctx-tenue-2);
-  margin-top: var(--e-2);
+  margin-top: 0; margin-bottom: 4px;
 }
+.dicho__titulo svg { width: 13px; height: 13px; }
 .ruedas { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--e-2); }
 
 /* Cada rueda ES la ficha de quien habló: su dibujo sobre su color, igual que

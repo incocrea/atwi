@@ -50,6 +50,34 @@ window.ATWI = window.ATWI || {};
     });
   }
 
+  /**
+   * Aclara un color hacia el blanco. Se calcula aquí y no con `color-mix` de
+   * CSS porque donde no haya soporte el relleno sale inválido y la mancha
+   * desaparece sin avisar; esto da un rgb() que entiende cualquier navegador.
+   * @param p cuánto blanco lleva, de 0 a 1
+   */
+  function aclarar(hex, p) {
+    var h = String(hex || '').replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    if (!/^[0-9a-f]{6}$/i.test(h)) return null;
+    var v = [0, 2, 4].map(function (i) {
+      var n = parseInt(h.substr(i, 2), 16);
+      return Math.round(n + (255 - n) * p);
+    });
+    return 'rgb(' + v.join(',') + ')';
+  }
+
+  /**
+   * Los dos tonos de la mancha. Si viene un color —el del aro que eligió quien
+   * juega— la mancha se hace con ÉL, y no con el azul o el rosa del personaje.
+   * Es lo que hace que la escena sea de esa persona y no del dibujo: dos Kai en
+   * la misma sala tienen que distinguirse también aquí.
+   */
+  function tonos(c, color) {
+    var t = aclarar(color, 0.86);
+    return t ? { tinte: t, medio: aclarar(color, 0.62) } : c;
+  }
+
   /* Las dos manchas. Van en dos óvalos y no en uno con degradado: dos tonos
      planos dan la misma sensación de volumen y respetan la regla de la casa. */
   function disco(c) {
@@ -80,14 +108,18 @@ window.ATWI = window.ATWI || {};
     estela: [estela, 'xMidYMid slice']
   };
 
-  /** La mancha de color de un personaje, suelta. `tipo` es 'disco' o 'estela'. */
-  window.ATWI.fondoPersonaje = function (quien, tipo) {
+  /**
+   * La mancha de color de un personaje, suelta.
+   * @param tipo  'disco' o 'estela'
+   * @param color el aro de quien juega; si no viene, el color del personaje
+   */
+  window.ATWI.fondoPersonaje = function (quien, tipo, color) {
     var c = GENTE[quien];
     var f = FONDOS[tipo];
     if (!c || !f) return '';
     return '<svg class="retrato__fondo" viewBox="0 0 100 100" ' +
       'preserveAspectRatio="' + f[1] + '" aria-hidden="true" focusable="false">' +
-      f[0](c) + '</svg>';
+      f[0](tonos(c, color)) + '</svg>';
   };
 
   /* HACIA DÓNDE MIRA CADA POSE. Hace falta para poder ponerlas cara a cara: en
@@ -108,13 +140,14 @@ window.ATWI = window.ATWI || {};
    * El personaje entero: la mancha detrás y la figura encima.
    * @param quien 'kai' o 'luna'
    * @param pose  una clave de POSES
-   * @param op    { fondo: 'disco'|'estela'|null, clase: '', mira: 'derecha'|'izquierda' }
+   * @param op    { fondo, clase, mira, color } — `color` es el aro de quien juega
    */
   window.ATWI.retrato = function (quien, pose, op) {
     var c = GENTE[quien];
     if (!c || !POSES[pose]) return '';
     op = op || {};
-    var fondo = op.fondo === null ? '' : window.ATWI.fondoPersonaje(quien, op.fondo || 'disco');
+    var fondo = op.fondo === null ? ''
+      : window.ATWI.fondoPersonaje(quien, op.fondo || 'disco', op.color);
     var natural = (MIRA[pose] || {})[quien];
     var voltea = op.mira && natural && op.mira !== natural;
     return '<span class="retrato ' + (op.clase || '') + (voltea ? ' retrato--volteado' : '') +
@@ -179,7 +212,7 @@ window.ATWI = window.ATWI || {};
     return '<span class="avatar avatar--pj ' + (clase || '') + '"' +
         (borde ? ' style="--borde-ficha:' + esc(borde) + '"' : '') +
         ' data-quien="' + quien + '">' +
-        window.ATWI.fondoPersonaje(quien, 'disco') +
+        window.ATWI.fondoPersonaje(quien, 'disco', borde) +
         '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-frente.png" ' +
           'alt="' + esc(GENTE[quien].nombre) + '" loading="lazy" decoding="async">' +
       '</span>';

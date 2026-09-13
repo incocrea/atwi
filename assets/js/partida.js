@@ -518,10 +518,16 @@ window.ATWI = window.ATWI || {};
       var b = $('#m-partida [data-accion="p-listo"]');
       if (b) b.disabled = false;
       if (sonido.hay()) sonido.campana();
-      /* Segundo y medio de silencio antes del encuentro. Encadenarlo a la
-         campana pisaría el momento en que se lee quién abre, que es lo que se
-         acaba de ganar con cuatro segundos de sorteo. */
-      setTimeout(entrarAlEncuentro, MS_ANTES_DEL_ENCUENTRO);
+      /* Un segundo para leer quién abre —es lo que se acaba de ganar con cuatro
+         segundos de sorteo— y el ganador SALE DE ESCENA. Se quedaba, y su
+         nombre acababa cruzado por el VS: dos cosas distintas peleando por el
+         centro de la pantalla. Ahora el sitio queda libre para los dos. */
+      setTimeout(function () {
+        if (!P || P.estado !== 'aviso') return;
+        var s = $('#m-partida .sorteo');
+        if (s) s.classList.add('sorteo--fuera');
+        setTimeout(entrarAlEncuentro, MS_SALIDA_GANADOR);
+      }, MS_ANTES_DEL_ENCUENTRO);
     }
   }
 
@@ -541,7 +547,8 @@ window.ATWI = window.ATWI || {};
      No lleva velo oscuro: en esta app no hay fondos oscuros. El que hay es un
      lavado del color del modo, que además dice de qué modo es la partida.
      ========================================================================== */
-  var MS_ANTES_DEL_ENCUENTRO = 1500;   // desde que para la ficha del sorteo
+  var MS_ANTES_DEL_ENCUENTRO = 1000;   // desde que para la ficha del sorteo
+  var MS_SALIDA_GANADOR = 300;         // lo que tarda en irse quien abre
   var MS_VIAJE = 620;                  // lo que tardan en llegar
 
   function entrarAlEncuentro() {
@@ -612,6 +619,51 @@ window.ATWI = window.ATWI || {};
      El reloj no aparece aquí: a 0:00 no dice nada y ocupa el sitio de lo que sí
      importa antes de hablar, que es volver a oír lo que dijo el otro.
      ========================================================================== */
+  /**
+   * LA SALA ES UNA SOLA PANTALLA. Grabar, escuchar lo grabado y mandarlo no son
+   * tres pantallas: son la misma, con el mismo tema arriba, los mismos turnos
+   * en medio y la misma figura abajo. Lo único que cambia es lo que dice el
+   * juez, lo que aparece encima de la figura —nada, el reloj o la pista— y los
+   * botones del pie.
+   *
+   * Antes cada estado se pintaba entero por su cuenta, con su propia maqueta, y
+   * al tocar grabar se saltaba a una pantalla distinta: se perdía de vista a
+   * quien estaba hablando justo cuando más falta hacía saber de quién era el
+   * turno, y el diseño cambiaba debajo de los pies.
+   */
+  function pintarSala(op) {
+    var t = turnoActual();
+    var pacto = P.modo !== 'debate';
+    /* QUÉ SE TIENE DELANTE MIENTRAS SE HABLA, y no es lo mismo en los dos modos.
+       En Controversia es la POSTURA que le tocó defender a quien habla; en
+       Negociación no se defiende nada, así que es el tema sobre el que se va a
+       proponer. Si el tema no trae posturas escritas —los hay— se cae al
+       enunciado en vez de dejar una tarjeta vacía. */
+    var loSuyo = (!pacto && t.postura) ? t.postura : P.tema.enunciado;
+    marcarTurno(t);
+
+    caja().innerHTML =
+      '<div class="sala sala--turno' + (op.medio ? ' sala--conmedio' : '') + '">' +
+        '<div class="turno">' +
+          '<p class="turno__que">' + esc(loSuyo) + '</p>' +
+        '</div>' +
+        loDicho() +
+        /* El nombre y la frase van ENCIMA de la figura, no debajo: la figura
+           baja a tocar el botón —asoma por detrás de él, como si saliera de
+           ahí— y el texto entre medias rompía esa continuidad. */
+        '<div class="hablante">' +
+          '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
+          '<p class="juez__dice" id="juez-dice">' + esc(op.dice) + '</p>' +
+          (op.medio || '') +
+          window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
+                                                      color: t.color,
+                                                      clase: 'hablante__fig' }) +
+        '</div>' +
+      '</div>';
+
+    pie().innerHTML = op.pie;
+  }
+
   function pintarTurno() {
     var t = turnoActual();
     P.estado = 'turno';
@@ -621,42 +673,12 @@ window.ATWI = window.ATWI || {};
        queda debajo de los turnos hasta el final de la partida. */
     if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
 
-    var pacto = P.modo !== 'debate';
-    /* QUÉ SE TIENE DELANTE MIENTRAS SE HABLA, y no es lo mismo en los dos modos.
-       En Controversia es la POSTURA que le tocó defender a quien habla; en
-       Negociación no se defiende nada, así que es el tema sobre el que se va a
-       proponer. Si el tema no trae posturas escritas —los hay— se cae al
-       enunciado en vez de dejar una tarjeta vacía, que era lo que pasaba. */
-    var loSuyo = (!pacto && t.postura) ? t.postura : P.tema.enunciado;
-
-    caja().innerHTML =
-      '<div class="sala sala--turno">' +
-        '<div class="turno">' +
-          '<p class="turno__que">' + esc(loSuyo) + '</p>' +
-        '</div>' +
-        /* EL ORDEN DE LA PANTALLA, de arriba abajo: qué toca, cómo va la
-           partida, y quién habla. Quien habla va ABAJO, pegado al botón de
-           grabar, porque son la misma cosa: el retrato dice de quién es el
-           turno y el botón lo abre. Arriba quedaba lejos de su botón y con la
-           lista de turnos metida en medio. */
-        loDicho() +
-        /* El nombre y la frase van ENCIMA de la figura, no debajo: la figura
-           baja a tocar el botón de grabar —asoma por detrás de él, como si
-           saliera de ahí— y el texto entre medias rompía esa continuidad. */
-        '<div class="hablante">' +
-          '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
-          '<p class="juez__dice" id="juez-dice">' +
-            esc(t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') +
-          '</p>' +
-          window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
-                                                      clase: 'hablante__fig' }) +
-        '</div>' +
-      '</div>';
-
-    marcarTurno(t);
-    pie().innerHTML = botonDeGrabar('grabar') +
-      '<p class="chico centrado pie-nota">Tocas para empezar y tocas para parar. ' +
-        'Podrás escucharlo antes de mandarlo.</p>';
+    pintarSala({
+      dice: t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.',
+      pie: botonDeGrabar('grabar') +
+        '<p class="chico centrado pie-nota">Tocas para empezar y tocas para parar. ' +
+          'Podrás escucharlo antes de mandarlo.</p>'
+    });
   }
 
   /* ==========================================================================
@@ -723,22 +745,14 @@ window.ATWI = window.ATWI || {};
     var tope = cfg.reglas.segundosPorTurno;
     P.estado = 'grabando';
 
-    caja().innerHTML =
-      '<div class="sala">' +
-        '<p class="sala__recordatorio">' + esc(P.tema.enunciado) + '</p>' +
-        juez('juez--escuchando', 'Te escucho.') +
-        '<div class="turno">' +
-          '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + '</p>' +
-        '</div>' +
-        '<div class="reloj reloj--corriendo" id="reloj">' +
+    pintarSala({
+      dice: agregando ? 'Sigues sobre lo que ya grabaste.' : 'Te escucho.',
+      medio: '<div class="reloj reloj--corriendo" id="reloj">' +
           '<span id="reloj-n">' + relojTexto(grabadora.segundos()) + '</span>' +
-          '<span class="reloj__tope">de ' + relojTexto(tope) + '</span></div>' +
-        (agregando ? '<p class="sala__nota">Sigues sobre lo que ya grabaste.</p>' : '') +
-      '</div>';
-
-    pie().innerHTML = botonDeGrabar('parar') +
-      '<p class="chico centrado pie-nota">Estás grabando. Toca para parar.</p>';
+          '<span class="reloj__tope">de ' + relojTexto(tope) + '</span></div>',
+      pie: botonDeGrabar('parar') +
+        '<p class="chico centrado pie-nota">Estás grabando. Toca para parar.</p>'
+    });
   }
 
   /* ==========================================================================
@@ -774,25 +788,15 @@ window.ATWI = window.ATWI || {};
     var puedeAgregar = quedan >= MINIMO && grabadora.pausada() && grabadora.sabeAnadir();
     P.estado = 'revision';
 
-    caja().innerHTML =
-      '<div class="sala">' +
-        '<p class="sala__recordatorio">' + esc(P.tema.enunciado) + '</p>' +
-        juez('', 'Todavía no lo he oído. Lo escucho cuando me lo mandes.') +
-        '<div class="turno">' +
-          '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + ' · defiende la ' + t.letra + '</p>' +
-        '</div>' +
-        pista('b', 'Tu turno, sin mandar',
-          relojTexto(b.segundos) + ' · ' +
-          (quedan > 0 ? 'te quedan ' + quedan + ' s' : 'sin tiempo de sobra')) +
-        (corto
-          ? '<p class="sala__nota sala__nota--ojo">Eso duró ' + b.segundos + ' s. ' +
-            (puedeAgregar ? 'Agrega algo antes de mandarlo.' : 'Bórralo y grábalo otra vez.') + '</p>'
-          : '<p class="sala__nota">Escúchalo si quieres, o mándalo tal cual.</p>') +
-        loDicho() +
-      '</div>';
-
-    pie().innerHTML =
+    pintarSala({
+      dice: corto
+        ? 'Eso duró ' + b.segundos + ' s. ' +
+          (puedeAgregar ? 'Agrega algo antes de mandarlo.' : 'Bórralo y grábalo otra vez.')
+        : 'Todavía no lo he oído. Escúchalo si quieres, o mándamelo tal cual.',
+      medio: pista('b', 'Tu turno, sin mandar',
+        relojTexto(b.segundos) + ' · ' +
+        (quedan > 0 ? 'te quedan ' + quedan + ' s' : 'sin tiempo de sobra')),
+      pie:
       principal('p-mandar', t.esUltima ? 'Mandar y cerrar' : 'Mandar mi turno',
                 iconoSVG('listo', 22), corto) +
       (confirmandoBorrado
@@ -810,7 +814,8 @@ window.ATWI = window.ATWI || {};
             (puedeAgregar ? botonDeGrabar('agregar') : '') +
             '<button class="boton boton--suave boton--borrar" data-accion="p-borrar">' +
               iconoSVG('papelera', 18) + 'Borrar</button>' +
-          '</div>');
+          '</div>')
+    });
   }
 
   /* ==========================================================================
