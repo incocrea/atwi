@@ -193,9 +193,15 @@ window.ATWI = window.ATWI || {};
 
   /* Dentro de la sala NO entra el lavanda de la marca: el botón principal lleva
      el color del modo. Un color por modo y no se mezclan. */
-  function principal(accion, texto, ico, apagado) {
+  /**
+   * El botón grande del pie. Normalmente lleva el color del MODO, que es el de
+   * la sala. `color` lo cambia al de quien juega: se usa al mandar el turno,
+   * donde lo que se confirma es algo tuyo y no algo del juego.
+   */
+  function principal(accion, texto, ico, apagado, color) {
     return '<button class="boton boton--bloque boton--grande boton--' + P.modo + '"' +
-      ' data-accion="' + accion + '"' + (apagado ? ' disabled' : '') + '>' +
+      ' data-accion="' + accion + '"' + (apagado ? ' disabled' : '') +
+      (color ? ' style="--suyo:' + esc(color) + '"' : '') + '>' +
       (ico || '') + esc(texto) + '</button>';
   }
 
@@ -268,14 +274,32 @@ window.ATWI = window.ATWI || {};
                 '<span class="rueda__n">' + v.turno + '</span>' +
               '</button>';
           }).join('') +
+          /* LO GRABADO Y TODAVÍA NO MANDADO va en SU casilla, la que le toca, no
+             en una tarjeta aparte debajo. Es la misma cosa que las demás —un
+             turno que se puede oír— y sacarlo fuera obligaba a encoger la
+             figura para hacerle sitio. Aquí late y brilla para decir que está
+             ahí y que es nuevo, y se toca igual que los otros. Lo que no hace
+             es cerrar el turno: eso solo pasa al mandarlo. */
+          (P.borrador ? (function () {
+            var j = P.jugadores[turnoActual().jugador];
+            return '<button type="button" class="rueda rueda--nueva"' +
+                   ' style="--voz:' + esc(j.color) + '"' +
+                   ' data-oir="b" data-rueda="b"' +
+                   ' aria-label="Escuchar lo que acabas de grabar, sin mandar">' +
+                window.ATWI.fichaHTML(j.avatar, 'rueda__cara', j.color) +
+                '<span class="rueda__n">' + turnoActual().numero + '</span>' +
+              '</button>';
+          })() : '') +
           /* Los que faltan: sombras del tamaño exacto que va a ocupar la ficha.
              Sin ellos la fila crecía de la nada y saltaba la maqueta a cada
              turno cerrado. */
-          Array.apply(null, { length: Math.max(0, huecos - total) }).map(function (_, n) {
-            return '<span class="rueda rueda--hueco" aria-hidden="true">' +
-                '<span class="rueda__n">' + (Math.floor((total + n) / 2) + 1) + '</span>' +
-              '</span>';
-          }).join('') +
+          Array.apply(null, { length: Math.max(0, huecos - total - (P.borrador ? 1 : 0)) })
+            .map(function (_, n) {
+              var i = total + (P.borrador ? 1 : 0) + n;
+              return '<span class="rueda rueda--hueco" aria-hidden="true">' +
+                  '<span class="rueda__n">' + (Math.floor(i / 2) + 1) + '</span>' +
+                '</span>';
+            }).join('') +
         '</div>' +
         /* Aquí iba una leyenda con «Diana · A» y «Prueba · B». Se va: quién es
            quién ya lo dicen la cara y el aro de cada ficha, y la letra de la
@@ -792,13 +816,14 @@ window.ATWI = window.ATWI || {};
       dice: corto
         ? 'Eso duró ' + b.segundos + ' s. ' +
           (puedeAgregar ? 'Agrega algo antes de mandarlo.' : 'Bórralo y grábalo otra vez.')
-        : 'Todavía no lo he oído. Escúchalo si quieres, o mándamelo tal cual.',
-      medio: pista('b', 'Tu turno, sin mandar',
-        relojTexto(b.segundos) + ' · ' +
-        (quedan > 0 ? 'te quedan ' + quedan + ' s' : 'sin tiempo de sobra')),
+        : 'Ahí está tu turno, sin mandar. ' + relojTexto(b.segundos) +
+          (quedan > 0 ? ' · te quedan ' + quedan + ' s' : ' · sin tiempo de sobra'),
+      /* Sin `medio`: lo grabado vive arriba, en su casilla. Así la figura no
+         tiene que encogerse para hacerle sitio a una tarjeta que decía lo mismo
+         que la casilla que ya estaba ahí. */
       pie:
       principal('p-mandar', t.esUltima ? 'Mandar y cerrar' : 'Mandar mi turno',
-                iconoSVG('listo', 22), corto) +
+                iconoSVG('listo', 22), corto, t.color) +
       (confirmandoBorrado
         /* Se pregunta aquí dentro y no con un `confirm()` del navegador: eso
            rompe la pantalla completa y saca a la persona del juego. */

@@ -1151,7 +1151,7 @@ body.app {
    mientras se revisa— la figura encoge para hacerle sitio. Es la misma pantalla
    con una cosa más, no otra pantalla: lo que no puede pasar es que aparezca una
    barra de scroll a mitad de grabación. */
-.sala--conmedio { --alto-hablante: clamp(120px, 19vh, 200px); }
+.sala--conmedio { --alto-hablante: clamp(130px, 21vh, 215px); }
 .sala--conmedio .reloj, .sala--conmedio .pista { width: 100%; margin: 2px 0 4px; }
 .sala--turno .hablante { margin-top: auto; }
 .turno {
@@ -1299,6 +1299,30 @@ body.app {
   transition: transform var(--dur-corta) var(--suave);
 }
 .rueda:active { transform: scale(.92); }
+/* El botón de mandar se tiñe del color de quien juega. Lo que se confirma ahí
+   es algo TUYO —tu turno, grabado por ti— y no un paso del juego, así que no
+   lleva el color del modo sino el del aro que elegiste. Va con `--suyo` en
+   línea y gana por especificidad al color del modo. */
+.boton[style*="--suyo"] { background: var(--suyo); box-shadow: var(--sombra-2); }
+.boton[style*="--suyo"]:hover { filter: brightness(.94); }
+
+/* EL TURNO GRABADO Y SIN MANDAR. Está en su casilla como los demás, pero late y
+   lleva un halo del color de quien lo grabó: dice «esto es nuevo y está aquí»
+   sin sacarlo a una tarjeta aparte. El halo va en `box-shadow` y no en un borde,
+   para que no cambie el tamaño de la ficha y la fila no salte. */
+.rueda--nueva {
+  box-shadow: inset 0 0 0 2.5px rgba(255,255,255,.55),
+              0 0 0 3px var(--voz), 0 0 14px 2px var(--voz);
+  animation: rueda-nueva 1.6s ease-in-out infinite;
+}
+@keyframes rueda-nueva {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rueda--nueva { animation: none; }
+}
+
 /* Los turnos que faltan: la sombra del sitio que van a ocupar. Van en el mismo
    `.rueda` para que midan exactamente lo mismo —si no, la fila se movía al
    llenarse— pero sin ficha dentro y sin poder tocarse. */
