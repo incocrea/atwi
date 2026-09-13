@@ -240,13 +240,38 @@ window.ATWI = window.ATWI || {};
    * widget no dibuja nada cuando no hace falta desafío, así que la ausencia de
    * iframe no prueba nada. Lo que prueba que algo va mal es no tener token.
    */
+  /* EL AVISO VA EN TODAS PARTES, NO SOLO EN LOCAL. Esta comprobación existía ya
+     y llevaba `if (!enLocalhost()) return;`, escrita dando por hecho que un
+     widget mal configurado solo podía pasar en desarrollo. Pasó en atwi.app: el
+     dominio no estaba en la lista del widget, Turnstile se negó EN SILENCIO
+     —sin iframe, sin token y sin `error-callback`— y la puerta se quedó muerta
+     sin decir nada. La salvaguarda se callo justo donde hacía falta.
+
+     Se mira el IFRAME y no el token: el token puede tardar en llegar por red
+     lenta, pero si a los cuatro segundos no se dibujó ni el iframe es que
+     Turnstile rechazó el dominio. Es la diferencia entre «va lento» y «no va». */
   function avisarSiFaltaElCaptcha() {
-    if (!cfg.turnstileSiteKey || !enLocalhost()) return;
+    if (!cfg.turnstileSiteKey) return;
     setTimeout(function () {
       if (estado.captcha) return;
-      error('Aviso de local: el antirrobots no dio token para «localhost», así ' +
-            'que entrar va a fallar aquí. Revisa los dominios del widget ' +
-            cfg.turnstileSiteKey + ' en Cloudflare.');
+      var hueco = $('#captcha');
+      if (hueco && hueco.querySelector('iframe')) return;   // se dibujó: va lento, no roto
+
+      /* A quien juega se le dice algo que pueda entender y hacer. El diagnóstico
+         —qué dominio hay que dar de alta y en qué widget— va a la consola, que
+         es donde lo busca quien puede arreglarlo. */
+      if (window.console && console.warn) {
+        console.warn('[ATWI] Turnstile no dibujó el widget en «' + location.hostname +
+          '». Casi siempre es que ese dominio no está en la lista del widget ' +
+          cfg.turnstileSiteKey + ' en Cloudflare. Con el captcha obligatorio en ' +
+          'Supabase Auth, entrar va a fallar con captcha_failed.');
+      }
+      error(enLocalhost()
+        ? 'Aviso de local: el antirrobots no dio token para «localhost», así que ' +
+          'entrar va a fallar aquí. Revisa los dominios del widget ' +
+          cfg.turnstileSiteKey + ' en Cloudflare.'
+        : 'No pudimos cargar la verificación antirrobots. Probá a recargar la ' +
+          'página; si sigue igual, puede ser tu red o un bloqueador.');
     }, 4000);
   }
 
