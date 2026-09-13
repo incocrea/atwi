@@ -1417,9 +1417,9 @@ body.app {
 /* --- El reproductor flotante ---------------------------------------------------
    Se levanta sobre la sala al tocar una rueda. Barra que se arrastra y
    velocidad: escuchar un minuto entero para pescar una frase es insufrible. */
-/* EL REPRODUCTOR SALE SOBRE LA CABEZA de quien habla, no al pie de la pantalla.
-   Abajo quedaba pegado al botón y parecía otro control del pie; arriba se lee
-   como lo que es: lo que está diciendo esa figura. */
+/* EL REPRODUCTOR SALE SOBRE LA CABEZA de quien habla. Este `bottom` es solo el
+   punto de partida: la posición buena la calcula `ponerloSobreLaCabeza` midiendo
+   dónde está la figura, porque su alto depende de la pantalla. */
 .reproductor {
   position: absolute; left: var(--borde-pantalla); right: var(--borde-pantalla);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 210px);

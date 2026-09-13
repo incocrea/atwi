@@ -384,6 +384,27 @@ window.ATWI = window.ATWI || {};
     window.ATWI.animarBoca($('#m-partida .hablante__fig'), Boolean(a && !a.paused));
   }
 
+  /**
+   * El reproductor va SOBRE LA CABEZA de quien habla, no encima de él. Es lo que
+   * lo hace leer como «esto es lo que está diciendo» y no como un control que se
+   * le puso delante: tapándole la cara, lo que se ve es una tarjeta sobre un
+   * dibujo, y la figura deja de servir para nada.
+   *
+   * Se mide en vez de fijarse en CSS porque el alto de la figura cambia con la
+   * pantalla —es un `clamp` con `vh`— y cualquier número fijo acierta en un
+   * teléfono y falla en el siguiente. Puede quedar por encima del nombre; eso da
+   * igual, el nombre lo repite el propio reproductor.
+   */
+  function ponerloSobreLaCabeza(r) {
+    var fig = $('#m-partida .hablante__fig');
+    var m = $('#m-partida');
+    if (!fig || !m) return;
+    var caja = m.getBoundingClientRect();
+    var f = fig.getBoundingClientRect();
+    r.style.top = 'auto';
+    r.style.bottom = Math.max(12, Math.round(caja.bottom - f.top + 10)) + 'px';
+  }
+
   /** Quién y qué es lo que suena. El borrador no es de nadie todavía. */
   function quienSuena() {
     if (sonando === 'b') {
@@ -431,6 +452,7 @@ window.ATWI = window.ATWI || {};
           'aria-label="Avance de la grabación">' +
         '<span class="reproductor__t"><b id="r-t">0:00</b> / ' + relojTexto(duracionDe(sonando)) + '</span>' +
       '</div>';
+    ponerloSobreLaCabeza(r);
     refrescarReproductor('play');
   }
 
