@@ -697,13 +697,18 @@ window.ATWI = window.ATWI || {};
         '</span>';
     }
 
+    /* El `data-quien` va TAMBIÉN en el lado, y no solo en la figura. Cada
+       personaje se coloca a una altura distinta —Kai más arriba, que es más
+       alto— y esa altura es la que necesita el rótulo para posarse justo encima
+       de la cabeza. Estando el dato solo en la figura, el rótulo, que es su
+       hermano y no su hijo, no tenía forma de saber a qué altura quedaba. */
     caja.innerHTML =
-      '<span class="encuentro__lado encuentro__lado--izq">' +
+      '<span class="encuentro__lado encuentro__lado--izq" data-quien="' + esc(izq.avatar) + '">' +
         rotulado(izq) +
         window.ATWI.retrato(izq.avatar, pose, { fondo: null, mira: 'derecha',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
-      '<span class="encuentro__lado encuentro__lado--der">' +
+      '<span class="encuentro__lado encuentro__lado--der" data-quien="' + esc(der.avatar) + '">' +
         rotulado(der) +
         window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
                                                 clase: 'encuentro__fig' }) +
