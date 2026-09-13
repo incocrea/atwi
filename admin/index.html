@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>ATWI · tablero</title>
+<!--
+  EL TABLERO NO ES EL JUEGO. Vive en su propia carpeta, no carga ni un archivo
+  del juego y no comparte sesión con él: entrar aquí con la cuenta de jugar no
+  sirve de nada si esa cuenta no está en `admins`.
+
+  ESTO NO ES ESCRITORIO-SOLO POR CASUALIDAD. El juego es un móvil de 430 px y
+  aquí hay tablas de consumo con ocho columnas. Son dos productos distintos y se
+  diseñan distinto; la regla de «solo móvil» de CLAUDE.md es para el juego.
+
+  LA SEGURIDAD NO LA DA ESTA PÁGINA. La dan las políticas RLS: `es_admin()` en
+  la base. Aunque alguien se descargue este HTML y lo abra, la base no le va a
+  devolver una fila. Lo de aquí es comodidad, no una puerta.
+-->
+<style>
+  :root {
+    --tinta: #23202b; --suave: #6b6577; --tenue: #9b95a6;
+    --fondo: #f6f4f1; --papel: #fff; --linea: #e7e3de;
+    --marca: #7a6ad8; --bien: #2e9e7e; --mal: #d2564b; --ojo: #c98a1a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--fondo); color: var(--tinta);
+    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    background: var(--papel); border-bottom: 1px solid var(--linea);
+    padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+    position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: .02em; }
+  header .quien { margin-left: auto; color: var(--suave); font-size: 13px; }
+  nav { display: flex; gap: 4px; padding: 0 20px; background: var(--papel);
+        border-bottom: 1px solid var(--linea); position: sticky; top: 49px; z-index: 9; }
+  nav button {
+    font: inherit; font-weight: 600; background: none; border: 0; cursor: pointer;
+    padding: 10px 14px; color: var(--suave); border-bottom: 2px solid transparent;
+  }
+  nav button[aria-current] { color: var(--marca); border-bottom-color: var(--marca); }
+  main { padding: 20px; max-width: 1200px; margin: 0 auto; }
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
+  .tarjeta { background: var(--papel); border: 1px solid var(--linea); border-radius: 10px; padding: 14px 16px; }
+  .tarjeta .eti { color: var(--tenue); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
+  .tarjeta .dato { font-size: 24px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .tarjeta .pie { color: var(--suave); font-size: 12px; margin-top: 2px; }
+  table { width: 100%; border-collapse: collapse; background: var(--papel);
+          border: 1px solid var(--linea); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { background: #fbfaf9; font-size: 11px; text-transform: uppercase;
+       letter-spacing: .06em; color: var(--tenue); font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  h2 { font-size: 14px; margin: 26px 0 10px; letter-spacing: .02em; }
+  h2:first-child { margin-top: 0; }
+  .chico { font-size: 12px; color: var(--suave); }
+  .mal { color: var(--mal); } .bien { color: var(--bien); } .ojo { color: var(--ojo); }
+  .pastilla { display: inline-block; padding: 1px 7px; border-radius: 99px;
+              background: #efecf8; color: var(--marca); font-size: 11px; font-weight: 700; }
+  .aviso { background: #fff7e6; border: 1px solid #f0dcae; color: #6b5316;
+           padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 13px; }
+  /* --- La puerta --- */
+  #puerta { max-width: 340px; margin: 12vh auto; background: var(--papel);
+            border: 1px solid var(--linea); border-radius: 12px; padding: 26px; }
+  #puerta h1 { font-size: 17px; margin: 0 0 4px; }
+  #puerta input {
+    font: inherit; width: 100%; padding: 10px 12px; margin-top: 10px;
+    border: 1px solid var(--linea); border-radius: 8px; background: #fbfaf9;
+  }
+  #puerta button {
+    font: inherit; font-weight: 700; width: 100%; margin-top: 14px; padding: 11px;
+    background: var(--marca); color: #fff; border: 0; border-radius: 8px; cursor: pointer;
+  }
+  #puerta .error { color: var(--mal); font-size: 13px; margin-top: 10px; min-height: 18px; }
+  pre { background: #fbfaf9; border: 1px solid var(--linea); border-radius: 8px;
+        padding: 10px; font-size: 12px; white-space: pre-wrap; margin: 0; }
+</style>
+</head>
+<body>
+
+<div id="puerta">
+  <h1>Tablero de ATWI</h1>
+  <p class="chico">Cuenta de administración. No es la de jugar.</p>
+  <input id="correo" type="email" autocomplete="username" placeholder="correo">
+  <input id="clave" type="password" autocomplete="current-password" placeholder="contraseña">
+  <button id="entrar">Entrar</button>
+  <p class="error" id="error"></p>
+</div>
+
+<div id="tablero" hidden>
+  <header>
+    <h1>ATWI · tablero</h1>
+    <span class="quien" id="quien"></span>
+    <button id="salir" style="font:inherit;background:none;border:0;color:var(--suave);cursor:pointer">Salir</button>
+  </header>
+  <nav>
+    <button data-pest="costos" aria-current="page">Costos</button>
+    <button data-pest="gente">Gente</button>
+    <button data-pest="partidas">Partidas</button>
+    <button data-pest="material">Material</button>
+    <button data-pest="limites">Límites</button>
+  </nav>
+  <main id="lienzo"></main>
+</div>
+
+<script src="../assets/js/config.js?v=dc8bdd5"></script>
+<script src="tablero.js"></script>
+</body>
+</html>
