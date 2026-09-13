@@ -391,7 +391,16 @@ window.ATWI = window.ATWI || {};
        juego tiene dos registros --la voz real y la del personaje-- y el efecto
        se pierde justo al principio, que es cuando más falta hace. */
     var i = String(clave).charAt(0) === 'i' ? P.intervenciones[Number(String(clave).slice(1))] : null;
-    if (i && i.preparando) return;
+    /* UNA CASILLA QUE NO HACE NADA AL TOCARLA PARECE ROTA. Si está esperando o
+       falló, se dice qué pasa en vez de quedarse callada: es lo único que la
+       persona puede hacer con ella, y en un teléfono no hay consola que abrir. */
+    if (i && i.preparando) return contarQuePasa(i, 'Preparando la voz…',
+      'Se está transcribiendo y poniéndole la voz del personaje. Tarda unos ' +
+      'segundos y no se puede oír hasta que esté: lo que hay guardado todavía es ' +
+      'la grabación, y esa no se reproduce nunca.');
+    if (i && i.falloLaNube) return contarQuePasa(i, 'Se quedó sin voz',
+      'Esta intervención cuenta para la partida igual —el juez la va a leer— pero ' +
+      'no se le pudo poner la voz del personaje.');
     if (siguiendo) { clearTimeout(siguiendo); siguiendo = null; }
     if (sonando === clave) { if (a.paused) a.play(); else a.pause(); return; }
     sonando = clave;
@@ -1084,14 +1093,46 @@ window.ATWI = window.ATWI || {};
      es cuando más falta hace.
      ========================================================================== */
   function subirTurno(v, orden, intento) {
-    if (!v || !window.ATWI.nube || !window.ATWI.nube.hay()) return;
+    /* TODO ESTO VA DENTRO DE UN TRY. Sin él, una excepción síncrona --un objeto
+       que no es el que se esperaba, un método que no existe-- se lleva por
+       delante el `.then` que apaga el reloj de la casilla, y lo que queda es un
+       reloj girando para siempre y ningún motivo en ninguna parte. Pasó: cuatro
+       partidas creadas, cero turnos, cero registros en el servidor y el aviso
+       vacío, porque el fallo ocurría ANTES de cualquier sitio donde se anotara.
+       Aquí no puede perderse nada: lo que reviente queda escrito en el turno. */
+    try { intentarSubir(v, orden, intento); }
+    catch (e) {
+      v.preparando = false;
+      v.falloLaNube = true;
+      v.motivo = 'se rompió al subir: ' + (e && (e.message || e.name) || e);
+      marcarRueda(orden);
+    }
+  }
+
+  function intentarSubir(v, orden, intento) {
+    if (!v) return;
+    if (!window.ATWI.nube) {
+      v.falloLaNube = true;
+      v.motivo = 'no se cargó el puente con el servidor (nube.js)';
+      return marcarRueda(orden);
+    }
+    if (!window.ATWI.nube.hay()) {
+      v.falloLaNube = true;
+      v.motivo = window.ATWI.nube.ultimoFallo() || 'sin servidor ni sesión';
+      return marcarRueda(orden);
+    }
     intento = intento || 0;
     if (!P || !P.debate) {
       /* La partida todavía no tiene id: se abrió en paralelo y puede tardar.
          Se espera unas cuantas veces —lo que cuesta grabar un turno— y SE DEJA:
          sin tope esto se reintentaba cada cuatro segundos para siempre, y una
          partida que nunca abrió en el servidor no va a abrir sola. */
-      if (intento >= 5) { v.falloLaNube = true; return marcarRueda(orden); }
+      if (intento >= 5) {
+        v.falloLaNube = true;
+        v.motivo = window.ATWI.nube.ultimoFallo() ||
+                   'la partida no llegó a abrirse en el servidor';
+        return marcarRueda(orden);
+      }
       v.preparando = true;
       marcarRueda(orden);
       return setTimeout(function () { subirTurno(v, orden, intento + 1); }, 4000);
@@ -1105,7 +1146,17 @@ window.ATWI = window.ATWI || {};
       esInvitado: v.jugador !== indiceDeLaCuenta()
     }).then(function (r) {
       v.preparando = false;
-      if (!r) { v.falloLaNube = true; return marcarRueda(orden); }
+      if (!r) {
+        v.falloLaNube = true;
+        v.motivo = window.ATWI.nube.ultimoFallo() || 'el servidor no devolvió nada';
+        return marcarRueda(orden);
+      }
+      if (r.valido === false) {
+        v.falloLaNube = true;
+        v.motivo = (r.aviso || 'no se aceptó el audio') +
+                   (r.motivo ? ' (' + r.motivo + ')' : '');
+        return marcarRueda(orden);
+      }
       v.transcripcion = r.transcripcion || '';
       v.guion = r.guion || '';
       if (r.voz) {
@@ -1116,9 +1167,41 @@ window.ATWI = window.ATWI || {};
         v.conVoz = true;
       } else {
         v.falloLaNube = true;
+        v.motivo = 'se transcribió pero no llegó la voz del personaje';
       }
       marcarRueda(orden);
+    }, function (e) {
+      /* El rechazo de la promesa también: si no se atrapa, el reloj se queda
+         girando igual que con la excepción síncrona. */
+      v.preparando = false;
+      v.falloLaNube = true;
+      v.motivo = 'falló la subida: ' + (e && e.message || e);
+      marcarRueda(orden);
     });
+  }
+
+  /** El detalle de una casilla que no suena. Va en un modal y no en un aviso
+      pequeño porque el motivo puede ser largo y hay que poder leerlo entero y
+      copiarlo. */
+  function contarQuePasa(v, titulo, explicacion) {
+    var viejo = $('#p-detalle');
+    if (viejo) viejo.remove();
+    var m = document.createElement('div');
+    m.id = 'p-detalle';
+    m.className = 'detalle';
+    m.innerHTML =
+      '<div class="detalle__caja" role="dialog" aria-modal="true">' +
+        '<p class="detalle__titulo">' + esc(titulo) + '</p>' +
+        '<p class="detalle__que">' + esc(explicacion) + '</p>' +
+        (v.motivo ? '<p class="detalle__motivo">' + esc(v.motivo) + '</p>' : '') +
+        '<p class="detalle__quien">' + esc(v.nombre || '') + ' · turno ' + v.turno +
+          ' · ' + (v.segundos || 0) + ' s' +
+          (v.audio && v.audio.size ? ' · ' + Math.round(v.audio.size / 1024) + ' KB' : '') +
+        '</p>' +
+        '<button type="button" class="boton boton--bloque" data-accion="p-cerrar-detalle">' +
+          'Entendido</button>' +
+      '</div>';
+    $('#m-partida').appendChild(m);
   }
 
   /** Repinta UNA casilla sin rehacer la pantalla: repintar entera cortaría la
@@ -1229,6 +1312,7 @@ window.ATWI = window.ATWI || {};
     var b = e.target.closest('#m-partida [data-accion]');
     if (!b) return;
     var a = b.dataset.accion;
+    if (a === 'p-cerrar-detalle') { var d = $('#p-detalle'); if (d) d.remove(); return; }
     if (a === 'p-listo') pintarTurno();
     else if (a === 'p-grabar') empezarAGrabar(false);
     else if (a === 'p-agregar') empezarAGrabar(true);

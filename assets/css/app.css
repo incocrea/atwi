@@ -1361,6 +1361,36 @@ body.app {
 /* Y si el circuito falló, se dice. La intervención existe y cuenta para la
    partida --el juez la va a leer igual-- pero no tiene voz que reproducir, y
    una casilla que no hace nada al tocarla parece rota. */
+/* EL DETALLE DE UNA CASILLA QUE NO SUENA. Cubre la sala entera porque es lo
+   unico que importa mientras esta abierto, y porque el motivo puede ser largo:
+   en un aviso de una linea no cabria y es justo lo que hay que poder leer. */
+.detalle {
+  position: absolute; inset: 0; z-index: 30;
+  display: grid; place-items: center; padding: var(--e-4);
+  background: rgba(46, 42, 54, .32);
+  animation: detalle-entra 180ms var(--suave) both;
+}
+@keyframes detalle-entra { from { opacity: 0; } to { opacity: 1; } }
+.detalle__caja {
+  background: var(--superficie); border-radius: var(--radio-2);
+  padding: var(--e-4); box-shadow: var(--sombra-2); max-width: 340px; width: 100%;
+}
+.detalle__titulo {
+  margin: 0 0 var(--e-2); font-family: var(--display); font-weight: 800;
+  font-size: var(--t-h3); color: var(--tinta);
+}
+.detalle__que { margin: 0 0 var(--e-3); font-size: var(--t-chico); color: var(--tinta-suave); }
+/* El motivo tecnico va MONOESPACIADO y se puede seleccionar: se lee distinto
+   del texto que lo explica, y casi siempre hay que copiarlo para mandarlo. */
+.detalle__motivo {
+  margin: 0 0 var(--e-3); padding: var(--e-2);
+  background: var(--crema-hondo); border-radius: var(--radio-1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: var(--t-mini); color: var(--peligro);
+  word-break: break-word; user-select: text; -webkit-user-select: text;
+}
+.detalle__quien { margin: 0 0 var(--e-3); font-size: var(--t-mini); color: var(--tinta-tenue); }
+
 .dicho__fallo {
   margin: var(--e-2) 0 0; text-align: center;
   font-size: var(--t-mini); color: var(--peligro); line-height: 1.35;
