@@ -1595,6 +1595,68 @@
     if (q) { q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
   }
 
+  /* --- La app se actualiza sola ---------------------------------------------
+     UN PWA QUE NO SABE ACTUALIZARSE ES UN PWA ROTO. GitHub Pages manda
+     `Cache-Control: max-age=600` en el HTML, así que un teléfono puede seguir
+     con la versión de hace diez minutos. Y el `?v=` que pone el publicador
+     sella el CSS y el JS DENTRO del HTML: no sirve de nada cuando lo cacheado
+     es el HTML mismo. Pedirle a la gente que limpie la caché o reinstale no es
+     una solución, es rendirse.
+
+     `version.json` lo escribe el publicador, pesa sesenta bytes y se pide con
+     `cache: 'no-store'`, así que siempre trae el sello de verdad. Si no coincide
+     con el que lleva cargado, se recarga.
+
+     SE RECARGA CON LA URL CAMBIADA y no con `location.reload()`: recargar vuelve
+     a pedir la misma URL y el navegador la puede servir de la caché otra vez,
+     que es justo el problema. Con `?v=` distinto, la clave de caché es otra y
+     baja de verdad.
+
+     Y NUNCA A MITAD DE PARTIDA. Recargar mientras alguien graba le borra el
+     turno. Si la sala está abierta, se anota y se hace al salir. */
+  var CLAVE_RECARGA = 'atwi.recargado.en';
+  var selloNuevo = null;
+
+  function mirarSiHayVersionNueva() {
+    var mia = (cfg && cfg.version) || '';
+    if (!mia) return;                       // en local no hay sello y no hay nada que mirar
+    fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (!d || !d.sello || d.sello === mia) return;
+        /* Si ya se recargó por este mismo sello y sigue sin coincidir, el
+           navegador está sirviendo HTML viejo de todas formas: recargar otra vez
+           es un bucle. Se deja de insistir. */
+        var ya = '';
+        try { ya = sessionStorage.getItem(CLAVE_RECARGA) || ''; } catch (e) {}
+        if (ya === d.sello) return;
+        selloNuevo = d.sello;
+        if (!$('#m-partida') || $('#m-partida').hidden) recargar();
+      })
+      .catch(function () { /* sin red no pasa nada: se mira la próxima vez */ });
+  }
+
+  function recargar() {
+    if (!selloNuevo) return;
+    try { sessionStorage.setItem(CLAVE_RECARGA, selloNuevo); } catch (e) {}
+    var u = new URL(location.href);
+    u.searchParams.set('v', selloNuevo);     // clave de caché distinta: baja de verdad
+    location.replace(u.toString());
+  }
+
+  /** La llama la sala al cerrarse, por si la actualización quedó esperando. */
+  window.ATWI.recargarSiTocaba = function () { if (selloNuevo) recargar(); };
+
+  function vigilarLaVersion() {
+    mirarSiHayVersionNueva();
+    /* Al volver a la app: es cuando la gente la abre después de un rato, que es
+       justo cuando más probable es que se haya publicado algo. */
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) mirarSiHayVersionNueva();
+    });
+    setInterval(mirarSiHayVersionNueva, 120000);
+  }
+
   /* --- Arranque ------------------------------------------------------------ */
   function arrancar() {
     $$('.barra-item').forEach(function (b) {
@@ -1608,6 +1670,7 @@
     datos.catalogo().then(function () {
       if (vistaActual === 'jugar') pintarJugar();
     }).catch(function () {});
+    vigilarLaVersion();
   }
 
   function abrir() {

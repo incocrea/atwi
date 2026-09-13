@@ -174,9 +174,17 @@ window.ATWI = window.ATWI || {};
     if (P && P.limpiarEncuentro) P.limpiarEncuentro();
     cerrarReproductor();
     tirarBorrador();
-    if (P) P.intervenciones.forEach(function (v) { if (v.url) URL.revokeObjectURL(v.url); });
+    /* Solo los objetos LOCALES. Las URLs firmadas de la voz del personaje no
+       son objetos de este navegador y `revokeObjectURL` con ellas no hace nada,
+       pero da igual: se comprueba para decir en el codigo cual es cual. */
+    if (P) P.intervenciones.forEach(function (v) {
+      if (v.url && v.url.indexOf('blob:') === 0) URL.revokeObjectURL(v.url);
+    });
     grabadora.cerrar();
     P = null;
+    /* Si mientras se jugaba se publico una version nueva, la recarga quedo
+       esperando: recargar a mitad de partida le borra el turno a alguien. */
+    if (window.ATWI.recargarSiTocaba) window.ATWI.recargarSiTocaba();
   }
 
   /* Quién habla ahora, qué defiende y qué número de turno suyo es */
