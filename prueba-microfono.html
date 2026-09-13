@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>ATWI · prueba de micrófono</title>
+<!--
+  PÁGINA DE DIAGNÓSTICO, no parte del juego. Existe para una sola cosa: contestar
+  con números lo que el navegador de escritorio no puede contestar solo.
+
+  Carga `grabadora.js`, LA DE VERDAD. Escribir aquí una grabadora de prueba
+  sería medir una grabadora de prueba: lo que hay que comprobar es la que usa la
+  sala, con su elección de formato y su bitrate.
+
+  Tiene que abrirse por HTTPS. `getUserMedia` solo funciona en HTTPS o en
+  localhost, así que desde el teléfono va por https://atwi.app/prueba-microfono.html
+  y NO por la IP del servidor local, donde Chrome lo bloquea en silencio.
+-->
+<link rel="stylesheet" href="assets/css/tokens.css?v=65b934d">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 20px 16px 40px; background: var(--crema, #FFF7EE);
+    color: var(--tinta, #2E2A36); font-family: var(--texto, system-ui, sans-serif);
+    max-width: 430px; margin-inline: auto;
+  }
+  h1 { font-family: var(--display, inherit); font-size: 1.3rem; margin: 0 0 4px; }
+  p.sub { margin: 0 0 20px; color: var(--tinta-suave, #6B6577); font-size: .875rem; }
+  button {
+    font: inherit; font-weight: 800; border: 0; border-radius: 999px;
+    padding: 16px 20px; width: 100%; cursor: pointer; margin-bottom: 10px;
+  }
+  .grande { background: var(--lavanda, #7A6AD8); color: #fff; font-size: 1.05rem; }
+  .grande[data-grabando] { background: var(--coral, #F07F55); }
+  .suave { background: #fff; color: var(--tinta, #2E2A36); box-shadow: 0 1px 6px rgba(0,0,0,.1); }
+  button:disabled { opacity: .45; }
+  pre {
+    background: #fff; border-radius: 14px; padding: 14px; font-size: .8rem;
+    white-space: pre-wrap; word-break: break-word; line-height: 1.5;
+    box-shadow: 0 1px 6px rgba(0,0,0,.08); margin: 0 0 14px;
+  }
+  audio { width: 100%; margin-bottom: 14px; }
+  .paso { font-weight: 800; margin: 22px 0 8px; font-size: .95rem; }
+  .ok { color: #2E9E7E; } .mal { color: #D2564B; }
+</style>
+</head>
+<body>
+
+<h1>Prueba de micrófono</h1>
+<p class="sub">Esto no es el juego. Sirve para medir cómo graba <em>este</em> teléfono.</p>
+
+<div class="paso">1 · Hablá unos 30 segundos, normal</div>
+<button class="grande" id="b-grabar">Empezar a grabar</button>
+
+<div class="paso">2 · Escuchate</div>
+<audio id="oir" controls></audio>
+<p class="sub" id="pista-oir">Todavía no hay nada grabado.</p>
+
+<div class="paso">3 · Mandame esto</div>
+<pre id="informe">Sin datos todavía.</pre>
+<button class="suave" id="b-copiar" disabled>Copiar el informe</button>
+<button class="suave" id="b-bajar" disabled>Bajar el audio</button>
+
+<script src="assets/js/grabadora.js?v=65b934d"></script>
+<script>
+(function () {
+  'use strict';
+  var G = window.ATWI.grabadora;
+  var bGrabar = document.getElementById('b-grabar');
+  var bCopiar = document.getElementById('b-copiar');
+  var bBajar = document.getElementById('b-bajar');
+  var caja = document.getElementById('informe');
+  var oir = document.getElementById('oir');
+  var pista = document.getElementById('pista-oir');
+  var grabando = false;
+  var ultimo = null;
+
+  /* Lo que el navegador dice que sabe hacer, antes de intentar nada. Si la
+     grabación falla, esto es lo que explica por qué. */
+  function admitidos() {
+    if (!window.MediaRecorder) return ['no hay MediaRecorder'];
+    return ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4;codecs=mp4a.40.2',
+            'audio/mp4', 'audio/ogg;codecs=opus']
+      .filter(function (t) { return MediaRecorder.isTypeSupported(t); });
+  }
+
+  function pintar(extra) {
+    var l = [
+      'ATWI · prueba de micrófono',
+      'navegador: ' + navigator.userAgent,
+      'pantalla: ' + window.innerWidth + '×' + window.innerHeight +
+        ' @' + (window.devicePixelRatio || 1) + 'x',
+      'protocolo: ' + location.protocol,
+      'sabe grabar: ' + (G.sePuede() ? 'sí' : 'NO — ' + G.porQueNo()),
+      'sabe reanudar: ' + (G.sabeAnadir() ? 'sí' : 'no'),
+      'formatos que admite: ' + admitidos().join(', ')
+    ];
+    caja.textContent = l.concat(extra || []).join('\n');
+  }
+
+  pintar();
+
+  bGrabar.addEventListener('click', function () {
+    if (!grabando) {
+      G.empezar(function (s) {
+        bGrabar.textContent = 'Parar · ' + Math.floor(s / 60) + ':' +
+          String(s % 60).padStart(2, '0');
+      }, 120, function () { bGrabar.click(); }).then(function () {
+        grabando = true;
+        bGrabar.dataset.grabando = '1';
+        bGrabar.textContent = 'Parar · 0:00';
+      }).catch(function (e) {
+        pintar(['', 'FALLÓ AL ABRIR EL MICRÓFONO:', String(e && e.name), String(e && e.message)]);
+      });
+      return;
+    }
+
+    G.terminar().then(function (r) {
+      grabando = false;
+      delete bGrabar.dataset.grabando;
+      bGrabar.textContent = 'Grabar otra vez';
+      if (!r) return pintar(['', 'No salió nada de la grabadora.']);
+      ultimo = r;
+      oir.src = URL.createObjectURL(r.audio);
+      pista.textContent = 'Escuchalo entero. ¿Se entiende todo lo que dijiste?';
+      bCopiar.disabled = false;
+      bBajar.disabled = false;
+
+      var kbps = r.segundos ? Math.round(r.bytes * 8 / r.segundos / 1000) : 0;
+      pintar([
+        '',
+        '--- LO GRABADO ---',
+        'formato que eligió: ' + r.tipo,
+        'duración: ' + r.segundos + ' s',
+        'peso: ' + (r.bytes / 1024).toFixed(1) + ' KB',
+        'bitrate real: ' + kbps + ' kbps',
+        'proyección a 1 minuto: ' + (r.bytes / 1024 / r.segundos * 60).toFixed(0) + ' KB',
+        'proyección a 6 intervenciones de 60 s: ' +
+          (r.bytes / 1024 / r.segundos * 60 * 6 / 1024).toFixed(2) + ' MB'
+      ]);
+    });
+  });
+
+  bCopiar.addEventListener('click', function () {
+    var t = caja.textContent;
+    /* `navigator.clipboard` necesita HTTPS y a veces permiso. Si no está, se
+       selecciona el texto para que se pueda copiar a mano y no quede en nada. */
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () {
+        bCopiar.textContent = 'Copiado ✓';
+        setTimeout(function () { bCopiar.textContent = 'Copiar el informe'; }, 1800);
+      }).catch(seleccionar);
+    } else {
+      seleccionar();
+    }
+    function seleccionar() {
+      var s = window.getSelection();
+      var r = document.createRange();
+      r.selectNodeContents(caja);
+      s.removeAllRanges(); s.addRange(r);
+      bCopiar.textContent = 'Copialo a mano de arriba';
+    }
+  });
+
+  bBajar.addEventListener('click', function () {
+    if (!ultimo) return;
+    var ext = /mp4/.test(ultimo.tipo) ? 'm4a' : (/ogg/.test(ultimo.tipo) ? 'ogg' : 'webm');
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(ultimo.audio);
+    a.download = 'atwi-prueba.' + ext;
+    a.click();
+  });
+})();
+</script>
+</body>
+</html>
