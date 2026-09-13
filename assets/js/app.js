@@ -507,18 +507,174 @@
   /* ======================================================================
      Vista: Historial
      ====================================================================== */
-  function pintarHistorial() {
-    var p = datos.perfil();
-    var caja = $('#v-historial');
+  /* EL HISTORIAL SALE DEL SERVIDOR, no de `localStorage`. Se escribio cuando no
+     habia backend y leia `p.partidas`, que no se llena nunca: por eso salia
+     vacio aunque hubiera partidas jugadas.
 
-    if (!p.partidas.length && !p.actas.length) {
-      caja.innerHTML =
-        '<h1 style="margin-bottom:var(--e-4)">Historial</h1>' +
-        estadoVacio('📜', 'Todavía no hay nada',
-          'Aquí quedarán tus partidas y las actas de los acuerdos. El historial nunca se sobrescribe: una revancha añade una versión nueva y la anterior sigue ahí.');
+     Y se puede volver a oir, que es para lo que existe: la voz del personaje se
+     guarda sin plazo, asi que una partida de hace meses se escucha igual. */
+  var historial = null;
+
+  function pintarHistorial() {
+    var caja = $('#v-historial');
+    var titulo = '<h1 style="margin-bottom:var(--e-4)">Historial</h1>';
+
+    if (!window.ATWI.nube || !window.ATWI.nube.hay()) {
+      caja.innerHTML = titulo + estadoVacio('📜', 'Entrá con tu cuenta',
+        'El historial vive en el servidor, para que lo tengas en cualquier teléfono. ' +
+        'Sin sesión no hay nada que traer.');
       return;
     }
-    caja.innerHTML = '<h1 style="margin-bottom:var(--e-4)">Historial</h1>';
+
+    if (!historial) {
+      caja.innerHTML = titulo + '<p class="chico tenue">Buscando tus partidas…</p>';
+      window.ATWI.nube.historial().then(function (l) {
+        historial = l;
+        if (vistaActual === 'historial') pintarHistorial();
+      });
+      return;
+    }
+
+    if (!historial.length) {
+      caja.innerHTML = titulo + estadoVacio('📜', 'Todavía no hay nada',
+        'Aquí quedarán tus partidas y las actas de los acuerdos. El historial nunca se ' +
+        'sobrescribe: una revancha añade una versión nueva y la anterior sigue ahí.');
+      return;
+    }
+
+    caja.innerHTML = titulo +
+      historial.map(function (d) {
+        var t = d.turnos_grabados || [];
+        /* SOLO LAS QUE TIENEN ALGO QUE OIR se ofrecen para oir. Una partida
+           abandonada antes del primer turno esta en la lista --paso, y
+           esconderla seria mentir sobre lo que hiciste-- pero no promete un
+           audio que no existe. */
+        var hay = t.length > 0;
+        return '<button class="tarjeta partida" data-partida="' + esc(d.id) + '"' +
+            (hay ? '' : ' disabled') + '>' +
+            '<span class="partida__cuando">' + esc(cuando(d.creado)) + '</span>' +
+            '<span class="partida__tema">' + esc(d.enunciado || 'Sin tema') + '</span>' +
+            '<span class="partida__pie">' +
+              window.ATWI.rotuloModo(d.modo === 'debate' ? 'debate' : 'negociacion',
+                                     'partida__modo') +
+              '<span class="chico tenue">' +
+                (hay ? t.length + ' intervenciones · ' +
+                       t.reduce(function (a, b) { return a + (b.segundos || 0); }, 0) + ' s'
+                     : 'sin intervenciones') +
+              '</span>' +
+            '</span>' +
+          '</button>';
+      }).join('');
+  }
+
+  /* «Hoy», «ayer» y la fecha. Un historial de partidas de pareja se lee por lo
+     reciente: «hace dos días» dice mas que «13/09». */
+  function cuando(iso) {
+    var d = new Date(iso);
+    var hoy = new Date();
+    var dias = Math.floor((hoy.setHours(0, 0, 0, 0) - new Date(iso).setHours(0, 0, 0, 0))
+                          / 86400000);
+    var hora = d.toTimeString().slice(0, 5);
+    if (dias === 0) return 'Hoy · ' + hora;
+    if (dias === 1) return 'Ayer · ' + hora;
+    if (dias < 7) return 'Hace ' + dias + ' días · ' + hora;
+    return d.toLocaleDateString('es', { day: 'numeric', month: 'long' });
+  }
+
+  /* --- Volver a oír una partida ------------------------------------------------
+     UN SOLO ELEMENTO DE AUDIO para toda la lista, y no uno por turno: con uno
+     por turno se pueden disparar dos a la vez y se oyen encimados, que es el
+     fallo clásico de una lista de audios. */
+  var oyendo = null;          // { orden, url }
+  var audioHistorial = null;
+
+  function elAudioDelHistorial() {
+    if (!audioHistorial) {
+      audioHistorial = new Audio();
+      audioHistorial.addEventListener('ended', function () {
+        oyendo = null;
+        marcarLoQueSuena();
+      });
+    }
+    return audioHistorial;
+  }
+
+  function abrirPartida(id) {
+    var d = (historial || []).filter(function (x) { return x.id === id; })[0];
+    if (!d) return;
+    var t = d.turnos_grabados || [];
+    pararElHistorial();
+
+    $('#m-oir .modal__titulo').textContent = cuando(d.creado);
+    $('#m-oir .modal__cuerpo').innerHTML =
+      '<p class="tarjeta tarjeta--aire" style="text-align:center;font-weight:800">' +
+        esc(d.enunciado || '') + '</p>' +
+      '<div class="apilado-3" style="margin-top:var(--e-4)">' +
+        t.map(function (x) {
+          /* CON abogado suena el personaje; SIN abogado, la grabación de la
+             persona. Es la misma regla que en la sala, y se dice en pantalla
+             para que no parezca que a unos les cambió la voz y a otros no. */
+          return '<button class="tarjeta oir-turno" data-oir-turno="' + x.orden + '">' +
+              window.ATWI.fichaHTML(x.avatar, 'avatar--mini', x.color) +
+              '<span class="oir-turno__quien">' + esc(x.nombre || '') +
+                '<span class="chico tenue"> · turno ' + (x.numero || 1) + '</span></span>' +
+              '<span class="chico tenue">' + (x.segundos || 0) + ' s</span>' +
+              '<span class="oir-turno__icono" data-icono="play"></span>' +
+            '</button>' +
+            (x.guion || x.transcripcion
+              ? '<p class="oir-turno__texto">' + esc(x.guion || x.transcripcion) + '</p>'
+              : '');
+        }).join('') +
+      '</div>';
+    $$('#m-oir [data-icono]').forEach(function (el) { el.innerHTML = icono('play', 20); });
+    partidaAbierta = d;
+    abrirModal('m-oir');
+  }
+
+  var partidaAbierta = null;
+
+  function oirTurno(orden) {
+    if (!partidaAbierta) return;
+    var t = (partidaAbierta.turnos_grabados || []).filter(function (x) {
+      return String(x.orden) === String(orden);
+    })[0];
+    if (!t) return;
+
+    var a = elAudioDelHistorial();
+    if (oyendo && String(oyendo.orden) === String(orden)) {
+      if (a.paused) a.play(); else a.pause();
+      return;
+    }
+
+    var ruta = t.abogado ? t.voz_ruta : t.audio_ruta;
+    if (!ruta) return;
+    oyendo = { orden: orden, url: null, cargando: true };
+    marcarLoQueSuena();
+    window.ATWI.nube.oirDelAlmacen(ruta).then(function (url) {
+      if (!url) {
+        oyendo = null;
+        marcarLoQueSuena();
+        return;
+      }
+      oyendo = { orden: orden, url: url };
+      a.src = url;
+      a.play();
+      marcarLoQueSuena();
+    });
+  }
+
+  function marcarLoQueSuena() {
+    $$('#m-oir [data-oir-turno]').forEach(function (b) {
+      var suya = oyendo && String(oyendo.orden) === String(b.dataset.oirTurno);
+      b.classList.toggle('oir-turno--sonando', Boolean(suya && !oyendo.cargando));
+      b.classList.toggle('oir-turno--cargando', Boolean(suya && oyendo.cargando));
+    });
+  }
+
+  function pararElHistorial() {
+    if (audioHistorial) { audioHistorial.pause(); audioHistorial.removeAttribute('src'); }
+    if (oyendo && oyendo.url) { try { URL.revokeObjectURL(oyendo.url); } catch (e) {} }
+    oyendo = null;
   }
 
   /* Buscador y filtros. Van juntos porque responden a la misma pregunta:
@@ -1515,6 +1671,10 @@
   /* Para quien llegue de fuera con datos nuevos: la puerta, cuando se trae el
      perfil del servidor después de arrancar. */
   window.ATWI.repintar = function () { pintar(vistaActual); };
+
+  /* Al terminar una partida el historial que hay en memoria ya no es el de
+     ahora: se tira para que se vuelva a pedir. */
+  window.ATWI.olvidarHistorial = function () { historial = null; };
   /* Para quien abra algo a pantalla completa desde fuera de este archivo —el
      veredicto— y necesite que el atrás del teléfono lo cierre a él y no la app. */
   window.ATWI.pasoAtras = apilarPaso;
@@ -1560,6 +1720,12 @@
        tarjeta y si se mirara después, el tema se abriría igualmente. */
     var edi = e.target.closest('[data-editar-tema]');
     if (edi) { abrirEscribir(edi.dataset.editarTema); return; }
+
+    var partida = e.target.closest('[data-partida]');
+    if (partida && !partida.disabled) { abrirPartida(partida.dataset.partida); return; }
+
+    var turnoOir = e.target.closest('[data-oir-turno]');
+    if (turnoOir) { oirTurno(turnoOir.dataset.oirTurno); return; }
 
     var tema = e.target.closest('[data-tema]');
     if (tema) { abrirTema(tema.dataset.tema); return; }

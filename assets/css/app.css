@@ -1973,3 +1973,46 @@ body.app {
   font-size: 10px; line-height: 1.5; color: var(--tinta-suave);
   white-space: pre; user-select: text; -webkit-user-select: text;
 }
+
+/* ==========================================================================
+   EL HISTORIAL
+   Una tarjeta por partida y, dentro, sus intervenciones para volver a oírlas.
+   La voz del personaje se guarda sin plazo, así que una partida de hace meses
+   suena igual que la de hoy.
+   ========================================================================== */
+.partida {
+  display: grid; gap: 4px; width: 100%; text-align: left;
+  margin-bottom: var(--e-3);
+}
+.partida:disabled { opacity: .55; cursor: default; }
+.partida__cuando {
+  font-size: var(--t-mini); color: var(--tinta-tenue);
+  text-transform: uppercase; letter-spacing: .06em; font-weight: 700;
+}
+.partida__tema { font-weight: 800; color: var(--tinta); line-height: 1.35; }
+.partida__pie { display: flex; align-items: center; gap: var(--e-2); margin-top: 4px; }
+.partida__modo { height: 18px; width: auto; flex: none; }
+
+/* Una intervención. El texto va DEBAJO y no dentro del botón: dentro, el botón
+   crece con lo que se dijo y una intervención larga deja un área de toque de
+   media pantalla. */
+.oir-turno {
+  display: flex; align-items: center; gap: var(--e-2);
+  width: 100%; text-align: left; padding: 10px 12px;
+  border-radius: var(--radio-tarjeta); border: 2px solid transparent;
+  transition: border-color var(--dur-corta) var(--suave);
+}
+.oir-turno__quien { flex: 1; min-width: 0; font-weight: 700; font-size: var(--t-chico); }
+.oir-turno__icono { flex: none; display: grid; place-items: center; color: var(--tinta-suave); }
+.oir-turno--sonando { border-color: var(--lavanda); }
+.oir-turno--sonando .oir-turno__icono { color: var(--lavanda); }
+/* Mientras baja: gira. Es el mismo lenguaje que la casilla de la sala, y por lo
+   mismo —el audio todavía no está y tocar otra vez no lo trae antes. */
+.oir-turno--cargando .oir-turno__icono {
+  animation: oir-girando .9s linear infinite; opacity: .5;
+}
+@keyframes oir-girando { to { transform: rotate(360deg); } }
+.oir-turno__texto {
+  margin: 2px 0 var(--e-2) 52px; font-size: var(--t-mini);
+  color: var(--tinta-suave); line-height: 1.45;
+}

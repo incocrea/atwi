@@ -187,7 +187,65 @@ window.ATWI = window.ATWI || {};
     }).catch(function (e) { return apuntar('no se pudo llamar al servidor: ' + e.message); });
   }
 
+  /**
+   * Las partidas de quien esta dentro, de la mas nueva a la mas vieja, con sus
+   * turnos. En UNA sola peticion: PostgREST sabe traer la tabla hija anidada, y
+   * pedir primero los debates y despues los turnos de cada uno serian N+1
+   * viajes para pintar una lista.
+   */
+  function historial(cuantas) {
+    if (!hayNube()) return Promise.resolve([]);
+    var campos = 'id,creado,modo,enunciado,tema_catalogo,turnos,invitado_nombre,' +
+      'turnos_grabados:turnos(orden,numero,nombre,avatar,color,abogado,segundos,' +
+      'voz_ruta,audio_ruta,transcripcion,guion,creado)';
+    return fetch(cfg.supabaseUrl + '/rest/v1/debates' +
+        '?select=' + encodeURIComponent(campos) +
+        '&order=creado.desc&limit=' + (cuantas || 20), {
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Accept': 'application/json'
+      }
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) {
+        throw new Error('historial (' + r.status + '): ' + t.slice(0, 160));
+      });
+      return r.json();
+    }).then(function (filas) {
+      return (filas || []).map(function (d) {
+        /* PostgREST no promete el orden de la tabla anidada. Se ordena aqui:
+           una partida contada al reves no es una partida. */
+        d.turnos_grabados = (d.turnos_grabados || [])
+          .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+        return d;
+      });
+    }).catch(function (e) { apuntar(e.message); return []; });
+  }
+
+  /**
+   * Se trae un audio del almacen y devuelve una URL local, o null.
+   *
+   * Va por `/object/authenticated/` y NO por una URL firmada: firmar es una
+   * peticion mas para conseguir una direccion que caduca, y aqui ya se tiene la
+   * sesion. Quien puede oirlo lo decide RLS --la politica «oigo el audio de mis
+   * partidas»--, que es donde tiene que decidirse.
+   *
+   * Se baja a blob en vez de dejarle la URL al elemento de audio para que el
+   * primer toque suene: con la URL suelta, el navegador empieza a bajar CUANDO
+   * se toca y el primer toque no hace nada.
+   */
+  function oirDelAlmacen(ruta) {
+    if (!hayNube() || !ruta) return Promise.resolve(null);
+    return fetch(cfg.supabaseUrl + '/storage/v1/object/authenticated/audios/' + ruta, {
+      headers: { 'Authorization': 'Bearer ' + conSesion() }
+    }).then(function (r) { return r.ok ? r.blob() : null; })
+      .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
+      .catch(function (e) { return apuntar('audio: ' + e.message); });
+  }
+
   window.ATWI.nube = {
+    historial: historial,
+    oirDelAlmacen: oirDelAlmacen,
     hay: hayNube,
     abrirPartida: abrirPartida,
     mandarTurno: mandarTurno,
