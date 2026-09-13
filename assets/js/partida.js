@@ -419,6 +419,9 @@ window.ATWI = window.ATWI || {};
     if (sonando === clave) { if (a.paused) a.play(); else a.pause(); return; }
     sonando = clave;
     a.src = p.url;
+    /* Al saber lo que dura de verdad se repinta el total: hasta ese momento se
+       enseña el de la grabacion, que con abogado no es el mismo. */
+    a.onloadedmetadata = function () { pintarReproductor(); };
     a.currentTime = 0;
     a.playbackRate = velocidad;
     a.play();
@@ -587,8 +590,21 @@ window.ATWI = window.ATWI || {};
     refrescarReproductor('play');
   }
 
+  /* LA DURACION DEL AUDIO QUE SUENA, no la de lo que se grabo. Son dos cosas
+     distintas en cuanto hay abogado: lo que suena es al personaje LEYENDO EL
+     TEXTO, y ese texto va sin muletillas, sin repeticiones y sin las pausas.
+     Once segundos hablando salen en seis leidos, y no hay nada roto: sobraban
+     cinco segundos de «eh, o sea, que, que».
+
+     Lo que SI estaba mal era enseñar 0:11 debajo de un audio de 0:06. Se toma
+     del elemento de audio, que sabe lo que dura de verdad; `segundos` queda de
+     respaldo mientras no ha cargado los metadatos. */
   function duracionDe(clave) {
     var p = pistaDe(clave);
+    if (sonando === clave) {
+      var a = $('#sala-audio');
+      if (a && isFinite(a.duration) && a.duration > 0) return Math.round(a.duration);
+    }
     return (p && p.segundos) || 0;
   }
 
@@ -1001,7 +1017,12 @@ window.ATWI = window.ATWI || {};
      4. LA REVISIÓN: parar no es mandar
      ========================================================================== */
   function pausarGrabacion() {
-    if (!grabadora.grabando()) return;
+    /* TAMBIEN CUANDO ESTA PAUSADA. `grabando()` es solo `state === 'recording'`,
+       y el recorte de silencios deja la grabadora en `paused` en cuanto alguien
+       se calla un segundo. Al terminar de hablar y tocar «Parar» --que es el
+       caso normal, no uno raro-- esto salia por aqui y EL BOTON NO HACIA NADA.
+       El reloj ya se habia detenido solo, asi que parecia que si funcionaba. */
+    if (!grabadora.grabando() && !grabadora.pausada()) return;
     grabadora.pausar().then(function (r) {
       if (!r) return;
       tirarBorrador();
@@ -1259,6 +1280,7 @@ window.ATWI = window.ATWI || {};
         '<p class="detalle__titulo">' + esc(titulo) + '</p>' +
         '<p class="detalle__que">' + esc(explicacion) + '</p>' +
         (v.motivo ? '<p class="detalle__motivo">' + esc(v.motivo) + '</p>' : '') +
+        bitacoraHTML() +
         '<p class="detalle__quien">' + esc(v.nombre || '') + ' · turno ' + v.turno +
           ' · ' + (v.segundos || 0) + ' s' +
           (v.audio && v.audio.size ? ' · ' + Math.round(v.audio.size / 1024) + ' KB' : '') +
@@ -1276,6 +1298,24 @@ window.ATWI = window.ATWI || {};
       .then(function (r) { return r.ok ? r.blob() : null; })
       .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
       .catch(function () { return null; });
+  }
+
+  /** La bitácora de la grabadora, para poder leerla EN EL APARATO. Aquí no hay
+      consola que abrir, y los fallos de los controles de audio son de los que no
+      dejan rastro: un botón que no hace nada no escribe nada en ningún sitio.
+      Va plegada, que en lo normal no interesa a nadie. */
+  function bitacoraHTML() {
+    if (!grabadora.bitacora) return '';
+    var b = grabadora.bitacora();
+    if (!b.length) return '';
+    return '<details class="detalle__bitacora">' +
+        '<summary>Qué hizo la grabadora (' + b.length + ' pasos)</summary>' +
+        '<pre>' + esc(b.map(function (x) {
+          return (x.ms / 1000).toFixed(1) + 's  ' + x.que +
+                 '  [' + x.estado + ' · ' + x.seg + 's]' +
+                 (x.extra ? '  ' + x.extra : '');
+        }).join('\n')) + '</pre>' +
+      '</details>';
   }
 
   /** Repinta UNA casilla sin rehacer la pantalla: repintar entera cortaría la

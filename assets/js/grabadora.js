@@ -37,28 +37,60 @@ window.ATWI = window.ATWI || {};
   var tope = 0;
   var alTope = null;
 
-  /* --- El recorte de silencios ----------------------------------------------
-     LAS PAUSAS NO SE RECORTAN DESPUES, SE EVITAN. Un turno de un minuto con
-     veinte segundos de silencio cuesta un tercio mas de transcribir --Deepgram
-     cobra por minuto de audio-- y sube un tercio mas de datos. Recortarlas una
-     vez grabadas obligaria a descodificar, cortar y volver a codificar en el
-     telefono, y eso tarda casi tanto como el audio dura.
+  /* --- El aire muerto ---------------------------------------------------------
+     LAS PAUSAS SE CONSERVAN. Decision del titular (2026-09-13), y corrige lo que
+     hacia esto antes: cortaba todo silencio de mas de un segundo para ahorrarle
+     minutos al transcriptor, que cobra por minuto de audio.
 
-     Asi que no se graban: se escucha el nivel en vivo y, cuando lleva un
-     segundo largo en silencio, se PAUSA la grabadora. MediaRecorder ya sabe
-     pausar y reanudar, y el archivo sale continuo y sin el hueco. Cuesta cero y
-     no anade ni un milisegundo de espera.
+     El ahorro se llevaba por delante otra cosa. Las pausas de alguien hablando
+     NO son huecos vacios: son donde piensa, donde duda y donde remarca. Y ahora
+     se REPRODUCEN en la voz del personaje --Deepgram devuelve cuando empieza y
+     acaba cada palabra, y esos huecos se convierten en `<break>` al locutar--.
+     Cortandolas de la grabacion, el personaje leia del tiron y sonaba a maquina.
+
+     Lo que se sigue cortando es el AIRE MUERTO: cuatro segundos seguidos sin
+     nadie hablando ya no es una pausa, es alguien que se olvido de parar o que
+     se fue a buscar algo. Eso no aporta ritmo y si cuesta dinero.
+
+     Se evita en vez de recortarse despues: se escucha el nivel en vivo y se
+     PAUSA la grabadora, que ya sabe pausar y reanudar y deja el archivo continuo
+     y sin el hueco. Recortarlo una vez grabado obligaria a descodificar, cortar
+     y volver a codificar en el telefono, y eso tarda casi tanto como el audio.
 
      OJO CON LO QUE ESTO NO ES: no es un recortador de ruido. Lo que se graba
-     sale tal cual; lo unico que desaparece son los tramos en los que no habla
-     nadie. El ruido ambiental de fondo mientras se habla se queda, y da igual:
-     lo que se reproduce despues no es esta grabacion, es la voz del personaje
-     leyendo el texto. El ruido no llega al resultado por ningun camino.
+     sale tal cual; lo unico que desaparece son los tramos LARGOS en los que no
+     habla nadie. */
+  /* --- LA BITACORA ------------------------------------------------------------
+     Esto se depura en un telefono, donde no hay consola que abrir, y los fallos
+     de la grabadora son de los que no dejan rastro: un boton que no hace nada no
+     escribe nada en ningun sitio. Sin bitacora, «le di a parar y no paso nada»
+     es todo lo que se sabe, y averiguar por que cuesta varios intentos de ida y
+     vuelta --paso tres veces con el mismo boton--.
 
-     El segundo de espera es a proposito y no menos: pausar al primer respiro
-     corta las palabras por la mitad. Al reanudar se pierden unos milisegundos
-     del arranque de la palabra que vuelve, que es el precio, y es asumible. */
-  var MS_PARA_CALLAR = 1000;   // silencio seguido antes de pausar
+     Se apunta CADA transicion con el estado real del MediaRecorder al lado, que
+     es lo que de verdad explica el fallo: el que hubo aqui era que el recorte de
+     silencios dejaba la grabadora en `paused` y el boton comprobaba `recording`.
+     Con la bitacora se habria visto a la primera.
+
+     Es un anillo de 60: cabe una grabacion entera con sus silencios y no crece
+     sin fin. Y no se manda a ningun sitio: se lee en el aparato. */
+  var BITACORA_MAX = 60;
+  var bitacora = [];
+  var arranqueBitacora = 0;
+
+  function apuntar(que, extra) {
+    if (!arranqueBitacora) arranqueBitacora = Date.now();
+    bitacora.push({
+      ms: Date.now() - arranqueBitacora,
+      que: que,
+      estado: grabadora ? grabadora.state : '—',
+      seg: segundos(),
+      extra: extra == null ? '' : String(extra)
+    });
+    if (bitacora.length > BITACORA_MAX) bitacora.shift();
+  }
+
+  var MS_PARA_CALLAR = 4000;   // aire muerto seguido antes de pausar
   var NIVEL_DE_VOZ = 0.012;    // RMS por debajo del cual no hay nadie hablando
   var escucha = null;          // { ctx, analizador, datos, latido }
   var enSilencioDesde = 0;
@@ -92,6 +124,7 @@ window.ATWI = window.ATWI || {};
         if (nivel >= NIVEL_DE_VOZ) {
           enSilencioDesde = 0;
           if (pausadoPorSilencio && grabadora.state === 'paused') {
+            apuntar('vuelve la voz', 'nivel ' + nivel.toFixed(3));
             /* Lo recortado se mide con RELOJ, no contando latidos. Se conto
                `+= 60` por latido dando por hecho que caen cada 60 ms, y el
                navegador los estrangula a uno por segundo cuando la pestana no
@@ -111,6 +144,7 @@ window.ATWI = window.ATWI || {};
         if (ahora - enSilencioDesde < MS_PARA_CALLAR) return;
 
         if (grabadora.state === 'recording') {
+          apuntar('pausa por silencio', 'nivel ' + nivel.toFixed(3));
           pausadoPorSilencio = true;
           calladoDesde = ahora;
           pararReloj();
@@ -270,6 +304,11 @@ window.ATWI = window.ATWI || {};
         desde = Date.now();
         arrancarReloj();
         vigilarElSilencio(f);
+        bitacora = []; arranqueBitacora = Date.now();
+        apuntar('empezar', tipo || '(por defecto)');
+        grabadora.onerror = function (e) {
+          apuntar('ERROR del MediaRecorder', (e && e.error && e.error.name) || e);
+        };
         return true;
       });
     },
@@ -279,13 +318,10 @@ window.ATWI = window.ATWI || {};
      * NO termina la grabación: después se puede seguir añadiendo.
      */
     pausar: function () {
-      var yo = this;
       return new Promise(function (resolver) {
-        if (!grabadora) return resolver(null);
-        /* Puede estar PAUSADA por el recorte de silencios y no grabando. Antes
-           se comprobaba solo `recording` y, si alguien paraba justo despues de
-           callarse, esto devolvia null y la revision se quedaba sin audio. */
+        if (!grabadora) { apuntar('pausar sin grabadora'); return resolver(null); }
         if (grabadora.state !== 'recording' && grabadora.state !== 'paused') {
+          apuntar('pausar en estado raro');
           return resolver(null);
         }
         /* El estado se lee ANTES de parar la vigilancia, que lo cambia. Si el
@@ -293,20 +329,46 @@ window.ATWI = window.ATWI || {};
            y `desde` se quedo viejo: sumarlo otra vez contaria el silencio como
            tiempo hablado, que es justo lo que este recorte quita. */
         var grabando = grabadora.state === 'recording';
+        apuntar('pausar', grabando ? 'grabando' : 'ya estaba pausada');
         pararVigilancia();
         pararReloj();
         if (grabando) msAcumulados += Date.now() - desde;
+
+        var listo = false;
+        function acabar(como) {
+          if (listo) return;
+          listo = true;
+          apuntar('pausada', como);
+          try { if (grabadora.state === 'recording') grabadora.pause(); } catch (e) {}
+          resolver({ audio: montar(), tipo: grabadora.mimeType, segundos: segundos() });
+        }
+
+        /* SI YA ESTABA PAUSADA, NO SE PIDE EL TROZO. `requestData()` sobre una
+           grabadora en `paused` NO dispara `dataavailable` --no hay nada
+           produciendose-- asi que la promesa se quedaba esperando para siempre:
+           el reloj se detenia y el boton seguia diciendo «Parar». Con trozos
+           cada 250 ms lo que falta por escribir es como mucho un cuarto de
+           segundo, y encima de silencio, que es justo lo que se estaba
+           recortando. */
+        if (!grabando) return acabar('estaba pausada, no se pide trozo');
+
         /* Se pide el trozo pendiente ANTES de pausar, o el último medio segundo
            se queda sin escribir y la copia sale corta. */
         var alLlegar = function () {
           grabadora.removeEventListener('dataavailable', alLlegar);
-          setTimeout(function () {
-            try { grabadora.pause(); } catch (e) {}
-            resolver({ audio: montar(), tipo: grabadora.mimeType, segundos: segundos() });
-          }, 0);
+          setTimeout(function () { acabar('con el ultimo trozo'); }, 0);
         };
         grabadora.addEventListener('dataavailable', alLlegar);
-        grabadora.requestData();
+
+        /* RED DE SEGURIDAD. Aunque este camino ya no deberia colgarse, un boton
+           de grabacion que no responde es de los peores fallos que puede tener
+           esto: se pierde lo que la persona acaba de decir y no hay forma de
+           saber por que. Si en un segundo no llego el trozo, se sigue con lo que
+           haya y queda apuntado. */
+        setTimeout(function () { acabar('POR TIEMPO: no llego el dataavailable'); }, 1000);
+
+        try { grabadora.requestData(); }
+        catch (e) { acabar('requestData reviento: ' + (e && e.name)); }
       });
     },
 
@@ -329,22 +391,27 @@ window.ATWI = window.ATWI || {};
         /* Hacia abajo, igual que el reloj: lo que se vio en la revisión y lo
            que se manda tienen que ser el mismo número. */
         var s = Math.floor(msAcumulados / 1000);
-        grabadora.onstop = function () {
+        apuntar('terminar');
+        var yaSalio = false;
+        var salir = function (como) {
+          if (yaSalio) return;
+          yaSalio = true;
+          apuntar('terminada', como);
           var r = { audio: montar(), tipo: grabadora.mimeType, segundos: s };
           r.bytes = r.audio.size;
-          /* Cuanto silencio se quito. Va en el resultado para poder MEDIR el
-             ahorro en vez de confiar en que lo hay: es lo que se deja de subir
-             y lo que se deja de pagarle al transcriptor, que cobra por minuto
-             de audio. */
           r.silenciados = Math.round(msSilenciados / 100) / 10;
-          /* COMO SE GRABO, para poder contestar «funciona en todos los
-             navegadores» con datos y no con una lista de memoria. */
           r.navegador = queNavegador();
+          r.bitacora = bitacora.slice();
           trozos = [];
           msAcumulados = 0;
           msSilenciados = 0;
           resolver(r);
         };
+        /* La misma red que en `pausar`: si `onstop` no llega, se sale con lo que
+           hay. Perder el ultimo cuarto de segundo es mucho mejor que perder el
+           turno entero. */
+        setTimeout(function () { salir('POR TIEMPO: no llego el onstop'); }, 1500);
+        grabadora.onstop = function () { salir('con el onstop'); };
         grabadora.stop();
       });
     },
@@ -361,6 +428,12 @@ window.ATWI = window.ATWI || {};
       trozos = [];
       msAcumulados = 0;
     },
+
+    /** Todo lo que hizo la grabadora en este turno, para poder leerlo en el
+        aparato cuando algo no responde. */
+    bitacora: function () { return bitacora.slice(); },
+    /** El estado crudo del MediaRecorder. `grabando()` dice solo `recording`. */
+    estado: function () { return grabadora ? grabadora.state : 'sin grabadora'; },
 
     grabando: function () { return Boolean(grabadora && grabadora.state === 'recording'); },
     pausada: function () { return Boolean(grabadora && grabadora.state === 'paused'); },

@@ -1957,3 +1957,19 @@ body.app {
   background: var(--crema-hondo, rgba(0, 0, 0, .05));
   font-size: var(--t-mini); color: var(--tinta-suave); line-height: 1.35;
 }
+
+/* LA BITACORA DE LA GRABADORA, plegada. En lo normal no le interesa a nadie;
+   cuando algo no responde es lo unico que sirve, y aqui no hay consola que
+   abrir. Monoespaciada y seleccionable, porque hay que poder copiarla. */
+.detalle__bitacora { margin: 0 0 var(--e-3); }
+.detalle__bitacora summary {
+  font-size: var(--t-mini); color: var(--tinta-tenue); cursor: pointer;
+  padding: 4px 0; user-select: none;
+}
+.detalle__bitacora pre {
+  margin: 6px 0 0; padding: var(--e-2); max-height: 180px; overflow: auto;
+  background: var(--crema-hondo); border-radius: var(--radio-chip);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px; line-height: 1.5; color: var(--tinta-suave);
+  white-space: pre; user-select: text; -webkit-user-select: text;
+}
