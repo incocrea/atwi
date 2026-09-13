@@ -421,6 +421,13 @@ window.ATWI = window.ATWI || {};
     if (!fig) return;
     fig.outerHTML = window.ATWI.retrato(quien.avatar, 'hablando',
       { fondo: 'disco', mira: 'derecha', color: quien.color, clase: 'hablante__fig' });
+    /* Y EL NOMBRE CON LA FIGURA. Cambiaba el dibujo y el rótulo se quedaba en
+       el de quien tiene el turno: sonaba Harold, se veía a Kai y debajo ponía
+       «Diana». El reproductor flotante suele taparlo, pero «suele» no es
+       «siempre» —depende del alto de la pantalla— y una figura con el nombre
+       del otro es justo la confusión que la figura existe para evitar. */
+    var rotulo = caja.querySelector('.turno__quien');
+    if (rotulo) rotulo.textContent = quien.nombre;
     caja.classList.toggle('hablante--ajeno', Boolean(j));
     /* La figura es otra, así que el latido de la boca hay que engancharlo al
        dibujo nuevo: el viejo ya no está en la página. */
@@ -458,9 +465,15 @@ window.ATWI = window.ATWI || {};
     }
     var v = P.intervenciones[Number(String(sonando).slice(1))];
     if (!v) return { nombre: '', meta: '', color: null, avatar: '' };
+    /* De la INTERVENCIÓN, no del jugador. Hoy da lo mismo —la ficha no cambia a
+       media partida—, pero es la misma regla que hace que el personaje se selle
+       al mandar: lo que se oye de una ronda se ve como se vio esa ronda. Si un
+       día se puede cambiar la ficha sin salir, esto ya está bien. */
     var j = P.jugadores[v.jugador];
-    return { nombre: j.nombre, meta: 'Turno ' + v.turno,
-             color: j.color, avatar: j.avatar, jugador: j };
+    var ficha = { nombre: v.nombre || j.nombre, color: v.color || j.color,
+                  avatar: v.avatar || j.avatar };
+    return { nombre: ficha.nombre, meta: 'Turno ' + v.turno,
+             color: ficha.color, avatar: ficha.avatar, jugador: ficha };
   }
 
   function pintarReproductor() {

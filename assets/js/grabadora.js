@@ -50,6 +50,19 @@ window.ATWI = window.ATWI || {};
     return '';
   }
 
+  /* EL BITRATE HAY QUE DECIRLO. Sin esto, Chrome graba a su por defecto —unos
+     128 kbps— y un turno de 16 s pesaba 271 KB: cuatro veces lo que `docs/01`
+     §8.1 da por supuesto (Opus a 32 kbps ≈ 240 KB/min). Cuatro veces la subida,
+     el almacenamiento y el egress, y nadie lo notaría al oírlo: 32 kbps es de
+     sobra para voz en Opus, que está diseñado justo para eso.
+
+     AAC no aguanta lo mismo. Safari graba en MP4/AAC y a 32 kbps mono se oye
+     mal, lo que además le daría trabajo de más al transcriptor. Va a 48, que
+     sigue siendo la quinta parte de lo que salía antes. */
+  function bitrate(tipo) {
+    return /mp4|mpeg|aac/.test(tipo || '') ? 48000 : 32000;
+  }
+
   function segundos() {
     var enCurso = grabadora && grabadora.state === 'recording' ? Date.now() - desde : 0;
     return Math.floor((msAcumulados + enCurso) / 1000);
@@ -98,7 +111,13 @@ window.ATWI = window.ATWI || {};
     abrir: function () {
       if (flujo && flujo.active) return Promise.resolve(flujo);
       return navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        /* EN MONO. Esto es una nota de voz de una persona hablando a un
+           teléfono: el segundo canal es la misma señal otra vez y duplica todo
+           lo que cuesta —subida, almacenamiento, egress— a cambio de nada. Va
+           como preferencia y no como exigencia: si el aparato no sabe, graba
+           como pueda en vez de fallar. */
+        audio: { channelCount: 1, echoCancellation: true,
+                 noiseSuppression: true, autoGainControl: true }
       }).then(function (f) { flujo = f; return f; });
     },
 
@@ -111,7 +130,9 @@ window.ATWI = window.ATWI || {};
         var tipo = tipoQueAdmite();
         trozos = [];
         msAcumulados = 0;
-        grabadora = tipo ? new MediaRecorder(f, { mimeType: tipo }) : new MediaRecorder(f);
+        var opciones = { audioBitsPerSecond: bitrate(tipo) };
+        if (tipo) opciones.mimeType = tipo;
+        grabadora = new MediaRecorder(f, opciones);
         grabadora.ondataavailable = function (e) { if (e.data && e.data.size) trozos.push(e.data); };
         grabadora.start(250);       // por trozos: permite oírlo sin terminar
         desde = Date.now();
