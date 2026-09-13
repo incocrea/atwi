@@ -323,6 +323,9 @@ window.ATWI = window.ATWI || {};
                 '<span class="rueda__n">' + turnoActual().numero + '</span>' +
               '</button>';
           })() : '') +
+          /* EL MOTIVO, EN PANTALLA. Esto se prueba en un teléfono, donde no hay
+             consola que abrir: sin decirlo aquí, «falló» es todo lo que se sabe
+             y averiguar por qué cuesta un día de ida y vuelta. */
           /* Los que faltan: sombras del tamaño exacto que va a ocupar la ficha.
              Sin ellos la fila crecía de la nada y saltaba la maqueta a cada
              turno cerrado. */
@@ -337,7 +340,20 @@ window.ATWI = window.ATWI || {};
         /* Aquí iba una leyenda con «Diana · A» y «Prueba · B». Se va: quién es
            quién ya lo dicen la cara y el aro de cada ficha, y la letra de la
            postura no le importa a nadie mientras juega. */
+        motivoDelFallo() +
       '</div>';
+  }
+
+  /* POR QUÉ NO SUBIÓ, DICHO EN LA PANTALLA. Esto se prueba en un teléfono, donde
+     no hay consola que abrir: sin decirlo aquí, «falló» es todo lo que se sabe y
+     averiguar el motivo cuesta un día de ida y vuelta. Solo aparece cuando hay
+     una casilla marcada, así que en una partida sana no se ve nunca. */
+  function motivoDelFallo() {
+    var hayFallo = P.intervenciones.some(function (v) { return v.falloLaNube; });
+    if (!hayFallo || !window.ATWI.nube || !window.ATWI.nube.ultimoFallo) return '';
+    var m = window.ATWI.nube.ultimoFallo();
+    if (!m) return '';
+    return '<p class="dicho__fallo">Sin voz de personaje: ' + esc(m) + '</p>';
   }
 
   /* ==========================================================================

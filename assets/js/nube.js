@@ -25,8 +25,22 @@ window.ATWI = window.ATWI || {};
   var cfg = window.ATWI.config;
   var auth = window.ATWI.auth;
 
+  /* EL ULTIMO MOTIVO POR EL QUE ALGO NO SUBIO. Existe porque esto se depura en
+     un telefono, donde no hay consola que abrir: sin esto, «falló» es todo lo
+     que se sabe, y adivinar por que fallo cuesta un dia. Se enseña en la sala,
+     en pequeño, debajo de las casillas. */
+  var ultimoFallo = '';
+
+  function apuntar(que) {
+    ultimoFallo = String(que || '').slice(0, 200);
+    if (window.console) console.warn('[ATWI] ' + ultimoFallo);
+    return null;
+  }
+
   function hayNube() {
-    return Boolean(cfg.supabaseUrl && cfg.supabaseAnon && auth && auth.dentro());
+    if (!cfg.supabaseUrl || !cfg.supabaseAnon) { apuntar('sin servidor configurado'); return false; }
+    if (!auth || !auth.dentro()) { apuntar('sin sesión: entra con tu cuenta'); return false; }
+    return true;
   }
 
   function conSesion() {
@@ -44,7 +58,7 @@ window.ATWI = window.ATWI || {};
   function abrirPartida(p) {
     if (!hayNube()) return Promise.resolve(null);
     var yo = auth.sesion().user;
-    if (!yo || !yo.id) return Promise.resolve(null);
+    if (!yo || !yo.id) return Promise.resolve(apuntar('la sesión no trae usuario'));
 
     var cuerpo = {
       propone: yo.id,
@@ -78,13 +92,14 @@ window.ATWI = window.ATWI || {};
       });
       return r.json();
     }).then(function (filas) {
-      return (filas && filas[0] && filas[0].id) || null;
-    }).catch(function (e) {
-      /* Se avisa por consola y se sigue en local. Quien juega no tiene por qué
-         enterarse de que el servidor no contestó: su partida funciona igual. */
-      if (window.console) console.warn('[ATWI] ' + e.message);
-      return null;
-    });
+      var id = (filas && filas[0] && filas[0].id) || null;
+      /* PostgREST puede devolver 201 con una lista VACIA: la fila entra pero la
+         politica de lectura no la deja ver de vuelta. Eso dejaria `P.debate`
+         nulo con la partida creada, que es exactamente lo que pasaria sin
+         enterarse nadie. */
+      if (!id) apuntar('la partida se creó pero el servidor no la devolvió');
+      return id;
+    }).catch(function (e) { return apuntar(e.message); });
   }
 
   /**
@@ -96,7 +111,10 @@ window.ATWI = window.ATWI || {};
    * vuelve nunca, ni firmada.
    */
   function mandarTurno(op) {
-    if (!hayNube() || !op.debate || !op.audio) return Promise.resolve(null);
+    if (!hayNube()) return Promise.resolve(null);
+    if (!op.debate) return Promise.resolve(apuntar('el turno no tiene partida en el servidor'));
+    if (!op.audio) return Promise.resolve(apuntar('el turno no trae audio'));
+    if (!op.audio.size) return Promise.resolve(apuntar('el audio pesa 0 bytes'));
 
     var f = new FormData();
     /* El nombre del archivo importa: la función deduce la extensión del tipo,
@@ -123,16 +141,19 @@ window.ATWI = window.ATWI || {};
       },
       body: f
     }).then(function (r) {
-      return r.json().catch(function () { return null; });
-    }).catch(function (e) {
-      if (window.console) console.warn('[ATWI] turno no subido: ' + e.message);
-      return null;
-    });
+      return r.json().then(function (d) {
+        if (!r.ok) return apuntar('el servidor dijo ' + r.status + ': ' +
+                                  ((d && (d.error || d.msg)) || ''));
+        if (d && d.error) return apuntar(d.error);
+        return d;
+      }, function () { return apuntar('el servidor contestó algo que no es JSON (' + r.status + ')'); });
+    }).catch(function (e) { return apuntar('no se pudo llamar al servidor: ' + e.message); });
   }
 
   window.ATWI.nube = {
     hay: hayNube,
     abrirPartida: abrirPartida,
-    mandarTurno: mandarTurno
+    mandarTurno: mandarTurno,
+    ultimoFallo: function () { return ultimoFallo; }
   };
 })();

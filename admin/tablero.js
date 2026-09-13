@@ -417,16 +417,18 @@
       var CUENTAS = [
         { p: 'deepgram', nombre: 'Deepgram', credito: 200,
           fuente: 'Crédito inicial de 200 USD (docs/01 §8.2, verificado sep-2026).',
-          donde: 'console.deepgram.com → Usage' },
+          donde: 'https://console.deepgram.com/usage', etiqueta: 'console.deepgram.com · Usage' },
         { p: 'anthropic', nombre: 'Anthropic', credito: null,
           fuente: 'De prepago. El saldo no se puede leer desde aquí sin poner la clave en el navegador.',
-          donde: 'console.anthropic.com → Billing' },
+          donde: 'https://console.anthropic.com/settings/billing', etiqueta: 'console.anthropic.com · Billing' },
         { p: 'azure', nombre: 'Azure Speech', credito: null,
           fuente: 'El nivel gratuito da 0,5 M de caracteres al mes de voz neuronal; el de pago cobra por carácter. SIN VERIFICAR.',
-          donde: 'portal.azure.com → el recurso → Métricas' },
+          donde: 'https://portal.azure.com/#view/Microsoft_Azure_Billing/BillingMenuBlade/~/Overview',
+          etiqueta: 'portal.azure.com · Costos' },
         { p: 'supabase', nombre: 'Supabase', credito: null,
           fuente: 'Gratis: 500 MB de base, 1 GB de almacén, 5 GB de egress, 500.000 invocaciones de función (docs/01 §8.4).',
-          donde: 'supabase.com/dashboard → Usage' }
+          donde: 'https://supabase.com/dashboard/project/vauarfofsfgwnuyjfpni/settings/billing/usage',
+          etiqueta: 'supabase.com · Usage' }
       ];
 
       $('#lienzo').innerHTML =
@@ -444,7 +446,12 @@
                       ? '<br><span class="chico">' + (g / x.credito * 100).toFixed(2) +
                         '% de ' + x.credito + ' USD</span>' : ''),
                     '<span class="chico">' + esc(x.fuente) + '</span>',
-                    '<span class="chico">' + esc(x.donde) + '</span>'];
+                    /* Enlace de verdad y no un texto que hay que teclear: se
+                       entra aquí justo cuando se quiere comprobar una cifra, y
+                       copiar una ruta a mano es la mitad de las veces que no se
+                       comprueba. `noopener` porque abre fuera. */
+                    '<a class="chico" href="' + esc(x.donde) + '" target="_blank" ' +
+                      'rel="noopener noreferrer">' + esc(x.etiqueta) + ' ↗</a>'];
           }), [false, true, false, false]) +
 
         '<h2>Cuánto cuesta jugar</h2>' +
