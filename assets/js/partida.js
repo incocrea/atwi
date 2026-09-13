@@ -349,11 +349,16 @@ window.ATWI = window.ATWI || {};
      averiguar el motivo cuesta un día de ida y vuelta. Solo aparece cuando hay
      una casilla marcada, así que en una partida sana no se ve nunca. */
   function motivoDelFallo() {
-    var hayFallo = P.intervenciones.some(function (v) { return v.falloLaNube; });
-    if (!hayFallo || !window.ATWI.nube || !window.ATWI.nube.ultimoFallo) return '';
-    var m = window.ATWI.nube.ultimoFallo();
+    /* El motivo DE LA CASILLA, no el ultimo global: si dos turnos fallaron por
+       cosas distintas, el global solo recuerda el segundo. */
+    var falla = null;
+    P.intervenciones.forEach(function (v) { if (v.falloLaNube && !falla) falla = v; });
+    if (!falla) return '';
+    var m = falla.motivo ||
+      (window.ATWI.nube && window.ATWI.nube.ultimoFallo && window.ATWI.nube.ultimoFallo());
     if (!m) return '';
-    return '<p class="dicho__fallo">Sin voz de personaje: ' + esc(m) + '</p>';
+    return '<p class="dicho__fallo">Sin voz de personaje: ' + esc(m) +
+           '<br><span class="tenue">Toca la casilla para el detalle.</span></p>';
   }
 
   /* ==========================================================================
@@ -1212,6 +1217,22 @@ window.ATWI = window.ATWI || {};
     if (!r || !v) return;
     r.classList.toggle('rueda--preparando', Boolean(v.preparando));
     r.classList.toggle('rueda--sinvoz', Boolean(v.falloLaNube));
+    refrescarElAviso();
+  }
+
+  /* EL AVISO DE LINEA TAMBIEN SE REFRESCA. Se dibujaba en `loDicho()`, que solo
+     corre al repintar la pantalla entera --y el resultado de la subida llega
+     DESPUES de ese repintado--, asi que la casilla se marcaba y el texto no
+     aparecia nunca. Se actualiza aqui, junto a la casilla, que es cuando se sabe.
+     No se repinta la pantalla: repintarla a mitad cortaria la grabacion en curso. */
+  function refrescarElAviso() {
+    var caja = $('#m-partida .dicho');
+    if (!caja) return;
+    var viejo = caja.querySelector('.dicho__fallo');
+    var html = motivoDelFallo();
+    if (!html) { if (viejo) viejo.remove(); return; }
+    if (viejo) viejo.outerHTML = html;
+    else caja.insertAdjacentHTML('beforeend', html);
   }
 
   function borrar() {
