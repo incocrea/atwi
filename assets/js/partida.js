@@ -895,7 +895,12 @@ window.ATWI = window.ATWI || {};
   function tirarBorrador() {
     if (P && P.borrador && P.borrador.url) URL.revokeObjectURL(P.borrador.url);
     if (P) P.borrador = null;
-    if (sonando === 'b') { pararEscucha(); sonando = null; }
+    /* Si lo que sonaba era el borrador, el reproductor se CIERRA, no solo se
+       calla. Paraba el audio y ponía `sonando` a null, pero dejaba el panel en
+       pantalla: al mandar el último turno se quedaba flotando un «Tu turno, sin
+       mandar» de algo que acababa de mandarse, encima del botón de ver el
+       resultado. */
+    if (sonando === 'b') cerrarReproductor();
   }
 
   function pintarRevision(confirmandoBorrado) {
