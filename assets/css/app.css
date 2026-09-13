@@ -1150,17 +1150,20 @@ body.app {
   font-size: var(--t-h3); line-height: 1.3;
 }
 
-/* QUIEN HABLA, en grande y en el centro. La figura se recorta de la cintura
-   para arriba dentro de su disco: de cuerpo entero, a este tamaño, la cara —que
-   es lo que identifica de quién es el turno— quedaba del tamaño de una uña. */
+/* QUIEN HABLA, ENTERO Y GRANDE. Estuvo recortado en un disco, de la cintura
+   para arriba, y era un error de encuadre: aquí hay UNA figura y toda la
+   pantalla para ella, así que lo que se pierde al recortar —la mano levantada,
+   la postura— es justo lo que cuenta que está exponiendo su idea. El disco de
+   color se queda detrás, ovalado y suelto, porque es lo que tiñe la escena del
+   color de quien habla. */
 .hablante { display: grid; justify-items: center; gap: var(--e-2); }
 .hablante__fig {
-  width: 176px; height: 176px; border-radius: 50%;
-  box-shadow: var(--sombra-1);
+  width: 100%; max-width: 300px;
+  height: clamp(190px, 33vh, 330px);
+  border-radius: var(--radio-carta); box-shadow: none;
 }
 .hablante__fig .retrato__fig {
-  object-fit: contain; object-position: center top; transform: scale(1.34);
-  transform-origin: 50% 8%;
+  object-fit: contain; object-position: center bottom; transform: none;
 }
 .turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.75rem; }
 
