@@ -666,7 +666,8 @@ window.ATWI = window.ATWI || {};
      ========================================================================== */
   var MS_ANTES_DEL_ENCUENTRO = 1000;   // desde que para la ficha del sorteo
   var MS_SALIDA_GANADOR = 300;         // lo que tarda en irse quien abre
-  var MS_VIAJE = 620;                  // lo que tardan en llegar
+  var MS_VIAJE = 620;                  // lo que dura la entrada entera
+  var MS_CONTACTO = 480;               // cuándo se tocan dentro de esa entrada
 
   function entrarAlEncuentro() {
     if (!P || P.estado !== 'aviso') return;
@@ -715,18 +716,29 @@ window.ATWI = window.ATWI || {};
              : '<span class="encuentro__vs">VS</span>');
     m.appendChild(caja);
 
-    /* El golpe suena cuando LLEGAN, no al salir: es el sonido del encuentro, y
-       adelantarlo lo convierte en el de arrancar. */
-    var alLlegar = setTimeout(function () {
+    /* DOS MOMENTOS, NO UNO. La clase que arranca la entrada, el sonido del golpe
+       y el destello salían los tres a la vez, y esa clase es la que PONE EN
+       MARCHA el viaje: el golpe sonaba al salir, 620 ms antes de que se tocaran.
+
+       Ahora la entrada arranca enseguida —hacen falta esos milisegundos para que
+       el navegador registre la posición de partida y anime en vez de saltar— y
+       el golpe suena en el instante del contacto, que es el 78% del recorrido. */
+    var alEntrar = setTimeout(function () {
       if (!P || P.estado !== 'aviso') return;
       caja.classList.add('encuentro--llegado');
+    }, 40);
+
+    var alChocar = setTimeout(function () {
+      if (!P || P.estado !== 'aviso') return;
+      caja.classList.add('encuentro--chocado');
       if (sonido.hay()) sonido.choque();
-    }, MS_VIAJE);
+    }, 40 + MS_CONTACTO);
 
     /* Si se sale de la sala a mitad, la escena se va con ella: colgada del
        modal, se quedaría flotando sobre la pantalla siguiente. */
     P.limpiarEncuentro = function () {
-      clearTimeout(alLlegar);
+      clearTimeout(alEntrar);
+      clearTimeout(alChocar);
       if (caja.parentNode) caja.remove();
     };
   }

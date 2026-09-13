@@ -1612,10 +1612,29 @@ body.app {
    solos, midan lo que midan. */
 .encuentro__lado--izq { right: 50%; z-index: 2; transform: translateX(-170%); }
 .encuentro__lado--der { left: 50%; z-index: 1; transform: translateX(170%); }
-.encuentro--llegado .encuentro__lado--izq { transform: translateX(var(--fin-izq, -14%)); }
-.encuentro--llegado .encuentro__lado--der { transform: translateX(var(--fin-der, 14%)); }
-.encuentro--llegado .encuentro__lado {
-  transition: transform 620ms cubic-bezier(.16, .84, .3, 1.06);
+/* LA ENTRADA TIENE TRES PUNTOS, NO DOS. Era una transición de fuera a la
+   posición final, y una transición solo conoce el principio y el final: frenaban
+   justo antes de tocarse y el choque nunca llegaba a verse. Ahora pasan por un
+   punto de CONTACTO —donde se solapan de verdad— y de ahí rebotan a su sitio.
+   Por eso es `animation` y no `transition`: el contacto es un punto intermedio. */
+.encuentro--llegado .encuentro__lado--izq {
+  animation: entra-izq 620ms cubic-bezier(.22, .72, .3, 1) both;
+}
+.encuentro--llegado .encuentro__lado--der {
+  animation: entra-der 620ms cubic-bezier(.22, .72, .3, 1) both;
+}
+/* El 78% es el instante del choque y son los 480 ms de `MS_CONTACTO` en
+   partida.js, que es cuando suena el golpe. Si se toca uno hay que tocar el
+   otro, o el sonido se despega de la imagen. */
+@keyframes entra-izq {
+  from { transform: translateX(-170%); }
+  78% { transform: translateX(var(--toca-izq, -9%)); }
+  to { transform: translateX(var(--fin-izq, -14%)); }
+}
+@keyframes entra-der {
+  from { transform: translateX(170%); }
+  78% { transform: translateX(var(--toca-der, 9%)); }
+  to { transform: translateX(var(--fin-der, 14%)); }
 }
 
 /* El rótulo de cada uno, sobre su figura y del lado donde le tocó quedar. Va
@@ -1683,8 +1702,8 @@ body.app {
   -webkit-mask: radial-gradient(closest-side, transparent 24%, #000 27%);
   mask: radial-gradient(closest-side, transparent 24%, #000 27%);
 }
-.encuentro--llegado .encuentro__vs,
-.encuentro--llegado .encuentro__chispa { animation: encuentro-golpe 460ms var(--rebote) both; }
+.encuentro--chocado .encuentro__vs,
+.encuentro--chocado .encuentro__chispa { animation: encuentro-golpe 460ms var(--rebote) both; }
 @keyframes encuentro-golpe {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(2.2) rotate(-12deg); }
   55% { opacity: 1; transform: translate(-50%, -50%) scale(.88) rotate(3deg); }
@@ -1692,13 +1711,20 @@ body.app {
 }
 
 /* En Negociación no se plantan: siguen hasta juntarse y chocan el puño. Misma
-   entrada, lo contrario contado. El 4% de solape es el grosor del perfil
-   blanco, que si no deja los nudillos separados por una rayita. */
-/* Se separan un poco: llegaban a solaparse y los puños se cruzaban en vez de
-   tocarse. Cero sería borde con borde; el 2% hacia fuera deja el hueco del
-   perfil blanco de cada uno, que es lo que hace que se lean como dos piezas que
-   se encuentran y no como una sola. */
-.encuentro--pacto { --fin-izq: -2%; --fin-der: 2%; }
+   entrada, lo contrario contado.
+
+   Y aquí se ven los dos puntos por separado. En `--toca-*` los puños SE PISAN,
+   que es lo que hace un choque de verdad: los nudillos se aplastan un instante.
+   Se pisan 9 px, ni uno más: es justo el grosor de los dos perfiles blancos, así
+   que lo que se ve es que se aprietan. Probado con 28 px de solape y lo que se
+   veía era un puño atravesando al otro.
+
+   En `--fin-*` se apartan al 2%, que devuelve el hueco de esos dos perfiles y
+   los hace leer como dos piezas que se encontraron y no como una sola. */
+.encuentro--pacto {
+  --toca-izq: 2%; --toca-der: -2%;
+  --fin-izq: -2%; --fin-der: 2%;
+}
 /* Y Luna sube en ESTA pose. En el dibujo del puño su brazo sale más bajo que el
    de Kai, así que con la misma altura los nudillos no quedaban a la misma. La
    corrección va solo aquí: en la pose de guardia los dos están bien. */
@@ -1707,8 +1733,9 @@ body.app {
 @media (prefers-reduced-motion: reduce) {
   .encuentro__lado--izq { transform: translateX(var(--fin-izq, -14%)); }
   .encuentro__lado--der { transform: translateX(var(--fin-der, 14%)); }
-  .encuentro--llegado .encuentro__lado { transition: none; }
-  .encuentro--llegado .encuentro__vs, .encuentro--llegado .encuentro__chispa {
+  .encuentro--llegado .encuentro__lado--izq,
+  .encuentro--llegado .encuentro__lado--der { animation: none; }
+  .encuentro--chocado .encuentro__vs, .encuentro--chocado .encuentro__chispa {
     animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1);
   }
 }
