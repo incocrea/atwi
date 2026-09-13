@@ -711,7 +711,9 @@ window.ATWI = window.ATWI || {};
   function botonDeGrabar(estado) {
     if (estado === 'parar') {
       return '<button class="boton boton--bloque boton--grande boton--parar grabando"' +
-                    ' data-accion="p-parar">' + iconoSVG('parar', 22) + 'Parar</button>';
+                    ' data-accion="p-parar">' + iconoSVG('parar', 22) + 'Parar' +
+               '<span class="boton__reloj" id="reloj-n">' +
+                 relojTexto(grabadora.segundos()) + '</span></button>';
     }
     if (estado === 'agregar') {
       return '<button class="boton boton--suave" data-accion="p-agregar">' +
@@ -739,7 +741,7 @@ window.ATWI = window.ATWI || {};
 
     var aCadaSegundo = function (s) {
       var n = $('#reloj-n');
-      if (n) { n.textContent = relojTexto(s); $('#reloj').classList.add('reloj--corriendo'); }
+      if (n) n.textContent = relojTexto(s);
     };
     var alTope = function () { pausarGrabacion(); };
 
@@ -769,13 +771,15 @@ window.ATWI = window.ATWI || {};
     var tope = cfg.reglas.segundosPorTurno;
     P.estado = 'grabando';
 
+    /* SIN `medio`: el reloj va DENTRO del botón de parar. Encima de la figura
+       obligaba a encogerla y a achatarle el óvalo de color para hacerle sitio, y
+       el tiempo no es una pieza de la escena: es un dato del control que lo
+       está contando. */
     pintarSala({
       dice: agregando ? 'Sigues sobre lo que ya grabaste.' : 'Te escucho.',
-      medio: '<div class="reloj reloj--corriendo" id="reloj">' +
-          '<span id="reloj-n">' + relojTexto(grabadora.segundos()) + '</span>' +
-          '<span class="reloj__tope">de ' + relojTexto(tope) + '</span></div>',
       pie: botonDeGrabar('parar') +
-        '<p class="chico centrado pie-nota">Estás grabando. Toca para parar.</p>'
+        '<p class="chico centrado pie-nota">Estás grabando. Toca para parar. ' +
+          'Máximo ' + relojTexto(tope) + '.</p>'
     });
   }
 
@@ -892,17 +896,14 @@ window.ATWI = window.ATWI || {};
       return;
     }
 
-    /* El turno se pasa aquí y no al pulsar: lo que hay que ver mientras se pasa
-       el teléfono es a quién le toca, no a quien acaba de hablar. */
+    /* Y se pasa DIRECTO al turno de quien sigue. Había un paso intermedio que
+       anunciaba a quién le tocaba y pedía un toque para continuar; decía lo
+       mismo que el botón de la pantalla siguiente —«Turno de Diana»— y cobraba
+       un toque por decirlo. Con dos teléfonos hará falta algo ahí, porque habrá
+       que esperar a que el otro mande lo suyo; en un solo teléfono no hay nada
+       que esperar. */
     P.i++;
-    pintarSala({
-      dice: alAzar(cfg.frasesDelJuez),
-      /* Jugando los dos en un teléfono, el botón entrega el aparato. Con dos
-         teléfonos esto será un «Esperando turno» apagado mientras el otro
-         manda lo suyo; hoy no hay partida remota, así que no se finge. */
-      pie: principal('p-seguir', 'Le toca a ' + turnoActual().nombre, '', false,
-                     turnoActual().color)
-    });
+    pintarTurno();
   }
 
   function seguir() {

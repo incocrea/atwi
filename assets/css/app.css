@@ -1299,6 +1299,25 @@ body.app {
   transition: transform var(--dur-corta) var(--suave);
 }
 .rueda:active { transform: scale(.92); }
+/* El tiempo grabado, dentro del botón de parar. Va a la derecha y con fondo
+   propio para que se lea como un contador y no como parte del texto del botón,
+   y en tabular para que no baile al pasar de 0:09 a 0:10. */
+.boton__reloj {
+  margin-left: auto; padding: 2px 10px; border-radius: var(--radio-pastilla);
+  background: var(--ctx-halo);
+  font-variant-numeric: tabular-nums; font-size: var(--t-chico);
+  display: inline-flex; align-items: center; gap: 7px;
+}
+/* El punto rojo de «está grabando» se viene con el reloj al botón. Rojo de
+   verdad y no el color del modo: es la convención universal de «esto se está
+   grabando», y no debe confundirse con el coral de Controversia. */
+.boton__reloj::before {
+  content: ''; width: 9px; height: 9px; border-radius: 50%;
+  background: #E4574A; animation: late 1.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .boton__reloj::before { animation: none; } }
+.boton--parar { justify-content: flex-start; gap: var(--e-2); }
+
 /* El botón de mandar se tiñe del color de quien juega. Lo que se confirma ahí
    es algo TUYO —tu turno, grabado por ti— y no un paso del juego, así que no
    lleva el color del modo sino el del aro que elegiste. Va con `--suyo` en
