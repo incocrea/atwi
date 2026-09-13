@@ -1588,7 +1588,13 @@ window.ATWI = window.ATWI || {};
     else if (a === 'r-vel') cambiarVelocidad();
     else if (a === 'r-cerrar') cerrarReproductor();
     else if (a === 'p-salir') {
-      if (confirm('Si sales ahora, la partida se pierde y no cuenta para nadie. ¿Salir?')) cerrar();
+      /* EN EL REPASO NO HAY NADA QUE PERDER. La partida ya se jugó y ya está
+         guardada; salir es cerrar una grabación, no abandonar a nadie. Avisar
+         ahí no solo sobra: dice algo falso —«la partida se pierde»— sobre algo
+         que no se puede perder, y quien lo lee no vuelve a creer el aviso el día
+         que sí es verdad. */
+      if (P && P.repaso) return cerrar();
+      if (confirm('Si salís ahora, la partida se pierde y no cuenta para nadie. ¿Salir?')) cerrar();
     }
   });
 

@@ -195,11 +195,17 @@ window.ATWI = window.ATWI || {};
    */
   function historial(cuantas) {
     if (!hayNube()) return Promise.resolve([]);
-    var campos = 'id,creado,modo,enunciado,tema_catalogo,turnos,invitado_nombre,' +
+    var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,invitado_nombre,' +
       'turnos_grabados:turnos(orden,numero,nombre,avatar,color,abogado,segundos,' +
       'voz_ruta,audio_ruta,transcripcion,guion,creado)';
     return fetch(cfg.supabaseUrl + '/rest/v1/debates' +
         '?select=' + encodeURIComponent(campos) +
+        /* SOLO LAS QUE TERMINARON. Una ronda dejada a medias no es una partida,
+           es un intento: no se puede oír entera, no tiene resultado, y verla en
+           la lista ofrece algo que al abrirlo no está. Lo marca el servidor
+           --`debates.cerrado`, migración 0022-- porque quien abandona cierra la
+           pestaña y no queda navegador que lo apunte. */
+        '&cerrado=not.is.null' +
         '&order=creado.desc&limit=' + (cuantas || 20), {
       headers: {
         'apikey': cfg.supabaseAnon,

@@ -536,9 +536,13 @@
     }
 
     if (!historial.length) {
+      /* SE DICE QUE SOLO ENTRAN LAS TERMINADAS. Quien dejó una ronda a medias y
+         no la encuentra aquí va a pensar que se perdió algo; y no es eso, es
+         que nunca llegó a ser una partida. */
       caja.innerHTML = titulo + estadoVacio('📜', 'Todavía no hay nada',
-        'Aquí quedarán tus partidas y las actas de los acuerdos. El historial nunca se ' +
-        'sobrescribe: una revancha añade una versión nueva y la anterior sigue ahí.');
+        'Aquí quedarán las partidas que terminaron —una ronda dejada a medias no ' +
+        'entra— y las actas de los acuerdos. El historial nunca se sobrescribe: una ' +
+        'revancha añade una versión nueva y la anterior sigue ahí.');
       return;
     }
 
