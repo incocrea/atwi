@@ -687,9 +687,9 @@ window.ATWI = window.ATWI || {};
     caja.id = 'encuentro';
     caja.className = 'encuentro' + (pacto ? ' encuentro--pacto' : '');
     caja.setAttribute('aria-hidden', 'true');
-    /* Sobre cada figura, su ficha y su nombre. Sin esto hay que deducir quién
-       es cada uno por el dibujo, y si los dos eligieron el mismo personaje no
-       hay forma: se distinguen por el aro, y el aro solo se ve en la ficha. */
+    /* Quién es cada uno, con su ficha y su nombre. Sin esto hay que deducirlo
+       por el dibujo, y si los dos eligieron el mismo personaje no hay forma: se
+       distinguen por el aro, y el aro solo se ve en la ficha. */
     function rotulado(j) {
       return '<span class="encuentro__quien">' +
           window.ATWI.fichaHTML(j.avatar, 'avatar--mini', j.color) +
@@ -697,22 +697,26 @@ window.ATWI = window.ATWI || {};
         '</span>';
     }
 
-    /* El `data-quien` va TAMBIÉN en el lado, y no solo en la figura. Cada
-       personaje se coloca a una altura distinta —Kai más arriba, que es más
-       alto— y esa altura es la que necesita el rótulo para posarse justo encima
-       de la cabeza. Estando el dato solo en la figura, el rótulo, que es su
-       hermano y no su hijo, no tenía forma de saber a qué altura quedaba. */
+    /* LOS DOS RÓTULOS VAN JUNTOS Y FUERA DE LAS FIGURAS. Estuvieron dentro de
+       cada lado, colgados de la cabeza de su personaje: viajaban con él en la
+       entrada y quedaban a distinta altura, porque Kai y Luna no se colocan a la
+       misma. Dos nombres a dos alturas se leen como un desnivel, no como una
+       pareja.
+
+       Ahora son una línea suelta sobre la escena, los dos al mismo alto, y
+       aparecen a la vez cuando se chocan. Al no ir dentro de los lados tampoco
+       heredan su desplazamiento: las figuras entran y los nombres se revelan
+       donde ya estaban. */
     caja.innerHTML =
-      '<span class="encuentro__lado encuentro__lado--izq" data-quien="' + esc(izq.avatar) + '">' +
-        rotulado(izq) +
+      '<span class="encuentro__lado encuentro__lado--izq">' +
         window.ATWI.retrato(izq.avatar, pose, { fondo: null, mira: 'derecha',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
-      '<span class="encuentro__lado encuentro__lado--der" data-quien="' + esc(der.avatar) + '">' +
-        rotulado(der) +
+      '<span class="encuentro__lado encuentro__lado--der">' +
         window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
+      '<span class="encuentro__rotulos">' + rotulado(izq) + rotulado(der) + '</span>' +
       /* El destello del choque lo pone la interfaz y ya no el dibujo. Las
          figuras traían las suyas y al juntarse se montaban unas sobre otras y
          sobre el puño contrario; se regeneraron sin ellas. Este cae donde se

@@ -1637,19 +1637,21 @@ body.app {
   to { transform: translateX(var(--fin-der, 14%)); }
 }
 
-/* El rótulo de cada uno, sobre su figura y del lado donde le tocó quedar. Va
-   dentro del lado y no suelto en la banda, así que viaja con él en la entrada:
-   nombre y personaje llegan juntos, que es lo que los relaciona.
+/* LOS DOS NOMBRES, A LA MISMA ALTURA Y EN UNA LÍNEA SUELTA. Estuvieron colgados
+   de la cabeza de cada figura, cada uno a la altura de la suya: como Kai y Luna
+   no se colocan igual, los nombres quedaban a distinto alto y lo que se leía era
+   un desnivel. Ahora es una sola línea sobre la escena y da igual quién esté
+   debajo.
 
-   SE POSA EN LA CABEZA, no en el techo de la banda. Antes iba a `top: 0`, que es
-   el borde de arriba de la banda y no tiene nada que ver con dónde queda la
-   figura: entre el rótulo y la cabeza había un palmo de aire y el nombre parecía
-   flotar solo. Ahora cuelga de `--sube` —la altura a la que se coloca esa
-   figura— y se sube su propio alto, así que su borde inferior cae siempre justo
-   encima del pelo, midan lo que midan la banda y el personaje. */
+   El 17% es la altura a la que llegaban los de Kai, que eran los más bajos de
+   los dos. Va en la banda y no en las figuras a propósito: un número solo, y
+   ningún personaje del que dependa. */
+.encuentro__rotulos {
+  position: absolute; left: 0; right: 0; top: 17%; z-index: 4;
+  transform: translateY(-100%);
+  display: flex; justify-content: center; gap: 38px;
+}
 .encuentro__quien {
-  position: absolute; top: var(--sube, 20%); z-index: 4;
-  transform: translateY(calc(-100% + 4px));
   display: inline-flex; align-items: center; gap: 8px;
   padding: 5px 13px 5px 5px; border-radius: var(--radio-pastilla);
   background: var(--superficie); box-shadow: var(--sombra-1);
@@ -1661,8 +1663,23 @@ body.app {
 /* Y la ficha crece lo mismo. Va aquí y no en `.avatar--mini`, que es de 26 px y
    lo usan también el reproductor y las casillas de turno. */
 .encuentro__quien .avatar--mini { width: 34px; height: 34px; font-size: 1.1rem; }
-.encuentro__lado--izq .encuentro__quien { right: 8%; }
-.encuentro__lado--der .encuentro__quien { left: 8%; }
+
+/* SE REVELAN, NO ENTRAN. Al estar fuera de los lados ya no viajan con las
+   figuras, así que necesitan aparecer por su cuenta: los dos a la vez, en el
+   momento del choque, saliendo de un desenfoque. Así el nombre no compite con el
+   movimiento de la entrada —que es lo que hay que mirar— y llega justo cuando ya
+   se sabe quién es quién. */
+/* Ease suave y no `--rebote`: con el rebote, a un tercio de la animación ya
+   estaba al 96% y el desenfoque no llegaba a verse. Aquí el punto es que se vea
+   enfocarse, así que el tiempo se reparte parejo. */
+.encuentro__rotulos .encuentro__quien { opacity: 0; }
+.encuentro--chocado .encuentro__quien {
+  animation: rotulo-revela 460ms cubic-bezier(.3, .5, .3, 1) both;
+}
+@keyframes rotulo-revela {
+  from { opacity: 0; filter: blur(10px); transform: translateY(10px) scale(.92); }
+  to { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+}
 
 .encuentro__fig { position: absolute; inset: 0; display: block; }
 /* SIN sombra. Se le puso una y lo que hacía era delatar el contenedor: la
@@ -1680,9 +1697,6 @@ body.app {
   position: absolute; top: var(--sube, 20%); bottom: auto;
   height: var(--alto-fig, 95%); width: auto; max-width: none;
 }
-/* `--sube` se declara en el LADO y baja heredada hasta la figura. Declararla en
-   la figura misma sería más directo, pero el rótulo la necesita también y es su
-   hermano: lo único que los dos tienen en común es el lado. */
 /* Kai es más ALTO que Luna, que no es lo mismo que más grande. La diferencia la
    hace la POSICIÓN, no el tamaño: los dos se dibujan igual de grandes y él se
    coloca un 4% más arriba, así que lo que sobresale es la cabeza y no la figura
@@ -1692,7 +1706,7 @@ body.app {
    Efecto secundario asumido: su puño queda ese 4% por encima del de Luna. En un
    choque de puños eso no desentona —tampoco se chocan a escuadra en la vida
    real— y es el precio de que se le note la altura. */
-.encuentro__lado[data-quien="kai"] { --sube: 17%; }
+.encuentro__fig[data-quien="kai"] .retrato__fig { --sube: 17%; }
 .encuentro__lado--izq .retrato__fig { right: 0; }
 .encuentro__lado--der .retrato__fig { left: 0; }
 .retrato--volteado .retrato__fig { transform: scaleX(-1); }
@@ -1744,7 +1758,7 @@ body.app {
 /* Y Luna sube en ESTA pose. En el dibujo del puño su brazo sale más bajo que el
    de Kai, así que con la misma altura los nudillos no quedaban a la misma. La
    corrección va solo aquí: en la pose de guardia los dos están bien. */
-.encuentro--pacto .encuentro__lado[data-quien="luna"] { --sube: 15%; }
+.encuentro--pacto .encuentro__fig[data-quien="luna"] .retrato__fig { --sube: 15%; }
 
 @media (prefers-reduced-motion: reduce) {
   .encuentro__lado--izq { transform: translateX(var(--fin-izq, -14%)); }
@@ -1754,5 +1768,6 @@ body.app {
   .encuentro--chocado .encuentro__vs, .encuentro--chocado .encuentro__chispa {
     animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1);
   }
+  .encuentro__rotulos .encuentro__quien { animation: none; opacity: 1; }
 }
 
