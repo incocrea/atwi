@@ -129,6 +129,12 @@ window.ATWI = window.ATWI || {};
     f.append('nombre', op.nombre || '');
     f.append('color', op.color || '');
     f.append('segundos', String(op.segundos || 0));
+    /* El tipo COMPLETO, con sus parametros. El servidor lo recorta para guardar
+       el archivo, pero lo anota entero: sin el codec no se puede saber que
+       produjo este navegador, que es justo lo que se quiere medir. */
+    f.append('mime', op.tipo || '');
+    f.append('navegador', op.navegador || '');
+    f.append('bytes', String((op.audio && op.audio.size) || 0));
     f.append('invitado', op.esInvitado ? '1' : '0');
 
     return fetch(cfg.supabaseUrl + '/functions/v1/turno', {

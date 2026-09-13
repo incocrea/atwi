@@ -1076,6 +1076,11 @@ window.ATWI = window.ATWI || {};
         audio: blob,
         tipo: r ? r.tipo : P.borrador.tipo,
         segundos: r ? r.segundos : P.borrador.segundos,
+        /* CON QUE SE GRABO. Se sella aqui junto con el resto: el formato que
+           eligio este navegador es un dato de ESTA grabacion, no del aparato
+           que la vuelva a mirar despues. */
+        navegador: (r && r.navegador) || (window.ATWI.grabadora.navegador &&
+                                          window.ATWI.grabadora.navegador()),
         url: URL.createObjectURL(blob)
       });
       var v = P.intervenciones[P.intervenciones.length - 1];
@@ -1147,6 +1152,7 @@ window.ATWI = window.ATWI || {};
     window.ATWI.nube.mandarTurno({
       debate: P.debate, orden: orden, numero: v.turno,
       audio: v.audio, tipo: v.tipo, segundos: v.segundos,
+      navegador: v.navegador,
       avatar: v.avatar, nombre: v.nombre, color: v.color,
       esInvitado: v.jugador !== indiceDeLaCuenta()
     }).then(function (r) {

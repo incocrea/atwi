@@ -134,6 +134,38 @@ window.ATWI = window.ATWI || {};
     pausadoPorSilencio = false;
   }
 
+  /* QUE NAVEGADOR ES, EN CORTO. Hace falta para saber que formato manda cada
+     uno, y eso solo se sabe midiendo: Chrome graba WebM con Opus, Safari MP4
+     con AAC, Firefox puede mandar Ogg, y cada version puede cambiar de idea.
+
+     NO se manda el user agent entero. Un UA completo identifica el aparato con
+     bastante precision y aqui no hace falta: para diagnosticar basta «Chrome
+     152 · Android». Guardar de menos es gratis; guardar de mas hay que
+     justificarlo ante quien juega.
+
+     El orden de las comprobaciones importa: Edge dice ser Chrome, Chrome dice
+     ser Safari, y Safari lo dice de verdad. Se mira de lo mas especifico a lo
+     mas general o salen todos etiquetados como Safari. */
+  function queNavegador() {
+    var u = navigator.userAgent || '';
+    var familia = 'otro', v = '';
+    var mirar = [
+      ['Edge', /Edg\/([\d.]+)/], ['Opera', /OPR\/([\d.]+)/],
+      ['Samsung', /SamsungBrowser\/([\d.]+)/], ['Firefox', /Firefox\/([\d.]+)/],
+      ['Chrome', /Chrome\/([\d.]+)/], ['Safari', /Version\/([\d.]+).*Safari/]
+    ];
+    for (var i = 0; i < mirar.length; i++) {
+      var m = u.match(mirar[i][1]);
+      if (m) { familia = mirar[i][0]; v = m[1].split('.')[0]; break; }
+    }
+    var so = /Android/.test(u) ? 'Android'
+           : /iPhone|iPad|iPod/.test(u) ? 'iOS'
+           : /Mac OS X/.test(u) ? 'Mac'
+           : /Windows/.test(u) ? 'Windows'
+           : /Linux/.test(u) ? 'Linux' : '';
+    return (familia + (v ? ' ' + v : '') + (so ? ' · ' + so : '')).slice(0, 60);
+  }
+
   function tipoQueAdmite() {
     if (!window.MediaRecorder) return '';
     var candidatos = [
@@ -200,6 +232,9 @@ window.ATWI = window.ATWI || {};
     },
 
     /** ¿El navegador sabe pausar y reanudar? Si no, «añadir» no se ofrece. */
+    /** Como se identifica este navegador, en corto. */
+    navegador: queNavegador,
+
     sabeAnadir: function () {
       return Boolean(window.MediaRecorder && MediaRecorder.prototype.pause && MediaRecorder.prototype.resume);
     },
@@ -302,6 +337,9 @@ window.ATWI = window.ATWI || {};
              y lo que se deja de pagarle al transcriptor, que cobra por minuto
              de audio. */
           r.silenciados = Math.round(msSilenciados / 100) / 10;
+          /* COMO SE GRABO, para poder contestar «funciona en todos los
+             navegadores» con datos y no con una lista de memoria. */
+          r.navegador = queNavegador();
           trozos = [];
           msAcumulados = 0;
           msSilenciados = 0;

@@ -187,7 +187,8 @@
     });
     $('#lienzo').innerHTML = '<p class="chico">Cargando…</p>';
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
-       material: verMaterial, limites: verLimites })[pestana]();
+       material: verMaterial, navegadores: verNavegadores,
+       limites: verLimites })[pestana]();
   }
 
   function fallo(e) {
@@ -399,6 +400,58 @@
                         esc(String(f.voz_modelo || '').replace('azure:', '')) + '</span>'
                       : '<span class="mal">no</span>'];
           }), [false, false, false, false, false]);
+    }).catch(fallo);
+  }
+
+  /* --- NAVEGADORES -----------------------------------------------------------
+     «¿Funciona en todos los navegadores?» contestado con datos y no con una
+     lista de memoria. Cada navegador graba a su manera --Chrome WebM con Opus,
+     Safari MP4 con AAC, Firefox puede mandar Ogg-- y cada versión puede cambiar
+     de idea. Esto enseña qué mandó cada uno DE VERDAD y si sirvió. */
+  function verNavegadores() {
+    pedir('compatibilidad?select=*').then(function (f) {
+      if (!f.length) {
+        $('#lienzo').innerHTML = '<div class="aviso">Todavía no se grabó nada. ' +
+          'Esta tabla se llena sola: cada grabación anota con qué navegador y en ' +
+          'qué formato se hizo, y si el transcriptor la aceptó.</div>';
+        return;
+      }
+      var rotos = f.filter(function (x) { return Number(x.rechazadas) > 0; });
+      var avisos = rotos.length
+        ? '<div class="aviso"><b>' + rotos.length + ' combinación(es) con rechazos.</b> ' +
+          'Ese navegador está grabando en un formato que no pasa. Es lo que hay ' +
+          'que convertir o pedir de otra manera.</div>'
+        : '<div class="aviso">Ningún formato rechazado hasta ahora. Ojo: eso vale ' +
+          'para los navegadores que aparecen abajo, no para los que todavía no ' +
+          'probó nadie.</div>';
+
+      $('#lienzo').innerHTML = avisos +
+        '<h2>Qué graba cada navegador</h2>' +
+        tabla(['Navegador', 'Formato que eligió', 'Grabaciones', 'Aceptadas',
+               'Rechazadas', 'Con voz', 'Duración media', 'Bitrate real', 'Última'],
+          f.map(function (x) {
+            var mal = Number(x.rechazadas) > 0;
+            return [esc(x.navegador),
+                    '<span class="chico">' + esc(x.mime) + '</span>',
+                    x.grabaciones,
+                    '<span class="bien">' + x.aceptadas + '</span>',
+                    mal ? '<span class="mal">' + x.rechazadas + '</span>' : '0',
+                    x.con_voz,
+                    (x.segundos_medios || '—') + ' s',
+                    /* El bitrate delata a un navegador que ignoró
+                       `audioBitsPerSecond`: si sale muy por encima de 33 kbps,
+                       está grabando a su antojo y subiendo de más. */
+                    (x.kbps_medios
+                      ? (Number(x.kbps_medios) > 60
+                          ? '<span class="ojo">' + x.kbps_medios + ' kbps</span>'
+                          : x.kbps_medios + ' kbps')
+                      : '—'),
+                    '<span class="chico">' + fecha(x.ultima) + '</span>'];
+          }), [false, false, true, true, true, true, true, true, false]) +
+
+        '<p class="chico" style="margin-top:12px">El bitrate debería rondar los ' +
+        '33 kbps (48 en Safari, que graba AAC). Muy por encima significa que ese ' +
+        'navegador ignoró el bitrate que se le pidió y está subiendo de más.</p>';
     }).catch(fallo);
   }
 
