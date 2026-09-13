@@ -1993,26 +1993,4 @@ body.app {
 .partida__pie { display: flex; align-items: center; gap: var(--e-2); margin-top: 4px; }
 .partida__modo { height: 18px; width: auto; flex: none; }
 
-/* Una intervención. El texto va DEBAJO y no dentro del botón: dentro, el botón
-   crece con lo que se dijo y una intervención larga deja un área de toque de
-   media pantalla. */
-.oir-turno {
-  display: flex; align-items: center; gap: var(--e-2);
-  width: 100%; text-align: left; padding: 10px 12px;
-  border-radius: var(--radio-tarjeta); border: 2px solid transparent;
-  transition: border-color var(--dur-corta) var(--suave);
-}
-.oir-turno__quien { flex: 1; min-width: 0; font-weight: 700; font-size: var(--t-chico); }
-.oir-turno__icono { flex: none; display: grid; place-items: center; color: var(--tinta-suave); }
-.oir-turno--sonando { border-color: var(--lavanda); }
-.oir-turno--sonando .oir-turno__icono { color: var(--lavanda); }
-/* Mientras baja: gira. Es el mismo lenguaje que la casilla de la sala, y por lo
-   mismo —el audio todavía no está y tocar otra vez no lo trae antes. */
-.oir-turno--cargando .oir-turno__icono {
-  animation: oir-girando .9s linear infinite; opacity: .5;
-}
-@keyframes oir-girando { to { transform: rotate(360deg); } }
-.oir-turno__texto {
-  margin: 2px 0 var(--e-2) 52px; font-size: var(--t-mini);
-  color: var(--tinta-suave); line-height: 1.45;
-}
+

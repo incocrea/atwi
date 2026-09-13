@@ -139,6 +139,75 @@ window.ATWI = window.ATWI || {};
     pintarAviso();
   }
 
+  /* ==========================================================================
+     EL REPASO: la misma sala, ya jugada
+     Volver a oír una partida NO es otra pantalla. Es esta, con las casillas ya
+     llenas y sin botón de grabar: como poner una película que ya se vio.
+
+     Se escribio primero como una lista aparte dentro de un modal, y era peor lo
+     mismo: perdia la figura grande, el reproductor sobre la cabeza y el
+     encadenado, que son justo lo que hace que una partida se relea como una
+     conversacion y no como una carpeta de audios.
+
+     Lo unico que cambia es el pie --oir la partida en vez de grabar-- y que la
+     figura grande arranca en quien abrio, porque no hay turno de nadie. */
+  function repasar(d) {
+    var t = (d.turnos_grabados || []).slice()
+      .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+    if (!t.length) return;
+
+    /* Los jugadores se reconstruyen DE LOS TURNOS y no del debate: ahi esta
+       sellado con que personaje y con que nombre jugo cada uno ESA vez, que es
+       lo que hay que volver a ver. El debate solo sabe como se llaman hoy. */
+    var lados = [t[0], t.filter(function (x) { return x.orden % 2 === 1; })[0] || t[0]];
+    P = {
+      tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+      modo: d.modo,
+      turnos: d.turnos,
+      publico: 'pareja',
+      jugadores: lados.map(function (x, i) {
+        return { nombre: x.nombre || (i ? 'La otra parte' : 'Vos'),
+                 avatar: x.avatar || (i ? 'luna' : 'kai'),
+                 color: x.color || COLOR_POR_DEFECTO[i],
+                 abogado: Boolean(x.abogado) };
+      }),
+      orden: [0, 1],
+      intervenciones: t.map(function (x, n) {
+        return {
+          jugador: n % 2, turno: x.numero || Math.floor(n / 2) + 1,
+          avatar: x.avatar, nombre: x.nombre, color: x.color,
+          abogado: Boolean(x.abogado),
+          segundos: x.segundos || 0,
+          transcripcion: x.transcripcion, guion: x.guion,
+          /* La ruta, todavia sin bajar. El audio se trae al tocarlo: bajar seis
+             de golpe al abrir es gastar datos de alguien por si acaso. */
+          ruta: x.abogado ? x.voz_ruta : x.audio_ruta,
+          url: null
+        };
+      }),
+      i: 0,
+      borrador: null,
+      estado: 'repaso',
+      repaso: true,
+      debate: d.id
+    };
+    abrir();
+    window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
+                               ['hablando']);
+    pintarRepaso();
+  }
+
+  function pintarRepaso() {
+    P.estado = 'repaso';
+    pintarSala({
+      dice: P.intervenciones.length + ' intervenciones · toca una para oírla',
+      pie: '<button class="boton boton--bloque boton--grande" data-accion="p-oir-todo">' +
+             iconoSVG('play', 22) + 'Oír la partida entera</button>' +
+           '<button class="boton boton--suave boton--bloque" data-accion="p-revelar">' +
+             'Ver el resultado otra vez</button>'
+    });
+  }
+
   /* CUÁL DE LOS DOS TIENE CUENTA. En la partida local juega quien abrió la app
      --el índice 0 de `jugadores`, que sale de su propia ficha-- contra alguien
      que agarró el teléfono. El de enfrente no tiene perfil en ninguna parte, y
@@ -198,6 +267,14 @@ window.ATWI = window.ATWI || {};
 
   /* Quién habla ahora, qué defiende y qué número de turno suyo es */
   function turnoActual() {
+    /* EN REPASO NO LE TOCA A NADIE. Se devuelve quien abrio, que es la figura
+       con la que arranca la pantalla; en cuanto se toque una intervencion, la
+       figura pasa a ser la de quien la dijo, como en la sala. */
+    if (P.repaso) {
+      var q = P.jugadores[0];
+      return { jugador: 0, nombre: q.nombre, avatar: q.avatar, color: q.color,
+               numero: 1, esUltima: false, esPrimera: true };
+    }
     var j = P.orden[P.i % 2];                 // índice del jugador
     return {
       jugador: j,
@@ -405,6 +482,26 @@ window.ATWI = window.ATWI || {};
        juego tiene dos registros --la voz real y la del personaje-- y el efecto
        se pierde justo al principio, que es cuando más falta hace. */
     var i = String(clave).charAt(0) === 'i' ? P.intervenciones[Number(String(clave).slice(1))] : null;
+    /* EN REPASO EL AUDIO NO ESTA BAJADO todavia: se trae al tocarlo. Bajar los
+       seis al abrir seria gastar los datos de alguien por si acaso, y casi
+       siempre se quiere oir uno. Mientras baja, la casilla gira. */
+    if (i && !i.url && i.ruta && window.ATWI.nube) {
+      if (i.preparando) return;
+      i.preparando = true;
+      marcarRueda(P.intervenciones.indexOf(i));
+      return window.ATWI.nube.oirDelAlmacen(i.ruta).then(function (url) {
+        if (!P) return;
+        i.preparando = false;
+        if (!url) {
+          i.falloLaNube = true;
+          i.motivo = 'no se pudo bajar el audio guardado';
+          return marcarRueda(P.intervenciones.indexOf(i));
+        }
+        i.url = url;
+        marcarRueda(P.intervenciones.indexOf(i));
+        oir(clave);
+      });
+    }
     /* UNA CASILLA QUE NO HACE NADA AL TOCARLA PARECE ROTA. Si está esperando o
        falló, se dice qué pasa en vez de quedarse callada: es lo único que la
        persona puede hacer con ella, y en un teléfono no hay consola que abrir. */
@@ -1464,6 +1561,7 @@ window.ATWI = window.ATWI || {};
     if (!b) return;
     var a = b.dataset.accion;
     if (a === 'p-cerrar-detalle') { var d = $('#p-detalle'); if (d) d.remove(); return; }
+    if (a === 'p-oir-todo') { oir('i0'); return; }
     if (a === 'p-listo') pintarTurno();
     else if (a === 'p-grabar') empezarAGrabar(false);
     else if (a === 'p-agregar') empezarAGrabar(true);
@@ -1507,5 +1605,5 @@ window.ATWI = window.ATWI || {};
     });
   });
 
-  window.ATWI.partida = { empezar: empezar, cerrar: cerrar };
+  window.ATWI.partida = { empezar: empezar, repasar: repasar, cerrar: cerrar };
 })();

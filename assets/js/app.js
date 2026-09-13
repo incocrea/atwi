@@ -582,99 +582,18 @@
   }
 
   /* --- Volver a oír una partida ------------------------------------------------
-     UN SOLO ELEMENTO DE AUDIO para toda la lista, y no uno por turno: con uno
-     por turno se pueden disparar dos a la vez y se oyen encimados, que es el
-     fallo clásico de una lista de audios. */
-  var oyendo = null;          // { orden, url }
-  var audioHistorial = null;
+     SE ABRE LA SALA, no una pantalla nueva. Se escribio primero como una lista
+     dentro de un modal propio --ficha, duracion y un boton de play por
+     intervencion-- y era peor lo mismo: perdia la figura grande, el reproductor
+     sobre la cabeza y el encadenado, que son justo lo que hace que una partida
+     se relea como una conversacion y no como una carpeta de audios.
 
-  function elAudioDelHistorial() {
-    if (!audioHistorial) {
-      audioHistorial = new Audio();
-      audioHistorial.addEventListener('ended', function () {
-        oyendo = null;
-        marcarLoQueSuena();
-      });
-    }
-    return audioHistorial;
-  }
-
+     Reproducir una partida es ponerla otra vez: la misma sala, con las casillas
+     ya llenas y sin boton de grabar. */
   function abrirPartida(id) {
     var d = (historial || []).filter(function (x) { return x.id === id; })[0];
-    if (!d) return;
-    var t = d.turnos_grabados || [];
-    pararElHistorial();
-
-    $('#m-oir .modal__titulo').textContent = cuando(d.creado);
-    $('#m-oir .modal__cuerpo').innerHTML =
-      '<p class="tarjeta tarjeta--aire" style="text-align:center;font-weight:800">' +
-        esc(d.enunciado || '') + '</p>' +
-      '<div class="apilado-3" style="margin-top:var(--e-4)">' +
-        t.map(function (x) {
-          /* CON abogado suena el personaje; SIN abogado, la grabación de la
-             persona. Es la misma regla que en la sala, y se dice en pantalla
-             para que no parezca que a unos les cambió la voz y a otros no. */
-          return '<button class="tarjeta oir-turno" data-oir-turno="' + x.orden + '">' +
-              window.ATWI.fichaHTML(x.avatar, 'avatar--mini', x.color) +
-              '<span class="oir-turno__quien">' + esc(x.nombre || '') +
-                '<span class="chico tenue"> · turno ' + (x.numero || 1) + '</span></span>' +
-              '<span class="chico tenue">' + (x.segundos || 0) + ' s</span>' +
-              '<span class="oir-turno__icono" data-icono="play"></span>' +
-            '</button>' +
-            (x.guion || x.transcripcion
-              ? '<p class="oir-turno__texto">' + esc(x.guion || x.transcripcion) + '</p>'
-              : '');
-        }).join('') +
-      '</div>';
-    $$('#m-oir [data-icono]').forEach(function (el) { el.innerHTML = icono('play', 20); });
-    partidaAbierta = d;
-    abrirModal('m-oir');
-  }
-
-  var partidaAbierta = null;
-
-  function oirTurno(orden) {
-    if (!partidaAbierta) return;
-    var t = (partidaAbierta.turnos_grabados || []).filter(function (x) {
-      return String(x.orden) === String(orden);
-    })[0];
-    if (!t) return;
-
-    var a = elAudioDelHistorial();
-    if (oyendo && String(oyendo.orden) === String(orden)) {
-      if (a.paused) a.play(); else a.pause();
-      return;
-    }
-
-    var ruta = t.abogado ? t.voz_ruta : t.audio_ruta;
-    if (!ruta) return;
-    oyendo = { orden: orden, url: null, cargando: true };
-    marcarLoQueSuena();
-    window.ATWI.nube.oirDelAlmacen(ruta).then(function (url) {
-      if (!url) {
-        oyendo = null;
-        marcarLoQueSuena();
-        return;
-      }
-      oyendo = { orden: orden, url: url };
-      a.src = url;
-      a.play();
-      marcarLoQueSuena();
-    });
-  }
-
-  function marcarLoQueSuena() {
-    $$('#m-oir [data-oir-turno]').forEach(function (b) {
-      var suya = oyendo && String(oyendo.orden) === String(b.dataset.oirTurno);
-      b.classList.toggle('oir-turno--sonando', Boolean(suya && !oyendo.cargando));
-      b.classList.toggle('oir-turno--cargando', Boolean(suya && oyendo.cargando));
-    });
-  }
-
-  function pararElHistorial() {
-    if (audioHistorial) { audioHistorial.pause(); audioHistorial.removeAttribute('src'); }
-    if (oyendo && oyendo.url) { try { URL.revokeObjectURL(oyendo.url); } catch (e) {} }
-    oyendo = null;
+    if (!d || !(d.turnos_grabados || []).length) return;
+    window.ATWI.partida.repasar(d);
   }
 
   /* Buscador y filtros. Van juntos porque responden a la misma pregunta:
@@ -1723,9 +1642,6 @@
 
     var partida = e.target.closest('[data-partida]');
     if (partida && !partida.disabled) { abrirPartida(partida.dataset.partida); return; }
-
-    var turnoOir = e.target.closest('[data-oir-turno]');
-    if (turnoOir) { oirTurno(turnoOir.dataset.oirTurno); return; }
 
     var tema = e.target.closest('[data-tema]');
     if (tema) { abrirTema(tema.dataset.tema); return; }
