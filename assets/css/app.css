@@ -1361,6 +1361,29 @@ body.app {
 /* Y si el circuito falló, se dice. La intervención existe y cuenta para la
    partida --el juez la va a leer igual-- pero no tiene voz que reproducir, y
    una casilla que no hace nada al tocarla parece rota. */
+/* EL ABOGADO. Dos botones que se encienden por separado: uno puede jugar con
+   abogado y el otro a pelo. Se ve el SÍ o el no de un vistazo, sin abrir nada,
+   porque es una decisión que cambia cómo suena la partida entera. */
+.abogados { display: grid; gap: var(--e-2); }
+.abogado {
+  display: flex; align-items: center; gap: var(--e-2);
+  padding: 10px 12px; border-radius: var(--radio-2);
+  border: 2px solid var(--linea, #e7e3de); background: var(--superficie);
+  font: inherit; color: var(--tinta); cursor: pointer; text-align: left;
+  transition: border-color var(--dur-corta) var(--suave),
+              background var(--dur-corta) var(--suave);
+}
+.abogado__quien { flex: 1; min-width: 0; font-weight: 700; font-size: var(--t-chico);
+                  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.abogado__si {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  color: var(--tinta-tenue); letter-spacing: .04em;
+}
+.abogado[aria-pressed="true"] {
+  border-color: var(--lavanda); background: var(--lavanda-lavado, #f3f0fd);
+}
+.abogado[aria-pressed="true"] .abogado__si { color: var(--lavanda); }
+
 /* EL DETALLE DE UNA CASILLA QUE NO SUENA. Cubre la sala entera porque es lo
    unico que importa mientras esta abierto, y porque el motivo puede ser largo:
    en un aviso de una linea no cabria y es justo lo que hay que poder leer. */

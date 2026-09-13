@@ -1265,6 +1265,33 @@
             }).join('') +
           '</div>'
         : '') +
+      /* EL ABOGADO. Se elige POR SEPARADO y antes de empezar: uno puede jugar
+         con abogado y el otro a pelo, y esa asimetría es parte de la gracia.
+         Va aquí y no dentro de la sala porque cambiar las reglas a mitad de
+         partida no es una opción, y porque cambia lo que cuesta cada turno. */
+      '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Con abogado?</h3>' +
+      '<p class="chico tenue" style="margin-bottom:var(--e-3)">' +
+        'Permite que tu personaje sea tu abogado. Usará su voz y mejorará levemente ' +
+        'tu argumento, o corregirá errores de pronunciación o lenguaje. ' +
+        '<b>¡Pero atención!</b> Puede que lo malinterprete y termine haciéndote ' +
+        'perder, como un mal abogado de verdad.</p>' +
+      '<div class="abogados">' +
+        [{ k: 'yo', quien: propuesta.abogadoYo, ficha: p.avatar, color: p.avatarBorde },
+         { k: 'otro', quien: propuesta.abogadoOtro, ficha: propuesta.otroAvatar,
+           color: propuesta.otroColor }].map(function (x, i) {
+          return '<button type="button" class="abogado" data-abogado="' + x.k + '"' +
+                 (x.quien ? ' aria-pressed="true"' : '') + '>' +
+              window.ATWI.fichaHTML(x.ficha, 'avatar--mini', x.color) +
+              '<span class="abogado__quien" id="abogado-' + x.k + '">' +
+                (i ? 'Su abogado' : 'Mi abogado') + '</span>' +
+              '<span class="abogado__si">' + (x.quien ? 'SÍ' : 'no') + '</span>' +
+            '</button>';
+        }).join('') +
+      '</div>' +
+      '<p class="chico tenue" style="margin:6px 0 var(--e-5)">' +
+        'Sin abogado se escucha tu propia grabación y el juez lee lo que dijiste, ' +
+        'tal cual.</p>' +
+
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
       '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
@@ -1282,7 +1309,19 @@
     if (!repintando) abrirModal('m-preparar');
   }
 
+  /* El botón del abogado dice el NOMBRE de cada quien en cuanto se escribe.
+     «Mi abogado» y «Su abogado» funcionan, pero con dos fichas iguales al lado
+     hay que pararse a pensar cuál es cuál, y esto se decide de un vistazo. */
+  function nombrarAbogados() {
+    var yo = ($('#p-yo') && $('#p-yo').value || '').trim();
+    var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
+    var a = $('#abogado-yo'), b = $('#abogado-otro');
+    if (a) a.textContent = yo ? 'Abogado de ' + yo : 'Mi abogado';
+    if (b) b.textContent = otro ? 'Abogado de ' + otro : 'Su abogado';
+  }
+
   function revisarPreparar() {
+    nombrarAbogados();
     /* El botón se apaga con la MISMA regla con la que se rechaza al pulsarlo.
        Tenía la suya —dos letras y nada más— y eso dejaba encender el botón con
        un nombre que luego no pasaba, que es la peor de las dos opciones. */
@@ -1331,8 +1370,11 @@
        una inicial. El primero defiende la postura A y el segundo la B: eso lo
        fija quien elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
     var p = datos.perfil();
-    var fichaMia = { nombre: yo, avatar: p.avatar, color: p.avatarBorde };
-    var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar, color: propuesta.otroColor };
+    var fichaMia = { nombre: yo, avatar: p.avatar, color: p.avatarBorde,
+                     abogado: Boolean(propuesta.abogadoYo) };
+    var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar,
+                      color: propuesta.otroColor,
+                      abogado: Boolean(propuesta.abogadoOtro) };
     var abre = Math.random() < 0.5 ? 0 : 1;
 
     cerrarModales(['m-preparar', 'm-tema']);
@@ -1440,6 +1482,19 @@
         if (Number(x.dataset.turnos) === propuesta.turnos) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
+      return;
+    }
+
+    /* El abogado se enciende y se apaga tocándolo. No se repinta la pantalla
+       entera: hacerlo perdería los dos nombres a medio escribir. */
+    var ab = e.target.closest('[data-abogado]');
+    if (ab) {
+      var cual = ab.dataset.abogado === 'yo' ? 'abogadoYo' : 'abogadoOtro';
+      propuesta[cual] = !propuesta[cual];
+      if (propuesta[cual]) ab.setAttribute('aria-pressed', 'true');
+      else ab.removeAttribute('aria-pressed');
+      var eti = ab.querySelector('.abogado__si');
+      if (eti) eti.textContent = propuesta[cual] ? 'SÍ' : 'no';
       return;
     }
 

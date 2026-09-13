@@ -72,6 +72,11 @@ window.ATWI = window.ATWI || {};
          de la 0001 exige que si el estado no es 'propuesto' haya un
          `aceptado_por`, y ahí solo caben perfiles. Se deja en 'propuesto': es
          verdad que nadie con cuenta la aceptó. */
+      /* QUIÉN ELIGIÓ ABOGADO, por separado. Va en el debate y no en cada turno
+         porque se decide antes de empezar y vale para toda la partida: el
+         servidor lo lee de aquí y no de lo que diga cada petición. */
+      abogado_propone: Boolean(p.abogadoYo),
+      abogado_invitado: Boolean(p.abogadoOtro),
       invitado_nombre: String(p.invitado && p.invitado.nombre || '').slice(0, 16),
       invitado_avatar: p.invitado && p.invitado.avatar || null,
       invitado_color: p.invitado && p.invitado.color || null
@@ -136,6 +141,9 @@ window.ATWI = window.ATWI || {};
     f.append('navegador', op.navegador || '');
     f.append('bytes', String((op.audio && op.audio.size) || 0));
     f.append('invitado', op.esInvitado ? '1' : '0');
+    /* Se manda, pero el servidor NO se fía: lo comprueba contra el debate. Va
+       solo para que los registros cuadren si algún día divergen. */
+    f.append('abogado', op.abogado ? '1' : '0');
 
     return fetch(cfg.supabaseUrl + '/functions/v1/turno', {
       method: 'POST',

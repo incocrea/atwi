@@ -119,6 +119,8 @@ window.ATWI = window.ATWI || {};
     if (window.ATWI.nube && window.ATWI.nube.hay()) {
       window.ATWI.nube.abrirPartida({
         tema: P.tema, modo: P.modo, turnos: P.turnos,
+        abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
+        abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
         invitado: P.jugadores[1 - indiceDeLaCuenta()]
       }).then(function (id) { P.debate = id; });
     }
@@ -144,7 +146,8 @@ window.ATWI = window.ATWI || {};
     return {
       nombre: x.nombre || '?',
       avatar: x.avatar || (i ? 'luna' : 'kai'),
-      color: x.color || COLOR_POR_DEFECTO[i] || COLOR_POR_DEFECTO[0]
+      color: x.color || COLOR_POR_DEFECTO[i] || COLOR_POR_DEFECTO[0],
+      abogado: Boolean(x.abogado)
     };
   }
 
@@ -1081,6 +1084,9 @@ window.ATWI = window.ATWI || {};
            que la vuelva a mirar despues. */
         navegador: (r && r.navegador) || (window.ATWI.grabadora.navegador &&
                                           window.ATWI.grabadora.navegador()),
+        /* Sellado como el personaje: lo que decide cómo suena esta ronda es lo
+           que se eligió ENTONCES. */
+        abogado: Boolean(j.abogado),
         url: URL.createObjectURL(blob)
       });
       var v = P.intervenciones[P.intervenciones.length - 1];
@@ -1154,7 +1160,8 @@ window.ATWI = window.ATWI || {};
       audio: v.audio, tipo: v.tipo, segundos: v.segundos,
       navegador: v.navegador,
       avatar: v.avatar, nombre: v.nombre, color: v.color,
-      esInvitado: v.jugador !== indiceDeLaCuenta()
+      esInvitado: v.jugador !== indiceDeLaCuenta(),
+      abogado: Boolean(v.abogado)
     }).then(function (r) {
       v.preparando = false;
       if (!r) {
@@ -1176,6 +1183,13 @@ window.ATWI = window.ATWI || {};
         if (v.url) { try { URL.revokeObjectURL(v.url); } catch (e) {} }
         v.url = r.voz;
         v.conVoz = true;
+      } else if (r.abogado === false) {
+        /* SIN ABOGADO NO HAY VOZ QUE ESPERAR, y eso NO es un fallo. Se queda la
+           grabación de la persona, que es lo que esta partida acordó que suene.
+           Sin distinguirlo, «no toca» y «no se pudo» se ven igual desde fuera
+           --los dos llegan con `voz: null`-- y cada turno sin abogado saldría
+           marcado en rojo. */
+        v.conVoz = false;
       } else {
         v.falloLaNube = true;
         v.motivo = 'se transcribió pero no llegó la voz del personaje';
