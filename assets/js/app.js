@@ -1270,12 +1270,14 @@
          Va aquí y no dentro de la sala porque cambiar las reglas a mitad de
          partida no es una opción, y porque cambia lo que cuesta cada turno. */
       '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
+      /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
+         explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
+         para una decisión que la mayoría va a dejar como viene, y encima
+         repetidos, porque el modal lo vuelve a decir justo cuando hace falta
+         leerlo —al elegir—. */
       '<p class="chico tenue" style="margin-bottom:var(--e-3)">' +
-        'Un abogado usa su voz y mejora levemente tu argumento, o corrige errores de ' +
-        'pronunciación o lenguaje. <b>¡Pero atención!</b> Puede que lo malinterprete y ' +
-        'termine haciéndote perder, como un mal abogado de verdad. ' +
-        'Sin abogado se escucha tu propia grabación y el juez lee lo que dijiste, tal cual.' +
-      '</p>' +
+        'Cada quien se representa a sí mismo. Prendé la llave para que un ' +
+        'personaje te haga de abogado.</p>' +
       pintarRepresentantes() +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
@@ -1312,36 +1314,87 @@
   function pintarRepresentantes() {
     var p = datos.perfil();
     var lados = [
-      { k: 'yo', repre: propuesta.repreYo, otro: propuesta.repreOtro,
-        ficha: p.avatar, color: p.avatarBorde },
-      { k: 'otro', repre: propuesta.repreOtro, otro: propuesta.repreYo,
-        ficha: propuesta.otroAvatar, color: propuesta.otroColor }
+      { k: 'yo', repre: propuesta.repreYo, ficha: p.avatar, color: p.avatarBorde },
+      { k: 'otro', repre: propuesta.repreOtro, ficha: propuesta.otroAvatar,
+        color: propuesta.otroColor }
     ];
     return '<div class="repres">' + lados.map(function (x) {
-      return '<div class="repre">' +
+      /* La ficha que se ve es la del DUELO: el abogado si lo hay, el avatar de
+         perfil si no. Se ve de un vistazo con quién se va a jugar, sin abrir
+         nada. */
+      var suyo = x.repre || x.ficha;
+      var conAbogado = Boolean(x.repre);
+      return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '">' +
+          window.ATWI.fichaHTML(suyo, 'avatar--mini', conAbogado ? null : x.color) +
           '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
-          '<div class="repre__opciones">' +
-            /* «Tu voz» primero, y es lo que viene puesto: el abogado se pide,
-               no se da por hecho. */
-            '<button type="button" class="repre__opcion' + (x.repre ? '' : ' repre__opcion--puesta') + '"' +
-              ' data-repre="' + x.k + '" data-personaje="">' +
-              window.ATWI.fichaHTML(x.ficha, 'repre__cara', x.color) +
-              '<span class="repre__n">' + (x.k === 'yo' ? 'Tu voz' : 'Su voz') + '</span>' +
-            '</button>' +
-            window.ATWI.quienes().map(function (q) {
-              var tomado = x.otro === q.clave;
-              return '<button type="button" class="repre__opcion' +
-                  (x.repre === q.clave ? ' repre__opcion--puesta' : '') +
-                  (tomado ? ' repre__opcion--tomada' : '') + '"' +
-                  ' data-repre="' + x.k + '" data-personaje="' + q.clave + '"' +
-                  (tomado ? ' disabled aria-label="Ya lo tomó la otra parte"' : '') + '>' +
-                  window.ATWI.fichaHTML(q.clave, 'repre__cara') +
-                  '<span class="repre__n">' + esc(q.nombre) + '</span>' +
-                '</button>';
-            }).join('') +
-          '</div>' +
+          '<span class="repre__como">' +
+            (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' lo defiende'
+                        : (x.k === 'yo' ? 'Tu voz' : 'Su voz')) +
+          '</span>' +
+          '<button type="button" class="repre__llave" data-abogado="' + x.k + '"' +
+            (conAbogado ? ' aria-pressed="true"' : '') +
+            ' aria-label="Usar abogado"></button>' +
         '</div>';
     }).join('') + '</div>';
+  }
+
+  /* EL PANEL DE ABOGADOS, en su propio modal. Se abre al encender la llave y se
+     cierra al elegir: una decisión, una pantalla.
+
+     EL QUE YA SE LLEVÓ EL OTRO SALE EN GRIS, no tachado ni escondido. Escondido,
+     la rejilla se recoloca y no se entiende por qué hay uno menos; tachado hay
+     que dibujar una raya encima de una cara. En gris se ve quién es y se ve que
+     no está, que es lo que hay que entender. */
+  var eligiendoPara = 'yo';
+
+  function abrirAbogados(cual) {
+    eligiendoPara = cual;
+    var mio = cual === 'yo' ? propuesta.repreYo : propuesta.repreOtro;
+    var delOtro = cual === 'yo' ? propuesta.repreOtro : propuesta.repreYo;
+    var nombre = ($(cual === 'yo' ? '#p-yo' : '#p-otro') || {}).value || '';
+
+    $('#m-abogados .modal__titulo').textContent =
+      nombre.trim() ? 'El abogado de ' + nombre.trim() : 'Elegí el abogado';
+
+    $('#m-abogados .modal__cuerpo').innerHTML =
+      '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
+        'Va a usar su voz y va a decir tu idea mejor dicha. No puede argumentar por ' +
+        'vos ni traer datos que no diste. <b>¡Pero atención!</b> Puede que te ' +
+        'malinterprete, como un mal abogado de verdad.</p>' +
+      '<div class="abogados-rejilla">' +
+        window.ATWI.quienes().map(function (q) {
+          var ocupado = delOtro === q.clave;
+          return '<button type="button" class="abogado-ficha' +
+              (mio === q.clave ? ' abogado-ficha--puesta' : '') +
+              (ocupado ? ' abogado-ficha--ocupada' : '') + '"' +
+              ' data-abogado-es="' + q.clave + '"' + (ocupado ? ' disabled' : '') + '>' +
+              window.ATWI.fichaHTML(q.clave, 'abogado-ficha__cara') +
+              '<span class="abogado-ficha__n">' + esc(q.nombre) + '</span>' +
+              '<span class="abogado-ficha__nota">' +
+                (ocupado ? 'Ya lo tomó la otra parte' : esc(comoHabla(q.clave))) +
+              '</span>' +
+            '</button>';
+        }).join('') +
+      '</div>';
+    abrirModal('m-abogados');
+  }
+
+  /* Una línea por personaje para que la elección no sea a ciegas: dos dibujos
+     sin más no dicen en qué se diferencian, y en lo que se diferencian es
+     justo en cómo van a decir lo tuyo. */
+  var COMO_HABLAN = {
+    kai: 'Directo y con frases cortas',
+    luna: 'Cálida y va encadenando'
+  };
+  function comoHabla(clave) { return COMO_HABLAN[clave] || ''; }
+
+  /* El selector se repinta SOLO, sin tocar la pantalla entera: repintarla se
+     llevaría por delante los dos nombres a medio escribir. */
+  function refrescarRepresentantes() {
+    var caja = $('#m-preparar .repres');
+    if (!caja) return;
+    caja.outerHTML = pintarRepresentantes();
+    nombrarAbogados();
   }
 
   /* El botón del abogado dice el NOMBRE de cada quien en cuanto se escribe.
@@ -1523,17 +1576,22 @@
 
     /* El abogado se enciende y se apaga tocándolo. No se repinta la pantalla
        entera: hacerlo perdería los dos nombres a medio escribir. */
-    var rp = e.target.closest('[data-repre]');
-    if (rp && !rp.disabled) {
-      var cual = rp.dataset.repre === 'yo' ? 'repreYo' : 'repreOtro';
-      propuesta[cual] = rp.dataset.personaje || null;
-      /* Se repinta SOLO este bloque y no la pantalla entera: repintarla se
-         llevaría por delante los dos nombres a medio escribir. */
-      var caja = $('#m-preparar .repres');
-      if (caja) {
-        caja.outerHTML = pintarRepresentantes();
-        nombrarAbogados();
-      }
+    /* La llave: encenderla abre el panel, apagarla devuelve a la voz propia. */
+    var llave = e.target.closest('[data-abogado]');
+    if (llave) {
+      var k = llave.dataset.abogado;
+      var campo = k === 'yo' ? 'repreYo' : 'repreOtro';
+      if (propuesta[campo]) { propuesta[campo] = null; refrescarRepresentantes(); }
+      else abrirAbogados(k);
+      return;
+    }
+
+    /* Elegir uno del panel. Se cierra al elegir: una decisión, una pantalla. */
+    var esc2 = e.target.closest('[data-abogado-es]');
+    if (esc2 && !esc2.disabled) {
+      propuesta[eligiendoPara === 'yo' ? 'repreYo' : 'repreOtro'] = esc2.dataset.abogadoEs;
+      cerrarModal('m-abogados');
+      refrescarRepresentantes();
       return;
     }
 
