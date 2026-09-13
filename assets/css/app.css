@@ -1195,7 +1195,7 @@ body.app {
    pie subía, sí, pero ese alto se lo devolvía al cuerpo, la figura bajaba con
    él y el solape volvía a ser cero. `top` mueve el pie SIN repartir alto. */
 #m-partida:has(.sala--turno) .modal__pie {
-  top: calc(var(--alto-hablante, 300px) * -0.05);
+  top: calc(var(--alto-hablante, 300px) * -0.10);
 }
 /* Y el cuerpo pierde su relleno de abajo SOLO aquí: dejaba veinte píxeles de
    aire bajo los pies de la figura, así que el pie subía quince y seguía sin

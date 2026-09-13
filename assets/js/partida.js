@@ -872,26 +872,41 @@ window.ATWI = window.ATWI || {};
   }
 
   /* El juez acusa recibo con una de las cinco frases fijas. No evalúa, no
-     comenta y no llama al modelo: aquí solo pasa el turno. */
+     comenta y no llama al modelo: aquí solo pasa el turno.
+
+     Y NO CAMBIA DE PANTALLA. Tenía la suya, con el icono del juez en grande y
+     un «Registrado, que hable la otra parte», y era una pantalla de más en
+     medio de la partida: lo único que pasa aquí es que le toca al otro. Así que
+     el turno se pasa YA y se vuelve a pintar la misma sala con la figura de
+     quien sigue. De una intervención a la otra, lo que cambia es la persona y
+     el texto del botón; todo lo demás se queda quieto. */
   function acusarRecibo(t) {
     P.estado = 'recibo';
-    var ultima = t.esUltima;
+    P.cerrando = t.esUltima;
 
-    caja().innerHTML =
-      '<div class="sala">' +
-        '<p class="sala__recordatorio">' + esc(P.tema.enunciado) + '</p>' +
-        juez('juez--asiente', ultima ? alAzar(cfg.frasesDeCierre) : alAzar(cfg.frasesDelJuez)) +
-        loDicho() +
-      '</div>';
+    if (P.cerrando) {
+      pintarSala({
+        dice: alAzar(cfg.frasesDeCierre),
+        pie: principal('p-seguir', 'Ver el resultado')
+      });
+      return;
+    }
 
-    pie().innerHTML = principal('p-seguir',
-      ultima ? 'Ver el resultado' : 'Le toca a ' + elOtro().nombre);
+    /* El turno se pasa aquí y no al pulsar: lo que hay que ver mientras se pasa
+       el teléfono es a quién le toca, no a quien acaba de hablar. */
+    P.i++;
+    pintarSala({
+      dice: alAzar(cfg.frasesDelJuez),
+      /* Jugando los dos en un teléfono, el botón entrega el aparato. Con dos
+         teléfonos esto será un «Esperando turno» apagado mientras el otro
+         manda lo suyo; hoy no hay partida remota, así que no se finge. */
+      pie: principal('p-seguir', 'Le toca a ' + turnoActual().nombre, '', false,
+                     turnoActual().color)
+    });
   }
 
   function seguir() {
-    var t = turnoActual();
-    if (t.esUltima) return deliberar();
-    P.i++;
+    if (P.cerrando) return deliberar();
     pintarTurno();
   }
 
