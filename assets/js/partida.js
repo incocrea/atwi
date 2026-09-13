@@ -269,13 +269,9 @@ window.ATWI = window.ATWI || {};
               '</span>';
           }).join('') +
         '</div>' +
-        '<p class="dicho__leyenda">' +
-          P.jugadores.map(function (j) {
-            return '<span class="leyenda">' +
-              window.ATWI.fichaHTML(j.avatar, 'avatar--mini', j.color) +
-              esc(j.nombre) + ' · ' + j.letra + '</span>';
-          }).join('') +
-        '</p>' +
+        /* Aquí iba una leyenda con «Diana · A» y «Prueba · B». Se va: quién es
+           quién ya lo dicen la cara y el aro de cada ficha, y la letra de la
+           postura no le importa a nadie mientras juega. */
       '</div>';
   }
 
@@ -615,8 +611,10 @@ window.ATWI = window.ATWI || {};
     caja().innerHTML =
       '<div class="sala sala--turno">' +
         '<div class="turno">' +
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos +
-            (pacto || !t.postura ? '' : ' · defiendes la ' + t.letra) + '</p>' +
+          /* Solo el número de turno. La letra de la postura —«defiendes la A»—
+             obligaba a recordar un rótulo para entender la frase de abajo, que
+             ya dice lo que hay que defender. */
+          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + '</p>' +
           '<p class="turno__que">' + esc(loSuyo) + '</p>' +
         '</div>' +
         /* EL ORDEN DE LA PANTALLA, de arriba abajo: qué toca, cómo va la
