@@ -1288,7 +1288,21 @@ body.app {
   margin-top: 0; margin-bottom: 4px;
 }
 .dicho__titulo svg { width: 13px; height: 13px; }
-.ruedas { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--e-2); }
+/* SIEMPRE CENTRADAS, y en dos filas cuando pasan de seis. Estaban en una
+   rejilla de seis columnas fijas: con cuatro turnos se quedaban las cuatro
+   pegadas a la izquierda y las dos columnas vacías a la derecha, que se leía
+   como si faltara algo en vez de como una partida corta.
+
+   Va en `flex` y no en `grid` porque la rejilla reparte SIEMPRE seis columnas
+   existan o no las fichas; el flex coloca las que hay y las centra. El ancho de
+   cada una se fija en píxeles —no en fracción— para que seis quepan justas en
+   la fila y la séptima baje sola: el máximo son cinco turnos por persona, diez
+   fichas, más el borrador. */
+.ruedas {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: var(--e-2); row-gap: var(--e-3);
+}
+.ruedas > * { flex: 0 0 47px; width: 47px; }
 
 /* Cada rueda ES la ficha de quien habló: su dibujo sobre su color, igual que
    el avatar del perfil. El aro blanco de dentro es el mismo recurso del avatar
