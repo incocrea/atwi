@@ -1694,7 +1694,15 @@ body.app {
 /* En Negociación no se plantan: siguen hasta juntarse y chocan el puño. Misma
    entrada, lo contrario contado. El 4% de solape es el grosor del perfil
    blanco, que si no deja los nudillos separados por una rayita. */
-.encuentro--pacto { --fin-izq: 4%; --fin-der: -4%; }
+/* Se separan un poco: llegaban a solaparse y los puños se cruzaban en vez de
+   tocarse. Cero sería borde con borde; el 2% hacia fuera deja el hueco del
+   perfil blanco de cada uno, que es lo que hace que se lean como dos piezas que
+   se encuentran y no como una sola. */
+.encuentro--pacto { --fin-izq: -2%; --fin-der: 2%; }
+/* Y Luna sube en ESTA pose. En el dibujo del puño su brazo sale más bajo que el
+   de Kai, así que con la misma altura los nudillos no quedaban a la misma. La
+   corrección va solo aquí: en la pose de guardia los dos están bien. */
+.encuentro--pacto .encuentro__fig[data-quien="luna"] .retrato__fig { --sube: 15%; }
 
 @media (prefers-reduced-motion: reduce) {
   .encuentro__lado--izq { transform: translateX(var(--fin-izq, -14%)); }
