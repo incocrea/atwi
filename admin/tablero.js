@@ -238,9 +238,17 @@
     Promise.all([
       pedir('perfiles?select=*&order=creado.desc'),
       pedir('debates?select=id,propone,creado,modo,estado'),
-      pedir('costos?select=perfil,usd')
+      pedir('costos?select=perfil,usd'),
+      pedir('admins?select=id')
     ]).then(function (r) {
       var gente = r[0], debates = r[1], costos = r[2];
+      /* TODA CUENTA DE ADMIN ES TAMBIEN UNA DE JUGADOR: el disparador del alta
+         crea un perfil para cada usuario nuevo y no puede saber para qué se hizo
+         la cuenta. Contarlas como jugadores infla la cifra, así que se separan.
+         No se les quita el perfil: la misma persona puede querer jugar. */
+      var admins = {};
+      (r[3] || []).forEach(function (a) { admins[a.id] = true; });
+      var jugadores = gente.filter(function (p) { return !admins[p.id]; });
       var porPersona = {};
       debates.forEach(function (d) {
         porPersona[d.propone] = porPersona[d.propone] || { partidas: 0, usd: 0 };
@@ -254,14 +262,16 @@
 
       $('#lienzo').innerHTML =
         '<div class="tarjetas">' +
-          tarjeta('Cuentas', String(gente.length), '') +
+          tarjeta('Jugadores', String(jugadores.length),
+                  Object.keys(admins).length + ' de administración aparte') +
           tarjeta('Partidas', String(debates.length), '') +
         '</div>' +
         '<h2>Cuentas</h2>' +
         tabla(['Nombre', 'Personaje', 'Nivel', 'Partidas', 'Gastado', 'Alta', 'Id'],
           gente.map(function (p) {
             var d = porPersona[p.id] || { partidas: 0, usd: 0 };
-            return [esc(p.nombre || '—'),
+            return [esc(p.nombre || '—') +
+                      (admins[p.id] ? ' <span class="pastilla">admin</span>' : ''),
                     esc(p.avatar || '—'),
                     p.nivel,
                     d.partidas,
