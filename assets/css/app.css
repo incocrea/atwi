@@ -1038,19 +1038,23 @@ body.app {
 .sala { display: grid; gap: var(--e-4); align-content: start; padding-top: var(--e-2); }
 .sala--centrada { align-content: center; justify-items: center; min-height: 60vh; }
 
+/* EL MODO VA FUERA Y ENCIMA de la tarjeta, y es lo más grande de la pantalla
+   después del sorteo. Dentro competía con el enunciado por el mismo sitio y se
+   leía como una etiqueta; fuera, manda, que es lo que tiene que hacer. */
+.sala__rotulo {
+  height: 52px; width: auto; max-width: 100%;
+  display: block; margin: 0 auto var(--e-3);
+}
 .sala__tema {
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
   padding: var(--e-4); box-shadow: var(--sombra-1);
+  text-align: center;
 }
 .sala__enunciado { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); line-height: 1.3; }
-/* El rótulo del modo y la píldora de turnos van CENTRADOS en el ancho de la
-   tarjeta, no pegados a la izquierda: son dos piezas de igual peso que dicen de
-   qué va la partida, y alineadas al margen quedaban como una nota al pie. */
 .sala__chips {
   display: flex; gap: var(--e-2); flex-wrap: wrap;
   align-items: center; justify-content: center; margin-top: var(--e-3);
 }
-.sala__rotulo { height: 34px; width: auto; max-width: 100%; display: block; }
 .sala__recordatorio { font-size: var(--t-chico); color: var(--ctx-tenue-2); line-height: 1.4; text-align: center; }
 .sala__posturas { display: grid; gap: var(--e-2); }
 .sala__posturas p { color: var(--ctx-tenue); line-height: 1.45; }
@@ -1493,7 +1497,22 @@ body.app {
   color: var(--ctx-banda, var(--tinta));
   -webkit-text-stroke: 6px var(--ctx-fondo, var(--crema)); paint-order: stroke;
 }
-.encuentro--llegado .encuentro__vs { animation: encuentro-golpe 460ms var(--rebote) both; }
+/* El destello del choque de puños. Ocho rayos, de un `repeating-conic-gradient`
+   y no de uno normal: con el normal hay que escribir los ocho tramos a mano y
+   basta equivocarse en un ángulo para que salga uno solo, que ya pasó. El hueco
+   del centro lo abre la máscara, y es lo que lo hace leer como chispa y no como
+   sol. Cae a la altura de los nudillos, más abajo que el VS. */
+.encuentro__chispa {
+  position: absolute; z-index: 3; left: 50%; top: 55%;
+  transform: translate(-50%, -50%) scale(0); opacity: 0;
+  width: 104px; height: 104px; border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg,
+    var(--dorado, #F5C243) 0deg 6deg, transparent 6deg 45deg);
+  -webkit-mask: radial-gradient(closest-side, transparent 24%, #000 27%);
+  mask: radial-gradient(closest-side, transparent 24%, #000 27%);
+}
+.encuentro--llegado .encuentro__vs,
+.encuentro--llegado .encuentro__chispa { animation: encuentro-golpe 460ms var(--rebote) both; }
 @keyframes encuentro-golpe {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(2.2) rotate(-12deg); }
   55% { opacity: 1; transform: translate(-50%, -50%) scale(.88) rotate(3deg); }
@@ -1509,7 +1528,7 @@ body.app {
   .encuentro__lado--izq { transform: translateX(var(--fin-izq, -14%)); }
   .encuentro__lado--der { transform: translateX(var(--fin-der, 14%)); }
   .encuentro--llegado .encuentro__lado { transition: none; }
-  .encuentro--llegado .encuentro__vs {
+  .encuentro--llegado .encuentro__vs, .encuentro--llegado .encuentro__chispa {
     animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1);
   }
 }

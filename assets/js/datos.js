@@ -305,10 +305,10 @@ window.ATWI = window.ATWI || {};
       var guardado = this.invitado(ficha.nombre);
       if (guardado) {
         guardado.nombre = ficha.nombre;      // respeta mayúsculas nuevas
-        guardado.nombre = ficha.nombre;
-        guardado.color = ficha.color;
+        if (ficha.avatar) guardado.avatar = ficha.avatar;
+        if (ficha.color) guardado.color = ficha.color;
       } else {
-        guardado = { nombre: ficha.nombre };
+        guardado = { nombre: ficha.nombre, avatar: ficha.avatar, color: ficha.color };
         lista.push(guardado);
       }
       /* El último con quien se jugó primero: es casi siempre el de la próxima. */

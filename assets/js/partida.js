@@ -106,6 +106,11 @@ window.ATWI = window.ATWI || {};
     };
     separarFichas();
     abrir();
+    /* Las poses del encuentro se piden YA, aunque falten cinco segundos para
+       verlas: así la entrada no empieza con una figura a medio pintar. */
+    window.ATWI.precargarPoses(
+      P.jugadores.map(function (j) { return j.avatar; }),
+      [P.modo === 'debate' ? 'plante' : 'puno']);
     pintarAviso();
   }
 
@@ -120,15 +125,15 @@ window.ATWI = window.ATWI || {};
     };
   }
 
-  /* Dos fichas iguales no se distinguen, que es justo para lo que sirven. Si
-     coinciden se le cambia el color a la segunda; solo si también el dibujo es
-     el mismo se toca el dibujo. */
+  /* Dos fichas iguales no se distinguen, que es justo para lo que sirven. Pero
+     lo que se separa es el ARO, no el personaje: dos Kai en la misma sala valen
+     —cada uno con su aro— y cambiarle el personaje a alguien porque el otro
+     eligió el mismo es decidir por él. */
   function separarFichas() {
     var a = P.jugadores[0], b = P.jugadores[1];
     if (a.color.toLowerCase() !== b.color.toLowerCase()) return;
     b.color = b.color.toLowerCase() === COLOR_POR_DEFECTO[1].toLowerCase()
       ? COLOR_POR_DEFECTO[0] : COLOR_POR_DEFECTO[1];
-    if (a.avatar === b.avatar) b.avatar = window.ATWI.otroPersonaje(a.avatar);
   }
 
   function abrir() {
@@ -398,13 +403,14 @@ window.ATWI = window.ATWI || {};
   function pintarAviso() {
     caja().innerHTML =
       '<div class="sala sala--sorteo">' +
+        /* EL MODO MANDA Y VA FUERA DE LA TARJETA. Dentro competía con el
+           enunciado por el mismo sitio y acababa leyéndose como una etiqueta
+           más; sacándolo arriba queda claro el orden en que hay que leer esto:
+           a qué se juega, sobre qué, y cuántos turnos. */
+        window.ATWI.rotuloModo(P.modo, 'sala__rotulo') +
         '<div class="sala__tema">' +
           '<p class="sala__enunciado">' + esc(P.tema.enunciado) + '</p>' +
-          /* El modo va DIBUJADO, como en el home y en la cinta del catálogo.
-             Escrito aquí quedaba como una etiqueta más al lado de la de turnos,
-             y no es una etiqueta: es de qué se está jugando. */
           '<div class="sala__chips">' +
-            window.ATWI.rotuloModo(P.modo, 'sala__rotulo') +
             '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>' +
           '</div>' +
         '</div>' +
@@ -542,11 +548,12 @@ window.ATWI = window.ATWI || {};
         window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
-      /* En Negociación NO se dibuja destello: las dos figuras ya traen sus
-         propias chispas junto al puño, y una tercera encima se veía como un
-         adorno pegado que no era de nadie. El VS de Controversia sí hace falta:
-         ahí no hay nada en el medio que diga que se enfrentan. */
-      (pacto ? '' : '<span class="encuentro__vs">VS</span>');
+      /* El destello del choque lo pone la interfaz y ya no el dibujo. Las
+         figuras traían las suyas y al juntarse se montaban unas sobre otras y
+         sobre el puño contrario; se regeneraron sin ellas. Este cae donde se
+         tocan de verdad, que es lo único que el dibujo no puede saber. */
+      (pacto ? '<span class="encuentro__chispa"></span>'
+             : '<span class="encuentro__vs">VS</span>');
     m.appendChild(caja);
 
     /* El golpe suena cuando LLEGAN, no al salir: es el sonido del encuentro, y

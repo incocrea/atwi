@@ -120,9 +120,29 @@ window.ATWI = window.ATWI || {};
     return '<span class="retrato ' + (op.clase || '') + (voltea ? ' retrato--volteado' : '') +
         '" data-quien="' + quien + '">' +
         fondo +
+        /* `loading="eager"` a propósito. Estas figuras NACEN FUERA DEL LIENZO
+           —entran desde el borde— y con carga diferida el navegador puede no
+           bajarlas nunca, porque nunca «entran en vista» a su manera de
+           mirarlo. Con una sí y con otra no, que es peor: parece que falta un
+           jugador. Son dos imágenes por pantalla, no una lista. */
         '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-' + pose + '.png" ' +
-          'alt="' + esc(c.nombre + ', ' + POSES[pose]) + '" loading="lazy" decoding="async">' +
+          'alt="' + esc(c.nombre + ', ' + POSES[pose]) + '" loading="eager" decoding="async">' +
       '</span>';
+  };
+
+  /**
+   * Deja las poses en la caché antes de que hagan falta. Se llama al abrir la
+   * sala: entre eso y el encuentro pasan más de cinco segundos, de sobra para
+   * que lleguen, y así la entrada no empieza con una figura a medio pintar.
+   */
+  window.ATWI.precargarPoses = function (quienes, poses) {
+    (quienes || []).forEach(function (q) {
+      (poses || []).forEach(function (p) {
+        if (!GENTE[q] || !POSES[p]) return;
+        var im = new Image();
+        im.src = '../assets/img/personajes/' + q + '-' + p + '.png';
+      });
+    });
   };
 
   /** Quiénes hay, para pintar el selector de avatar. */

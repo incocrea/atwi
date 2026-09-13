@@ -704,26 +704,24 @@
                 'Así te ve la otra persona en la sala y en el resultado.</span>' +
             '</label>') +
 
-        /* Al invitado NO se le pregunta. Con dos personajes la respuesta está
-           decidida por la mía: si yo soy Kai, él es Luna. Un selector de una
-           sola opción no es un selector, es un trámite. */
-        (deInvitado
-          ? '<p class="chico tenue">Juega como <b>' +
-              esc(window.ATWI.nombrePersonaje(personajeElegido)) + '</b>, que es quien no ' +
-              'eres tú: dos fichas iguales no se distinguen en la sala.</p>'
-          : '<div>' +
-              '<span class="chico" style="font-weight:700">¿Con quién juegas?</span>' +
-              '<div class="personajes" style="margin-top:var(--e-2)">' +
-                window.ATWI.quienes().map(function (q) {
-                  return '<button class="personaje" data-personaje="' + q.clave + '"' +
-                    (q.clave === personajeElegido ? ' aria-pressed="true"' : '') +
-                    ' style="--pj:' + q.color + '">' +
-                    window.ATWI.fichaHTML(q.clave, 'personaje__cara') +
-                    '<span class="personaje__nombre">' + esc(q.nombre) + '</span>' +
-                  '</button>';
-                }).join('') +
-              '</div>' +
-            '</div>') +
+        /* El invitado elige igual que yo, y puede elegir el MISMO personaje: en
+           una sala pueden jugar dos Kai, y lo que los distingue es el aro. Se
+           probó a asignárselo automáticamente —el que yo no soy— y lo que salía
+           era una pantalla sin nada que decidir. */
+        '<div>' +
+          '<span class="chico" style="font-weight:700">' +
+            (deInvitado ? '¿Con quién juega?' : '¿Con quién juegas?') + '</span>' +
+          '<div class="personajes" style="margin-top:var(--e-2)">' +
+            window.ATWI.quienes().map(function (q) {
+              return '<button class="personaje" data-personaje="' + q.clave + '"' +
+                (q.clave === personajeElegido ? ' aria-pressed="true"' : '') +
+                ' style="--pj:' + q.color + '">' +
+                window.ATWI.fichaHTML(q.clave, 'personaje__cara') +
+                '<span class="personaje__nombre">' + esc(q.nombre) + '</span>' +
+              '</button>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
 
         /* El aro vuelve a elegirse. El personaje dice quién eres; el aro, cuál
            de las dos fichas es la tuya cuando las dos están en la misma sala. */
@@ -766,6 +764,7 @@
     /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
        se recuerda al empezar la partida, cuando ya se sabe su nombre. */
     if (editandoFicha === 'invitado') {
+      propuesta.otroAvatar = personajeElegido;
       propuesta.otroColor = colorElegido;
       cerrarModal('m-perfil');
       var bf0 = $('#p-ficha-otro');
@@ -1134,9 +1133,11 @@
     var g = nombre ? datos.invitado(nombre) : null;
     return {
       nombre: (g ? g.nombre : nombre) || '',
-      /* El personaje NO se elige: es el que no soy yo. El aro sí, y si ya jugó
-         aquí se le devuelve el suyo. */
-      avatar: window.ATWI.otroPersonaje(datos.perfil().avatar),
+      /* Si ya jugó en este teléfono se le devuelve su ficha. Si no, se propone
+         el personaje que yo NO soy —que es lo que suele querer— pero se puede
+         cambiar: dos Kai en la misma sala valen, los distingue el aro. */
+      avatar: (g && g.avatar) || propuesta.otroAvatar ||
+              window.ATWI.otroPersonaje(datos.perfil().avatar),
       color: (g && g.color) || propuesta.otroColor || colorLibre()
     };
   }
@@ -1225,14 +1226,15 @@
           'placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
       '</div>' +
       '<span class="chico tenue" style="display:block;margin-top:6px">' +
-        'Van a jugar los dos en este teléfono, por turnos. Juega con el personaje que ' +
-        'no eres tú; toca el círculo para darle su aro de color.</span>' +
+        'Van a jugar los dos en este teléfono, por turnos. Toca el círculo para elegirle ' +
+        'personaje y aro.</span>' +
 
       (invitadosPrevios().length
         ? '<div class="invitados" style="margin-top:var(--e-3)">' +
             invitadosPrevios().map(function (g) {
               return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
-                  window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--mini', g.color) + esc(g.nombre) +
+                  window.ATWI.fichaHTML(g.avatar || propuesta.otroAvatar, 'avatar--mini', g.color) +
+                  esc(g.nombre) +
                 '</button>';
             }).join('') +
           '</div>'
@@ -1308,7 +1310,8 @@
     /* La ficha del invitado se recuerda AQUÍ, que es cuando por fin se sabe su
        nombre. No crea cuenta ni historial: es memoria de este teléfono para no
        volver a preguntárselo. */
-    datos.recordarInvitado({ nombre: otro, color: propuesta.otroColor });
+    datos.recordarInvitado({ nombre: otro, avatar: propuesta.otroAvatar,
+                             color: propuesta.otroColor });
     propuesta.otro = otro;
 
     /* Cada jugador viaja con su ficha entera —nombre, dibujo y color—, porque
