@@ -337,6 +337,7 @@ window.ATWI = window.ATWI || {};
     var a = elAudio();
     var p = pistaDe(clave);
     if (!p || !p.url) return;
+    if (siguiendo) { clearTimeout(siguiendo); siguiendo = null; }
     if (sonando === clave) { if (a.paused) a.play(); else a.pause(); return; }
     sonando = clave;
     a.src = p.url;
@@ -346,9 +347,48 @@ window.ATWI = window.ATWI || {};
     pintarReproductor();
   }
 
+  /* ==========================================================================
+     LA CONVERSACIÓN SE OYE SEGUIDA
+     Al acabar una intervención NO se para: espera un segundo y sigue con la
+     siguiente, cambiando de cara y de color según de quién sea. Oír la discusión
+     de corrido es lo que hace falta antes de contestar; ir tocando una por una
+     obliga a reconstruirla de memoria entre toque y toque.
+
+     Entra también lo grabado y sin mandar, si ya está: es la última cosa que se
+     dijo, aunque todavía no la haya oído nadie.
+
+     El segundo de espera no es decoración. Sin él las dos voces se pegan y
+     parece una sola grabación; con él se oye el turno del otro.
+     ========================================================================== */
+  var MS_ENTRE_PISTAS = 1000;
+  var siguiendo = null;
+
+  /** El orden en que se oye todo: los turnos cerrados y, al final, el borrador. */
+  function ordenDePistas() {
+    var l = P.intervenciones.map(function (_, n) { return 'i' + n; });
+    if (P.borrador) l.push('b');
+    return l;
+  }
+
+  function encadenar() {
+    var l = ordenDePistas();
+    var i = l.indexOf(sonando);
+    if (i < 0 || i === l.length - 1) return;          // era la última
+    var proxima = l[i + 1];
+    if (siguiendo) clearTimeout(siguiendo);
+    siguiendo = setTimeout(function () {
+      siguiendo = null;
+      /* Se comprueba otra vez: en ese segundo se pudo cerrar el reproductor,
+         tocar otra pista o salirse de la sala. */
+      if (!P || sonando !== l[i]) return;
+      oir(proxima);
+    }, MS_ENTRE_PISTAS);
+  }
+
   function pararEscucha() {
     var a = $('#sala-audio');
     if (a && !a.paused) a.pause();
+    if (siguiendo) { clearTimeout(siguiendo); siguiendo = null; }
     window.ATWI.animarBoca($('#m-partida .hablante__fig'), false);
   }
 
@@ -470,7 +510,7 @@ window.ATWI = window.ATWI || {};
     /* El avance se calcula sobre los segundos que contamos nosotros:
        `a.duration` de un WebM de MediaRecorder vale Infinity. */
     var total = duracionDe(sonando) || 1;
-    if (ev === 'ended') { a.currentTime = 0; }
+    if (ev === 'ended') { a.currentTime = 0; encadenar(); }
 
     var ic = $('#r-icono');
     if (ic) ic.innerHTML = iconoSVG(a.paused ? 'play' : 'pausa', 24);
