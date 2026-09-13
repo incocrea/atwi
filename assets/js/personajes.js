@@ -217,14 +217,43 @@ window.ATWI = window.ATWI || {};
    * sala: entre eso y el encuentro pasan más de cinco segundos, de sobra para
    * que lleguen, y así la entrada no empieza con una figura a medio pintar.
    */
+  /* DEVUELVE UNA PROMESA, y ese es el punto. Antes disparaba las peticiones y se
+     olvidaba: quien la llamaba seguía adelante y la animación de entrada
+     empezaba con las figuras a medio bajar. En un teléfono que abre la app por
+     primera vez eso se ve fatal —los personajes aparecen a trozos o de golpe a
+     mitad del movimiento— y no hay forma de arreglarlo después: una animación
+     que ya empezó no se puede volver a empezar sin que se note.
+
+     Espera a que estén DECODIFICADAS, no solo descargadas: una imagen bajada
+     pero sin decodificar todavía pinta en blanco el primer fotograma.
+
+     Nunca rechaza y nunca se queda colgada. Si una imagen falla, se sigue: es
+     preferible una figura que falta a una partida que no arranca. Y el tope de
+     tiempo existe porque en una red mala esto puede tardar lo que quiera, y
+     nadie va a mirar una pantalla quieta más de tres segundos. */
+  var MS_TOPE_PRECARGA = 3000;
+
   window.ATWI.precargarPoses = function (quienes, poses) {
+    var esperas = [];
     (quienes || []).forEach(function (q) {
       (poses || []).forEach(function (p) {
         if (!GENTE[q] || !POSES[p]) return;
-        var im = new Image();
-        im.src = '../assets/img/personajes/' + q + '-' + p + '.png';
+        esperas.push(new Promise(function (listo) {
+          var im = new Image();
+          im.onload = function () {
+            if (im.decode) im.decode().then(listo, listo);
+            else listo();
+          };
+          im.onerror = listo;
+          im.src = '../assets/img/personajes/' + q + '-' + p + '.png';
+        }));
       });
     });
+    if (!esperas.length) return Promise.resolve();
+    return Promise.race([
+      Promise.all(esperas),
+      new Promise(function (listo) { setTimeout(listo, MS_TOPE_PRECARGA); })
+    ]);
   };
 
   /** Quiénes hay, para pintar el selector de avatar. */

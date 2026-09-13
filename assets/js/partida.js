@@ -126,8 +126,10 @@ window.ATWI = window.ATWI || {};
     }
     abrir();
     /* Las poses del encuentro se piden YA, aunque falten cinco segundos para
-       verlas: así la entrada no empieza con una figura a medio pintar. */
-    window.ATWI.precargarPoses(
+       verlas. Y se GUARDA LA PROMESA: el sorteo dura lo que dura y casi siempre
+       llegan a tiempo, pero en un teléfono que abre la app por primera vez no, y
+       sin esperarla la entrada arrancaba con las figuras a medio bajar. */
+    P.poses = window.ATWI.precargarPoses(
       P.jugadores.map(function (j) { return j.avatar; }),
       [P.modo === 'debate' ? 'plante' : 'puno']);
     pintarAviso();
@@ -726,9 +728,18 @@ window.ATWI = window.ATWI || {};
          centro de la pantalla. Ahora el sitio queda libre para los dos. */
       setTimeout(function () {
         if (!P || P.estado !== 'aviso') return;
-        var s = $('#m-partida .sorteo');
-        if (s) s.classList.add('sorteo--fuera');
-        setTimeout(entrarAlEncuentro, MS_SALIDA_GANADOR);
+        /* NINGUNA ANIMACIÓN EMPIEZA SIN SUS IMÁGENES. Se esperaba solo el reloj,
+           y en un teléfono que abre la app por primera vez las figuras llegaban
+           a mitad del movimiento: aparecían a trozos o de golpe. Una animación
+           que ya empezó no se puede volver a empezar sin que se note.
+           `precargarPoses` nunca falla ni se cuelga --lleva su propio tope-- así
+           que esperarla no puede dejar la partida parada. */
+        (P.poses || Promise.resolve()).then(function () {
+          if (!P || P.estado !== 'aviso') return;
+          var s = $('#m-partida .sorteo');
+          if (s) s.classList.add('sorteo--fuera');
+          setTimeout(entrarAlEncuentro, MS_SALIDA_GANADOR);
+        });
       }, MS_ANTES_DEL_ENCUENTRO);
     }
   }
@@ -1163,7 +1174,10 @@ window.ATWI = window.ATWI || {};
       esInvitado: v.jugador !== indiceDeLaCuenta(),
       abogado: Boolean(v.abogado)
     }).then(function (r) {
-      v.preparando = false;
+      /* OJO: aquí NO se apaga `preparando` en general. En el camino de la voz se
+         apaga más abajo, cuando el audio ya está descargado; apagarlo aquí sería
+         encender la casilla con una promesa en vez de con un sonido. */
+      if (r && r.voz) { /* lo apaga `bajarLaVoz` */ } else { v.preparando = false; }
       if (!r) {
         v.falloLaNube = true;
         v.motivo = window.ATWI.nube.ultimoFallo() || 'el servidor no devolvió nada';
@@ -1178,11 +1192,33 @@ window.ATWI = window.ATWI || {};
       v.transcripcion = r.transcripcion || '';
       v.guion = r.guion || '';
       if (r.voz) {
-        /* El objeto local se suelta: ya no lo va a oír nadie y se está
-           quedando con memoria del teléfono para nada. */
-        if (v.url) { try { URL.revokeObjectURL(v.url); } catch (e) {} }
-        v.url = r.voz;
-        v.conVoz = true;
+        /* LA CASILLA NO SE ENCIENDE HASTA QUE EL AUDIO ESTÁ AQUÍ. Se encendía
+           al recibir la URL firmada, que es solo una dirección: al tocarla, el
+           navegador empezaba a bajar el mp3 y el primer toque no sonaba. Había
+           que tocar dos veces, y la segunda funcionaba porque para entonces ya
+           había bajado.
+
+           Se baja a un blob en vez de dejárselo al elemento de audio, y así se
+           gana otra cosa: la URL firmada caduca en una hora y el blob no, así
+           que una partida larga se puede seguir escuchando entera.
+
+           `preparando` sigue en verdadero todo este rato --la casilla sigue
+           girando-- que es la verdad: todavía no se puede oír. */
+        return bajarLaVoz(r.voz).then(function (local) {
+          if (!P) return;
+          if (!local) {
+            v.falloLaNube = true;
+            v.motivo = 'la voz llegó pero no se pudo descargar';
+            return marcarRueda(orden);
+          }
+          if (v.url && v.url.indexOf('blob:') === 0) {
+            try { URL.revokeObjectURL(v.url); } catch (e) {}
+          }
+          v.url = local;
+          v.conVoz = true;
+          v.preparando = false;
+          marcarRueda(orden);
+        });
       } else if (r.abogado === false) {
         /* SIN ABOGADO NO HAY VOZ QUE ESPERAR, y eso NO es un fallo. Se queda la
            grabación de la persona, que es lo que esta partida acordó que suene.
@@ -1227,6 +1263,15 @@ window.ATWI = window.ATWI || {};
           'Entendido</button>' +
       '</div>';
     $('#m-partida').appendChild(m);
+  }
+
+  /** Se trae el audio de verdad y devuelve una URL local, o null si no se pudo.
+      Sin esto, la casilla promete algo que todavía no está. */
+  function bajarLaVoz(url) {
+    return fetch(url)
+      .then(function (r) { return r.ok ? r.blob() : null; })
+      .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
+      .catch(function () { return null; });
   }
 
   /** Repinta UNA casilla sin rehacer la pantalla: repintar entera cortaría la
@@ -1294,7 +1339,22 @@ window.ATWI = window.ATWI || {};
   }
 
   function seguir() {
-    if (P.cerrando) return deliberar();
+    /* DIRECTO AL VEREDICTO, sin pantalla de espera en medio. Había una que
+       decía «Deliberando…» y cobraba un toque más por no hacer nada: hoy no hay
+       juez, así que esa espera era mentira, y el botón que la cerraba decía lo
+       mismo que el que la abría.
+
+       El toque sigue haciendo falta, y no es un capricho: la política de
+       autoreproducción del navegador deja el audio bloqueado hasta que hay un
+       gesto, y sin él no suena ni el redoble (docs/01 §8.6). Lo que cambia es
+       que ese toque ya estaba —el botón del último turno— y ahora lleva al
+       veredicto en vez de a una sala de espera.
+
+       Cuando el árbitro exista sí habrá algo que esperar, y el sitio correcto
+       para esa espera es DESPUÉS del toque: la cuenta atrás y el redoble tapan
+       los segundos que el modelo tarde en pensar, en vez de enseñar una
+       pantalla quieta antes. `deliberar()` se queda escrita para entonces. */
+    if (P.cerrando) return revelar();
     pintarTurno();
   }
 
@@ -1303,6 +1363,9 @@ window.ATWI = window.ATWI || {};
      Todavía sin servidor: no hay transcripción ni juez de verdad, así que se
      enseña el efecto con un resultado simulado y se dice que lo es.
      ========================================================================== */
+  /* SIN USO POR AHORA, a propósito. Es la pantalla del árbitro pensando, y hoy
+     no hay árbitro: `seguir()` va directo al veredicto. Cuando lo haya, esta
+     vuelve —pero DESPUÉS del toque, mientras el modelo trabaja. */
   function deliberar() {
     P.estado = 'deliberando';
     cerrarReproductor();
