@@ -107,6 +107,29 @@ window.ATWI = window.ATWI || {};
     }).catch(function (e) { return apuntar(e.message); });
   }
 
+  /** Deja constancia de con quien jugo cada lado. `lado` 0 es quien propone. */
+  function apuntarElecciones(debate, p) {
+    var yo = auth.sesion().user;
+    var filas = [
+      { debate: debate, lado: 0, perfil: yo.id,
+        abogado: Boolean(p.abogadoYo), personaje: p.personajeYo },
+      { debate: debate, lado: 1, perfil: null,
+        abogado: Boolean(p.abogadoOtro), personaje: p.personajeOtro }
+    ];
+    return fetch(cfg.supabaseUrl + '/rest/v1/elecciones', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify(filas)
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { apuntar('elecciones: ' + t.slice(0, 160)); });
+    }).catch(function (e) { apuntar('elecciones: ' + e.message); });
+  }
+
   /**
    * Manda un turno y devuelve lo que salió del otro lado:
    *   { valido, transcripcion, guion, voz, ms }  ·  o null si no se pudo.

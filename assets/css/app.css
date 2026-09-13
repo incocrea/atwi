@@ -1867,3 +1867,52 @@ body.app {
   .encuentro__rotulos .encuentro__quien { animation: none; opacity: 1; }
 }
 
+
+/* ==========================================================================
+   QUIÉN REPRESENTA A CADA UNO EN EL DUELO
+   Una fila por persona: su voz, o uno de los personajes de abogado. No es un
+   interruptor de sí/no porque ya no lo es: hay que elegir A QUIÉN, y con cuatro
+   personajes en camino un interruptor no daría más de sí.
+
+   SE LLAMA `repre__opcion` Y NO `opcion` porque `.opcion` YA EXISTE en este
+   proyecto --son las opciones de postura-- y `modal.css` carga despues de
+   `app.css`, asi que su regla ganaba: esto salia en `display: grid` con la cara
+   al lado del nombre, en vez de encima. No era falta de especificidad, era una
+   colision de nombres, y subir la especificidad solo la habria tapado.
+   ========================================================================== */
+.repres { display: grid; gap: var(--e-3); }
+.repre__quien {
+  display: block; font-weight: 800; font-size: var(--t-chico);
+  color: var(--tinta); margin-bottom: 6px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Flex y no rejilla: los personajes van a ser seis y tienen que poder pasar a
+   la fila siguiente sin que nadie recalcule columnas. Y `minmax(0,1fr)` no
+   salvaría de que el contenido ensanche la columna, que es el fallo clásico
+   aquí (ver CLAUDE.md: nada scrollea de lado). */
+.repre__opciones { display: flex; flex-wrap: wrap; gap: var(--e-2); }
+.repre__opcion {
+  flex: 1 1 88px; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 6px; border-radius: var(--radio-2);
+  border: 2px solid var(--linea, #e7e3de); background: var(--superficie);
+  font: inherit; color: var(--tinta); cursor: pointer;
+  transition: border-color var(--dur-corta) var(--suave),
+              background var(--dur-corta) var(--suave);
+}
+.repre__cara { width: 40px; height: 40px; border-radius: 50%; }
+.repre__n {
+  font-size: var(--t-mini); font-weight: 700; line-height: 1.2;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.repre__opcion--puesta { border-color: var(--lavanda); background: var(--lavanda-lavado, #f3f0fd); }
+
+/* YA LO TOMÓ LA OTRA PARTE. Se deja VISIBLE y tachado, no se esconde: si
+   desapareciera, la fila se recolocaría sola y quien mira no entendería por qué
+   hay una opción menos que en la de arriba. Tachado se ve que existe y que no
+   está disponible, que es la verdad. */
+.repre__opcion--tomada { opacity: .4; cursor: not-allowed; position: relative; }
+.repre__opcion--tomada::after {
+  content: ''; position: absolute; left: 14%; right: 14%; top: 50%;
+  height: 2px; background: var(--tinta-tenue); transform: rotate(-14deg);
+}

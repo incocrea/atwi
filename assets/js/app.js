@@ -1269,28 +1269,14 @@
          con abogado y el otro a pelo, y esa asimetría es parte de la gracia.
          Va aquí y no dentro de la sala porque cambiar las reglas a mitad de
          partida no es una opción, y porque cambia lo que cuesta cada turno. */
-      '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Con abogado?</h3>' +
+      '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
       '<p class="chico tenue" style="margin-bottom:var(--e-3)">' +
-        'Permite que tu personaje sea tu abogado. Usará su voz y mejorará levemente ' +
-        'tu argumento, o corregirá errores de pronunciación o lenguaje. ' +
-        '<b>¡Pero atención!</b> Puede que lo malinterprete y termine haciéndote ' +
-        'perder, como un mal abogado de verdad.</p>' +
-      '<div class="abogados">' +
-        [{ k: 'yo', quien: propuesta.abogadoYo, ficha: p.avatar, color: p.avatarBorde },
-         { k: 'otro', quien: propuesta.abogadoOtro, ficha: propuesta.otroAvatar,
-           color: propuesta.otroColor }].map(function (x, i) {
-          return '<button type="button" class="abogado" data-abogado="' + x.k + '"' +
-                 (x.quien ? ' aria-pressed="true"' : '') + '>' +
-              window.ATWI.fichaHTML(x.ficha, 'avatar--mini', x.color) +
-              '<span class="abogado__quien" id="abogado-' + x.k + '">' +
-                (i ? 'Su abogado' : 'Mi abogado') + '</span>' +
-              '<span class="abogado__si">' + (x.quien ? 'SÍ' : 'no') + '</span>' +
-            '</button>';
-        }).join('') +
-      '</div>' +
-      '<p class="chico tenue" style="margin:6px 0 var(--e-5)">' +
-        'Sin abogado se escucha tu propia grabación y el juez lee lo que dijiste, ' +
-        'tal cual.</p>' +
+        'Un abogado usa su voz y mejora levemente tu argumento, o corrige errores de ' +
+        'pronunciación o lenguaje. <b>¡Pero atención!</b> Puede que lo malinterprete y ' +
+        'termine haciéndote perder, como un mal abogado de verdad. ' +
+        'Sin abogado se escucha tu propia grabación y el juez lee lo que dijiste, tal cual.' +
+      '</p>' +
+      pintarRepresentantes() +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
@@ -1309,15 +1295,64 @@
     if (!repintando) abrirModal('m-preparar');
   }
 
+  /* QUIÉN REPRESENTA A CADA UNO EN ESTE DUELO, que ya no es lo mismo que su
+     avatar de perfil. Dos ejes que estaban pegados:
+
+       «Tu voz»      -> se ve tu avatar de perfil y se oye tu grabación.
+       un personaje -> se ve y se oye ese personaje, de abogado.
+
+     DOS ABOGADOS NO PUEDEN SER EL MISMO PERSONAJE: se distinguen por dibujo y
+     por voz, y con la misma cara y la misma voz no se distinguen. Pero solo
+     entre abogados —quien va con su voz no bloquea a nadie, porque lo que de
+     verdad los separa es que una de las dos voces es humana—.
+
+     Aquí el bloqueo es de pantalla porque los dos eligen en el mismo teléfono.
+     En remoto lo arbitra la base con un índice único (migración 0019): el
+     primer INSERT que llega gana. Dos relojes distintos no pueden decidirlo. */
+  function pintarRepresentantes() {
+    var p = datos.perfil();
+    var lados = [
+      { k: 'yo', repre: propuesta.repreYo, otro: propuesta.repreOtro,
+        ficha: p.avatar, color: p.avatarBorde },
+      { k: 'otro', repre: propuesta.repreOtro, otro: propuesta.repreYo,
+        ficha: propuesta.otroAvatar, color: propuesta.otroColor }
+    ];
+    return '<div class="repres">' + lados.map(function (x) {
+      return '<div class="repre">' +
+          '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
+          '<div class="repre__opciones">' +
+            /* «Tu voz» primero, y es lo que viene puesto: el abogado se pide,
+               no se da por hecho. */
+            '<button type="button" class="repre__opcion' + (x.repre ? '' : ' repre__opcion--puesta') + '"' +
+              ' data-repre="' + x.k + '" data-personaje="">' +
+              window.ATWI.fichaHTML(x.ficha, 'repre__cara', x.color) +
+              '<span class="repre__n">' + (x.k === 'yo' ? 'Tu voz' : 'Su voz') + '</span>' +
+            '</button>' +
+            window.ATWI.quienes().map(function (q) {
+              var tomado = x.otro === q.clave;
+              return '<button type="button" class="repre__opcion' +
+                  (x.repre === q.clave ? ' repre__opcion--puesta' : '') +
+                  (tomado ? ' repre__opcion--tomada' : '') + '"' +
+                  ' data-repre="' + x.k + '" data-personaje="' + q.clave + '"' +
+                  (tomado ? ' disabled aria-label="Ya lo tomó la otra parte"' : '') + '>' +
+                  window.ATWI.fichaHTML(q.clave, 'repre__cara') +
+                  '<span class="repre__n">' + esc(q.nombre) + '</span>' +
+                '</button>';
+            }).join('') +
+          '</div>' +
+        '</div>';
+    }).join('') + '</div>';
+  }
+
   /* El botón del abogado dice el NOMBRE de cada quien en cuanto se escribe.
      «Mi abogado» y «Su abogado» funcionan, pero con dos fichas iguales al lado
      hay que pararse a pensar cuál es cuál, y esto se decide de un vistazo. */
   function nombrarAbogados() {
     var yo = ($('#p-yo') && $('#p-yo').value || '').trim();
     var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
-    var a = $('#abogado-yo'), b = $('#abogado-otro');
-    if (a) a.textContent = yo ? 'Abogado de ' + yo : 'Mi abogado';
-    if (b) b.textContent = otro ? 'Abogado de ' + otro : 'Su abogado';
+    var a = $('#repre-yo'), b = $('#repre-otro');
+    if (a) a.textContent = yo || 'Vos';
+    if (b) b.textContent = otro || 'La otra parte';
   }
 
   function revisarPreparar() {
@@ -1370,11 +1405,12 @@
        una inicial. El primero defiende la postura A y el segundo la B: eso lo
        fija quien elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
     var p = datos.perfil();
-    var fichaMia = { nombre: yo, avatar: p.avatar, color: p.avatarBorde,
-                     abogado: Boolean(propuesta.abogadoYo) };
-    var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar,
-                      color: propuesta.otroColor,
-                      abogado: Boolean(propuesta.abogadoOtro) };
+    /* EL AVATAR DEL DUELO, que no tiene por qué ser el del perfil. Con abogado
+       manda el personaje elegido; sin abogado, el de la ficha de cada uno. */
+    var fichaMia = { nombre: yo, avatar: propuesta.repreYo || p.avatar,
+                     color: p.avatarBorde, abogado: Boolean(propuesta.repreYo) };
+    var fichaSuya = { nombre: otro, avatar: propuesta.repreOtro || propuesta.otroAvatar,
+                      color: propuesta.otroColor, abogado: Boolean(propuesta.repreOtro) };
     var abre = Math.random() < 0.5 ? 0 : 1;
 
     cerrarModales(['m-preparar', 'm-tema']);
@@ -1487,14 +1523,17 @@
 
     /* El abogado se enciende y se apaga tocándolo. No se repinta la pantalla
        entera: hacerlo perdería los dos nombres a medio escribir. */
-    var ab = e.target.closest('[data-abogado]');
-    if (ab) {
-      var cual = ab.dataset.abogado === 'yo' ? 'abogadoYo' : 'abogadoOtro';
-      propuesta[cual] = !propuesta[cual];
-      if (propuesta[cual]) ab.setAttribute('aria-pressed', 'true');
-      else ab.removeAttribute('aria-pressed');
-      var eti = ab.querySelector('.abogado__si');
-      if (eti) eti.textContent = propuesta[cual] ? 'SÍ' : 'no';
+    var rp = e.target.closest('[data-repre]');
+    if (rp && !rp.disabled) {
+      var cual = rp.dataset.repre === 'yo' ? 'repreYo' : 'repreOtro';
+      propuesta[cual] = rp.dataset.personaje || null;
+      /* Se repinta SOLO este bloque y no la pantalla entera: repintarla se
+         llevaría por delante los dos nombres a medio escribir. */
+      var caja = $('#m-preparar .repres');
+      if (caja) {
+        caja.outerHTML = pintarRepresentantes();
+        nombrarAbogados();
+      }
       return;
     }
 

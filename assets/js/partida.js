@@ -121,6 +121,10 @@ window.ATWI = window.ATWI || {};
         tema: P.tema, modo: P.modo, turnos: P.turnos,
         abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
         abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
+        /* El personaje DEL DUELO. Con abogado es el elegido; sin abogado es el
+           avatar de la ficha, que es lo que se ve aunque la voz sea humana. */
+        personajeYo: P.jugadores[indiceDeLaCuenta()].avatar,
+        personajeOtro: P.jugadores[1 - indiceDeLaCuenta()].avatar,
         invitado: P.jugadores[1 - indiceDeLaCuenta()]
       }).then(function (id) { P.debate = id; });
     }
