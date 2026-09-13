@@ -47,6 +47,41 @@
     });
   }
 
+  /* --- El antirrobots --------------------------------------------------------
+     Supabase Auth tiene el captcha obligatorio y lo exige TAMBIEN en la entrada
+     por contraseña, no solo en el alta. Sin token devuelve `captcha_failed` y
+     no deja pasar: esta puerta se escribió sin él y no habría funcionado.
+
+     Si el widget no se dibuja, se dice y no se deja intentar a ciegas: el error
+     de Supabase sería `captcha_failed`, que no le explica nada a nadie. */
+  var captcha = '';
+
+  function montarCaptcha() {
+    if (!cfg.turnstileSiteKey) return;
+    var hueco = $('#captcha');
+    if (!hueco) return;
+    if (!window.turnstile) {
+      if (!document.getElementById('js-turnstile')) {
+        var s = document.createElement('script');
+        s.id = 'js-turnstile';
+        s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+        s.async = true; s.defer = true;
+        s.onload = montarCaptcha;
+        document.head.appendChild(s);
+      }
+      return;
+    }
+    hueco.innerHTML = '';
+    window.turnstile.render(hueco, {
+      sitekey: cfg.turnstileSiteKey,
+      language: 'es', theme: 'light', size: 'flexible',
+      appearance: 'interaction-only',
+      callback: function (t) { captcha = t; },
+      'expired-callback': function () { captcha = ''; },
+      'error-callback': function () { captcha = ''; }
+    });
+  }
+
   /* --- La puerta ------------------------------------------------------------- */
   function entrar() {
     var correo = $('#correo').value.trim().toLowerCase();
@@ -54,13 +89,24 @@
     $('#error').textContent = '';
     if (!correo || !clave) { $('#error').textContent = 'Faltan datos.'; return; }
 
+    var cuerpo = { email: correo, password: clave };
+    if (captcha) cuerpo.gotrue_meta_security = { captcha_token: captcha };
+
     fetch(cfg.supabaseUrl + '/auth/v1/token?grant_type=password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', apikey: cfg.supabaseAnon },
-      body: JSON.stringify({ email: correo, password: clave })
+      body: JSON.stringify(cuerpo)
     }).then(function (r) { return r.json(); }).then(function (s) {
       if (!s || !s.access_token) {
-        throw new Error(s && (s.error_description || s.msg) || 'No se pudo entrar.');
+        var msg = (s && (s.error_description || s.msg)) || 'No se pudo entrar.';
+        /* El mensaje de Supabase para esto es «captcha protection: request
+           disallowed», que no le dice nada a nadie. Se traduce a lo que de
+           verdad hay que hacer. */
+        if (s && s.error_code === 'captcha_failed') {
+          msg = 'El antirrobots no dio token. Recargá la página; si sigue igual, ' +
+                'revisá que este dominio esté en la lista del widget de Turnstile.';
+        }
+        throw new Error(msg);
       }
       sesion = s;
       try { sessionStorage.setItem(CLAVE, JSON.stringify(s)); } catch (e) {}
@@ -404,6 +450,8 @@
     pestana = b.dataset.pest;
     pintar();
   });
+
+  montarCaptcha();
 
   /* La sesión vive en `sessionStorage` y no en `localStorage`: al cerrar la
      pestaña se va. Es un tablero de administración, no una app de uso diario. */

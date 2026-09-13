@@ -88,6 +88,11 @@
   <p class="chico">Cuenta de administración. No es la de jugar.</p>
   <input id="correo" type="email" autocomplete="username" placeholder="correo">
   <input id="clave" type="password" autocomplete="current-password" placeholder="contraseña">
+  <!-- El antirrobots NO es opcional aquí. Supabase Auth tiene el captcha
+       obligatorio y lo exige también en la entrada por contraseña, no solo en el
+       alta: sin token devuelve `captcha_failed` y no deja pasar. Se comprobó
+       pidiendo el token con una cuenta inventada. -->
+  <div id="captcha" style="margin-top:12px"></div>
   <button id="entrar">Entrar</button>
   <p class="error" id="error"></p>
 </div>
@@ -108,7 +113,7 @@
   <main id="lienzo"></main>
 </div>
 
-<script src="../assets/js/config.js?v=dc8bdd5"></script>
+<script src="../assets/js/config.js?v=e289c46"></script>
 <script src="tablero.js"></script>
 </body>
 </html>
