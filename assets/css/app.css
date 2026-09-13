@@ -1980,16 +1980,43 @@ body.app {
    La voz del personaje se guarda sin plazo, así que una partida de hace meses
    suena igual que la de hoy.
    ========================================================================== */
-.partida {
-  display: grid; gap: 4px; width: 100%; text-align: left;
+/* LA TARJETA PASA A SER LA FILA, y dentro van dos botones: abrir y borrar. No
+   se puede meter un boton dentro de otro --el navegador desarma el HTML-- y la
+   tarjeta entera ERA el boton de abrir. */
+.partida-fila {
+  display: flex; align-items: center; gap: var(--e-2);
   margin-bottom: var(--e-3);
 }
+.partida {
+  display: grid; gap: 4px; text-align: left;
+  /* `min-width: 0` o el enunciado largo ensancha la fila y saca la pantalla de
+     los 430 px. En un flex el minimo por defecto es el del contenido. */
+  flex: 1; min-width: 0;
+  background: none; border: 0; padding: 0; font: inherit; color: inherit;
+  cursor: pointer;
+}
 .partida:disabled { opacity: .55; cursor: default; }
+.partida__borrar {
+  flex: none; width: 38px; height: 38px; display: grid; place-items: center;
+  border: 0; border-radius: var(--radio-boton); cursor: pointer;
+  background: transparent; color: var(--tinta-tenue);
+  transition: background var(--dur-corta) var(--suave), color var(--dur-corta) var(--suave);
+}
+.partida__borrar:active { background: var(--peligro-tinte); color: var(--peligro); }
+
+/* FUERA DE LA SALA TAMBIEN SE BORRA: el historial. Mismo criterio que el
+   `--borrar` de la sala --tono aparte, nunca un bloque de rojo de alarma--
+   porque es el mismo gesto y tiene que reconocerse igual. Va en app.css, que
+   carga despues de base.css, asi que gana al color de `--suave`. */
+.boton--borrar { color: var(--peligro); border-color: rgba(212, 91, 91, .32); }
 .partida__cuando {
   font-size: var(--t-mini); color: var(--tinta-tenue);
   text-transform: uppercase; letter-spacing: .06em; font-weight: 700;
 }
-.partida__tema { font-weight: 800; color: var(--tinta); line-height: 1.35; }
+.partida__tema {
+  font-weight: 800; color: var(--tinta); line-height: 1.35;
+  overflow-wrap: anywhere;
+}
 .partida__pie { display: flex; align-items: center; gap: var(--e-2); margin-top: 4px; }
 .partida__modo { height: 18px; width: auto; flex: none; }
 

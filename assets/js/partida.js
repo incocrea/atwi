@@ -476,35 +476,44 @@ window.ATWI = window.ATWI || {};
   function oir(clave) {
     var a = elAudio();
     var p = pistaDe(clave);
-    if (!p || !p.url) return;
-    /* MIENTRAS SE PREPARA NO SUENA NADA. La URL que hay ahí todavía es la
-       grabación de verdad, y esa no se reproduce nunca: si suena una vez, el
-       juego tiene dos registros --la voz real y la del personaje-- y el efecto
-       se pierde justo al principio, que es cuando más falta hace. */
-    var i = String(clave).charAt(0) === 'i' ? P.intervenciones[Number(String(clave).slice(1))] : null;
-    /* EN REPASO EL AUDIO NO ESTA BAJADO todavia: se trae al tocarlo. Bajar los
-       seis al abrir seria gastar los datos de alguien por si acaso, y casi
-       siempre se quiere oir uno. Mientras baja, la casilla gira. */
-    if (i && !i.url && i.ruta && window.ATWI.nube) {
+    if (!p) return;
+
+    var i = String(clave).charAt(0) === 'i'
+      ? P.intervenciones[Number(String(clave).slice(1))] : null;
+
+    /* PRIMERO SE BAJA, Y DESPUES SE MIRA SI HAY URL. Este bloque estaba DEBAJO
+       de un `if (!p.url) return`, asi que no se ejecutaba nunca: en el repaso
+       las intervenciones nacen sin `url` --solo con la ruta en el almacen-- y la
+       funcion salia antes de llegar aqui. Tocar una casilla no hacia nada y no
+       dejaba ni un rastro, porque el `return` es silencioso.
+
+       Se baja al tocarlo y no al abrir la partida: bajar seis audios de golpe
+       es gastar los datos de alguien por si acaso, y casi siempre se quiere oir
+       uno. Mientras baja, la casilla gira. */
+    if (i && !i.url && i.ruta && window.ATWI.nube && window.ATWI.nube.oirDelAlmacen) {
       if (i.preparando) return;
       i.preparando = true;
       marcarRueda(P.intervenciones.indexOf(i));
-      return window.ATWI.nube.oirDelAlmacen(i.ruta).then(function (url) {
+      window.ATWI.nube.oirDelAlmacen(i.ruta).then(function (url) {
         if (!P) return;
+        var n = P.intervenciones.indexOf(i);
         i.preparando = false;
         if (!url) {
           i.falloLaNube = true;
           i.motivo = 'no se pudo bajar el audio guardado';
-          return marcarRueda(P.intervenciones.indexOf(i));
+          return marcarRueda(n);
         }
         i.url = url;
-        marcarRueda(P.intervenciones.indexOf(i));
-        oir(clave);
+        marcarRueda(n);
+        oir(clave);              // ahora si, con el audio en la mano
       });
+      return;
     }
-    /* UNA CASILLA QUE NO HACE NADA AL TOCARLA PARECE ROTA. Si está esperando o
-       falló, se dice qué pasa en vez de quedarse callada: es lo único que la
-       persona puede hacer con ella, y en un teléfono no hay consola que abrir. */
+
+    /* MIENTRAS SE PREPARA NO SUENA NADA. En la sala, la URL que hay ahi todavia
+       es la grabacion de verdad, y esa no se reproduce nunca: si suena una vez,
+       el juego tiene dos registros --la voz real y la del personaje-- y el
+       efecto se pierde justo al principio, que es cuando mas falta hace. */
     if (i && i.preparando) return contarQuePasa(i, 'Preparando la voz…',
       'Se está transcribiendo y poniéndole la voz del personaje. Tarda unos ' +
       'segundos y no se puede oír hasta que esté: lo que hay guardado todavía es ' +
@@ -512,6 +521,9 @@ window.ATWI = window.ATWI || {};
     if (i && i.falloLaNube) return contarQuePasa(i, 'Se quedó sin voz',
       'Esta intervención cuenta para la partida igual —el juez la va a leer— pero ' +
       'no se le pudo poner la voz del personaje.');
+    /* Y AHORA si: si despues de todo eso no hay nada que sonar, se sale. Antes
+       este guardia estaba el PRIMERO y se comia los dos casos de arriba. */
+    if (!p.url) return;
     if (siguiendo) { clearTimeout(siguiendo); siguiendo = null; }
     if (sonando === clave) { if (a.paused) a.play(); else a.pause(); return; }
     sonando = clave;

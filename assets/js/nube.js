@@ -243,9 +243,39 @@ window.ATWI = window.ATWI || {};
       .catch(function (e) { return apuntar('audio: ' + e.message); });
   }
 
+  /**
+   * Borra una partida del historial: sus audios y sus filas.
+   *
+   * LO HACE EL SERVIDOR, no esto. Seria mas corto mandar dos peticiones desde
+   * aqui --el archivo y la fila-- pero hay que retirarlas EN ORDEN: quien puede
+   * tocar un audio se decide leyendo el debate al que pertenece, asi que si la
+   * fila se va primero los archivos quedan huerfanos y ya nadie puede
+   * borrarlos. Y son la voz de una persona. Un telefono que se apaga entre las
+   * dos peticiones deja eso hecho; la funcion de borde termina igual.
+   */
+  function olvidar(debate) {
+    if (!hayNube() || !debate) return Promise.resolve(null);
+    return fetch(cfg.supabaseUrl + '/functions/v1/olvidar', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ debate: debate })
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok || (d && d.error))
+          return apuntar('no se pudo borrar: ' + ((d && d.error) || r.status));
+        return d;
+      }, function () { return apuntar('el servidor contestó algo raro (' + r.status + ')'); });
+    }).catch(function (e) { return apuntar('no se pudo borrar: ' + e.message); });
+  }
+
   window.ATWI.nube = {
     historial: historial,
     oirDelAlmacen: oirDelAlmacen,
+    olvidar: olvidar,
     hay: hayNube,
     abrirPartida: abrirPartida,
     mandarTurno: mandarTurno,

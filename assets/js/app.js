@@ -550,7 +550,8 @@
            esconderla seria mentir sobre lo que hiciste-- pero no promete un
            audio que no existe. */
         var hay = t.length > 0;
-        return '<button class="tarjeta partida" data-partida="' + esc(d.id) + '"' +
+        return '<div class="tarjeta partida-fila">' +
+          '<button class="partida" data-partida="' + esc(d.id) + '"' +
             (hay ? '' : ' disabled') + '>' +
             '<span class="partida__cuando">' + esc(cuando(d.creado)) + '</span>' +
             '<span class="partida__tema">' + esc(d.enunciado || 'Sin tema') + '</span>' +
@@ -563,8 +564,92 @@
                      : 'sin intervenciones') +
               '</span>' +
             '</span>' +
-          '</button>';
+          '</button>' +
+          /* LA PAPELERA VA SIEMPRE, tenga turnos o no. Una partida vacia
+             tambien ocupa sitio en la lista, y no poder quitarla obliga a
+             cargar con ella para siempre. */
+          '<button class="partida__borrar" data-borrar="' + esc(d.id) + '"' +
+            ' aria-label="Borrar esta partida">' +
+            window.ATWI.iconoSVG('papelera', 20) + '</button>' +
+        '</div>';
       }).join('');
+  }
+
+  /* --- Borrar una partida ------------------------------------------------------
+     SE PREGUNTA ANTES, Y SE DICE QUE SE LLEVA. Quien no usa abogado suena con su
+     propia voz, y esa grabacion se conserva para poder volver a oirla: es la
+     unica que hay. Borrar la partida la borra de verdad --el archivo, no solo la
+     fila-- y eso no se deshace. Un boton de papelera que actua al primer toque
+     seria perder una conversacion por rozar la pantalla.
+
+     Y ES LA PERSONA QUIEN DECIDE, no un plazo. Decision del titular
+     (2026-09-13): si se guarda indefinidamente, tiene que poder quitarse cuando
+     se quiera, y sin dar explicaciones ni esperar a que caduque. */
+  function abrirOlvidar(id) {
+    var d = (historial || []).filter(function (x) { return x.id === id; })[0];
+    if (!d) return;
+    var t = d.turnos_grabados || [];
+    /* Cuantas se oyen con la voz de quien las dijo. Son las que de verdad
+       desaparecen: las del abogado son un dibujo leyendo un texto. */
+    var propias = t.filter(function (x) { return !x.abogado; }).length;
+
+    $('#m-olvidar .modal__cuerpo').innerHTML =
+      '<p class="chico tenue" style="margin-bottom:var(--e-3)">' +
+        esc(cuando(d.creado)) + '</p>' +
+      '<p style="font-weight:800;margin-bottom:var(--e-4);line-height:1.35">' +
+        esc(d.enunciado || 'Sin tema') + '</p>' +
+      '<p class="chico" style="margin-bottom:var(--e-4)">' +
+        (t.length
+          ? 'Se van las <b>' + t.length + ' intervenciones</b> y el resultado. ' +
+            (propias
+              ? 'De esas, <b>' + propias + '</b> ' + (propias === 1 ? 'es' : 'son') +
+                ' tu grabación, así que también se borra' + (propias === 1 ? '' : 'n') +
+                ' del servidor.'
+              : 'Todas se oyen con la voz del personaje.')
+          : 'Esta partida no llegó a tener intervenciones.') +
+      '</p>' +
+      '<p class="chico tenue" style="margin-bottom:var(--e-5)">No se puede deshacer.</p>' +
+      /* Suave y con el tono aparte, no un bloque rojo: es el mismo criterio que
+         el borrar de la sala --esto es un juego, no un formulario-- y el mismo
+         gesto, asi que se ve igual. */
+      '<button class="boton boton--bloque boton--grande boton--suave boton--borrar"' +
+        ' data-olvidar-ya="' + esc(id) + '">Borrarla</button>' +
+      '<button class="boton boton--suave boton--bloque" data-cerrar="m-olvidar">' +
+        'Dejarla donde está</button>';
+    abrirModal('m-olvidar');
+  }
+
+  function olvidarPartida(id, boton) {
+    boton.disabled = true;
+    boton.textContent = 'Borrando…';
+    window.ATWI.nube.olvidar(id).then(function (r) {
+      if (!r || !r.borrado) {
+        boton.disabled = false;
+        boton.textContent = 'Reintentar';
+        var aviso = $('#m-olvidar .modal__cuerpo .olvidar-fallo');
+        if (!aviso) {
+          aviso = document.createElement('p');
+          aviso.className = 'chico olvidar-fallo';
+          aviso.style.cssText = 'color:var(--peligro);margin-bottom:var(--e-3)';
+          /* ENCIMA DEL BOTON, no al final del modal. Puesto al final cae debajo
+             de «dejarla donde está» y se lee despues de las dos salidas, cuando
+             lo que dice es justo por que una de ellas no funciono. */
+          boton.parentNode.insertBefore(aviso, boton);
+        }
+        /* SE DICE QUE NO SE BORRO NADA, y es verdad: la funcion de borde no
+           toca la fila si los audios no se fueron. Decir «puede que si, puede
+           que no» sobre la voz de alguien es lo peor que se puede contestar. */
+        aviso.textContent = 'No se pudo borrar, y no se borró nada. Probá otra vez.';
+        return;
+      }
+      /* Se quita de la lista que ya esta en memoria en vez de volver a pedirla:
+         la persona acaba de decir que se vaya y verla desaparecer es la
+         respuesta. Pedir el historial otra vez son dos segundos de tarjeta
+         todavia ahi. */
+      historial = (historial || []).filter(function (x) { return x.id !== id; });
+      cerrarModal('m-olvidar');
+      pintarHistorial();
+    });
   }
 
   /* «Hoy», «ayer» y la fecha. Un historial de partidas de pareja se lee por lo
@@ -1639,6 +1724,16 @@
        tarjeta y si se mirara después, el tema se abriría igualmente. */
     var edi = e.target.closest('[data-editar-tema]');
     if (edi) { abrirEscribir(edi.dataset.editarTema); return; }
+
+    /* Antes que `[data-partida]`. Hoy son hermanos --la papelera esta FUERA del
+       boton de abrir, porque un boton dentro de otro el navegador lo desarma--
+       asi que no se pisan; se deja antes igual para que el dia que la papelera
+       vuelva a entrar en la tarjeta no abra la partida al tocarla. */
+    var pap = e.target.closest('[data-borrar]');
+    if (pap) { abrirOlvidar(pap.dataset.borrar); return; }
+
+    var yaOlvidar = e.target.closest('[data-olvidar-ya]');
+    if (yaOlvidar) { olvidarPartida(yaOlvidar.dataset.olvidarYa, yaOlvidar); return; }
 
     var partida = e.target.closest('[data-partida]');
     if (partida && !partida.disabled) { abrirPartida(partida.dataset.partida); return; }
