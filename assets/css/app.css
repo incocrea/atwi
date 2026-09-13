@@ -381,7 +381,7 @@ body.app {
    lado no scrollea nada. El aire de abajo separa dos cosas distintas, y por eso
    es mayor que el que hay entre los dos párrafos. */
 .explica__rotulo {
-  display: block; width: 21rem; max-width: 100%; height: auto;
+  display: block; width: 15.75rem; max-width: 100%; height: auto;
   margin-bottom: var(--e-4);
 }
 .explica__que {
