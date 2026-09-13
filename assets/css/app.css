@@ -1345,6 +1345,30 @@ body.app {
    lleva un halo del color de quien lo grabó: dice «esto es nuevo y está aquí»
    sin sacarlo a una tarjeta aparte. El halo va en `box-shadow` y no en un borde,
    para que no cambie el tamaño de la ficha y la fila no salte. */
+/* MIENTRAS SE LE PONE LA VOZ. La casilla está, se ve de quién es, y no se puede
+   tocar: lo que hay guardado ahí todavía es la grabación de verdad, y esa no
+   suena nunca. Se apaga en gris y da vueltas un anillo por encima; dura los dos
+   o tres segundos que tarda el circuito, y casi siempre pasa mientras la otra
+   persona está grabando, así que nadie lo mira. */
+.rueda--preparando { pointer-events: none; filter: grayscale(.7); opacity: .55; }
+.rueda--preparando::after {
+  content: ''; position: absolute; inset: -3px; border-radius: 50%;
+  border: 2.5px solid transparent; border-top-color: var(--voz);
+  animation: rueda-girando .9s linear infinite;
+}
+@keyframes rueda-girando { to { transform: rotate(360deg); } }
+
+/* Y si el circuito falló, se dice. La intervención existe y cuenta para la
+   partida --el juez la va a leer igual-- pero no tiene voz que reproducir, y
+   una casilla que no hace nada al tocarla parece rota. */
+.rueda--sinvoz { opacity: .6; }
+.rueda--sinvoz::after {
+  content: '!'; position: absolute; right: -2px; bottom: -2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--peligro); color: #fff;
+  font-size: 11px; font-weight: 800; line-height: 16px; text-align: center;
+}
+
 .rueda--nueva {
   box-shadow: inset 0 0 0 2.5px rgba(255,255,255,.55),
               0 0 0 3px var(--voz), 0 0 14px 2px var(--voz);

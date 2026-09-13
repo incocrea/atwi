@@ -111,6 +111,17 @@ window.ATWI = window.ATWI || {};
       estado: 'aviso'
     };
     separarFichas();
+    /* La partida se abre en el servidor EN PARALELO, sin esperarla. Nadie tiene
+       que mirar una ruedita antes de jugar: para cuando el primer turno esté
+       grabado --medio minuto largo-- el id ya llegó. Y si no llega, la partida
+       sigue en local y lo único que falta es la voz del personaje. */
+    P.debate = null;
+    if (window.ATWI.nube && window.ATWI.nube.hay()) {
+      window.ATWI.nube.abrirPartida({
+        tema: P.tema, modo: P.modo, turnos: P.turnos,
+        invitado: P.jugadores[1 - indiceDeLaCuenta()]
+      }).then(function (id) { P.debate = id; });
+    }
     abrir();
     /* Las poses del encuentro se piden YA, aunque falten cinco segundos para
        verlas: así la entrada no empieza con una figura a medio pintar. */
@@ -119,6 +130,12 @@ window.ATWI = window.ATWI || {};
       [P.modo === 'debate' ? 'plante' : 'puno']);
     pintarAviso();
   }
+
+  /* CUÁL DE LOS DOS TIENE CUENTA. En la partida local juega quien abrió la app
+     --el índice 0 de `jugadores`, que sale de su propia ficha-- contra alguien
+     que agarró el teléfono. El de enfrente no tiene perfil en ninguna parte, y
+     eso decide qué se guarda en `turnos.perfil`: el suyo va NULO. */
+  function indiceDeLaCuenta() { return 0; }
 
   /* Cada jugador llega con su ficha —nombre, dibujo y color—. Se admite también
      un nombre suelto por si alguna llamada vieja lo pasa así. */
@@ -270,10 +287,14 @@ window.ATWI = window.ATWI || {};
           P.intervenciones.map(function (v, n) {
             var j = P.jugadores[v.jugador];
             return '<button type="button" class="rueda' +
-                     (n === total - 1 ? ' rueda--ultima' : '') + '"' +
+                     (n === total - 1 ? ' rueda--ultima' : '') +
+                     (v.preparando ? ' rueda--preparando' : '') +
+                     (v.falloLaNube ? ' rueda--sinvoz' : '') + '"' +
                    ' style="--voz:' + esc(j.color) + '"' +
                    ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
-                   ' aria-label="Escuchar a ' + esc(j.nombre) + ', turno ' + v.turno + '">' +
+                   ' aria-label="' + (v.preparando
+                     ? esc(j.nombre) + ' está poniendo voz a su turno'
+                     : 'Escuchar a ' + esc(j.nombre) + ', turno ' + v.turno) + '">' +
                 window.ATWI.fichaHTML(j.avatar, 'rueda__cara', j.color) +
                 '<span class="rueda__n">' + v.turno + '</span>' +
               '</button>';
@@ -341,6 +362,12 @@ window.ATWI = window.ATWI || {};
     var a = elAudio();
     var p = pistaDe(clave);
     if (!p || !p.url) return;
+    /* MIENTRAS SE PREPARA NO SUENA NADA. La URL que hay ahí todavía es la
+       grabación de verdad, y esa no se reproduce nunca: si suena una vez, el
+       juego tiene dos registros --la voz real y la del personaje-- y el efecto
+       se pierde justo al principio, que es cuando más falta hace. */
+    var i = String(clave).charAt(0) === 'i' ? P.intervenciones[Number(String(clave).slice(1))] : null;
+    if (i && i.preparando) return;
     if (siguiendo) { clearTimeout(siguiendo); siguiendo = null; }
     if (sonando === clave) { if (a.paused) a.play(); else a.pause(); return; }
     sonando = clave;
@@ -1013,9 +1040,65 @@ window.ATWI = window.ATWI || {};
         segundos: r ? r.segundos : P.borrador.segundos,
         url: URL.createObjectURL(blob)
       });
+      var v = P.intervenciones[P.intervenciones.length - 1];
       tirarBorrador();
       acusarRecibo(t);
+      subirTurno(v, P.intervenciones.length - 1);
     });
+  }
+
+  /* ==========================================================================
+     LA VOZ DEL PERSONAJE
+     El turno sube en cuanto se manda y se procesa MIENTRAS la otra persona
+     graba el suyo. Para cuando alguien quiera volver a oírlo, la voz ya está.
+
+     Lo que vuelve reemplaza a la grabación en la lista: a partir de ahí lo que
+     suena es el personaje leyendo el texto, y la grabación de verdad no se
+     reproduce nunca. Mientras no haya vuelto, la casilla queda marcada como
+     «preparándose» y no suena nada: sonaría la voz real, y tener dos registros
+     --la de verdad y la del personaje-- rompe el efecto justo al principio, que
+     es cuando más falta hace.
+     ========================================================================== */
+  function subirTurno(v, orden) {
+    if (!v || !window.ATWI.nube || !window.ATWI.nube.hay()) return;
+    if (!P || !P.debate) {
+      /* La partida todavía no tiene id: se abrió en paralelo y puede tardar.
+         Se reintenta una vez, que es lo que cuesta grabar un turno. */
+      return setTimeout(function () { subirTurno(v, orden); }, 4000);
+    }
+    v.preparando = true;
+    marcarRueda(orden);
+    window.ATWI.nube.mandarTurno({
+      debate: P.debate, orden: orden, numero: v.turno,
+      audio: v.audio, tipo: v.tipo, segundos: v.segundos,
+      avatar: v.avatar, nombre: v.nombre, color: v.color,
+      esInvitado: v.jugador !== indiceDeLaCuenta()
+    }).then(function (r) {
+      v.preparando = false;
+      if (!r) { v.falloLaNube = true; return marcarRueda(orden); }
+      v.transcripcion = r.transcripcion || '';
+      v.guion = r.guion || '';
+      if (r.voz) {
+        /* El objeto local se suelta: ya no lo va a oír nadie y se está
+           quedando con memoria del teléfono para nada. */
+        if (v.url) { try { URL.revokeObjectURL(v.url); } catch (e) {} }
+        v.url = r.voz;
+        v.conVoz = true;
+      } else {
+        v.falloLaNube = true;
+      }
+      marcarRueda(orden);
+    });
+  }
+
+  /** Repinta UNA casilla sin rehacer la pantalla: repintar entera cortaría la
+      grabación en curso, y esto llega justo mientras el otro habla. */
+  function marcarRueda(orden) {
+    var r = $('#m-partida .rueda[data-oir="i' + orden + '"]');
+    var v = P && P.intervenciones[orden];
+    if (!r || !v) return;
+    r.classList.toggle('rueda--preparando', Boolean(v.preparando));
+    r.classList.toggle('rueda--sinvoz', Boolean(v.falloLaNube));
   }
 
   function borrar() {

@@ -37,6 +37,103 @@ window.ATWI = window.ATWI || {};
   var tope = 0;
   var alTope = null;
 
+  /* --- El recorte de silencios ----------------------------------------------
+     LAS PAUSAS NO SE RECORTAN DESPUES, SE EVITAN. Un turno de un minuto con
+     veinte segundos de silencio cuesta un tercio mas de transcribir --Deepgram
+     cobra por minuto de audio-- y sube un tercio mas de datos. Recortarlas una
+     vez grabadas obligaria a descodificar, cortar y volver a codificar en el
+     telefono, y eso tarda casi tanto como el audio dura.
+
+     Asi que no se graban: se escucha el nivel en vivo y, cuando lleva un
+     segundo largo en silencio, se PAUSA la grabadora. MediaRecorder ya sabe
+     pausar y reanudar, y el archivo sale continuo y sin el hueco. Cuesta cero y
+     no anade ni un milisegundo de espera.
+
+     OJO CON LO QUE ESTO NO ES: no es un recortador de ruido. Lo que se graba
+     sale tal cual; lo unico que desaparece son los tramos en los que no habla
+     nadie. El ruido ambiental de fondo mientras se habla se queda, y da igual:
+     lo que se reproduce despues no es esta grabacion, es la voz del personaje
+     leyendo el texto. El ruido no llega al resultado por ningun camino.
+
+     El segundo de espera es a proposito y no menos: pausar al primer respiro
+     corta las palabras por la mitad. Al reanudar se pierden unos milisegundos
+     del arranque de la palabra que vuelve, que es el precio, y es asumible. */
+  var MS_PARA_CALLAR = 1000;   // silencio seguido antes de pausar
+  var NIVEL_DE_VOZ = 0.012;    // RMS por debajo del cual no hay nadie hablando
+  var escucha = null;          // { ctx, analizador, datos, latido }
+  var enSilencioDesde = 0;
+  var pausadoPorSilencio = false;
+  var calladoDesde = 0;        // cuando se pauso, para medir lo recortado
+  var msSilenciados = 0;
+
+  /** Mide el nivel del micrófono y pausa o reanuda segun haya voz o no. */
+  function vigilarElSilencio(f) {
+    pararVigilancia();
+    var Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return;                       // sin Web Audio se graba tal cual
+    try {
+      var ctx = new Ctx();
+      var fuente = ctx.createMediaStreamSource(f);
+      var an = ctx.createAnalyser();
+      an.fftSize = 1024;
+      fuente.connect(an);
+      var datos = new Float32Array(an.fftSize);
+      enSilencioDesde = 0;
+      pausadoPorSilencio = false;
+      msSilenciados = 0;
+      var latido = setInterval(function () {
+        if (!grabadora) return;
+        an.getFloatTimeDomainData(datos);
+        var suma = 0;
+        for (var i = 0; i < datos.length; i++) suma += datos[i] * datos[i];
+        var nivel = Math.sqrt(suma / datos.length);
+        var ahora = Date.now();
+
+        if (nivel >= NIVEL_DE_VOZ) {
+          enSilencioDesde = 0;
+          if (pausadoPorSilencio && grabadora.state === 'paused') {
+            /* Lo recortado se mide con RELOJ, no contando latidos. Se conto
+               `+= 60` por latido dando por hecho que caen cada 60 ms, y el
+               navegador los estrangula a uno por segundo cuando la pestana no
+               esta al frente: seis segundos de silencio se apuntaron como 0,3.
+               El recorte era correcto --el audio si salia mas corto--, la
+               cuenta no. */
+            msSilenciados += ahora - calladoDesde;
+            pausadoPorSilencio = false;
+            try { grabadora.resume(); } catch (e) {}
+            desde = ahora;
+            arrancarReloj();
+          }
+          return;
+        }
+        if (pausadoPorSilencio) return;
+        if (!enSilencioDesde) { enSilencioDesde = ahora; return; }
+        if (ahora - enSilencioDesde < MS_PARA_CALLAR) return;
+
+        if (grabadora.state === 'recording') {
+          pausadoPorSilencio = true;
+          calladoDesde = ahora;
+          pararReloj();
+          msAcumulados += ahora - desde;
+          try { grabadora.pause(); } catch (e) {}
+        }
+      }, 60);
+      escucha = { ctx: ctx, latido: latido };
+    } catch (e) { /* si la medicion falla, se graba sin recortar */ }
+  }
+
+  function pararVigilancia() {
+    /* Si se para MIENTRAS sigue callado, ese ultimo tramo tambien se recorto y
+       tambien cuenta: sin esto, el silencio final no aparecia en la cuenta. */
+    if (pausadoPorSilencio && calladoDesde) msSilenciados += Date.now() - calladoDesde;
+    calladoDesde = 0;
+    if (!escucha) return;
+    clearInterval(escucha.latido);
+    try { escucha.ctx.close(); } catch (e) {}
+    escucha = null;
+    pausadoPorSilencio = false;
+  }
+
   function tipoQueAdmite() {
     if (!window.MediaRecorder) return '';
     var candidatos = [
@@ -137,6 +234,7 @@ window.ATWI = window.ATWI || {};
         grabadora.start(250);       // por trozos: permite oírlo sin terminar
         desde = Date.now();
         arrancarReloj();
+        vigilarElSilencio(f);
         return true;
       });
     },
@@ -148,9 +246,21 @@ window.ATWI = window.ATWI || {};
     pausar: function () {
       var yo = this;
       return new Promise(function (resolver) {
-        if (!grabadora || grabadora.state !== 'recording') return resolver(null);
+        if (!grabadora) return resolver(null);
+        /* Puede estar PAUSADA por el recorte de silencios y no grabando. Antes
+           se comprobaba solo `recording` y, si alguien paraba justo despues de
+           callarse, esto devolvia null y la revision se quedaba sin audio. */
+        if (grabadora.state !== 'recording' && grabadora.state !== 'paused') {
+          return resolver(null);
+        }
+        /* El estado se lee ANTES de parar la vigilancia, que lo cambia. Si el
+           recorte de silencios ya habia pausado, el tramo actual ya esta sumado
+           y `desde` se quedo viejo: sumarlo otra vez contaria el silencio como
+           tiempo hablado, que es justo lo que este recorte quita. */
+        var grabando = grabadora.state === 'recording';
+        pararVigilancia();
         pararReloj();
-        msAcumulados += Date.now() - desde;
+        if (grabando) msAcumulados += Date.now() - desde;
         /* Se pide el trozo pendiente ANTES de pausar, o el último medio segundo
            se queda sin escribir y la copia sale corta. */
         var alLlegar = function () {
@@ -179,6 +289,7 @@ window.ATWI = window.ATWI || {};
       return new Promise(function (resolver) {
         if (!grabadora || grabadora.state === 'inactive') return resolver(null);
         pararReloj();
+        pararVigilancia();
         if (grabadora.state === 'recording') msAcumulados += Date.now() - desde;
         /* Hacia abajo, igual que el reloj: lo que se vio en la revisión y lo
            que se manda tienen que ser el mismo número. */
@@ -186,8 +297,14 @@ window.ATWI = window.ATWI || {};
         grabadora.onstop = function () {
           var r = { audio: montar(), tipo: grabadora.mimeType, segundos: s };
           r.bytes = r.audio.size;
+          /* Cuanto silencio se quito. Va en el resultado para poder MEDIR el
+             ahorro en vez de confiar en que lo hay: es lo que se deja de subir
+             y lo que se deja de pagarle al transcriptor, que cobra por minuto
+             de audio. */
+          r.silenciados = Math.round(msSilenciados / 100) / 10;
           trozos = [];
           msAcumulados = 0;
+          msSilenciados = 0;
           resolver(r);
         };
         grabadora.stop();
@@ -196,6 +313,7 @@ window.ATWI = window.ATWI || {};
 
     /** Tira lo grabado y deja todo listo para volver a empezar. */
     descartar: function () {
+      pararVigilancia();
       pararReloj();
       if (grabadora && grabadora.state !== 'inactive') {
         grabadora.onstop = null;
