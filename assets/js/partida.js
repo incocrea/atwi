@@ -1059,12 +1059,18 @@ window.ATWI = window.ATWI || {};
      --la de verdad y la del personaje-- rompe el efecto justo al principio, que
      es cuando más falta hace.
      ========================================================================== */
-  function subirTurno(v, orden) {
+  function subirTurno(v, orden, intento) {
     if (!v || !window.ATWI.nube || !window.ATWI.nube.hay()) return;
+    intento = intento || 0;
     if (!P || !P.debate) {
       /* La partida todavía no tiene id: se abrió en paralelo y puede tardar.
-         Se reintenta una vez, que es lo que cuesta grabar un turno. */
-      return setTimeout(function () { subirTurno(v, orden); }, 4000);
+         Se espera unas cuantas veces —lo que cuesta grabar un turno— y SE DEJA:
+         sin tope esto se reintentaba cada cuatro segundos para siempre, y una
+         partida que nunca abrió en el servidor no va a abrir sola. */
+      if (intento >= 5) { v.falloLaNube = true; return marcarRueda(orden); }
+      v.preparando = true;
+      marcarRueda(orden);
+      return setTimeout(function () { subirTurno(v, orden, intento + 1); }, 4000);
     }
     v.preparando = true;
     marcarRueda(orden);
