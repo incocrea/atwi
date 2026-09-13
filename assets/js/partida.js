@@ -101,7 +101,11 @@ window.ATWI = window.ATWI || {};
          que es lo que su rúbrica dice desde el principio (docs/02 §13-bis). */
       jugadores: gente,
       orden: [abre, 1 - abre],       // índices sobre `jugadores`
-      intervenciones: [],            // {jugador, turno, audio, tipo, segundos, url}
+      /* {jugador, turno, avatar, nombre, color, audio, tipo, segundos, url}
+         `avatar`, `nombre` y `color` van COPIADOS en cada intervención y no se
+         miran en `jugadores`: son los de la ronda, no los de la persona. Ver
+         `mandar()`. */
+      intervenciones: [],
       i: 0,                          // intervención actual, 0..(turnos*2 - 1)
       borrador: null,                // lo grabado y todavía NO entregado
       estado: 'aviso'
@@ -975,8 +979,22 @@ window.ATWI = window.ATWI || {};
     var t = turnoActual();
     grabadora.terminar().then(function (r) {
       var blob = r ? r.audio : P.borrador.blob;
+      var j = P.jugadores[t.jugador];
       P.intervenciones.push({
         jugador: t.jugador, turno: t.numero,
+        /* CON QUÉ PERSONAJE SE DIJO, copiado y no consultado. Se podría sacar
+           de `P.jugadores[jugador].avatar` cada vez que hiciera falta, y hoy
+           daría lo mismo. Pero la ficha se puede cambiar: quien jugó esta ronda
+           de Kai puede ser Luna la semana que viene, y entonces la consulta
+           devolvería el personaje de HOY para una ronda de ANTES.
+           Eso no importaría si el personaje fuera un adorno. Importa porque va
+           a ser la VOZ con la que se vuelva a escuchar esta intervención: una
+           ronda grabada de Kai se relee con la voz de Kai, siempre, aunque
+           quien la grabó ya no lo sea. El personaje es del turno, no de la
+           persona. */
+        avatar: j.avatar,
+        nombre: j.nombre,
+        color: j.color,
         audio: blob,
         tipo: r ? r.tipo : P.borrador.tipo,
         segundos: r ? r.segundos : P.borrador.segundos,
