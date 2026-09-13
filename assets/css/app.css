@@ -1127,7 +1127,15 @@ body.app {
    ellas se quedaba VACÍA en los temas que no traen posturas escritas —una caja
    blanca sin nada dentro, que no se entendía—; ahora esa tarjeta siempre dice
    algo, porque si no hay postura cae al enunciado del tema. */
-.sala--turno { display: grid; gap: var(--e-4); }
+/* La pantalla de turno se reparte el alto: la tarjeta arriba, los turnos en
+   medio y quien habla ABAJO, pegado a su botón de grabar. El retrato y el botón
+   son la misma cosa —uno dice de quién es el turno y el otro lo abre—, así que
+   separarlos con la lista en medio era partir en dos lo que se lee junto. */
+.sala--turno {
+  display: flex; flex-direction: column; gap: var(--e-4);
+  min-height: 100%;
+}
+.sala--turno .hablante { margin-top: auto; }
 .turno {
   text-align: center; padding: var(--e-3) var(--e-4);
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
@@ -1245,6 +1253,15 @@ body.app {
   transition: transform var(--dur-corta) var(--suave);
 }
 .rueda:active { transform: scale(.92); }
+/* Los turnos que faltan: la sombra del sitio que van a ocupar. Van en el mismo
+   `.rueda` para que midan exactamente lo mismo —si no, la fila se movía al
+   llenarse— pero sin ficha dentro y sin poder tocarse. */
+.rueda--hueco {
+  background: var(--ctx-halo);
+  box-shadow: inset 0 0 0 2px var(--ctx-linea);
+  cursor: default;
+}
+.rueda--hueco .rueda__n { background: var(--ctx-halo); color: var(--ctx-tenue-2); box-shadow: none; }
 .rueda__cara { font-size: 1.15rem; line-height: 1; }
 /* El número de turno cuelga de la rueda, no dentro: dentro no cabe legible, y
    va en blanco para leerse sobre cualquiera de los diez colores. */

@@ -235,11 +235,19 @@ window.ATWI = window.ATWI || {};
    * llevara el coral de Juicio o el menta de Pacto, parecería que la sala es
    * suya.
    */
+  /**
+   * LOS TURNOS SE VEN DESDE EL PRIMER MINUTO. Antes esta lista aparecía de la
+   * nada al cerrar la primera intervención; ahora están todos los huecos desde
+   * el principio, vacíos, y se van llenando. Así se ve de un vistazo cuántos
+   * quedan, que es la pregunta que se hace todo el mundo a mitad de partida.
+   */
   function loDicho() {
-    if (!P.intervenciones.length) return '';
     var total = P.intervenciones.length;
+    var huecos = P.turnos * 2;
     return '<div class="dicho">' +
-        '<p class="dicho__titulo">' + iconoSVG('historial', 16) + 'Lo que se dijo · toca para oírlo</p>' +
+        '<p class="dicho__titulo">' + iconoSVG('historial', 16) +
+          (total ? 'Lo que se dijo · toca para oírlo' : 'Aquí se van guardando los turnos') +
+        '</p>' +
         '<div class="ruedas">' +
           P.intervenciones.map(function (v, n) {
             var j = P.jugadores[v.jugador];
@@ -251,6 +259,14 @@ window.ATWI = window.ATWI || {};
                 window.ATWI.fichaHTML(j.avatar, 'rueda__cara', j.color) +
                 '<span class="rueda__n">' + v.turno + '</span>' +
               '</button>';
+          }).join('') +
+          /* Los que faltan: sombras del tamaño exacto que va a ocupar la ficha.
+             Sin ellos la fila crecía de la nada y saltaba la maqueta a cada
+             turno cerrado. */
+          Array.apply(null, { length: Math.max(0, huecos - total) }).map(function (_, n) {
+            return '<span class="rueda rueda--hueco" aria-hidden="true">' +
+                '<span class="rueda__n">' + (Math.floor((total + n) / 2) + 1) + '</span>' +
+              '</span>';
           }).join('') +
         '</div>' +
         '<p class="dicho__leyenda">' +
@@ -603,9 +619,12 @@ window.ATWI = window.ATWI || {};
             (pacto || !t.postura ? '' : ' · defiendes la ' + t.letra) + '</p>' +
           '<p class="turno__que">' + esc(loSuyo) + '</p>' +
         '</div>' +
-        /* QUIEN HABLA, EN GRANDE Y EN EL CENTRO. Antes aquí estaba el icono del
-           juez, que es el mismo en los dos turnos y no decía de quién era este.
-           Jugando los dos en un teléfono, eso es lo primero que hay que saber. */
+        /* EL ORDEN DE LA PANTALLA, de arriba abajo: qué toca, cómo va la
+           partida, y quién habla. Quien habla va ABAJO, pegado al botón de
+           grabar, porque son la misma cosa: el retrato dice de quién es el
+           turno y el botón lo abre. Arriba quedaba lejos de su botón y con la
+           lista de turnos metida en medio. */
+        loDicho() +
         '<div class="hablante">' +
           window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
                                                       clase: 'hablante__fig' }) +
@@ -614,7 +633,6 @@ window.ATWI = window.ATWI || {};
             esc(t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') +
           '</p>' +
         '</div>' +
-        loDicho() +
       '</div>';
 
     pie().innerHTML = botonDeGrabar('grabar') +
