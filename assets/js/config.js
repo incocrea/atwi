@@ -64,7 +64,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '473d4c7',
+  version: '540786d',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -114,9 +114,21 @@ window.ATWI.config = {
     turnosAlternos: true,
     quienEmpieza: 'sorteo',        // 'sorteo' | 'acordado'
     turnosMin: 1,
-    turnosMax: 5,
+    /* TRES COMO MUCHO. Decisión del titular (2026-09-13); eran cinco.
+       Una ronda de cinco turnos por persona son diez intervenciones y doce
+       minutos de partida, y cada una cuesta transcribirla, limpiarla y
+       locutarla. Tres es lo que la rúbrica necesita para puntuar los cinco
+       criterios --hay apertura, respuesta y cierre-- y es donde la partida
+       todavía se termina de una sentada. */
+    turnosMax: 3,
     turnosPorDefecto: 3,
-    turnosConCupo: [4, 5],       // fuera del nivel gratuito
+    /* SE QUEDA VACÍO, y con ello desaparece la única pared de pago que había:
+       4 y 5 turnos estaban fuera del nivel gratuito. Al no existir esas
+       opciones no hay nada que cobrar aquí, así que el cobro tendrá que
+       apoyarse en otra cosa --frecuencia, revanchas, historial-- y no en la
+       longitud de la partida. Se deja la lista, no la regla: volver a poner un
+       cupo es añadir un número. */
+    turnosConCupo: [],
     segundosPorTurno: 60,
     revanchasPorTema: 2,
     revanchasPorTemporada: 4,

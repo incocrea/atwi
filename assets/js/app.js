@@ -892,7 +892,16 @@
   var propuesta = { temaId: null, modo: null, turnos: null };
   /* Duración estimada de una partida según los turnos por persona. Sale de
      docs/03 §19: grabar, esperar al otro, transcribir y el veredicto. */
+  /* Cuánto dura una partida según los turnos que se elijan. La tabla se queda
+     completa aunque hoy solo se ofrezcan hasta tres: es una referencia de
+     duración, no la lista de lo que se ofrece --eso sale de `turnosMax`--. */
   var MINUTOS = { 1: 3, 2: 5, 3: 7, 4: 9, 5: 12 };
+
+  function opcionesDeTurnos() {
+    var l = [];
+    for (var n = cfg.reglas.turnosMin; n <= cfg.reglas.turnosMax; n++) l.push(n);
+    return l;
+  }
 
   function abrirTema(id) {
     var t = datos.tema(id);
@@ -1186,7 +1195,11 @@
 
       '<h3 style="margin-bottom:var(--e-2)">¿Cuántos turnos?</h3>' +
       '<div class="turnos-fila">' +
-        [1, 2, 3, 4, 5].map(function (n) {
+        /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
+           `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
+           la pantalla habría seguido ofreciendo cinco y la base los habría
+           rechazado al guardar. */
+        opcionesDeTurnos().map(function (n) {
           var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
           return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
             'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
@@ -1195,7 +1208,10 @@
           '</button>';
         }).join('') +
       '</div>' +
-      '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">4 y 5 turnos necesitan cupo.</p>' +
+      (cfg.reglas.turnosConCupo.length
+        ? '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">' +
+            cfg.reglas.turnosConCupo.join(' y ') + ' turnos necesitan cupo.</p>'
+        : '<div style="height:var(--e-4)"></div>') +
 
       /* AQUÍ NO SE ENSEÑA NINGUNA POSTURA. Ni para elegir ni como ejemplo: se
          probó a dejarlas de pista y siguen siendo punteros —leerlas antes de
