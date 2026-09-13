@@ -349,6 +349,7 @@ window.ATWI = window.ATWI || {};
   function pararEscucha() {
     var a = $('#sala-audio');
     if (a && !a.paused) a.pause();
+    window.ATWI.animarBoca($('#m-partida .hablante__fig'), false);
   }
 
   function cerrarReproductor() {
@@ -357,6 +358,30 @@ window.ATWI = window.ATWI || {};
     var r = $('#reproductor');
     if (r) r.remove();
     $$('.rueda--sonando').forEach(function (e) { e.classList.remove('rueda--sonando'); });
+    ponerHablante(null);
+  }
+
+  /**
+   * QUIEN SE VE ES QUIEN SUENA. Al oír una intervención vieja, la figura grande
+   * cambia a quien la dijo —con su color de fondo— y vuelve sola a la de quien
+   * tiene el turno cuando se cierra el reproductor. Sin esto se oía la voz de
+   * uno mientras en pantalla seguía la cara del otro, que es justo la confusión
+   * que la figura está ahí para evitar.
+   * @param j el jugador que suena, o null para volver al del turno
+   */
+  function ponerHablante(j) {
+    var caja = $('#m-partida .hablante');
+    if (!caja) return;
+    var quien = j || P.jugadores[turnoActual().jugador];
+    var fig = caja.querySelector('.hablante__fig');
+    if (!fig) return;
+    fig.outerHTML = window.ATWI.retrato(quien.avatar, 'hablando',
+      { fondo: 'disco', mira: 'derecha', color: quien.color, clase: 'hablante__fig' });
+    caja.classList.toggle('hablante--ajeno', Boolean(j));
+    /* La figura es otra, así que el latido de la boca hay que engancharlo al
+       dibujo nuevo: el viejo ya no está en la página. */
+    var a = $('#sala-audio');
+    window.ATWI.animarBoca($('#m-partida .hablante__fig'), Boolean(a && !a.paused));
   }
 
   /** Quién y qué es lo que suena. El borrador no es de nadie todavía. */
@@ -369,12 +394,15 @@ window.ATWI = window.ATWI || {};
     var v = P.intervenciones[Number(String(sonando).slice(1))];
     if (!v) return { nombre: '', meta: '', color: null, avatar: '' };
     var j = P.jugadores[v.jugador];
-    return { nombre: j.nombre, meta: 'Turno ' + v.turno + ' · defiende ' + j.letra,
-             color: j.color, avatar: j.avatar };
+    return { nombre: j.nombre, meta: 'Turno ' + v.turno,
+             color: j.color, avatar: j.avatar, jugador: j };
   }
 
   function pintarReproductor() {
     var q = quienSuena();
+    /* La figura pasa a ser la de quien suena. El borrador es de quien tiene el
+       turno, así que ahí no cambia nada. */
+    ponerHablante(sonando === 'b' ? null : q.jugador);
     var r = $('#reproductor');
     if (!r) {
       r = document.createElement('div');
@@ -424,6 +452,9 @@ window.ATWI = window.ATWI || {};
 
     var ic = $('#r-icono');
     if (ic) ic.innerHTML = iconoSVG(a.paused ? 'play' : 'pausa', 24);
+    /* La boca se mueve mientras SUENA de verdad, no mientras el reproductor
+       está abierto: en pausa la figura tiene que quedarse quieta. */
+    window.ATWI.animarBoca($('#m-partida .hablante__fig'), !a.paused);
 
     var barra = $('#r-barra');
     if (barra && !arrastrando) {
@@ -781,6 +812,9 @@ window.ATWI = window.ATWI || {};
         '<p class="chico centrado pie-nota">Estás grabando. Toca para parar. ' +
           'Máximo ' + relojTexto(tope) + '.</p>'
     });
+    /* Mientras se graba, la figura habla. Es la misma señal que el punto rojo
+       del botón, dicha por el dibujo. */
+    window.ATWI.animarBoca($('#m-partida .hablante__fig'), true);
   }
 
   /* ==========================================================================

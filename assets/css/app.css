@@ -1201,9 +1201,14 @@ body.app {
    aire bajo los pies de la figura, así que el pie subía quince y seguía sin
    tocarla. El solape tiene que empezar donde acaba el dibujo. */
 #m-partida:has(.sala--turno) .modal__cuerpo { padding-bottom: 0; }
+/* Los tres fotogramas de boca van APILADOS, no en fila: se enseña uno y se
+   esconden los otros dos. Sin `position: absolute` la caja mediría por los tres
+   y la figura saldría a un tercio de su tamaño. */
 .hablante__fig .retrato__fig {
+  position: absolute; inset: 0;
   object-fit: contain; object-position: center bottom; transform: none;
 }
+.retrato__fig[hidden] { display: none; }
 .turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.66rem; }
 
 /* --- El reloj ----------------------------------------------------------------- */
@@ -1412,9 +1417,12 @@ body.app {
 /* --- El reproductor flotante ---------------------------------------------------
    Se levanta sobre la sala al tocar una rueda. Barra que se arrastra y
    velocidad: escuchar un minuto entero para pescar una frase es insufrible. */
+/* EL REPRODUCTOR SALE SOBRE LA CABEZA de quien habla, no al pie de la pantalla.
+   Abajo quedaba pegado al botón y parecía otro control del pie; arriba se lee
+   como lo que es: lo que está diciendo esa figura. */
 .reproductor {
   position: absolute; left: var(--borde-pantalla); right: var(--borde-pantalla);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 210px);
   z-index: 5; display: grid; gap: var(--e-2);
   padding: var(--e-3) var(--e-3) var(--e-4);
   border-radius: var(--radio-tarjeta);
@@ -1422,6 +1430,11 @@ body.app {
   animation: sube-poco var(--dur-media) var(--suave);
   --voz: var(--ctx-acento);
 }
+/* Mientras suena una intervención vieja, la figura es la de quien la dijo y no
+   la de quien tiene el turno. Se marca para poder distinguirlo si hiciera falta;
+   hoy basta con que cambie la cara y el color del fondo. */
+.hablante--ajeno { }
+
 .reproductor--v0 { --voz: var(--voz-a); }
 .reproductor--v1 { --voz: var(--voz-b); }
 @keyframes sube-poco { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }

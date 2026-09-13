@@ -158,9 +158,58 @@ window.ATWI = window.ATWI || {};
            bajarlas nunca, porque nunca «entran en vista» a su manera de
            mirarlo. Con una sí y con otra no, que es peor: parece que falta un
            jugador. Son dos imágenes por pantalla, no una lista. */
-        '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-' + pose + '.png" ' +
-          'alt="' + esc(c.nombre + ', ' + POSES[pose]) + '" loading="eager" decoding="async">' +
+        marcos(quien, pose, esc(c.nombre + ', ' + POSES[pose])) +
       '</span>';
+  };
+
+  /* CUÁNTOS FOTOGRAMAS TIENE CADA POSE. Solo la de hablar tiene tres —boca
+     abierta, media y cerrada—, y son el mismo dibujo con la boca cambiada: se
+     alternan para animar el habla. Las demás poses son una imagen y ya. */
+  var MARCOS = { hablando: 3 };
+
+  function marcos(quien, pose, alt) {
+    var n = MARCOS[pose] || 1;
+    if (n === 1) {
+      return '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-' + pose + '.png" ' +
+             'alt="' + alt + '" loading="eager" decoding="async">';
+    }
+    var out = '';
+    for (var i = 1; i <= n; i++) {
+      out += '<img class="retrato__fig" data-marco="' + i + '"' + (i > 1 ? ' hidden' : '') +
+             ' src="../assets/img/personajes/' + quien + '-' + pose + '-' + i + '.png" ' +
+             'alt="' + (i === 1 ? alt : '') + '" loading="eager" decoding="async">';
+    }
+    return out;
+  }
+
+  /**
+   * LA BOCA. Es la técnica de siempre en animación: dos o tres dibujos de boca
+   * que se alternan mientras suena la voz —«lip flap»—, no una boca que se
+   * deforma. Aquí van tres y el ciclo es abierta, media, cerrada, media: así el
+   * paso de abierta a cerrada no es un salto.
+   *
+   * 110 ms por fotograma, que son unos nueve por segundo. Más rápido parece
+   * nervioso y más lento parece que mastica.
+   * @param caja el `.retrato` de quien habla
+   * @param habla si está sonando algo ahora mismo
+   */
+  var latido = null;
+  window.ATWI.animarBoca = function (caja, habla) {
+    if (latido) { clearInterval(latido); latido = null; }
+    if (!caja) return;
+    var m = caja.querySelectorAll('[data-marco]');
+    if (m.length < 3) return;
+    var orden = [0, 1, 2, 1];
+    var i = 0;
+    function pinta(n) {
+      for (var k = 0; k < m.length; k++) m[k].hidden = (k !== n);
+    }
+    pinta(0);
+    if (!habla) return;
+    latido = setInterval(function () {
+      i = (i + 1) % orden.length;
+      pinta(orden[i]);
+    }, 110);
   };
 
   /**
