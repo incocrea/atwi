@@ -130,6 +130,37 @@ body.app {
 }
 .vista[data-activa] { display: block; animation: entra var(--dur-media) var(--suave); }
 
+/* EL FONDO DE LA PORTADA. Va en `.marco` y no en la vista, por dos razones.
+   La vista es la que SCROLLEA: puesto ahí, el dibujo se arrastraría con el
+   contenido, y una trama de burbujas que sube es mareo, no decorado. Y la
+   cabecera queda FUERA de la vista, así que el fondo cortaría justo debajo del
+   logotipo y se vería la costura. En `.marco` es el papel de pared de toda la
+   pantalla, que es lo que parece que es.
+
+   `:has()` en vez de una clase que ponga el JS: la vista activa ya se marca con
+   `data-activa`, y un segundo sitio donde apuntar lo mismo es un segundo sitio
+   donde se puede quedar desincronizado.
+
+   Solo en la portada. El catálogo y el historial son listas largas y una trama
+   debajo de veinte tarjetas pelea con ellas; la portada tiene dos tarjetas
+   grandes y aire de sobra, que es donde un fondo aporta. */
+.marco:has(#v-jugar[data-activa])::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url(../img/fondos/home.webp) center top / cover no-repeat;
+  pointer-events: none;
+  /* Detrás de la cabecera, las vistas y la barra, que son hijos posicionados
+     de la misma rejilla. Sin esto se pintaría encima de la cabecera, que no
+     está posicionada. */
+  z-index: 0;
+}
+.marco > header, .marco > .vistas, .marco > .barra { position: relative; z-index: 1; }
+/* Y la cabecera se quita el color de encima, o la trama corta justo debajo del
+   logotipo y se ve la costura. Nada scrollea por debajo de ella --es su propia
+   fila de la rejilla-- así que dejarla transparente no tapa nada. */
+.marco:has(#v-jugar[data-activa]) > .cabecera { background: transparent; }
+
 @keyframes entra {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
