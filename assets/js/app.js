@@ -1003,7 +1003,6 @@
       var yoActual = ($('#p-yo') && $('#p-yo').value || '').trim();
       abrirPreparar(true);
       if (yoActual && $('#p-yo')) $('#p-yo').value = yoActual;
-      if (propuesta.miPostura) elegirPostura(propuesta.miPostura);
       revisarPreparar();
     } else if (!$('#m-tema').hidden) {
       abrirTema(guardado.id);
@@ -1034,8 +1033,8 @@
         (t && !propio
           ? 'Cambia el enunciado o las posturas para que se parezcan a la discusión de ustedes. ' +
             'El tema original del catálogo no se toca: puedes volver a él cuando quieras.'
-          : 'Escribe la discusión como es en casa. El enunciado plantea el desacuerdo, ' +
-            'y cada postura es lo que defiende una de las dos partes.') +
+          : 'Escribe la discusión como es en casa. El enunciado plantea el desacuerdo; ' +
+            'las dos posturas son ejemplos de por dónde suele ir, no lados asignados.') +
       '</p>' +
 
       (reescrito
@@ -1055,7 +1054,7 @@
 
         '<div class="postura-campo postura-campo--a">' +
           campoTexto('e-a', 'Postura A', t ? t.a : '', 'textarea',
-                     'Lo que defiende quien está de un lado.', 240) +
+                     'Una de las dos maneras de verlo. Sirve de ejemplo, no se asigna.', 240) +
         '</div>' +
         '<div class="postura-campo postura-campo--b">' +
           campoTexto('e-b', 'Postura B', t ? t.b : '', 'textarea',
@@ -1172,7 +1171,6 @@
     var t = datos.tema(propuesta.temaId);
     if (!t) return;
     var p = datos.perfil();
-    if (!repintando) propuesta.miPostura = null;
     /* El último con quien se jugó viene puesto: nombre, personaje y aro. En un
        teléfono compartido se repite casi siempre la misma pareja, y escribir el
        mismo nombre cada vez es trabajo que la app ya sabe hacer. */
@@ -1207,11 +1205,19 @@
       '</div>' +
       '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">4 y 5 turnos necesitan cupo.</p>' +
 
-      '<h3 style="margin-bottom:var(--e-2)">¿Cuál defiendes tú?</h3>' +
-      '<div class="apilado" style="margin-bottom:var(--e-5)">' +
-        opcionPostura('a', 'A', t.a) +
-        opcionPostura('b', 'B', t.b) +
+      /* AQUÍ NO SE REPARTEN POSTURAS. Se repartían —A y B, elegías una y la
+         defendías tres turnos— y eso obligaba a sostener algo que a lo mejor no
+         piensas solo porque te tocó ese lado. El tema plantea la discusión y
+         cada quien va fijando su posición al hablar, que es como pasa de
+         verdad. Las dos posturas del catálogo siguen ahí, pero como PISTA de
+         por dónde suele ir, no como reparto. */
+      '<h3 style="margin-bottom:var(--e-2)">Por dónde suele ir</h3>' +
+      '<div class="apilado-3" style="margin-bottom:var(--e-2)">' +
+        pistaPostura('A', t.a) +
+        pistaPostura('B', t.b) +
       '</div>' +
+      '<p class="chico tenue" style="margin-bottom:var(--e-5)">Son ejemplos, no lados ' +
+        'asignados: cada uno dice lo suyo y el juez evalúa cómo lo argumentaron.</p>' +
 
       '<h3 style="margin-bottom:var(--e-2)">¿Quiénes juegan?</h3>' +
 
@@ -1265,41 +1271,29 @@
       '</div>';
 
     var b = $('#m-preparar .modal__pie button');
-    b.disabled = true;
     b.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
+    /* Se revisa AL ABRIR y no solo al escribir. Antes el botón nacía apagado y
+       lo encendía elegir postura; sin ese paso, con los dos nombres ya puestos
+       —que es el caso normal— el botón se quedaba apagado sin nada que hacer
+       para encenderlo salvo tocar un campo. */
+    revisarPreparar();
     if (!repintando) abrirModal('m-preparar');
   }
 
-  /* La opción elige; el lápiz de abajo edita. Van en la misma caja pero son
-     dos botones: uno dentro de otro no es HTML válido. */
-  function opcionPostura(clave, letra, texto) {
-    return '<div class="opcion-caja">' +
-        '<button class="opcion opcion--postura" data-postura="' + clave + '" aria-pressed="false">' +
-          '<span style="display:grid;grid-template-columns:32px 1fr;gap:var(--e-3);align-items:start">' +
-            '<span class="chip chip--marca" style="justify-content:center">' + letra + '</span>' +
-            '<span class="chico" style="line-height:1.45">' + esc(texto) + '</span>' +
-          '</span>' +
-          '<span class="opcion__marca">' + icono('listo', 16) + '</span>' +
-        '</button>' +
-        '<button class="opcion__editar" data-retocar="' + clave + '" ' +
-                'aria-label="Editar la postura ' + letra + '">' +
-          window.ATWI.pegatina('lapiz', 15) + 'Editar</button>' +
-      '</div>';
-  }
-
-  function elegirPostura(clave) {
-    propuesta.miPostura = clave;
-    $$('#m-preparar .opcion').forEach(function (o) {
-      o.setAttribute('aria-pressed', String(o.dataset.postura === clave));
-    });
-    revisarPreparar();
+  /** Una de las dos posturas del tema, como ejemplo y no como opción. */
+  function pistaPostura(letra, texto) {
+    if (!texto) return '';
+    return '<p class="pista-postura">' +
+        '<span class="pista-postura__letra">' + letra + '</span>' +
+        '<span>' + esc(texto) + '</span>' +
+      '</p>';
   }
 
   function revisarPreparar() {
     var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
     var yo = ($('#p-yo') && $('#p-yo').value || '').trim();
     $('#m-preparar .modal__pie button').disabled =
-      !(propuesta.miPostura && otro.length >= 2 && yo.length >= 2);
+      !(otro.length >= 2 && yo.length >= 2);
   }
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
@@ -1339,7 +1333,6 @@
     var p = datos.perfil();
     var fichaMia = { nombre: yo, avatar: p.avatar, color: p.avatarBorde };
     var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar, color: propuesta.otroColor };
-    var porPostura = propuesta.miPostura === 'a' ? [fichaMia, fichaSuya] : [fichaSuya, fichaMia];
     var abre = Math.random() < 0.5 ? 0 : 1;
 
     cerrarModales(['m-preparar', 'm-tema']);
@@ -1348,8 +1341,8 @@
       modo: propuesta.modo,
       turnos: propuesta.turnos || cfg.reglas.turnosPorDefecto,
       publico: modoPublico || 'pareja',
-      posturas: porPostura,      // [quien defiende A, quien defiende B]
-      abre: abre                 // índice sobre `posturas`
+      posturas: [fichaMia, fichaSuya],
+      abre: abre                 // índice sobre esa lista: quién habla primero
     });
   }
 
@@ -1449,9 +1442,6 @@
       });
       return;
     }
-
-    var post = e.target.closest('[data-postura]');
-    if (post) { elegirPostura(post.dataset.postura); return; }
 
     /* Tocar a alguien con quien ya se jugó rellena su nombre y su ficha. */
     var inv = e.target.closest('[data-invitado]');

@@ -94,10 +94,12 @@ window.ATWI = window.ATWI || {};
       modo: op.modo,                 // 'debate' | 'negociacion'
       turnos: op.turnos,             // por persona
       publico: op.publico || 'pareja',
-      jugadores: [
-        Object.assign({ letra: 'A', texto: op.tema.a }, gente[0]),
-        Object.assign({ letra: 'B', texto: op.tema.b }, gente[1])
-      ],
+      /* SIN POSTURA ASIGNADA. Cada jugador llegaba con una letra y el texto de
+         «su» postura, y tenía que sostenerla los tres turnos aunque no la
+         pensara. Ahora el tema plantea la discusión y cada quien va fijando la
+         suya al hablar; el juez puntúa cómo argumentaron frente al enunciado,
+         que es lo que su rúbrica dice desde el principio (docs/02 §13-bis). */
+      jugadores: gente,
       orden: [abre, 1 - abre],       // índices sobre `jugadores`
       intervenciones: [],            // {jugador, turno, audio, tipo, segundos, url}
       i: 0,                          // intervención actual, 0..(turnos*2 - 1)
@@ -164,8 +166,6 @@ window.ATWI = window.ATWI || {};
       nombre: P.jugadores[j].nombre,
       avatar: P.jugadores[j].avatar,
       color: P.jugadores[j].color,
-      postura: P.jugadores[j].texto,
-      letra: P.jugadores[j].letra,
       numero: Math.floor(P.i / 2) + 1,
       esUltima: P.i === P.turnos * 2 - 1,
       esPrimera: P.i === 0
@@ -750,13 +750,10 @@ window.ATWI = window.ATWI || {};
    */
   function pintarSala(op) {
     var t = turnoActual();
-    var pacto = P.modo !== 'debate';
-    /* QUÉ SE TIENE DELANTE MIENTRAS SE HABLA, y no es lo mismo en los dos modos.
-       En Controversia es la POSTURA que le tocó defender a quien habla; en
-       Negociación no se defiende nada, así que es el tema sobre el que se va a
-       proponer. Si el tema no trae posturas escritas —los hay— se cae al
-       enunciado en vez de dejar una tarjeta vacía. */
-    var loSuyo = (!pacto && t.postura) ? t.postura : P.tema.enunciado;
+    /* LO QUE SE TIENE DELANTE ES EL TEMA, el mismo para los dos. Antes aquí
+       ponía la postura asignada a quien hablaba; ya no hay reparto, así que lo
+       que hay que tener a la vista mientras se habla es la discusión. */
+    var loSuyo = P.tema.enunciado;
     marcarTurno(t);
 
     caja().innerHTML =

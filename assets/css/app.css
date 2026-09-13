@@ -1693,3 +1693,20 @@ body.app {
     animation: none; opacity: 1; transform: translate(-50%, -50%) scale(1);
   }
 }
+
+/* --- Las posturas del tema, como PISTA -----------------------------------------
+   Eran dos opciones que se elegían y se defendían toda la partida. Ya no se
+   reparten: el tema plantea la discusión y cada quien fija la suya hablando.
+   Siguen aquí porque hacen el tema más claro —que es justo lo que hace falta al
+   quitar el reparto—, pero se leen, no se tocan. */
+.pista-postura {
+  display: grid; grid-template-columns: 22px 1fr; gap: var(--e-2);
+  align-items: start;
+  font-size: var(--t-chico); line-height: 1.45; color: var(--tinta-suave);
+}
+.pista-postura__letra {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--crema-hondo); color: var(--tinta-tenue);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+}
