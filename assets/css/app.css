@@ -1121,17 +1121,40 @@ body.app {
 @keyframes asiente { 0%,100% { transform: translateY(0); } 35% { transform: translateY(7px); } }
 @keyframes piensa { 0% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } 100% { transform: rotate(-6deg); } }
 
-/* --- De quién es el turno ----------------------------------------------------- */
-.turno { text-align: center; }
-.turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.75rem; }
-.turno__cual { font-size: var(--t-chico); color: var(--ctx-tenue-2); }
-.turno__postura {
-  margin-top: var(--e-3); padding: var(--e-3) var(--e-4);
+/* --- De quién es el turno -----------------------------------------------------
+   Arriba, en una sola tarjeta, lo único que hay que tener delante mientras se
+   habla: qué turno es y qué se defiende. Antes eran dos piezas sueltas y una de
+   ellas se quedaba VACÍA en los temas que no traen posturas escritas —una caja
+   blanca sin nada dentro, que no se entendía—; ahora esa tarjeta siempre dice
+   algo, porque si no hay postura cae al enunciado del tema. */
+.sala--turno { display: grid; gap: var(--e-4); }
+.turno {
+  text-align: center; padding: var(--e-3) var(--e-4);
   background: var(--ctx-vidrio); border-radius: var(--radio-tarjeta);
   box-shadow: var(--sombra-1);
-  font-size: var(--t-chico); line-height: 1.45; color: var(--ctx-tenue);
-  text-align: left;
 }
+.turno__cual {
+  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--ctx-tenue-2);
+}
+.turno__que {
+  margin-top: 6px; font-family: var(--display); font-weight: 800;
+  font-size: var(--t-h3); line-height: 1.3;
+}
+
+/* QUIEN HABLA, en grande y en el centro. La figura se recorta de la cintura
+   para arriba dentro de su disco: de cuerpo entero, a este tamaño, la cara —que
+   es lo que identifica de quién es el turno— quedaba del tamaño de una uña. */
+.hablante { display: grid; justify-items: center; gap: var(--e-2); }
+.hablante__fig {
+  width: 176px; height: 176px; border-radius: 50%;
+  box-shadow: var(--sombra-1);
+}
+.hablante__fig .retrato__fig {
+  object-fit: contain; object-position: center top; transform: scale(1.34);
+  transform-origin: 50% 8%;
+}
+.turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.75rem; }
 
 /* --- El reloj ----------------------------------------------------------------- */
 .reloj { text-align: center; font-family: var(--display); font-weight: 800; }

@@ -162,6 +162,8 @@ window.ATWI = window.ATWI || {};
     return {
       jugador: j,
       nombre: P.jugadores[j].nombre,
+      avatar: P.jugadores[j].avatar,
+      color: P.jugadores[j].color,
       postura: P.jugadores[j].texto,
       letra: P.jugadores[j].letra,
       numero: Math.floor(P.i / 2) + 1,
@@ -581,20 +583,38 @@ window.ATWI = window.ATWI || {};
     var t = turnoActual();
     P.estado = 'turno';
     tirarBorrador();
+    /* La cortinilla del encuentro se va al empezar a jugar: estaba colgada del
+       modal, no de la pantalla del sorteo, así que si no se quita a mano se
+       queda debajo de los turnos hasta el final de la partida. */
+    if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
+
+    var pacto = P.modo !== 'debate';
+    /* QUÉ SE TIENE DELANTE MIENTRAS SE HABLA, y no es lo mismo en los dos modos.
+       En Controversia es la POSTURA que le tocó defender a quien habla; en
+       Negociación no se defiende nada, así que es el tema sobre el que se va a
+       proponer. Si el tema no trae posturas escritas —los hay— se cae al
+       enunciado en vez de dejar una tarjeta vacía, que era lo que pasaba. */
+    var loSuyo = (!pacto && t.postura) ? t.postura : P.tema.enunciado;
 
     caja().innerHTML =
-      '<div class="sala">' +
-        '<p class="sala__recordatorio">' + esc(P.tema.enunciado) + '</p>' +
-        juez('', t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') +
+      '<div class="sala sala--turno">' +
         '<div class="turno">' +
+          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos +
+            (pacto || !t.postura ? '' : ' · defiendes la ' + t.letra) + '</p>' +
+          '<p class="turno__que">' + esc(loSuyo) + '</p>' +
+        '</div>' +
+        /* QUIEN HABLA, EN GRANDE Y EN EL CENTRO. Antes aquí estaba el icono del
+           juez, que es el mismo en los dos turnos y no decía de quién era este.
+           Jugando los dos en un teléfono, eso es lo primero que hay que saber. */
+        '<div class="hablante">' +
+          window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
+                                                      clase: 'hablante__fig' }) +
           '<p class="turno__quien">' + esc(t.nombre) + '</p>' +
-          '<p class="turno__cual">Turno ' + t.numero + ' de ' + P.turnos + ' · defiende la ' + t.letra + '</p>' +
-          '<p class="turno__postura">' + esc(t.postura) + '</p>' +
+          '<p class="juez__dice" id="juez-dice">' +
+            esc(t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') +
+          '</p>' +
         '</div>' +
         loDicho() +
-        (t.esPrimera
-          ? '<p class="sala__nota">Abres tú, así que todavía no hay nada que escuchar.</p>'
-          : '') +
       '</div>';
 
     pie().innerHTML = botonDeGrabar('grabar') +
