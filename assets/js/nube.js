@@ -108,7 +108,7 @@ window.ATWI = window.ATWI || {};
   }
 
   /** Deja constancia de con quien jugo cada lado. `lado` 0 es quien propone. */
-  function apuntarElecciones(debate, p) {
+  function apuntarRepresentacion(debate, p) {
     var yo = auth.sesion().user;
     var filas = [
       { debate: debate, lado: 0, perfil: yo.id,
@@ -116,7 +116,7 @@ window.ATWI = window.ATWI || {};
       { debate: debate, lado: 1, perfil: null,
         abogado: Boolean(p.abogadoOtro), personaje: p.personajeOtro }
     ];
-    return fetch(cfg.supabaseUrl + '/rest/v1/elecciones', {
+    return fetch(cfg.supabaseUrl + '/rest/v1/representacion', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -126,8 +126,8 @@ window.ATWI = window.ATWI || {};
       },
       body: JSON.stringify(filas)
     }).then(function (r) {
-      if (!r.ok) return r.text().then(function (t) { apuntar('elecciones: ' + t.slice(0, 160)); });
-    }).catch(function (e) { apuntar('elecciones: ' + e.message); });
+      if (!r.ok) return r.text().then(function (t) { apuntar('representacion: ' + t.slice(0, 160)); });
+    }).catch(function (e) { apuntar('representacion: ' + e.message); });
   }
 
   /**

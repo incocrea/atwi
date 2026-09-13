@@ -1947,3 +1947,13 @@ body.app {
    entender por que no esta disponible. */
 .abogado-ficha--ocupada { opacity: .55; cursor: not-allowed; filter: grayscale(1); }
 .abogado-ficha--ocupada .abogado-ficha__nota { color: var(--peligro); }
+
+/* EL AVISO DE QUE EL VEREDICTO ES DE MENTIRA. Discreto pero legible: no compite
+   con el nombre del ganador --que es lo que se ha venido a ver-- pero tampoco se
+   esconde, porque lo que dice es que ese nombre no significa nada todavia. */
+.revelacion__simulado {
+  margin: var(--e-3) auto 0; max-width: 30ch;
+  padding: 6px 12px; border-radius: var(--radio-pastilla);
+  background: var(--crema-hondo, rgba(0, 0, 0, .05));
+  font-size: var(--t-mini); color: var(--tinta-suave); line-height: 1.35;
+}

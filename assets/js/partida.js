@@ -1387,6 +1387,9 @@ window.ATWI = window.ATWI || {};
     m.hidden = true;
     var ganador = alAzar(P.jugadores).nombre;
     veredicto.revelar({
+      /* DE UN SORTEO, y se dice en pantalla. El dia que el arbitro conteste de
+         verdad, esto pasa a falso y el aviso desaparece solo. */
+      simulado: true,
       modo: P.modo,
       publico: P.publico,
       ganador: ganador,

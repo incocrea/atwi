@@ -369,8 +369,23 @@ window.ATWI = window.ATWI || {};
        después de haberla colocado tramo a tramo, y apagarla destiñe el
        logotipo. El nombre del ganador manda por tamaño, no por contraste
        prestado. */
+    /* SE DICE QUE ES DE MENTIRA, y se dice AQUI. El arbitro no existe todavia:
+       el ganador sale de un sorteo. Hasta ahora eso solo estaba escrito en un
+       comentario del codigo, asi que la unica diferencia entre un veredicto de
+       verdad y uno al azar era saberlo, y quien no lo supiera se lo iba a creer.
+
+       En un juego que le dice a una pareja quien argumento mejor, dejar pasar
+       eso no es un descuido de aviso: es dejar que alguien use como argumento
+       un resultado que tiro una moneda.
+
+       Se va solo: en cuanto el arbitro conteste de verdad, `r.simulado` llega en
+       falso y esta linea no se pinta. */
     p.querySelector('#rev-centro').innerHTML =
-      '<p class="revelacion__ganador">' + esc(titular) + '</p>' + detalle;
+      '<p class="revelacion__ganador">' + esc(titular) + '</p>' + detalle +
+      (r.simulado
+        ? '<p class="revelacion__simulado">Resultado simulado: el juez todavía no ' +
+          'está conectado, así que esto salió de un sorteo.</p>'
+        : '');
 
     p.querySelector('#rev-abajo').innerHTML =
       '<button class="boton boton--bloque boton--grande revelacion__boton" data-accion="ver-desglose">' +
