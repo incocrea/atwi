@@ -58,6 +58,11 @@
   .caja i.ne { right: -7px; top: -7px; cursor: nesw-resize; }
   .caja i.so { left: -7px; bottom: -7px; cursor: nesw-resize; }
   .caja i.se { right: -7px; bottom: -7px; cursor: nwse-resize; }
+  /* El de girar va ARRIBA y separado, colgando de un hilo: asi se ve de un
+     vistazo cual es el mango y hacia donde apunta la caja. Gira con ella. */
+  .caja i.giro { left: 50%; top: -34px; margin-left: -6px; cursor: grab; }
+  .caja i.giro::before { content: ''; position: absolute; left: 4px; top: 11px;
+                         width: 2px; height: 20px; background: currentColor; }
   .oculta .caja { display: none; }
 
   .mandos { display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
@@ -76,7 +81,8 @@
   la sonrisa cerrada para decir de dónde se corta. A la derecha la pose <b>hablando</b>, al
   tamaño de la sala: arrastrá la <b style="color:#2a6ee0">azul</b> para decir dónde se pega.
   Las esquinas estiran, y la otra caja copia el tamaño — son el mismo recorte.
-  Las flechas afinan la azul de a un píxel; con Mayús, la roja.
+  El mango de arriba de la roja la <b>gira</b>: la cabeza no está igual de inclinada
+  en las dos poses. Las flechas afinan la azul de a un píxel; con Mayús, la roja.
 </p>
 
 <div class="mandos">
@@ -119,7 +125,10 @@ var INICIO = {
 var CAJAS = {};
 COLORES.forEach(function (c) {
   QUIEN.forEach(function (q) {
-    CAJAS[q + '-' + c] = { de: INICIO[q].slice(), a: INICIO[q].slice() };
+    /* `ang` en grados: cuanto se gira lo copiado. La cabeza no esta igual de
+       inclinada en `frente` que en `hablando`, y una sonrisa pegada derecha
+       sobre una cara ladeada se nota mas que la boca abierta que reemplaza. */
+    CAJAS[q + '-' + c] = { de: INICIO[q].slice(), a: INICIO[q].slice(), ang: 0 };
   });
 });
 
@@ -151,7 +160,17 @@ function conSonrisa(hablando, frente, cajas) {
   var t = document.createElement('canvas');
   t.width = an; t.height = al;
   var tg = t.getContext('2d');
-  tg.drawImage(frente, d[0], d[1], d[2] - d[0], d[3] - d[1], 0, 0, an, al);
+  /* SE EXTRAE GIRADO. Se lleva el centro de la caja roja al centro del parche,
+     se gira y se escala, y despues se dibuja la pose entera: lo que cae dentro
+     del parche es justo el rectangulo girado que se ve marcado a la izquierda. */
+  var sw = d[2] - d[0], sh = d[3] - d[1];
+  tg.save();
+  tg.translate(an / 2, al / 2);
+  tg.rotate(-(cajas.ang || 0) * Math.PI / 180);
+  tg.scale(an / sw, al / sh);
+  tg.translate(-(d[0] + sw / 2), -(d[1] + sh / 2));
+  tg.drawImage(frente, 0, 0);
+  tg.restore();
 
   /* La pluma: el parche entra con el borde desvanecido, o se ve el recuadro. */
   var p = num('pluma');
@@ -193,6 +212,7 @@ function rehacer(q) {
   c.fuente.insertBefore(lz, c.fuente.firstChild);
   poner(c.cajaDe, (d[0] - cx) * ZOOM + 150, (d[1] - cy) * ZOOM + 150,
         (d[2] - d[0]) * ZOOM, (d[3] - d[1]) * ZOOM);
+  c.cajaDe.style.transform = 'rotate(' + (cajas.ang || 0) + 'deg)';
 
   /* Panel derecho: los dos fotogramas, al tamaño de la sala. */
   c.destino.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
@@ -207,7 +227,8 @@ function rehacer(q) {
   var ex = 285 / 620, ey = c.destino.clientHeight * 1.39 / 960;
   poner(c.cajaA, a[0] * ex, a[1] * ey, (a[2] - a[0]) * ex, (a[3] - a[1]) * ey);
 
-  c.pie.textContent = color() + ' · de ' + d.join(',') + '  →  a ' + a.join(',');
+  c.pie.textContent = color() + ' · de ' + d.join(',') + '  →  a ' + a.join(',') +
+                      '  ·  ' + (cajas.ang || 0) + '°';
   salida();
 }
 
@@ -217,7 +238,7 @@ function salida() {
     COLORES.forEach(function (c) {
       var k = CAJAS[q + '-' + c];
       l.push("    ('" + q + "', '" + c + "'): {'de': " + JSON.stringify(k.de) +
-             ", 'a': " + JSON.stringify(k.a) + "},");
+             ", 'a': " + JSON.stringify(k.a) + ", 'ang': " + (k.ang || 0) + "},");
     });
   });
   document.getElementById('salida').textContent =
@@ -239,6 +260,16 @@ function arrastrable(caja, q, cual, esc) {
       var dx = Math.round((ev.clientX - x0) * s.x);
       var dy = Math.round((ev.clientY - y0) * s.y);
       var b = CAJAS[clave(q)][cual];
+      if (tira === 'giro') {
+        /* El angulo sale del centro de la caja al puntero. `+90` porque el mango
+           cuelga hacia ARRIBA y ahi el angulo natural es -90. */
+        var r = caja.getBoundingClientRect();
+        var a = Math.atan2(ev.clientY - (r.top + r.height / 2),
+                           ev.clientX - (r.left + r.width / 2));
+        CAJAS[clave(q)].ang = Math.round(a * 180 / Math.PI + 90);
+        rehacer(q);
+        return;
+      }
       if (!tira) {
         b[0] = ini[0] + dx; b[1] = ini[1] + dy;
         b[2] = ini[2] + dx; b[3] = ini[3] + dy;
@@ -264,8 +295,8 @@ function arrastrable(caja, q, cual, esc) {
   });
 }
 
-function tiradores(caja) {
-  ['no', 'ne', 'so', 'se'].forEach(function (n) {
+function tiradores(caja, conGiro) {
+  (conGiro ? ['no', 'ne', 'so', 'se', 'giro'] : ['no', 'ne', 'so', 'se']).forEach(function (n) {
     var t = document.createElement('i'); t.className = n; t.dataset.tira = n;
     caja.appendChild(t);
   });
@@ -276,8 +307,8 @@ QUIEN.forEach(function (q) {
   var d = document.createElement('div'); d.className = 'caso'; d.tabIndex = 0;
   var izq = document.createElement('div'); izq.className = 'fuente';
   var der = document.createElement('div'); der.className = 'destino';
-  var cajaDe = document.createElement('div'); cajaDe.className = 'caja de'; tiradores(cajaDe);
-  var cajaA = document.createElement('div'); cajaA.className = 'caja a'; tiradores(cajaA);
+  var cajaDe = document.createElement('div'); cajaDe.className = 'caja de'; tiradores(cajaDe, true);
+  var cajaA = document.createElement('div'); cajaA.className = 'caja a'; tiradores(cajaA, false);
   izq.appendChild(cajaDe); der.appendChild(cajaA);
 
   var col = document.createElement('div');
