@@ -219,7 +219,7 @@ window.ATWI = window.ATWI || {};
      La buena noticia, para cuando se retome: la boca está en la cara y la cara
      NO cambia con el color, así que probablemente baste una lámina por
      personaje —seis— y no una por personaje y color, que serían veinticuatro. */
-  var MARCOS = {};
+  var MARCOS = { hablando: 3 };
 
   function marcos(quien, color, pose, alt) {
     var n = MARCOS[pose] || 1;
