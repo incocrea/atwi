@@ -1310,6 +1310,20 @@
      escribirles el nombre ni volver a elegirles la ficha. */
   function invitadosPrevios() { return datos.invitados(); }
 
+  /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no un
+     historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE; el mismo
+     nombre con otro personaje es otra ficha. */
+  function chipsDeInvitados() {
+    var l = invitadosPrevios().slice(0, 3);
+    if (!l.length) return '';
+    return '<div class="invitados">' + l.map(function (g) {
+      return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
+          window.ATWI.fichaHTML(g.avatar || propuesta.otroAvatar, 'avatar--mini', g.color) +
+          '<span class="invitado__n">' + esc(g.nombre) + '</span>' +
+        '</button>';
+    }).join('') + '</div>';
+  }
+
   /**
    * La ficha del invitado. Ya no se elige: es el personaje que no soy yo. Con
    * dos, la cuenta sale sola, y además garantiza lo que antes se pedía a mano
@@ -1420,15 +1434,26 @@
          así que la próxima vez que juegue sale como salió. */
       /* «Su nombre» se leía como «el nombre de uno» y había quien ponía el
          suyo dos veces. «Nombre de invitado» no admite esa lectura. */
-      '<span class="chico" style="font-weight:700;display:block">Nombre de invitado</span>' +
+      /* LOS ATAJOS VAN EN EL RENGLÓN DEL RÓTULO, a la derecha. Estaban debajo
+         del campo y del texto de ayuda, o sea DESPUÉS de haber leído «escribí
+         un nombre»: quien ya jugó con alguien lo escribía entero antes de ver
+         que podía tocarlo. Arriba se ven antes de empezar a escribir, que es
+         cuando sirven. */
+      '<div class="fila-invitado">' +
+        '<span class="chico" style="font-weight:700">Nombre de invitado</span>' +
+        chipsDeInvitados() +
+      '</div>' +
+      /* EL CAMPO PRIMERO Y LA FICHA DESPUÉS. Va en el orden del HTML y no con
+         `row-reverse`: así el tabulador pasa por el nombre antes que por el
+         dibujo, que es el orden en que se rellena. */
       '<div class="con-ficha" style="margin-top:6px">' +
+        '<input class="campo" id="p-otro" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+          'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
         '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
           'aria-label="Elegir el aro de su ficha">' +
           window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
             .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
         '</button>' +
-        '<input class="campo" id="p-otro" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-          'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
       '</div>' +
       '<span class="chico tenue" style="display:block;margin-top:6px">' +
         'Su primer nombre o un apodo, una sola palabra. Van a jugar los dos en este ' +
@@ -1437,16 +1462,6 @@
       /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no
          un historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE;
          el mismo nombre con otro personaje es otra ficha. */
-      (invitadosPrevios().length
-        ? '<div class="invitados" style="margin-top:var(--e-3)">' +
-            invitadosPrevios().slice(0, 3).map(function (g) {
-              return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
-                  window.ATWI.fichaHTML(g.avatar || propuesta.otroAvatar, 'avatar--mini', g.color) +
-                  esc(g.nombre) +
-                '</button>';
-            }).join('') +
-          '</div>'
-        : '') +
       /* EL ABOGADO. Se elige POR SEPARADO y antes de empezar: uno puede jugar
          con abogado y el otro a pelo, y esa asimetría es parte de la gracia.
          Va aquí y no dentro de la sala porque cambiar las reglas a mitad de

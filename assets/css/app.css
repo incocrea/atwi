@@ -1654,10 +1654,23 @@ body.app {
 .avatar--retrato { width: 56px; height: 56px; font-size: 1.6rem; }
 .avatar--mini { width: 26px; height: 26px; font-size: .85rem; box-shadow: inset 0 0 0 2px rgba(255,255,255,.55); }
 
-/* Con quién se jugó antes en este teléfono. No son cuentas: son fichas. */
-/* Centrados: son tres atajos, no una lista. Alineados a la izquierda parecían
-   el principio de un historial que sigue más abajo. */
+/* Con quién se jugó antes en este teléfono. No son cuentas: son fichas.
+
+   VAN EN EL RENGLÓN DEL RÓTULO, pegados a la derecha. Estaban debajo del campo
+   y del texto de ayuda, o sea DESPUÉS de leer «escribí un nombre»: quien ya
+   jugó con alguien lo escribía entero antes de ver que podía tocarlo.
+
+   Y SI NO CABEN, SE BAJAN. Tres nombres largos más el rótulo no entran en 375
+   px, y aquí nada scrollea de lado: el `wrap` los deja caer a su propio
+   renglón, que sigue estando arriba del campo, que es lo que importaba. */
+.fila-invitado {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e-2); flex-wrap: wrap;
+}
+.fila-invitado .invitados { flex: 1 1 auto; justify-content: flex-end; min-width: 0; }
 .invitados { display: flex; gap: var(--e-2); flex-wrap: wrap; justify-content: center; }
+/* El nombre se recorta antes que empujar el chip fuera de la fila. */
+.invitado__n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 /* El aviso de aro ocupado se lee: no es una nota al pie, es algo que acaba de
    pasar y que hay que resolver ahí mismo. */
 .aviso-aro { color: var(--gancho, #A8431F); font-weight: 700; }
@@ -1778,16 +1791,45 @@ body.app {
 .sala__nota--ojo { color: var(--sol); }
 
 /* --- Las fichas de número de turnos -------------------------------------------- */
-.turnos-fila { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--e-2); }
-.turno-ficha {
-  display: grid; justify-items: center; gap: 2px; padding: var(--e-3) 0;
-  border: 2px solid var(--linea); border-radius: var(--radio-boton);
-  background: var(--superficie); cursor: pointer; font: inherit; color: inherit;
+/* CUÁNTOS TURNOS: tres círculos repartidos a lo ancho, como las casillas de la
+   sala. Elegir «cuántas veces habla cada uno» y ver «cuántas veces habló» son
+   la misma cuenta en dos momentos, así que se dibujan igual: mismo círculo,
+   mismo aro blanco interior, mismo relieve que `.rueda`.
+
+   LAS COLUMNAS SE CUENTAN SOLAS. Estaban fijadas en cinco, de cuando los turnos
+   llegaban a cinco; al bajar el tope a tres (2026-09-13) quedaban dos columnas
+   vacías a la derecha y las tres fichas se veían arrinconadas a la izquierda en
+   vez de repartidas. Con `grid-auto-flow: column` la fila vale para las que
+   haya, y `config.reglas.turnosMax` deja de tener un segundo sitio donde
+   quedarse desincronizado. */
+.turnos-fila {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+  gap: var(--e-2); justify-items: center;
 }
-.turno-ficha[aria-pressed="true"] { border-color: var(--lavanda); background: var(--lavanda-tinte); }
+.turno-ficha {
+  display: grid; justify-items: center; gap: 6px;
+  border: 0; background: none; padding: 0;
+  cursor: pointer; font: inherit; color: inherit; width: 100%;
+}
+/* El número va DENTRO del círculo y centrado, y el círculo es el botón: el
+   minutaje queda fuera y debajo, que es un dato de apoyo y no la elección. */
+.turno-ficha__n {
+  width: min(72px, 100%); aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--display); font-weight: 800; font-size: 1.6rem;
+  border: 2px solid var(--linea); background: var(--superficie);
+  box-shadow: inset 0 0 0 2.5px rgba(255, 255, 255, .55), var(--sombra-1);
+  transition: transform var(--dur-corta) var(--suave);
+}
+.turno-ficha:active .turno-ficha__n { transform: scale(.92); }
+.turno-ficha[aria-pressed="true"] .turno-ficha__n {
+  border-color: var(--lavanda); background: var(--lavanda-tinte);
+}
 .turno-ficha--cupo { opacity: .55; }
-.turno-ficha__n { font-family: var(--display); font-weight: 800; font-size: 1.25rem; }
 .turno-ficha__min { font-size: var(--t-mini); color: var(--tinta-tenue); }
+@media (prefers-reduced-motion: reduce) {
+  .turno-ficha:active .turno-ficha__n { transform: none; }
+}
 
 /* --- La ficha de personaje dentro de cajas que no la esperaban ----------------
    Los tamaños de la ficha viven en la clase de cada sitio —la rueda, la voz del
