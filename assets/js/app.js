@@ -1334,7 +1334,8 @@
     var l = invitadosPrevios().slice(0, 2);
     if (!l.length) return '';
     return '<div class="invitados">' + l.map(function (g) {
-      return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +
+      return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '"' +
+          ' data-ficha="' + esc(g.avatar || '') + '">' +
           window.ATWI.fichaHTML(g.avatar || propuesta.otroAvatar, 'avatar--mini', g.color) +
           '<span class="invitado__n">' + esc(g.nombre) + '</span>' +
         '</button>';
@@ -1603,6 +1604,11 @@
             '</button>';
         }).join('') +
       '</div>';
+    /* LLEVA EL MODO, como las demás pantallas previas a la partida. Es la única
+       que se quedaba con el lavanda de marca en medio del recorrido, y se abre
+       DESDE «antes de empezar»: cambiar de fondo al entrar y volver a cambiarlo
+       al salir hacía parecer que se había ido a otro sitio. */
+    $('#m-abogados').className = 'modal modal--' + propuesta.modo;
     abrirModal('m-abogados');
   }
 
@@ -1884,7 +1890,8 @@
     /* Tocar a alguien con quien ya se jugó rellena su nombre y su ficha. */
     var inv = e.target.closest('[data-invitado]');
     if (inv) {
-      var g = datos.invitado(inv.dataset.invitado);
+      var g = datos.invitado(inv.dataset.invitado, inv.dataset.ficha) ||
+              datos.invitado(inv.dataset.invitado);
       if (g) {
         propuesta.otro = g.nombre;
         /* Por el mismo filtro que en `fichaDelInvitado`: lo guardado puede
@@ -1899,8 +1906,9 @@
            con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
         if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
+        /* Se marca EL QUE SE TOCÓ, no todos los que se llaman igual. */
         $$('#m-preparar [data-invitado]').forEach(function (x) {
-          if (x.dataset.invitado === g.nombre) x.setAttribute('aria-pressed', 'true');
+          if (x === inv) x.setAttribute('aria-pressed', 'true');
           else x.removeAttribute('aria-pressed');
         });
         refrescarRepresentantes();

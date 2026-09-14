@@ -241,13 +241,15 @@ body.app {
    el pie trae su propio color y deja una raya cruzando la pantalla. */
 #m-tema.modal--debate,
 #m-explicar.modal--debate,
-#m-preparar.modal--debate {
+#m-preparar.modal--debate,
+#m-abogados.modal--debate {
   background: url(../img/fondos/debate.webp) center top / cover no-repeat,
               var(--debate-tinte);
 }
 #m-tema.modal--negociacion,
 #m-explicar.modal--negociacion,
-#m-preparar.modal--negociacion {
+#m-preparar.modal--negociacion,
+#m-abogados.modal--negociacion {
   background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
               var(--negociacion-tinte);
 }
@@ -1930,8 +1932,8 @@ body.app {
    quedarse desincronizado. */
 /* De qué color va lo que lleva el color del modo dentro de esta pantalla. Se
    declara una vez en el modal, que es quien sabe de qué modo es. */
-#m-preparar.modal--debate { --del-modo: var(--debate); }
-#m-preparar.modal--negociacion { --del-modo: var(--negociacion); }
+#m-preparar.modal--debate, #m-abogados.modal--debate { --del-modo: var(--debate); }
+#m-preparar.modal--negociacion, #m-abogados.modal--negociacion { --del-modo: var(--negociacion); }
 
 .turnos-fila {
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);

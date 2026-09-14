@@ -384,12 +384,24 @@ window.ATWI = window.ATWI || {};
        color cada vez que juega la misma persona. */
     invitados: function () { return cargarInvitados().slice(); },
 
-    invitado: function (nombre) {
+    /* EL NOMBRE NO IDENTIFICA A UN INVITADO, y `recordarInvitado` ya lo decía:
+       cuentan como el mismo quien repite NOMBRE Y PERSONAJE, así que puede haber
+       dos Dianas con fichas distintas. Buscando solo por nombre se devuelve
+       siempre la primera y la segunda es inalcanzable: tocar su atajo no hacía
+       nada y los dos salían marcados a la vez.
+
+       `avatar` es opcional porque al ESCRIBIR un nombre no se sabe cuál de las
+       dos se quiere: ahí la primera es la mejor respuesta posible. Al tocar un
+       atajo sí se sabe, y ahí se pasa. */
+    invitado: function (nombre, avatar) {
       var lista = cargarInvitados();
+      var primera = null;
       for (var i = 0; i < lista.length; i++) {
-        if (mismoNombre(lista[i].nombre, nombre)) return lista[i];
+        if (!mismoNombre(lista[i].nombre, nombre)) continue;
+        if (avatar && lista[i].avatar === avatar) return lista[i];
+        if (!primera) primera = lista[i];
       }
-      return null;
+      return avatar ? null : primera;
     },
 
     recordarInvitado: function (ficha) {
