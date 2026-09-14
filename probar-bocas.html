@@ -170,9 +170,19 @@
   de verdad, con sus «yo digo» y sus «no sé» —, así que se pueden comparar.
   De cada una hay dos tomas: <b>como es</b> (sin tocarle nada) y <b>al tono</b>
   (subida hasta donde suena Kai o Luna, que son las dos que ya elegiste).
-  <br>Arriba están Kai y Luna para tener la referencia al oído. Abajo, los dos
-  candidatos recomendados para cada personaje y el desplegable para oír cualquier otro.
-  Lo que elijas se guarda solo en <code>arte/voces.json</code>.
+  <br>Arriba están Kai y Luna para tener la referencia al oído. Abajo están <b>los seis</b>,
+  cada uno con lo que tiene hoy en el juego, sus candidatos y el desplegable para oír
+  cualquier otra. Lo que elijas se guarda solo en <code>arte/voces.json</code>.
+</p>
+<p class="nota" style="border-left:4px solid #d88; padding-left:10px">
+  <b>El tono y el ritmo cambian cómo suena. «Cómo habla» cambia lo que dice.</b>
+  Ese texto no es dirección de doblaje: se le pasa al modelo que convierte la
+  transcripción en el guion, y el guion es lo que se locuta — o sea que
+  <b>reescribe las palabras</b> de lo que alguien dijo de verdad. Las dos reglas de Kai y
+  Luna que fallaron en la prueba lo dicen todo: «frases cortas» se comía el
+  <i>yo digo</i>, y «cierra las ideas» se comía el <i>no sé</i>. Las dos convertían una
+  opinión en una orden. Por eso cada regla lleva su contraejemplo escrito.
+  <br>(Solo pasa con abogado. Sin abogado suena la grabación y no hay reescritura.)
 </p>
 
 <div class="mandos">
@@ -629,6 +639,22 @@ latir();
    convierte en «agresiva». La toma «al tono» de cada voz lleva el porcentaje
    que la deja sonando DONDE KAI Y LUNA, comprobado midiendo el resultado.       */
 
+/* QUE HACE DE VERDAD LA CAJA DE «COMO HABLA». No es direccion de doblaje: ese
+   texto va al SYSTEM PROMPT de la llamada que convierte la transcripcion en el
+   guion --`revisarYLimpiar`, turno/index.ts:632-- y el guion es lo que se
+   locuta. O sea que CAMBIA LAS PALABRAS de lo que alguien dijo, no como suenan.
+
+   El tono, el ritmo y el estilo no: esos van al SSML de Azure y solo tocan la
+   entrega.
+
+   Por eso las reglas de aqui necesitan contraejemplo. Las dos de Kai y Luna que
+   fallaron en la prueba: «frases cortas» se comia el «yo digo» y «cierra las
+   ideas» se comia el «no se». Las dos convertian una opinion en una orden, que
+   es el peor fallo que esta app puede tener.
+
+   Y solo pasa CON ABOGADO. Sin abogado no hay reescritura ninguna: suena la
+   grabacion original y el guion queda nulo.                                    */
+
 /* La forma de hablar de quien todavia no tiene una escrita. Es la misma que
    `supabase/functions/turno/index.ts` usa hoy para los cuatro nuevos: el punto
    de partida de la caja de texto, para editar sobre algo y no sobre el vacio. */
@@ -642,7 +668,13 @@ var NEUTRO = 'NOMBRE. Habla claro y sin adornos.\n\n' +
   'se quedan donde estan y como estan, que es lo unico que separa una opinion\n' +
   'de una orden.';
 
-var NUEVOS = ['nico', 'dante', 'nina', 'maya'];
+/* LOS SEIS, y Kai y Luna tambien. Estaban solo de referencia arriba y no se
+   podian tocar, y eso era una decision que yo no habia tomado: tienen voz y
+   personalidad como los demas, y si el titular quiere cambiarles el tono o
+   afinarles una regla tiene que poder. Ademas su personalidad es EL EJEMPLO de
+   como se escribe una --con los contraejemplos medidos dentro-- asi que
+   esconderla era esconder justo lo que hay que copiar. */
+var NUEVOS = ['kai', 'luna', 'nico', 'dante', 'nina', 'maya'];
 var CASTING = null;
 var VOCES = {};          // lo que el titular va eligiendo
 var GUARDADO_V = 'atwi-voces-panel';
@@ -708,19 +740,43 @@ function pintarPatron() {
     }).join('') + '</div>';
 }
 
+/* LO QUE ESTE PERSONAJE TIENE HOY EN LA FUNCION DE BORDE. Es el punto de
+   partida: si nadie eligio nada, el panel ensena lo desplegado y no una casilla
+   vacia, que no diria si es que no hay voz o que no se pudo leer. Lo saca
+   `tools/casting_voces.py` leyendo `turno/index.ts`, no de una copia a mano: una
+   copia se desfasa el primer dia y entonces el panel miente. */
+function arranque(q) {
+  var h = (CASTING.hoy && CASTING.hoy[q]) || {};
+  return {
+    voz: h.voz || null,
+    tono: h.tono ? parseInt(h.tono, 10) : 0,
+    ritmo: h.ritmo ? parseInt(h.ritmo, 10) : 6,
+    como: h.como || NEUTRO.replace('NOMBRE', q.toUpperCase())
+  };
+}
+
 function pintarVoces() {
   document.getElementById('v-rejilla').innerHTML = NUEVOS.map(function (q) {
-    var elegida = VOCES[q] || {};
+    var hoy = arranque(q);
+    var elegida = VOCES[q] || hoy;
+    /* Kai y Luna no tienen terna: tienen la suya, elegida oyendo ocho. Se
+       ensena esa, y el desplegable de abajo sirve para cambiarla igual. */
     var suyas = CASTING.candidatas.filter(function (c) { return c.para === q; });
-    var otras = CASTING.candidatas.filter(function (c) {
-      return !c.quien && c.para !== q;
-    });
+    if (!suyas.length) {
+      suyas = CASTING.candidatas.filter(function (c) { return c.voz === hoy.voz; });
+    }
+    var puestas = {};
+    suyas.forEach(function (c) { puestas[c.voz] = 1; });
+    var otras = CASTING.candidatas.filter(function (c) { return !puestas[c.voz]; });
+    var corto = function (v) { return (v || '—').replace('es-MX-', '').replace('Neural', ''); };
     return '<div class="voz-caso" data-quien="' + q + '">' +
       '<header>' +
         '<img src="assets/img/personajes/' + q + '-azul-frente.webp" alt="">' +
         '<h2>' + q + '</h2>' +
-        '<span class="chico">hoy: ' + (elegida.voz || '—').replace('es-MX-', '')
-          .replace('Neural', '') + '</span>' +
+        '<span class="chico">en el juego: ' + corto(hoy.voz) +
+          (elegida.voz && elegida.voz !== hoy.voz
+            ? ' &nbsp;→&nbsp; <b>elegís ' + corto(elegida.voz) + '</b>' : '') +
+        '</span>' +
       '</header>' +
       suyas.map(function (c) {
         var puesta = elegida.voz === c.voz;
@@ -733,13 +789,15 @@ function pintarVoces() {
           '</label>';
       }).join('') +
       '<div class="afinar">' +
-        '<label>oír otra <select data-otra="' + q + '">' +
+        '<label>…o cualquier otra <select data-otra="' + q + '">' +
           '<option value="">—</option>' +
           otras.map(function (c) {
             return '<option value="' + c.voz + '">' + nombreCorto(c) + ' · ' +
-              c.alto + ' Hz · anim ' + c.animacion.toFixed(1) + '</option>';
+              c.alto + ' Hz · anim ' + c.animacion.toFixed(1) +
+              (c.quien ? ' (la de ' + c.quien + ')' : '') + '</option>';
           }).join('') +
         '</select></label>' +
+        '<button data-usar="' + q + '">quedarme con esa</button>' +
         '<label>tono <input type="number" data-tono="' + q + '" value="' +
           (elegida.tono != null ? elegida.tono : 0) + '" step="1" min="-40" max="60">%</label>' +
         '<label>ritmo <input type="number" data-ritmo="' + q + '" value="' +
@@ -755,17 +813,40 @@ function pintarVoces() {
   pintarSalida();
 }
 
-/* El bloque listo para pegar. El panel NO toca la funcion de borde por su
-   cuenta: desplegarla cuesta y se hace a sabiendas, no al arrastrar un numero. */
+/* El bloque listo para pegar, y SOLO LO QUE CAMBIO. El panel NO toca la funcion
+   de borde por su cuenta: desplegarla cuesta y se hace a sabiendas, no al
+   arrastrar un numero. Y se ensena como diferencia contra lo desplegado porque
+   lo que hay que revisar antes de pegar es lo que se movio, no las seis. */
 function pintarSalida() {
-  var l = NUEVOS.map(function (q) {
-    var v = VOCES[q] || {};
-    if (!v.voz) return '  // ' + q + ': sin elegir todavia';
-    return "  " + q + ": { voz: '" + v.voz + "', estilo: null, tono: '" +
-      (v.tono >= 0 ? '+' : '') + v.tono + "%', ritmo: '" +
-      (v.ritmo >= 0 ? '+' : '') + v.ritmo + "%', quien: " + q.toUpperCase() + ' },';
+  var pct = function (n) { return (n >= 0 ? '+' : '') + n + '%'; };
+  var citar = function (s) { return s.replace(/`/g, '\\`').replace(/\$\{/g, '\\${'); };
+  var usadas = {}, l = [];
+
+  NUEVOS.forEach(function (q) {
+    var hoy = arranque(q), v = VOCES[q] || hoy;
+    if (v.voz) (usadas[v.voz] || (usadas[v.voz] = [])).push(q);
+    if (v.voz === hoy.voz && v.tono === hoy.tono && v.ritmo === hoy.ritmo &&
+        v.como === hoy.como) return;
+    l.push('  ' + q + ': {\n' +
+           "    voz: '" + v.voz + "', estilo: null, tono: '" + pct(v.tono) +
+           "', ritmo: '" + pct(v.ritmo) + "',\n" +
+           '    quien: `' + citar(v.como) + '`,\n' +
+           '  },');
   });
-  document.getElementById('v-salida').textContent = l.join('\n');
+
+  /* DOS PERSONAJES CON LA MISMA VOZ NO SE DISTINGUEN. Es la misma regla que ya
+     rige para el dibujo --no se puede jugar con el mismo personaje-- y por el
+     mismo motivo: lo que separa a dos abogados es la cara y la voz. */
+  var choque = Object.keys(usadas).filter(function (v) { return usadas[v].length > 1; });
+  var aviso = choque.map(function (v) {
+    return '// OJO: ' + usadas[v].join(' y ') + ' comparten ' +
+           v.replace('es-MX-', '').replace('Neural', '') +
+           '. Con la misma voz no se distinguen.';
+  });
+
+  document.getElementById('v-salida').textContent =
+    (aviso.length ? aviso.join('\n') + '\n\n' : '') +
+    (l.length ? l.join('\n') : '// Todo igual que lo desplegado: nada que pegar.');
 }
 
 function guardarVoces() {
@@ -792,7 +873,7 @@ function elegirVoz(q, nombreVoz) {
   v.voz = nombreVoz;
   v.tono = c ? c.altono : 0;
   v.ritmo = 6;
-  if (!v.como) v.como = NEUTRO.replace('NOMBRE', q.toUpperCase());
+  if (!v.como) v.como = arranque(q).como;
   guardarVoces();
   pintarVoces();
 }
@@ -809,6 +890,13 @@ document.addEventListener('click', function (e) {
   }
   var s = e.target.closest('[data-oir]');
   if (s) { e.preventDefault(); oir(s.dataset.oir, s.dataset['var']); return; }
+  var u = e.target.closest('[data-usar]');
+  if (u) {
+    var sel = document.querySelector('[data-otra="' + u.dataset.usar + '"]');
+    if (sel && sel.value) elegirVoz(u.dataset.usar, sel.value);
+    else vDecir('elegí antes una voz en el desplegable de al lado', false);
+    return;
+  }
   if (e.target.id === 'v-parar') { tocador.pause(); marcarSonando(null); return; }
   if (e.target.id === 'v-copiar') {
     navigator.clipboard.writeText(document.getElementById('v-salida').textContent);
