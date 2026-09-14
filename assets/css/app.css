@@ -2334,6 +2334,11 @@ body.app {
 .repre__como {
   font-size: var(--t-mini); color: var(--tinta-tenue);
   text-align: center; text-wrap: balance;
+  /* SOMBRA BLANCA. Este renglón va sobre el fondo dibujado y, con abogado,
+     además en el color del modo: coral sobre rosa y menta sobre verde se leen
+     mal. La sombra va en cuatro direcciones y no de caída, para que haga de
+     halo y despegue la letra sin dejarla flotando. */
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
 /* Con abogado la pieza se enciende: aro y fondo del color del modo, y el texto
    en ese color. Antes era lavanda de marca en los dos modos, que aquí rompía

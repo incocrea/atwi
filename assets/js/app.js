@@ -1325,22 +1325,16 @@
      escribirles el nombre ni volver a elegirles la ficha. */
   function invitadosPrevios() { return datos.invitados(); }
 
-  /* Los DOS últimos: es una lista para tocar de un vistazo, no un historial.
-     Cuentan como el mismo quien repite NOMBRE Y PERSONAJE; el mismo nombre con
-     otro personaje es otra ficha. Dos y no tres porque con tres nombres largos
-     no caben junto al rótulo y bajan a otro renglón --lo guardado también son
-     dos, en `datos.recordarInvitado`, para que no sobre ninguno escondido--. */
-  function chipsDeInvitados() {
-    var l = invitadosPrevios().slice(0, 2);
-    if (!l.length) return '';
-    return '<div class="invitados">' + l.map(function (g) {
-      return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '"' +
-          ' data-ficha="' + esc(g.avatar || '') + '">' +
-          window.ATWI.fichaHTML(g.avatar || propuesta.otroAvatar, 'avatar--mini', g.color) +
-          '<span class="invitado__n">' + esc(g.nombre) + '</span>' +
-        '</button>';
-    }).join('') + '</div>';
-  }
+  /* AQUÍ ESTABAN LOS ATAJOS DE INVITADO y se quitaron (decisión del titular,
+     2026-09-14). Eran una lista para tocar de un vistazo, pasaron de tres a dos
+     por falta de sitio, y al final ni dos hacían falta: quien juega en este
+     teléfono es casi siempre la misma persona, y para esa el campo ya viene
+     relleno. Una lista de dos donde uno es siempre el bueno no es un atajo, es
+     una pregunta de más.
+
+     LO QUE SE RECUERDA SIGUE ESTANDO: `datos.recordarInvitado` guarda el último
+     y `abrirPreparar` lo pone en el campo. Desaparece la pantalla, no la
+     memoria. */
 
   /**
    * La ficha del invitado. Ya no se elige: es el personaje que no soy yo. Con
@@ -1459,8 +1453,10 @@
         /* UN SOLO RÓTULO. Estaban «Invitado local» de título y «Nombre de
            invitado» de etiqueta, uno encima del otro diciendo lo mismo. Se
            queda el título, con los atajos a su derecha en la misma fila. */
-        '<h3 style="margin:0">Invitado local</h3>' +
-        chipsDeInvitados() +
+        /* «Invitado» a secas: que la partida es local se sabe desde que se
+           eligió «Jugar los dos en este móvil», y repetirlo aquí contesta una
+           pregunta que nadie se estaba haciendo. */
+        '<h3 style="margin:0">Invitado</h3>' +
       '</div>' +
       /* EL CAMPO PRIMERO Y LA FICHA DESPUÉS. Va en el orden del HTML y no con
          `row-reverse`: así el tabulador pasa por el nombre antes que por el
@@ -1903,35 +1899,13 @@
       return;
     }
 
-    /* Tocar a alguien con quien ya se jugó rellena su nombre y su ficha. */
-    var inv = e.target.closest('[data-invitado]');
-    if (inv) {
-      var g = datos.invitado(inv.dataset.invitado, inv.dataset.ficha) ||
-              datos.invitado(inv.dataset.invitado);
-      if (g) {
-        propuesta.otro = g.nombre;
-        /* Por el mismo filtro que en `fichaDelInvitado`: lo guardado puede
-           chocar con mi personaje de ahora sin que nadie haya hecho nada raro. */
-        propuesta.otroAvatar = distintoDeMi(g.avatar);
-        propuesta.otroColor = g.color;
-        $('#p-otro').value = g.nombre;
-        var bf = $('#p-ficha-otro');
-        /* Con `propuesta.otroAvatar` y no con `g.avatar`: lo guardado puede
-           haber chocado con mi personaje y haberse movido una linea mas arriba.
-           Pintando el crudo, la pantalla enseñaba una ficha y la partida salia
-           con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
-        if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
-          .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
-        /* Se marca EL QUE SE TOCÓ, no todos los que se llaman igual. */
-        $$('#m-preparar [data-invitado]').forEach(function (x) {
-          if (x === inv) x.setAttribute('aria-pressed', 'true');
-          else x.removeAttribute('aria-pressed');
-        });
-        refrescarRepresentantes();
-        revisarPreparar();
-      }
-      return;
-    }
+    /* AQUÍ SE ATENDÍA EL TOQUE EN UN ATAJO DE INVITADO. Los atajos se quitaron
+       el 2026-09-14, así que este manejador ya no puede dispararse: ningún
+       elemento lleva `data-invitado`. Se va con ellos —un manejador de algo que
+       no existe es una pista falsa para quien venga a leer esto—.
+
+       Lo que hacía sigue pasando por otro lado: al ESCRIBIR un nombre ya
+       recordado, el manejador de `#p-otro` devuelve su ficha. */
 
     var col = e.target.closest('#m-perfil .colores [data-color]');
     if (col) {

@@ -427,12 +427,12 @@ window.ATWI = window.ATWI || {};
         lista.push(guardado);
       }
       /* El último con quien se jugó primero: es casi siempre el de la próxima. */
-      /* DOS, y no tres (decisión del titular, 2026-09-14). Es una lista para
-         tocar de un vistazo antes de empezar, no un historial. Eran tres y con
-         tres nombres largos no caben en el renglón del rótulo, así que bajaban
-         a la línea siguiente y la pantalla crecía un renglón según con quién se
-         hubiera jugado. Con dos entran siempre y el sitio deja de moverse. */
-      invitados = [guardado].concat(lista.filter(function (x) { return x !== guardado; })).slice(0, 2);
+      /* UNO, Y SOLO UNO (decisión del titular, 2026-09-14). Fueron tres, luego
+         dos, y al final ninguno hacía falta en pantalla: los atajos se quitaron.
+         Lo que queda es la memoria, y para rellenar el campo con el de la última
+         vez basta con el último. Guardar más sería guardar algo que ya no tiene
+         dónde enseñarse. */
+      invitados = [guardado];
       guardarInvitados();
       return guardado;
     },

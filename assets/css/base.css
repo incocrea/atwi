@@ -43,7 +43,12 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
   display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
   min-height: var(--diana); padding: 0 var(--e-5);
   font-family: var(--display); font-size: var(--t-boton); font-weight: 800;
-  border: 0; border-radius: var(--radio-pastilla); cursor: pointer;
+  /* BORDE BLANCO DE 4 px (decisión del titular, 2026-09-14). Desde que las
+     pantallas llevan fondo dibujado, un botón de color sólido sin borde se
+     confunde con las manchas del fondo: el coral del botón y el rosa del fondo
+     están a dos pasos. El aro blanco lo recorta, igual que el perfil de pegatina
+     recorta a los personajes, y es el mismo recurso gráfico en los dos sitios. */
+  border: 4px solid var(--blanco); border-radius: var(--radio-pastilla); cursor: pointer;
   background: var(--lavanda); color: var(--blanco); box-shadow: var(--sombra-cta);
   transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
 }
@@ -51,9 +56,11 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 .boton:active { transform: translateY(2px) scale(.985); box-shadow: 0 3px 10px rgba(122,106,216,.3); }
 .boton--bloque { width: 100%; }
 .boton--grande { min-height: 60px; font-size: 1.1875rem; }
+/* El suave ya es blanco por dentro, así que un aro blanco no lo recortaría de
+   nada: se queda con su borde de línea, que es lo que le da forma. */
 .boton--suave { background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra-1); border: 2px solid var(--linea); }
 .boton--suave:hover { background: var(--crema-hondo); }
-.boton--fantasma { background: transparent; color: var(--tinta-suave); box-shadow: none; font-weight: 700; }
+.boton--fantasma { background: transparent; color: var(--tinta-suave); box-shadow: none; font-weight: 700; border-color: transparent; }
 .boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); }
 .boton--debate { background: var(--debate); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
 .boton--debate:hover { background: var(--debate-oscuro); }
@@ -64,7 +71,12 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 /* Botón redondo de icono (cerrar, atrás) */
 .boton-icono {
   width: var(--diana); height: var(--diana); display: grid; place-items: center;
-  border: 0; border-radius: var(--radio-pastilla); cursor: pointer;
+  /* BORDE BLANCO DE 4 px (decisión del titular, 2026-09-14). Desde que las
+     pantallas llevan fondo dibujado, un botón de color sólido sin borde se
+     confunde con las manchas del fondo: el coral del botón y el rosa del fondo
+     están a dos pasos. El aro blanco lo recorta, igual que el perfil de pegatina
+     recorta a los personajes, y es el mismo recurso gráfico en los dos sitios. */
+  border: 4px solid var(--blanco); border-radius: var(--radio-pastilla); cursor: pointer;
   background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra-1);
 }
 .boton-icono:active { transform: scale(.94); }
