@@ -1546,9 +1546,13 @@
              lo contrata, que es lo que lo hace reconociblemente suyo. */
           window.ATWI.fichaHTML(suyo, 'avatar--mini', x.color) +
           '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
+          /* EL MISMO TEXTO PARA LOS DOS. Decía «Tu voz» y «Su voz», que en un
+             teléfono compartido no aclara nada —el «tu» cambia de dueño cada
+             turno— y además no decía lo que de verdad significa la llave
+             apagada: que suena la grabación de la persona y no hay abogado. */
           '<span class="repre__como">' +
             (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' lo defiende'
-                        : (x.k === 'yo' ? 'Tu voz' : 'Su voz')) +
+                        : 'Voz original, sin abogado') +
           '</span>' +
           '<button type="button" class="repre__llave" data-abogado="' + x.k + '"' +
             (conAbogado ? ' aria-pressed="true"' : '') +
