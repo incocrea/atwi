@@ -45,6 +45,12 @@ window.ATWI = window.ATWI || {};
     listo: '<path d="M5 12.6 9.7 17 19 6.8"/>',
     candado: '<rect x="4.8" y="10.5" width="14.4" height="9.2" rx="2.6"/><path d="M8.4 10.5V8a3.6 3.6 0 0 1 7.2 0v2.5"/>',
     aviso: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.8v4.6M12 15.9v.2"/>',
+    /* La interrogación, que no la había: `aviso` es una EXCLAMACIÓN --la misma
+       raya y el mismo punto-- y sirve para advertir, no para ofrecer ayuda. Va
+       sin círculo alrededor a propósito: el botón que la lleva ya es redondo, y
+       un aro dentro de otro aro se lee como un sello y no como un signo. */
+    ayuda: '<path d="M8.9 9.3c0-1.8 1.4-3.2 3.1-3.2s3.1 1.4 3.1 3.2' +
+           'c0 2.3-3.1 2.4-3.1 4.5v.4"/><path d="M12 17.6v.2"/>',
     buzon: '<path d="M18 9.2a6 6 0 1 0-12 0c0 4.3-1.4 5.6-2 6.3h16c-.6-.7-2-2-2-6.3Z"/><path d="M10 18.6a2.3 2.3 0 0 0 4 0"/>',
     /* Vínculo entre dos cuentas. Todavía sin versión ilustrada. */
     corazon: '<path d="M12 20s-7.4-4.4-7.4-9.5A4.1 4.1 0 0 1 12 7.9a4.1 4.1 0 0 1 7.4 2.6c0 5.1-7.4 9.5-7.4 9.5Z"/>'

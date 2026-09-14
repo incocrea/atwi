@@ -274,14 +274,23 @@
         '<div class="carta-modo__alto">' +
           rotuloModo(clave, 'carta-modo__rotulo') +
         '</div>' +
+        /* DOS BOTONES REDONDOS CON SU SIGNO, sin palabra. Llevaban texto y al
+           apilarse se estrecharon tanto que «Explícame» partía en dos
+           renglones; se acortó a «Info» y seguía siendo una palabra metida a
+           presión. El signo se lee antes que la palabra y no depende del largo
+           del idioma: una interrogación y un play no hay que traducirlos.
+
+           EL NOMBRE NO SE PIERDE: va en `aria-label` --que es lo que anuncia un
+           lector de pantalla-- y en `title`, que en escritorio sale al pasar por
+           encima. En el teléfono no hay «pasar por encima» y por eso el signo
+           tiene que bastar solo, que es justo por qué se eligieron estos dos. */
         '<div class="carta-modo__salidas">' +
-          /* «Info» y no «Explícame». En una sola palabra: el botón se estrechó
-             al apilarse y «Explícame» partía en dos renglones o encogía la
-             letra, y de paso es lo que la gente busca ahí. */
-          '<button class="boton boton--suave carta-modo__explica" data-explicar="' + clave + '">' +
-            window.ATWI.iconoSVG('aviso', 16) + 'Info</button>' +
-          '<button class="boton carta-modo__jugar boton--' + clave + '" data-crear="' + clave + '">' +
-            window.ATWI.iconoSVG('play', 16) + 'Jugar</button>' +
+          '<button class="carta-modo__signo carta-modo__explica" data-explicar="' + clave + '" ' +
+            'aria-label="Cómo se juega" title="Cómo se juega">' +
+            window.ATWI.iconoSVG('ayuda', 22) + '</button>' +
+          '<button class="carta-modo__signo carta-modo__jugar" data-crear="' + clave + '" ' +
+            'aria-label="Jugar" title="Jugar">' +
+            window.ATWI.iconoSVG('play', 22) + '</button>' +
         '</div>' +
       '</div>';
   }

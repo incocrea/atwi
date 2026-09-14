@@ -362,7 +362,12 @@ body.app {
    los deja exactamente igual de altos: con dos números sueltos, tocar uno
    desalinea la carta y no se ve hasta que alguien mira de cerca. */
 .carta-modo {
-  --alto-rotulo: 88px;
+  /* 96 Y NO 88, y el número sale de una cuenta: dos discos de 44 --el mínimo
+     para que un botón redondo no se falle al tocarlo-- más los 8 del hueco. Con
+     88 los rows salían de 40 y los discos se desbordaban 8 px de su caja por el
+     mínimo, así que dejaban de estar alineados con el dibujo justo en lo que se
+     pedía que coincidiera. El rótulo crece 8 px y todo vuelve a cuadrar. */
+  --alto-rotulo: 96px;
   display: flex; align-items: center; gap: var(--e-3);
   width: 100%; padding: var(--e-4);
   border: 0; border-radius: var(--radio-modal);
@@ -390,20 +395,37 @@ body.app {
   height: var(--alto-rotulo); width: auto; max-width: 100%; min-width: 0;
   display: block;
 }
-/* Las dos salidas, apiladas y repartiéndose el alto del rótulo. `1fr` las dos:
-   una lleva a entender y la otra a jugar, y ninguna de las dos es la
-   equivocada, así que ninguna es más alta. */
+/* Las dos salidas, apiladas y repartiéndose el alto del rótulo. Los dos del
+   mismo tamaño: una lleva a entender y la otra a jugar, y ninguna de las dos es
+   la equivocada, así que ninguna manda por tamaño. Lo que las separa es el
+   relleno, no el diámetro. */
 .carta-modo__salidas {
   display: grid; grid-auto-rows: 1fr; gap: var(--e-2);
-  flex: 0 0 auto; width: 38%; max-width: 140px; height: var(--alto-rotulo);
+  flex: 0 0 auto; height: var(--alto-rotulo); justify-items: center;
 }
-.carta-modo__salidas .boton {
-  padding: 0 var(--e-2); gap: 6px; font-size: var(--t-chico); min-width: 0;
+/* CADA UNO ES UN CÍRCULO DEL ALTO QUE LE TOCA. `aspect-ratio` sobre la altura
+   de la fila: así el diámetro sale del alto del rótulo y no de un número
+   suelto, y los dos siguen cuadrando si el rótulo cambia de tamaño.
+   44 px de mínimo porque por debajo de eso un botón redondo se falla al tocar,
+   y «Jugar» es LA acción de esta pantalla. */
+.carta-modo__signo {
+  aspect-ratio: 1; height: 100%; min-width: 44px; min-height: 44px;
+  border-radius: 50%; border: 2px solid transparent;
+  display: grid; place-items: center; padding: 0;
+  font: inherit; cursor: pointer;
+  box-shadow: var(--sombra-1);
+  transition: transform var(--dur-corta) var(--suave);
 }
-/* «Info» también lleva el color del modo, pero en versión secundaria: sobre
-   blanco, con la letra y el borde del modo. Rellenarlo igual que «Jugar»
-   dejaría dos botones idénticos y ninguno mandaría. */
-.carta-modo__explica { background: var(--superficie); border-width: 2px; }
+.carta-modo__signo:active { transform: scale(.92); }
+@media (prefers-reduced-motion: reduce) { .carta-modo__signo:active { transform: none; } }
+
+/* El de ayuda va en hueco --blanco con el borde y el signo del modo-- y el de
+   jugar relleno. Rellenar los dos dejaría dos discos iguales y ninguno
+   mandaría; es la misma regla que tenían cuando llevaban texto. */
+.carta-modo__explica { background: var(--superficie); }
+.carta-modo--debate .carta-modo__jugar { background: var(--debate); color: #fff; }
+.carta-modo--negociacion .carta-modo__jugar { background: var(--negociacion); color: #fff; }
+
 /* La letra va un punto más honda que el color del modo: a --debate-oscuro y
    --negociacion-oscuro daba 4,22 y 4,41 sobre blanco, por debajo del 4,5 que
    pide un cuerpo de 13 px. El borde sí lleva el color del modo a plena fuerza,
