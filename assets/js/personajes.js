@@ -219,7 +219,12 @@ window.ATWI = window.ATWI || {};
      La buena noticia, para cuando se retome: la boca está en la cara y la cara
      NO cambia con el color, así que probablemente baste una lámina por
      personaje —seis— y no una por personaje y color, que serían veinticuatro. */
-  var MARCOS = { hablando: 3 };
+  /* APAGADA MIENTRAS TANTO. Los tres fotogramas que hay son del primer intento
+     --achatar la boca abierta para fingir una cerrada-- y no convencieron:
+     deformar un dibujo se nota. Se vuelve a encender con `{ hablando: 2 }`
+     cuando esten las sonrisas recortadas de la pose `frente`, que es el camino
+     bueno. Mejor una boca quieta que una que canta. */
+  var MARCOS = {};
 
   function marcos(quien, color, pose, alt) {
     var n = MARCOS[pose] || 1;

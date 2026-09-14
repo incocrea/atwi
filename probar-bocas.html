@@ -6,67 +6,78 @@
 <!--
   BANCO DE PRUEBAS DE LAS BOCAS. No es parte del juego.
 
-  Sirve para ver la animacion de hablar de cada personaje SIN montar una partida
-  entera: elegir tema, empezar, esperar el sorteo y grabar un turno para ver dos
-  segundos de boca no es una forma de trabajar.
+  SEGUNDO INTENTO, Y POR OTRO CAMINO. El primero achataba la boca abierta para
+  fingir una cerrada y no convencio: deformar un dibujo se nota, por poco que
+  sea. Este parte de una idea del titular que es mejor y ademas mas simple: LA
+  SONRISA CERRADA YA ESTA DIBUJADA. Las poses `frente` y `plante` la tienen, del
+  mismo personaje, del mismo color, a la misma escala y con la misma luz. No hay
+  que inventar nada: se recorta y se pega.
 
-  Reproduce EXACTAMENTE el encuadre de la sala --la caja de `.hablante__fig`, su
-  alto, el 139% de la figura dentro y el recorte por la cintura-- porque el
-  tamaño al que se ve es la mitad del juicio: un parche que canta a 4 aumentos
-  puede ser invisible a tamaño real, y al reves.
+  Y la secuencia baja a DOS fotogramas --hablando y sonriendo-- en vez de tres.
+  Con una boca de verdad en cada extremo, el intermedio sobra.
 
-  Y CALCULA LOS FOTOGRAMAS AQUI, en un lienzo, con el mismo reparto de bandas
-  que `tools/bocas.py`. Asi la caja de la boca se mueve y se ve el resultado al
-  instante, en vez de reescribir el Python y volver a generar 72 archivos para
-  descubrir que sobraban tres pixeles.
+  Aqui se definen arrastrando las dos cosas que hacen falta:
+    · DE DONDE se corta la sonrisa, sobre `frente` (caja roja).
+    · DONDE se pega, sobre `hablando` (caja azul).
+
+  El panel derecho es EXACTAMENTE el encuadre de la sala --caja de 285 px,
+  figura al 139% y recorte por la cintura-- porque el tamaño al que se ve es la
+  mitad del juicio: un parche que canta a cuatro aumentos puede ser invisible a
+  tamaño real, y al reves.
 -->
 <style>
-  :root {
-    --alto-hablante: clamp(210px, 36vh, 350px);
-    --alto-fig: 139%;
-  }
   body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px;
          background: #FBEEE8; color: #23203a; }
   h1 { font-size: 1.1rem; margin: 0 0 4px; }
-  p.nota { margin: 0 0 14px; color: #6b6480; }
+  p.nota { margin: 0 0 14px; color: #6b6480; max-width: 76ch; }
 
-  .rejilla { display: flex; flex-wrap: wrap; gap: 18px; }
-  .caso { background: #fff; border-radius: 18px; padding: 10px 10px 6px;
-          box-shadow: 0 6px 18px rgba(60,40,80,.10); }
-  /* EL MISMO ENCUADRE QUE LA SALA. Si esto se desincroniza, la prueba deja de
-     probar lo que se quiere probar. */
-  .fig { position: relative; width: 285px; height: var(--alto-hablante);
-         overflow: hidden; border-radius: 18px; }
-  .fig canvas { position: absolute; top: 0; left: 0; right: 0; margin-inline: auto;
-                height: var(--alto-fig); width: auto; display: block; }
-  /* LA CAJA SE AGARRA CON EL RATON. Con las flechas se podia mover, pero para
-     DECIR donde esta una boca hace falta poder dibujarla encima, no empujarla de
-     pixel en pixel hasta que cuadre. */
-  .fig .caja { position: absolute; border: 2px solid #f22; display: none;
-               cursor: move; background: rgba(255,40,40,.10); }
-  .verCaja .fig .caja { display: block; }
-  .fig .caja i { position: absolute; width: 14px; height: 14px; background: #f22;
-                 border: 2px solid #fff; border-radius: 50%; }
-  .fig .caja i.ne { right: -8px; top: -8px; cursor: nesw-resize; }
-  .fig .caja i.so { left: -8px; bottom: -8px; cursor: nesw-resize; }
-  .fig .caja i.se { right: -8px; bottom: -8px; cursor: nwse-resize; }
-  .fig .caja i.no { left: -8px; top: -8px; cursor: nwse-resize; }
-  .caso h2 { font-size: .95rem; margin: 6px 0 2px; }
-  .caso .chico { color: #6b6480; font-size: .8rem; }
+  .rejilla { display: grid; gap: 16px; }
+  .caso { background: #fff; border-radius: 18px; padding: 12px;
+          box-shadow: 0 6px 18px rgba(60,40,80,.10);
+          display: flex; gap: 16px; align-items: flex-start; }
+  .caso h2 { font-size: .95rem; margin: 0 0 6px; }
+  .chico { color: #6b6480; font-size: .8rem; font-variant-numeric: tabular-nums; }
+
+  /* IZQUIERDA: de donde se corta. Bien grande, porque aqui lo que importa es
+     acertar el recorte al pixel. */
+  .fuente { position: relative; width: 300px; height: 300px; overflow: hidden;
+            border-radius: 14px; background: #f4f1ee; flex: none; }
+
+  /* DERECHA: como queda. Mismo encuadre que la sala, ni un pixel mas. */
+  .destino { position: relative; width: 285px; height: clamp(210px, 34vh, 330px);
+             overflow: hidden; border-radius: 18px; flex: none; }
+  .destino canvas { position: absolute; top: 0; left: 0; right: 0;
+                    margin-inline: auto; height: 139%; width: auto; display: block; }
+
+  .caja { position: absolute; cursor: move; }
+  .caja.de { border: 2px solid #e0232a; background: rgba(224,35,42,.12); color: #e0232a; }
+  .caja.a  { border: 2px dashed #2a6ee0; background: rgba(42,110,224,.10); color: #2a6ee0; }
+  .caja i { position: absolute; width: 13px; height: 13px; background: currentColor;
+            border: 2px solid #fff; border-radius: 50%; }
+  .caja i.no { left: -7px; top: -7px; cursor: nwse-resize; }
+  .caja i.ne { right: -7px; top: -7px; cursor: nesw-resize; }
+  .caja i.so { left: -7px; bottom: -7px; cursor: nesw-resize; }
+  .caja i.se { right: -7px; bottom: -7px; cursor: nwse-resize; }
+  .oculta .caja { display: none; }
 
   .mandos { display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
             margin-bottom: 14px; }
   label { display: inline-flex; gap: 6px; align-items: center; }
-  input[type=number] { width: 64px; }
+  input[type=number] { width: 62px; }
   pre { background: #24212e; color: #e8e4f0; padding: 12px; border-radius: 10px;
-        white-space: pre-wrap; margin-top: 16px; }
+        white-space: pre-wrap; margin-top: 16px; font-size: .82rem; }
   button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 0;
            background: #7A6AD8; color: #fff; cursor: pointer; }
 </style>
 
-<h1>Las bocas, al tamaño de la sala</h1>
-<p class="nota">Mismo encuadre que el turno: caja de 285&nbsp;px, figura al 139&nbsp;% y recorte por la cintura.<br>
-Encendé <b>ver la caja</b> y arrastrala; las cuatro esquinas la estiran. Las flechas la mueven de a un píxel.</p>
+<h1>La sonrisa cerrada, recortada de verdad</h1>
+<p class="nota">
+  A la izquierda la pose <b>frente</b>: arrastrá la caja <b style="color:#e0232a">roja</b> sobre
+  la sonrisa cerrada para decir de dónde se corta. A la derecha la pose <b>hablando</b>, al
+  tamaño de la sala: arrastrá la <b style="color:#2a6ee0">azul</b> para decir dónde se pega.
+  Las esquinas estiran, y la otra caja copia el tamaño — son el mismo recorte.
+  Las flechas afinan la azul de a un píxel; con Mayús, la roja.
+</p>
 
 <div class="mandos">
   <label>Color
@@ -74,29 +85,26 @@ Encendé <b>ver la caja</b> y arrastrala; las cuatro esquinas la estiran. Las fl
       <option>azul</option><option>verde</option><option>amarillo</option><option>morado</option>
     </select>
   </label>
-  <label>ms por fotograma <input type="number" id="ms" value="110" min="40" max="400" step="10"></label>
-  <label>media <input type="number" id="k2" value="0.45" min="0" max="1" step="0.05"></label>
-  <label>cerrada <input type="number" id="k3" value="0.12" min="0" max="1" step="0.02"></label>
-  <label>piel arriba <input type="number" id="aire" value="1" min="0.2" max="3" step="0.1"></label>
-  <label>pluma <input type="number" id="pluma" value="7" min="0" max="20" step="1"></label>
-  <label><input type="checkbox" id="verCaja"> ver la caja</label>
+  <label>Cortar de
+    <select id="origen"><option>frente</option><option>plante</option></select>
+  </label>
+  <label>ms <input type="number" id="ms" value="170" min="60" max="600" step="10"></label>
+  <label>pluma <input type="number" id="pluma" value="6" min="0" max="20" step="1"></label>
   <label><input type="checkbox" id="animar" checked> animar</label>
-  <button id="copiar">Copiar las cajas</button>
+  <label><input type="checkbox" id="verCajas" checked> ver las cajas</label>
+  <button id="copiar">Copiar</button>
 </div>
 
 <div class="rejilla" id="rejilla"></div>
 <pre id="salida"></pre>
 
 <script>
-/* UNA CAJA POR PERSONAJE **Y POR COLOR**, y esto es el arreglo. Estaban
-   marcadas solo sobre el azul y en los otros tres colores se buscaba la misma
-   boca por parecido. Falla: cada color es una generacion distinta, la cara no
-   cae en el mismo sitio, y los dos peores encajes de las 24 fueron justo los de
-   Dante --que es el que se vio mal--.
+var QUIEN = ['kai', 'nico', 'dante', 'luna', 'nina', 'maya'];
+var COLORES = ['azul', 'verde', 'amarillo', 'morado'];
 
-   Aqui se parte de la del azul y se ajusta cada una mirando. Flechas para mover,
-   Mayus+flechas para estirar. */
-var BASE = {
+/* Punto de partida: la boca de `hablando` que ya estaba marcada. Es un sitio por
+   donde empezar a arrastrar, no una respuesta. */
+var INICIO = {
   kai:   [277, 347, 331, 380],
   nico:  [274, 356, 313, 386],
   dante: [275, 344, 318, 377],
@@ -104,77 +112,102 @@ var BASE = {
   nina:  [278, 391, 327, 424],
   maya:  [260, 393, 314, 426]
 };
-var QUIEN = Object.keys(BASE);
-var COLORES = ['azul', 'verde', 'amarillo', 'morado'];
-var BOCAS = {};
+
+/* Una pareja de cajas por personaje Y COLOR: cada color es una generacion
+   distinta y la cara no cae en el mismo sitio. Eso fue lo que estropeo a Dante
+   en el intento anterior. */
+var CAJAS = {};
 COLORES.forEach(function (c) {
-  QUIEN.forEach(function (q) { BOCAS[q + '-' + c] = BASE[q].slice(); });
+  QUIEN.forEach(function (q) {
+    CAJAS[q + '-' + c] = { de: INICIO[q].slice(), a: INICIO[q].slice() };
+  });
 });
+
 var casos = {};
+/* LA VISTA DE LA IZQUIERDA ES FIJA, no sigue a la caja. Siguiendola, al
+   arrastrar parecia que se movia la imagen y la caja se quedaba quieta, que es
+   justo al reves de lo que uno espera. Se centra en la cara --medido sobre las
+   piezas: en `frente` cae por ahi en los seis-- y se enseña un trozo lo bastante
+   ancho para que la boca este dentro siempre. */
+var ZOOM = 2;
+var VISTA = { cx: 300, cy: 368 };
+function num(id) { return Number(document.getElementById(id).value); }
 function color() { return document.getElementById('color').value; }
+function origen() { return document.getElementById('origen').value; }
 function clave(q) { return q + '-' + color(); }
 
-function num(id) { return Number(document.getElementById(id).value); }
-
-/* El mismo reparto de bandas que el Python: la piel de encima se estira y la
-   boca se comprime, y la suma es constante. Lo de fuera no se toca. */
-function fotograma(base, caja, k) {
+/* La figura con la sonrisa pegada encima. Nada mas se toca: es un recorte de
+   OTRA pose del mismo dibujo, asi que la piel y la luz ya coinciden. */
+function conSonrisa(hablando, frente, cajas) {
   var c = document.createElement('canvas');
-  c.width = base.naturalWidth; c.height = base.naturalHeight;
+  c.width = hablando.naturalWidth; c.height = hablando.naturalHeight;
   var g = c.getContext('2d');
-  g.drawImage(base, 0, 0);
-  if (k >= 1) return c;
+  g.drawImage(hablando, 0, 0);
 
-  var x0 = caja[0], by0 = caja[1], x1 = caja[2], y1 = caja[3];
-  var alto = y1 - by0;
-  var y0 = Math.max(0, by0 - Math.round(alto * num('aire')));
-  var total = y1 - y0, an = x1 - x0;
-  var nueva = Math.max(1, Math.round(alto * k));
+  var d = cajas.de, a = cajas.a;
+  var an = a[2] - a[0], al = a[3] - a[1];
+  if (an < 4 || al < 4) return c;
 
   var t = document.createElement('canvas');
-  t.width = an; t.height = total;
+  t.width = an; t.height = al;
   var tg = t.getContext('2d');
-  tg.drawImage(base, x0, y0, an, by0 - y0, 0, 0, an, total - nueva);
-  tg.drawImage(base, x0, by0, an, alto, 0, total - nueva, an, nueva);
+  tg.drawImage(frente, d[0], d[1], d[2] - d[0], d[3] - d[1], 0, 0, an, al);
 
   /* La pluma: el parche entra con el borde desvanecido, o se ve el recuadro. */
   var p = num('pluma');
   if (p > 0) {
     var m = document.createElement('canvas');
-    m.width = an; m.height = total;
+    m.width = an; m.height = al;
     var mg = m.getContext('2d');
-    mg.filter = 'blur(' + (p * 0.7) + 'px)';
+    mg.filter = 'blur(' + (p * 0.8) + 'px)';
     mg.fillStyle = '#fff';
-    mg.fillRect(p, p, an - 2 * p, total - 2 * p);
+    mg.fillRect(p, p, an - 2 * p, al - 2 * p);
     tg.globalCompositeOperation = 'destination-in';
     tg.drawImage(m, 0, 0);
   }
-  g.drawImage(t, x0, y0);
+  g.drawImage(t, a[0], a[1]);
   return c;
 }
 
-function rehacer(quien) {
-  var c = casos[quien];
-  if (!c || !c.base.complete || !c.base.naturalWidth) return;
-  var caja = BOCAS[clave(quien)];
-  c.marcos = [1, num('k2'), num('k3')].map(function (k) {
-    return fotograma(c.base, caja, k);
-  });
-  c.fig.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
+function poner(el, x, y, an, al) {
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+  el.style.width = an + 'px'; el.style.height = al + 'px';
+}
+
+function rehacer(q) {
+  var c = casos[q];
+  if (!c || !c.hablando.naturalWidth || !c.frente.naturalWidth) return;
+  var cajas = CAJAS[clave(q)];
+  var d = cajas.de, a = cajas.a;
+
+  /* Panel izquierdo: la cara de `frente` centrada en la caja roja, aumentada. */
+  c.fuente.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
+  var lz = document.createElement('canvas');
+  lz.width = 300; lz.height = 300;
+  lz.style.position = 'absolute';
+  var lg = lz.getContext('2d');
+  var cx = VISTA.cx, cy = VISTA.cy;
+  lg.imageSmoothingEnabled = false;
+  lg.drawImage(c.frente, cx - 150 / ZOOM, cy - 150 / ZOOM, 300 / ZOOM, 300 / ZOOM,
+               0, 0, 300, 300);
+  c.fuente.insertBefore(lz, c.fuente.firstChild);
+  poner(c.cajaDe, (d[0] - cx) * ZOOM + 150, (d[1] - cy) * ZOOM + 150,
+        (d[2] - d[0]) * ZOOM, (d[3] - d[1]) * ZOOM);
+
+  /* Panel derecho: los dos fotogramas, al tamaño de la sala. */
+  c.destino.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
+  var abierta = document.createElement('canvas');
+  abierta.width = c.hablando.naturalWidth; abierta.height = c.hablando.naturalHeight;
+  abierta.getContext('2d').drawImage(c.hablando, 0, 0);
+  c.marcos = [abierta, conSonrisa(c.hablando, c.frente, cajas)];
   c.marcos.forEach(function (m, i) {
     m.style.display = i === 0 ? 'block' : 'none';
-    c.fig.insertBefore(m, c.fig.firstChild);
+    c.destino.insertBefore(m, c.destino.firstChild);
   });
-  var b = caja, e = 285 / 620;   /* la caja se enseña a la escala del lienzo */
-  var alto = c.fig.clientHeight * 1.39 / 960;
-  /* Una propiedad a la vez y no `cssText`: `cssText` reemplaza el estilo en
-     linea ENTERO, y ahi es donde acabaria cualquier otra cosa que se le ponga
-     a la caja mas adelante. */
-  c.caja.style.left = (b[0] * 285 / 620) + 'px';
-  c.caja.style.top = (b[1] * alto) + 'px';
-  c.caja.style.width = ((b[2] - b[0]) * 285 / 620) + 'px';
-  c.caja.style.height = ((b[3] - b[1]) * alto) + 'px';
-  c.pie.textContent = color() + ': ' + b.join(', ');
+  var ex = 285 / 620, ey = c.destino.clientHeight * 1.39 / 960;
+  poner(c.cajaA, a[0] * ex, a[1] * ey, (a[2] - a[0]) * ex, (a[3] - a[1]) * ey);
+
+  c.pie.textContent = color() + ' · de ' + d.join(',') + '  →  a ' + a.join(',');
   salida();
 }
 
@@ -182,76 +215,44 @@ function salida() {
   var l = [];
   QUIEN.forEach(function (q) {
     COLORES.forEach(function (c) {
-      l.push("    ('" + q + "', '" + c + "'): (" + BOCAS[q + '-' + c].join(', ') + "),");
+      var k = CAJAS[q + '-' + c];
+      l.push("    ('" + q + "', '" + c + "'): {'de': " + JSON.stringify(k.de) +
+             ", 'a': " + JSON.stringify(k.a) + "},");
     });
   });
-  document.getElementById('salida').textContent = 'BOCAS = {\n' + l.join('\n') + '\n}';
+  document.getElementById('salida').textContent =
+    "ORIGEN = '" + origen() + "'\nPLUMA = " + num('pluma') +
+    '\nSONRISAS = {\n' + l.join('\n') + '\n}';
 }
 
-QUIEN.forEach(function (q) {
-  var d = document.createElement('div'); d.className = 'caso';
-  var f = document.createElement('div'); f.className = 'fig';
-  var caja = document.createElement('div'); caja.className = 'caja';
-  ['no', 'ne', 'so', 'se'].forEach(function (n) {
-    var t = document.createElement('i'); t.className = n; t.dataset.tira = n;
-    caja.appendChild(t);
-  });
-  f.appendChild(caja);
-  arrastrable(caja, q, f);
-  var h = document.createElement('h2'); h.textContent = q;
-  var pie = document.createElement('div'); pie.className = 'chico';
-  d.appendChild(f); d.appendChild(h); d.appendChild(pie);
-  document.getElementById('rejilla').appendChild(d);
-
-  var im = new Image();
-  im.onload = function () { rehacer(q); };
-  casos[q] = { base: im, fig: f, caja: caja, pie: pie, marcos: [] };
-
-  /* Las flechas mueven la caja de este personaje: se pincha la tarjeta y se
-     ajusta mirando, que es lo unico que ha funcionado. Con Mayus se estira en
-     vez de moverse. */
-  d.tabIndex = 0;
-  d.addEventListener('keydown', function (e) {
-    var m = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
-    if (!m) return;
-    e.preventDefault();
-    var b = BOCAS[clave(q)];
-    if (e.shiftKey) { b[2] += m[0]; b[3] += m[1]; }
-    else { b[0] += m[0]; b[1] += m[1]; b[2] += m[0]; b[3] += m[1]; }
-    rehacer(q);
-  });
-});
-
-/* De pixeles de pantalla a pixeles de la pieza. La caja se enseña a la escala
-   a la que se ve la figura, que no es 1:1: el lienzo mide 620x960 y la ventana
-   285 de ancho, asi que cada pixel de pantalla son 2,18 de la pieza. */
-function escala(fig) {
-  return { x: 620 / 285, y: 960 / (fig.clientHeight * 1.39) };
-}
-
-function arrastrable(caja, quien, fig) {
+/* Arrastrar. `esc` convierte pixeles de pantalla a pixeles de la pieza, que no
+   es 1:1 en ninguno de los dos paneles. */
+function arrastrable(caja, q, cual, esc) {
   caja.addEventListener('pointerdown', function (e) {
     e.preventDefault();
     var tira = e.target.dataset ? e.target.dataset.tira : null;
-    var esc = escala(fig);
+    var s = esc();
     var x0 = e.clientX, y0 = e.clientY;
-    var ini = BOCAS[clave(quien)].slice();
+    var ini = CAJAS[clave(q)][cual].slice();
     caja.setPointerCapture(e.pointerId);
-
     function mover(ev) {
-      var dx = Math.round((ev.clientX - x0) * esc.x);
-      var dy = Math.round((ev.clientY - y0) * esc.y);
-      var b = BOCAS[clave(quien)];
-      if (!tira) {                       // el cuerpo: se mueve entera
+      var dx = Math.round((ev.clientX - x0) * s.x);
+      var dy = Math.round((ev.clientY - y0) * s.y);
+      var b = CAJAS[clave(q)][cual];
+      if (!tira) {
         b[0] = ini[0] + dx; b[1] = ini[1] + dy;
         b[2] = ini[2] + dx; b[3] = ini[3] + dy;
-      } else {                            // una esquina: se estira
+      } else {
         if (tira[0] === 'n') b[1] = Math.min(ini[3] - 6, ini[1] + dy);
         else b[3] = Math.max(ini[1] + 6, ini[3] + dy);
         if (tira[1] === 'o') b[0] = Math.min(ini[2] - 6, ini[0] + dx);
         else b[2] = Math.max(ini[0] + 6, ini[2] + dx);
+        /* LA OTRA CAJA COPIA EL TAMAÑO. Son el mismo recorte: si no midieran
+           igual, la sonrisa entraria estirada. */
+        var o = CAJAS[clave(q)][cual === 'de' ? 'a' : 'de'];
+        o[2] = o[0] + (b[2] - b[0]); o[3] = o[1] + (b[3] - b[1]);
       }
-      rehacer(quien);
+      rehacer(q);
     }
     function soltar(ev) {
       caja.releasePointerCapture(ev.pointerId);
@@ -263,15 +264,57 @@ function arrastrable(caja, quien, fig) {
   });
 }
 
+function tiradores(caja) {
+  ['no', 'ne', 'so', 'se'].forEach(function (n) {
+    var t = document.createElement('i'); t.className = n; t.dataset.tira = n;
+    caja.appendChild(t);
+  });
+  return caja;
+}
+
+QUIEN.forEach(function (q) {
+  var d = document.createElement('div'); d.className = 'caso'; d.tabIndex = 0;
+  var izq = document.createElement('div'); izq.className = 'fuente';
+  var der = document.createElement('div'); der.className = 'destino';
+  var cajaDe = document.createElement('div'); cajaDe.className = 'caja de'; tiradores(cajaDe);
+  var cajaA = document.createElement('div'); cajaA.className = 'caja a'; tiradores(cajaA);
+  izq.appendChild(cajaDe); der.appendChild(cajaA);
+
+  var col = document.createElement('div');
+  var h = document.createElement('h2'); h.textContent = q;
+  var pie = document.createElement('div'); pie.className = 'chico';
+  col.appendChild(h); col.appendChild(pie);
+  d.appendChild(izq); d.appendChild(der); d.appendChild(col);
+  document.getElementById('rejilla').appendChild(d);
+
+  casos[q] = { frente: new Image(), hablando: new Image(), fuente: izq, destino: der,
+               cajaDe: cajaDe, cajaA: cajaA, pie: pie, marcos: [] };
+  casos[q].frente.onload = function () { rehacer(q); };
+  casos[q].hablando.onload = function () { rehacer(q); };
+
+  arrastrable(cajaDe, q, 'de', function () { return { x: 1 / ZOOM, y: 1 / ZOOM }; });
+  arrastrable(cajaA, q, 'a', function () {
+    return { x: 620 / 285, y: 960 / (der.clientHeight * 1.39) };
+  });
+
+  d.addEventListener('keydown', function (e) {
+    var m = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!m) return;
+    e.preventDefault();
+    var b = CAJAS[clave(q)][e.shiftKey ? 'de' : 'a'];
+    b[0] += m[0]; b[1] += m[1]; b[2] += m[0]; b[3] += m[1];
+    rehacer(q);
+  });
+});
+
 function cargar() {
-  var c = document.getElementById('color').value;
   QUIEN.forEach(function (q) {
-    casos[q].base.src = 'assets/img/personajes/' + q + '-' + c + '-hablando.webp';
+    casos[q].hablando.src = 'assets/img/personajes/' + q + '-' + color() + '-hablando.webp';
+    casos[q].frente.src = 'assets/img/personajes/' + q + '-' + color() + '-' + origen() + '.webp';
   });
 }
 
-var reloj = null, paso = 0;
-var ORDEN = [0, 1, 2, 1];
+var reloj = null, cerrada = false;
 function latir() {
   if (reloj) clearInterval(reloj);
   if (!document.getElementById('animar').checked) {
@@ -281,30 +324,27 @@ function latir() {
     return;
   }
   reloj = setInterval(function () {
-    paso = (paso + 1) % ORDEN.length;
+    cerrada = !cerrada;
     QUIEN.forEach(function (q) {
       (casos[q].marcos || []).forEach(function (m, i) {
-        m.style.display = i === ORDEN[paso] ? 'block' : 'none';
+        m.style.display = (i === (cerrada ? 1 : 0)) ? 'block' : 'none';
       });
     });
   }, num('ms'));
 }
 
-['k2', 'k3', 'aire', 'pluma'].forEach(function (id) {
-  document.getElementById(id).addEventListener('input', function () { QUIEN.forEach(rehacer); });
-});
-document.getElementById('color').addEventListener('change', function () {
-  cargar(); QUIEN.forEach(rehacer);
-});
+document.getElementById('color').addEventListener('change', cargar);
+document.getElementById('origen').addEventListener('change', cargar);
+document.getElementById('pluma').addEventListener('input', function () { QUIEN.forEach(rehacer); });
 document.getElementById('ms').addEventListener('input', latir);
 document.getElementById('animar').addEventListener('change', latir);
-document.getElementById('verCaja').addEventListener('change', function () {
-  document.body.classList.toggle('verCaja', this.checked);
+document.getElementById('verCajas').addEventListener('change', function () {
+  document.body.classList.toggle('oculta', !this.checked);
 });
 document.getElementById('copiar').addEventListener('click', function () {
   navigator.clipboard.writeText(document.getElementById('salida').textContent);
-  this.textContent = 'copiado';
-  setTimeout(function () { document.getElementById('copiar').textContent = 'Copiar las cajas'; }, 1200);
+  var b = this; b.textContent = 'copiado';
+  setTimeout(function () { b.textContent = 'Copiar'; }, 1200);
 });
 
 cargar();
