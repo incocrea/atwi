@@ -175,6 +175,23 @@ body.app {
 .marco:has(#v-jugar[data-activa]) > .cabecera,
 .marco:has(#v-catalogo[data-activa]) > .cabecera { background: transparent; }
 
+/* LA SALA TIENE EL SUYO, uno por modo. Va en `#m-partida` y no en su cuerpo por
+   lo mismo que el del tema: el pie trae color propio y cortaria el dibujo en
+   seco justo encima de los botones. `data-ctx` ya dice el modo --lo pone
+   `partida.js` al abrir-- asi que no hace falta marcar nada mas.
+
+   La sala lleva ademas el tinte del modo debajo: si el fondo tarda o falla, la
+   pantalla sigue siendo coral o menta y no un hueco blanco. */
+#m-partida[data-ctx="sala-debate"] {
+  background: url(../img/fondos/sala-debate.webp) center top / cover no-repeat,
+              var(--debate-tinte);
+}
+#m-partida[data-ctx="sala-negociacion"] {
+  background: url(../img/fondos/sala-negociacion.webp) center top / cover no-repeat,
+              var(--negociacion-tinte);
+}
+#m-partida .modal__pie { background: none; border-top: 0; }
+
 /* El de elegir entre jugar aqui o invitar va en su modal, que tapa la pantalla
    entera y por tanto tapa el del catalogo.
 

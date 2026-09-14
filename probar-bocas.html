@@ -39,9 +39,18 @@
          overflow: hidden; border-radius: 18px; }
   .fig canvas { position: absolute; top: 0; left: 0; right: 0; margin-inline: auto;
                 height: var(--alto-fig); width: auto; display: block; }
-  .fig .caja { position: absolute; border: 1px solid #f22; pointer-events: none;
-               display: none; }
+  /* LA CAJA SE AGARRA CON EL RATON. Con las flechas se podia mover, pero para
+     DECIR donde esta una boca hace falta poder dibujarla encima, no empujarla de
+     pixel en pixel hasta que cuadre. */
+  .fig .caja { position: absolute; border: 2px solid #f22; display: none;
+               cursor: move; background: rgba(255,40,40,.10); }
   .verCaja .fig .caja { display: block; }
+  .fig .caja i { position: absolute; width: 14px; height: 14px; background: #f22;
+                 border: 2px solid #fff; border-radius: 50%; }
+  .fig .caja i.ne { right: -8px; top: -8px; cursor: nesw-resize; }
+  .fig .caja i.so { left: -8px; bottom: -8px; cursor: nesw-resize; }
+  .fig .caja i.se { right: -8px; bottom: -8px; cursor: nwse-resize; }
+  .fig .caja i.no { left: -8px; top: -8px; cursor: nwse-resize; }
   .caso h2 { font-size: .95rem; margin: 6px 0 2px; }
   .caso .chico { color: #6b6480; font-size: .8rem; }
 
@@ -56,7 +65,8 @@
 </style>
 
 <h1>Las bocas, al tamaño de la sala</h1>
-<p class="nota">Mismo encuadre que el turno: caja de 285&nbsp;px, figura al 139&nbsp;% y recorte por la cintura.</p>
+<p class="nota">Mismo encuadre que el turno: caja de 285&nbsp;px, figura al 139&nbsp;% y recorte por la cintura.<br>
+Encendé <b>ver la caja</b> y arrastrala; las cuatro esquinas la estiran. Las flechas la mueven de a un píxel.</p>
 
 <div class="mandos">
   <label>Color
@@ -157,8 +167,13 @@ function rehacer(quien) {
   });
   var b = caja, e = 285 / 620;   /* la caja se enseña a la escala del lienzo */
   var alto = c.fig.clientHeight * 1.39 / 960;
-  c.caja.style.cssText = 'left:' + (b[0] * 285 / 620) + 'px;top:' + (b[1] * alto) +
-    'px;width:' + ((b[2] - b[0]) * 285 / 620) + 'px;height:' + ((b[3] - b[1]) * alto) + 'px';
+  /* Una propiedad a la vez y no `cssText`: `cssText` reemplaza el estilo en
+     linea ENTERO, y ahi es donde acabaria cualquier otra cosa que se le ponga
+     a la caja mas adelante. */
+  c.caja.style.left = (b[0] * 285 / 620) + 'px';
+  c.caja.style.top = (b[1] * alto) + 'px';
+  c.caja.style.width = ((b[2] - b[0]) * 285 / 620) + 'px';
+  c.caja.style.height = ((b[3] - b[1]) * alto) + 'px';
   c.pie.textContent = color() + ': ' + b.join(', ');
   salida();
 }
@@ -177,7 +192,12 @@ QUIEN.forEach(function (q) {
   var d = document.createElement('div'); d.className = 'caso';
   var f = document.createElement('div'); f.className = 'fig';
   var caja = document.createElement('div'); caja.className = 'caja';
+  ['no', 'ne', 'so', 'se'].forEach(function (n) {
+    var t = document.createElement('i'); t.className = n; t.dataset.tira = n;
+    caja.appendChild(t);
+  });
   f.appendChild(caja);
+  arrastrable(caja, q, f);
   var h = document.createElement('h2'); h.textContent = q;
   var pie = document.createElement('div'); pie.className = 'chico';
   d.appendChild(f); d.appendChild(h); d.appendChild(pie);
@@ -201,6 +221,47 @@ QUIEN.forEach(function (q) {
     rehacer(q);
   });
 });
+
+/* De pixeles de pantalla a pixeles de la pieza. La caja se enseña a la escala
+   a la que se ve la figura, que no es 1:1: el lienzo mide 620x960 y la ventana
+   285 de ancho, asi que cada pixel de pantalla son 2,18 de la pieza. */
+function escala(fig) {
+  return { x: 620 / 285, y: 960 / (fig.clientHeight * 1.39) };
+}
+
+function arrastrable(caja, quien, fig) {
+  caja.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    var tira = e.target.dataset ? e.target.dataset.tira : null;
+    var esc = escala(fig);
+    var x0 = e.clientX, y0 = e.clientY;
+    var ini = BOCAS[clave(quien)].slice();
+    caja.setPointerCapture(e.pointerId);
+
+    function mover(ev) {
+      var dx = Math.round((ev.clientX - x0) * esc.x);
+      var dy = Math.round((ev.clientY - y0) * esc.y);
+      var b = BOCAS[clave(quien)];
+      if (!tira) {                       // el cuerpo: se mueve entera
+        b[0] = ini[0] + dx; b[1] = ini[1] + dy;
+        b[2] = ini[2] + dx; b[3] = ini[3] + dy;
+      } else {                            // una esquina: se estira
+        if (tira[0] === 'n') b[1] = Math.min(ini[3] - 6, ini[1] + dy);
+        else b[3] = Math.max(ini[1] + 6, ini[3] + dy);
+        if (tira[1] === 'o') b[0] = Math.min(ini[2] - 6, ini[0] + dx);
+        else b[2] = Math.max(ini[0] + 6, ini[2] + dx);
+      }
+      rehacer(quien);
+    }
+    function soltar(ev) {
+      caja.releasePointerCapture(ev.pointerId);
+      caja.removeEventListener('pointermove', mover);
+      caja.removeEventListener('pointerup', soltar);
+    }
+    caja.addEventListener('pointermove', mover);
+    caja.addEventListener('pointerup', soltar);
+  });
+}
 
 function cargar() {
   var c = document.getElementById('color').value;
