@@ -228,7 +228,7 @@ window.ATWI = window.ATWI || {};
      `site/probar-bocas.html` y sale en `arte/bocas.json`-- y hasta que eso esta
      hecho no hay fotogramas que poner: pedirlos daria dos 404 y una figura que
      parpadea a hueco. Aqui se listan los que ya estan. */
-  var CON_BOCA = ['dante-azul', 'kai-azul', 'luna-azul', 'maya-azul', 'nico-azul', 'nina-azul'];
+  var CON_BOCA = ['dante-azul', 'dante-verde', 'kai-azul', 'kai-verde', 'luna-azul', 'luna-verde', 'maya-azul', 'maya-verde', 'nico-azul', 'nico-verde', 'nina-azul', 'nina-verde'];
   var MARCOS = { hablando: 2 };
 
   function marcos(quien, color, pose, alt) {
