@@ -188,6 +188,10 @@
 <div class="mandos">
   <button id="v-copiar">Copiar el bloque para turno/index.ts</button>
   <button id="v-parar" style="background:#fff;color:#c33;border:2px solid #f0c8c8">Parar</button>
+  <label style="flex:1 1 320px">frase de prueba
+    <input type="text" id="v-frase" style="flex:1; min-width:200px; padding:5px 10px;
+           border-radius:999px; border:2px solid #efeaf6; font:inherit">
+  </label>
   <span class="chico" id="v-estado"></span>
 </div>
 
@@ -755,53 +759,121 @@ function arranque(q) {
   };
 }
 
+/* El estilo solo sale si la voz lo admite. Envolverlo en una que no los tiene
+   no da error --Azure lo ignora y devuelve la voz plana-- asi que el fallo
+   seria mudo y se notaria solo al oirlo, que es la peor clase de fallo. */
+function estiloHTML(q, elegida) {
+  var c = CASTING.candidatas.filter(function (x) { return x.voz === elegida.voz; })[0];
+  if (!c || !c.estilos.length) return '';
+  return '<label>estilo <select data-estilo="' + q + '">' +
+    '<option value="">llano</option>' +
+    c.estilos.map(function (s) {
+      return '<option value="' + s + '"' +
+        (elegida.estilo === s ? ' selected' : '') + '>' + s + '</option>';
+    }).join('') + '</select></label>';
+}
+
+/* OIRLO DE VERDAD CON ESOS NUMEROS. Los controles escribian un numero que no
+   se podia escuchar hasta desplegarlo, que es al reves de como se ajusta algo:
+   las tomas pregrabadas solo cubren dos ajustes fijos. Esto le pide al servidor
+   de desarrollo que lo sintetice --la clave de Azure se queda alli, nunca llega
+   al navegador-- y cada combinacion se genera UNA vez y queda en disco. */
+function probarAsi(q) {
+  var v = VOCES[q] || arranque(q);
+  if (!v.voz) return vDecir('ese personaje todavia no tiene voz elegida', false);
+  var frase = (document.getElementById('v-frase').value || '').trim() || CASTING.frase;
+  tocador.pause();
+  marcarSonando(null);
+  vDecir('generando la toma de ' + q + '…', true);
+  fetch('/_locutar', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ voz: v.voz, tono: v.tono, ritmo: v.ritmo,
+                           estilo: v.estilo || null, texto: frase })
+  }).then(function (r) {
+    if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
+    return r.blob();
+  }).then(function (b) {
+    tocador.src = URL.createObjectURL(b);
+    return tocador.play();
+  }).then(function () {
+    marcarSonando('probar-' + q);
+    vDecir(q + ' con ' + corto(VOCES[q] ? VOCES[q].voz : '') + ', tono ' + v.tono +
+           '% y ritmo ' + v.ritmo + '%' + (v.estilo ? ', estilo ' + v.estilo : ''), true);
+  }).catch(function (e) {
+    vDecir('no se pudo generar: ' + e.message, false);
+  });
+}
+
+function corto(v) { return (v || '—').replace('es-MX-', '').replace('Neural', ''); }
+
+/* ¿Este personaje se movio de lo que hay desplegado? Es lo que decide si sale
+   en el bloque para pegar y si la cabecera dice «cambiado». */
+function esDistinto(q) {
+  var h = arranque(q), v = VOCES[q];
+  return Boolean(v) && (v.voz !== h.voz || v.tono !== h.tono ||
+                        v.ritmo !== h.ritmo || v.como !== h.como ||
+                        (v.estilo || null) !== (h.estilo || null));
+}
+
 function pintarVoces() {
   document.getElementById('v-rejilla').innerHTML = NUEVOS.map(function (q) {
     var hoy = arranque(q);
     var elegida = VOCES[q] || hoy;
-    /* Kai y Luna no tienen terna: tienen la suya, elegida oyendo ocho. Se
-       ensena esa, y el desplegable de abajo sirve para cambiarla igual. */
-    var suyas = CASTING.candidatas.filter(function (c) { return c.para === q; });
-    if (!suyas.length) {
-      suyas = CASTING.candidatas.filter(function (c) { return c.voz === hoy.voz; });
-    }
-    var puestas = {};
-    suyas.forEach(function (c) { puestas[c.voz] = 1; });
-    var otras = CASTING.candidatas.filter(function (c) { return !puestas[c.voz]; });
-    var corto = function (v) { return (v || '—').replace('es-MX-', '').replace('Neural', ''); };
+    var c = CASTING.candidatas.filter(function (x) { return x.voz === elegida.voz; })[0];
+    /* Quien mas lleva esta voz. Dos abogados con la misma voz no se distinguen,
+       igual que no se puede jugar con el mismo personaje. */
+    var choca = NUEVOS.filter(function (o) {
+      return o !== q && (VOCES[o] || arranque(o)).voz === elegida.voz;
+    });
     return '<div class="voz-caso" data-quien="' + q + '">' +
       '<header>' +
         '<img src="assets/img/personajes/' + q + '-azul-frente.webp" alt="">' +
         '<h2>' + q + '</h2>' +
-        '<span class="chico">en el juego: ' + corto(hoy.voz) +
-          (elegida.voz && elegida.voz !== hoy.voz
-            ? ' &nbsp;→&nbsp; <b>elegís ' + corto(elegida.voz) + '</b>' : '') +
+        '<span class="chico">en el juego: ' + corto(hoy.voz) + ' ' +
+          (hoy.tono >= 0 ? '+' : '') + hoy.tono + '% / ' +
+          (hoy.ritmo >= 0 ? '+' : '') + hoy.ritmo + '%' +
+          (esDistinto(q) ? ' &nbsp;→&nbsp; <b>cambiado</b>' : '') +
         '</span>' +
       '</header>' +
-      suyas.map(function (c) {
-        var puesta = elegida.voz === c.voz;
-        return '<label class="candidata" data-puesta="' + (puesta ? 'si' : 'no') + '">' +
-          '<input type="radio" name="v-' + q + '" value="' + c.voz + '"' +
-            (puesta ? ' checked' : '') + '>' +
-          '<b>' + nombreCorto(c) + '</b>' + medidasDe(c) +
-          botonSuena(c.corto, 'comoes', 'como es') +
-          botonSuena(c.corto, 'altono', 'al tono ' + (c.altono >= 0 ? '+' : '') + c.altono + '%') +
-          '</label>';
-      }).join('') +
-      '<div class="afinar">' +
-        '<label>…o cualquier otra <select data-otra="' + q + '">' +
-          '<option value="">—</option>' +
-          otras.map(function (c) {
-            return '<option value="' + c.voz + '">' + nombreCorto(c) + ' · ' +
-              c.alto + ' Hz · anim ' + c.animacion.toFixed(1) +
-              (c.quien ? ' (la de ' + c.quien + ')' : '') + '</option>';
+
+      /* UNA SOLA LISTA CON LAS QUINCE. Antes eran dos recomendadas en fila y el
+         resto escondido en un desplegable aparte con su boton de confirmar, y
+         eso hacia ver la decision como «una de estas dos», que no es. Las
+         recomendadas se marcan con una estrella y ya. */
+      '<div class="afinar" style="border:0;padding-top:0;margin-top:0">' +
+        '<label>voz base <select data-voz="' + q + '">' +
+          CASTING.candidatas.map(function (x) {
+            return '<option value="' + x.voz + '"' +
+              (x.voz === elegida.voz ? ' selected' : '') + '>' +
+              (x.para === q ? '★ ' : '') + nombreCorto(x) + ' · ' + x.alto + ' Hz · ' +
+              'anim ' + x.animacion.toFixed(1) + ' · brillo ' + x.brillo +
+              (x.quien ? ' · la de ' + x.quien : '') + '</option>';
           }).join('') +
         '</select></label>' +
-        '<button data-usar="' + q + '">quedarme con esa</button>' +
-        '<label>tono <input type="number" data-tono="' + q + '" value="' +
-          (elegida.tono != null ? elegida.tono : 0) + '" step="1" min="-40" max="60">%</label>' +
-        '<label>ritmo <input type="number" data-ritmo="' + q + '" value="' +
-          (elegida.ritmo != null ? elegida.ritmo : 6) + '" step="1" min="-20" max="30">%</label>' +
+        (c ? botonSuena(c.corto, 'comoes', 'oírla cruda') : '') +
+        /* Kai y Luna no tienen estrellas --no tienen terna, ya se eligieron
+           oyendo ocho-- asi que ahi la leyenda no dice nada y no sale. */
+        (CASTING.candidatas.some(function (x) { return x.para === q; })
+          ? '<span class="chico">★ = recomendada por lo medido</span>' : '') +
+      '</div>' +
+      (choca.length ? '<p class="chico" style="color:#c33;margin:6px 0 0">' +
+        'Esa voz ya la lleva ' + choca.join(' y ') + '. Con la misma voz no se distinguen.' +
+        '</p>' : '') +
+
+      '<div class="afinar">' +
+        '<label>tono <input type="range" data-tono="' + q + '" value="' +
+          elegida.tono + '" min="-30" max="60" step="1" style="width:150px">' +
+          '<output data-eco="tono-' + q + '">' + (elegida.tono >= 0 ? '+' : '') +
+          elegida.tono + '%</output></label>' +
+        '<label>ritmo <input type="range" data-ritmo="' + q + '" value="' +
+          elegida.ritmo + '" min="-25" max="40" step="1" style="width:150px">' +
+          '<output data-eco="ritmo-' + q + '">' + (elegida.ritmo >= 0 ? '+' : '') +
+          elegida.ritmo + '%</output></label>' +
+        estiloHTML(q, elegida) +
+        '<button class="suena" data-probar="' + q + '" data-id="probar-' + q +
+          '" data-sonando="no">▶ oírlo así</button>' +
+        (c ? '<span class="chico">' + (c.altono >= 0 ? '+' : '') + c.altono +
+             '% la deja sonando donde Kai y Luna</span>' : '') +
       '</div>' +
       '<label class="chico" style="display:block;margin-top:10px">Cómo habla ' +
         '(esto es lo que lee el abogado; se pega tal cual en <code>turno/index.ts</code>)' +
@@ -823,12 +895,12 @@ function pintarSalida() {
   var usadas = {}, l = [];
 
   NUEVOS.forEach(function (q) {
-    var hoy = arranque(q), v = VOCES[q] || hoy;
+    var v = VOCES[q] || arranque(q);
     if (v.voz) (usadas[v.voz] || (usadas[v.voz] = [])).push(q);
-    if (v.voz === hoy.voz && v.tono === hoy.tono && v.ritmo === hoy.ritmo &&
-        v.como === hoy.como) return;
+    if (!esDistinto(q)) return;
     l.push('  ' + q + ': {\n' +
-           "    voz: '" + v.voz + "', estilo: null, tono: '" + pct(v.tono) +
+           "    voz: '" + v.voz + "', estilo: " +
+           (v.estilo ? "'" + v.estilo + "'" : 'null') + ", tono: '" + pct(v.tono) +
            "', ritmo: '" + pct(v.ritmo) + "',\n" +
            '    quien: `' + citar(v.como) + '`,\n' +
            '  },');
@@ -857,9 +929,11 @@ function guardarVoces() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(VOCES)
   }).then(function (r) {
-    vDecir(r.ok ? 'guardado en arte/voces.json' : 'el servidor dijo ' + r.status, r.ok);
+    vDecir(r.ok
+      ? '✓ guardado en arte/voces.json — ' + Object.keys(VOCES).join(', ')
+      : 'NO se guardó: el servidor dijo ' + r.status, r.ok);
   }).catch(function () {
-    vDecir('sin servidor: usá «Copiar» y pegame el bloque', false);
+    vDecir('NO se guardó (sin servidor): usá «Copiar» y pegame el bloque', false);
   });
 }
 
@@ -869,10 +943,11 @@ function guardarVoces() {
    de calculadora. */
 function elegirVoz(q, nombreVoz) {
   var c = CASTING.candidatas.filter(function (x) { return x.voz === nombreVoz; })[0];
-  var v = VOCES[q] || (VOCES[q] = {});
+  var v = mio(q);
   v.voz = nombreVoz;
   v.tono = c ? c.altono : 0;
   v.ritmo = 6;
+  v.estilo = null;                 /* el estilo es de la voz anterior, no de esta */
   if (!v.como) v.como = arranque(q).como;
   guardarVoces();
   pintarVoces();
@@ -890,13 +965,8 @@ document.addEventListener('click', function (e) {
   }
   var s = e.target.closest('[data-oir]');
   if (s) { e.preventDefault(); oir(s.dataset.oir, s.dataset['var']); return; }
-  var u = e.target.closest('[data-usar]');
-  if (u) {
-    var sel = document.querySelector('[data-otra="' + u.dataset.usar + '"]');
-    if (sel && sel.value) elegirVoz(u.dataset.usar, sel.value);
-    else vDecir('elegí antes una voz en el desplegable de al lado', false);
-    return;
-  }
+  var pr = e.target.closest('[data-probar]');
+  if (pr) { e.preventDefault(); probarAsi(pr.dataset.probar); return; }
   if (e.target.id === 'v-parar') { tocador.pause(); marcarSonando(null); return; }
   if (e.target.id === 'v-copiar') {
     navigator.clipboard.writeText(document.getElementById('v-salida').textContent);
@@ -907,20 +977,42 @@ document.addEventListener('click', function (e) {
 
 document.addEventListener('change', function (e) {
   var t = e.target;
-  if (t.name && t.name.indexOf('v-') === 0) return elegirVoz(t.name.slice(2), t.value);
-  if (t.dataset.otra && t.value) {
-    var c = CASTING.candidatas.filter(function (x) { return x.voz === t.value; })[0];
-    if (c) oir(c.corto, 'altono');
-    return;
+  if (t.dataset.voz) return elegirVoz(t.dataset.voz, t.value);
+  if (t.dataset.estilo) {
+    mio(t.dataset.estilo).estilo = t.value || null;
+    guardarVoces();
+    return pintarVoces();          /* el estilo cambia lo que dice «oírlo así» */
   }
-  if (t.dataset.tono) {
-    (VOCES[t.dataset.tono] || (VOCES[t.dataset.tono] = {})).tono = Number(t.value);
-    return guardarVoces();
+});
+
+/* Toma el ajuste de este personaje, copiando lo desplegado la primera vez: si
+   se empezara con un objeto vacio, mover SOLO el tono dejaria la voz en nulo y
+   el bloque saldria sin voz. */
+function mio(q) {
+  return VOCES[q] || (VOCES[q] = Object.assign({}, arranque(q)));
+}
+
+/* LOS DESLIZADORES SE GUARDAN SOLOS, igual que las cajas de las bocas: se
+   mueven y ya esta, sin boton de confirmar. Y como arrastrar dispara esto
+   decenas de veces por segundo, el archivo se escribe medio segundo despues de
+   soltar --el numero en pantalla sí se actualiza en cada pixel--. */
+var pendienteVoz = null;
+document.addEventListener('input', function (e) {
+  var t = e.target;
+  var q = t.dataset && (t.dataset.tono || t.dataset.ritmo);
+  if (!q) return;
+  var cual = t.dataset.tono ? 'tono' : 'ritmo';
+  var n = Number(t.value);
+  mio(q)[cual] = n;
+  var eco = document.querySelector('[data-eco="' + cual + '-' + q + '"]');
+  if (eco) eco.textContent = (n >= 0 ? '+' : '') + n + '%';
+  var cab = document.querySelector('.voz-caso[data-quien="' + q + '"] header .chico');
+  if (cab && esDistinto(q) && cab.innerHTML.indexOf('cambiado') < 0) {
+    cab.innerHTML += ' &nbsp;→&nbsp; <b>cambiado</b>';
   }
-  if (t.dataset.ritmo) {
-    (VOCES[t.dataset.ritmo] || (VOCES[t.dataset.ritmo] = {})).ritmo = Number(t.value);
-    return guardarVoces();
-  }
+  pintarSalida();
+  if (pendienteVoz) clearTimeout(pendienteVoz);
+  pendienteVoz = setTimeout(guardarVoces, 500);
 });
 
 /* La caja de texto se guarda al SALIR de ella y no en cada tecla: escribir una
@@ -952,10 +1044,12 @@ function cargarCasting() {
         catch (e) { guardadas = null; }
       }
       VOCES = guardadas || {};
+      document.getElementById('v-frase').value = CASTING.frase;
       pintarPatron();
       pintarVoces();
+      var n = Object.keys(VOCES).length;
       vDecir(CASTING.candidatas.length + ' voces medidas · ' +
-             Object.keys(VOCES).length + ' elegidas', true);
+             (n ? n + ' ajustadas, leídas de arte/voces.json' : 'nada ajustado todavía'), true);
     })
     .catch(function () {
       document.getElementById('v-rejilla').innerHTML =
