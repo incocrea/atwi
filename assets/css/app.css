@@ -389,10 +389,12 @@ body.app {
    encima lo parte en bloques. Lo que separa una carta de la otra deja de ser su
    caja y pasa a ser su rótulo y el color de sus dos discos, que ya lo dicen.
 
-   Y SE VA TAMBIÉN LA SOMBRA. Una sombra alrededor de una caja transparente no
-   desaparece: dibuja un halo gris flotando sobre el fondo, el contorno de algo
-   que no está. Sin fondo no hay caja a la que dar relieve. */
-.carta-modo { box-shadow: none; }
+   LA SOMBRA SÍ SE QUEDA, y me equivoqué al quitarla. El razonamiento era que
+   una sombra alrededor de una caja transparente dibuja el contorno de algo que
+   no está; en la práctica hace lo contrario: sobre un fondo claro queda un halo
+   suave que delimita la carta sin llenarla. Es lo único que sigue diciendo
+   «esto es una pieza» cuando ya no hay caja. Se ve y se decide mirando, no
+   razonando, y la decisión es del titular. */
 
 .carta-modo__alto {
   display: flex; align-items: center; flex: 1 1 auto; min-width: 0;
