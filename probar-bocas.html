@@ -83,6 +83,8 @@
   Las esquinas estiran, y la otra caja copia el tamaño — son el mismo recorte.
   El mango de arriba de la roja la <b>gira</b>: la cabeza no está igual de inclinada
   en las dos poses. Las flechas afinan la azul de a un píxel; con Mayús, la roja.
+  <br><b>Trabajá en <code>localhost:8127</code></b>, no en atwi.app: solo ahí se puede
+  escribir el archivo que después lee el cortador. Abajo a la derecha dice si está guardando.
 </p>
 
 <div class="mandos">
@@ -142,8 +144,40 @@ COLORES.forEach(function (c) {
    cortador hay que darle a «Copiar» y pegarlas; el boton no es un adorno. */
 var GUARDADO = 'atwi.bocas.v1';
 
+var pendiente = null;
+
 function guardar() {
   try { localStorage.setItem(GUARDADO, JSON.stringify(CAJAS)); } catch (e) {}
+  /* Y AL REPO, si hay servidor de desarrollo. El navegador guarda para no
+     perder el trabajo, pero eso no sale de esta maquina: sin esto habria que
+     copiar y pegar las cajas a mano para que el cortador las vea.
+
+     Se espera medio segundo antes de mandar: arrastrar una caja dispara esto
+     decenas de veces por segundo y no hace falta escribir el archivo en cada
+     pixel. */
+  if (pendiente) clearTimeout(pendiente);
+  pendiente = setTimeout(alRepo, 500);
+}
+
+function alRepo() {
+  fetch('/_guardar/bocas.json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ origen: origen(), pluma: num('pluma'), cajas: CAJAS })
+  }).then(function (r) {
+    decir(r.ok ? 'guardado en arte/bocas.json' : 'el servidor dijo ' + r.status, r.ok);
+  }).catch(function () {
+    /* En atwi.app no hay nada que escriba archivos --son estaticos-- asi que
+       esto falla siempre ahi, y esta bien: se dice y se sigue con el boton. */
+    decir('sin servidor: usá «Copiar» y pegame el bloque', false);
+  });
+}
+
+function decir(t, bien) {
+  var e = document.getElementById('estado');
+  if (!e) return;
+  e.textContent = t;
+  e.style.color = bien ? '#2b7a4b' : '#a0603a';
 }
 
 function recuperar() {
@@ -418,10 +452,12 @@ document.getElementById('olvidar').addEventListener('click', function () {
   location.reload();
 });
 
+/* DOS SITIOS Y CADA UNO PARA UNA COSA: el navegador guarda para que no se pierda
+   el trabajo al recargar, y `arte/bocas.json` es lo que lee el cortador. Al
+   abrir se recupera del navegador, que es donde esta lo ultimo que se toco. */
 var recuperadas = recuperar();
-document.getElementById('estado').textContent = recuperadas
-  ? 'Se guarda solo en este navegador · ' + recuperadas + ' cajas recuperadas'
-  : 'Se guarda solo en este navegador mientras ajustás';
+decir(recuperadas ? recuperadas + ' cajas recuperadas de este navegador'
+                  : 'Listo para ajustar', true);
 
 cargar();
 latir();
