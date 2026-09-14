@@ -25,6 +25,19 @@ html, body { height: 100%; overscroll-behavior: none; }
    columna; para eso está `minmax(0, 1fr)`.
    ========================================================================== */
 html, body, .marco, .vista, .modal, .modal__cuerpo, .hoja__panel { overflow-x: hidden; }
+
+/* LA BARRA DE SCROLL NO SE VE, EN NINGUNA PARTE (decisión del titular,
+   2026-09-14). Esto es un juego en un teléfono, y en un teléfono la barra no
+   existe: aparece solo al probarlo en escritorio, dentro del marco, y ahí parte
+   la ilusión —se ve la costura de que es una página—. El contenido sigue
+   scrolleando igual: lo que se quita es el dibujo de la barra, no el scroll.
+
+   Hacen falta las tres declaraciones y no sobra ninguna: `scrollbar-width` es
+   la estándar y la de Firefox, el pseudoelemento es lo único que entienden
+   Chrome y Safari, y `-ms-overflow-style` es para el Edge viejo. Con el
+   pseudoelemento a secas, en Firefox la barra sigue ahí. */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { width: 0; height: 0; display: none; }
 /* Ninguna imagen ni vídeo puede pasarse de su caja y arrastrar la columna. */
 img, video, canvas, svg { max-width: 100%; }
 
