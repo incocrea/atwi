@@ -2306,11 +2306,17 @@ body.app {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--e-3); align-items: start;
 }
+/* CARTA TRANSPARENTE CON SOMBRA, como las del home. Sin abogado la pieza se
+   perdía contra el fondo dibujado: el nombre, la llave y el renglón de debajo
+   flotaban sin nada que dijera dónde empieza y acaba cada lado. La sombra
+   delimita sin llenar, que es exactamente lo que se decidió para las cartas de
+   modo. Fondo, ninguno. */
 .repre {
   display: grid; justify-items: center; gap: 8px;
   padding: var(--e-3) var(--e-2) var(--e-3);
   border-radius: var(--radio-tarjeta);
   border: 2px solid transparent; background: transparent;
+  box-shadow: var(--sombra-2);
   transition: border-color var(--dur-corta) var(--suave),
               background var(--dur-corta) var(--suave);
 }
@@ -2324,7 +2330,7 @@ body.app {
 .repre__retrato {
   display: grid; place-items: center; padding: 16px; border-radius: 50%;
   background: radial-gradient(closest-side,
-              color-mix(in srgb, var(--del-modo, var(--lavanda)) 34%, transparent) 62%,
+              color-mix(in srgb, var(--suyo, var(--del-modo, var(--lavanda))) 34%, transparent) 62%,
               transparent 100%);
 }
 .repre__quien {
@@ -2340,14 +2346,17 @@ body.app {
      halo y despegue la letra sin dejarla flotando. */
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
-/* Con abogado la pieza se enciende: aro y fondo del color del modo, y el texto
-   en ese color. Antes era lavanda de marca en los dos modos, que aquí rompía
-   el color de la pantalla igual que lo rompía el círculo del turno elegido. */
+/* CON ABOGADO SE ENCIENDE EN EL COLOR DE SU FICHA, que `--suyo` trae en línea
+   desde el color que eligió quien juega. No en el del modo: con el del modo las
+   dos piezas se encendían del mismo color y dejaban de ser de nadie, cuando lo
+   que dice la regla del dibujo es que el abogado sale en el color de quien lo
+   contrata, que es lo que lo hace reconociblemente suyo. */
 .repre--conabogado {
-  border-color: var(--del-modo, var(--lavanda));
-  background: color-mix(in srgb, var(--del-modo, var(--lavanda)) 12%, transparent);
+  border-color: var(--suyo, var(--lavanda));
+  background: color-mix(in srgb, var(--suyo, var(--lavanda)) 14%, transparent);
 }
-.repre--conabogado .repre__como { color: var(--del-modo, var(--lavanda)); font-weight: 800; }
+.repre--conabogado .repre__como { color: var(--suyo, var(--lavanda)); font-weight: 800; }
+.repre--conabogado .repre__llave[aria-pressed="true"] { background: var(--suyo, var(--lavanda)); }
 
 /* La llave es una pastilla y no una casilla del sistema: las del sistema se
    dibujan distinto en cada aparato y esta pantalla ya tiene su lenguaje. */

@@ -1539,7 +1539,14 @@
          nada. */
       var suyo = x.repre || x.ficha;
       var conAbogado = Boolean(x.repre);
-      return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '">' +
+      /* EL COLOR DE LA PIEZA ES EL DE SU FICHA, no el del modo. Cuando hay
+         abogado, el aro y el tinte salen del color que eligió quien juega
+         --azul, verde, amarillo o morado-- porque eso es lo que ya hace el
+         dibujo: «el abogado sale en el color de perfil de quien lo contrata,
+         que es lo que lo hace reconociblemente suyo». Con el color del modo,
+         las dos piezas se encendían iguales y dejaban de ser de nadie. */
+      return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '"' +
+          ' style="--suyo:' + window.ATWI.colorPersonaje(x.color) + '">' +
           /* EL RETRATO MANDA. Esto eran dos tarjetas de ancho completo con la
              ficha diminuta a un lado: ocupaban media pantalla para enseñar dos
              dibujos de 26 px. Ahora son dos retratos grandes uno al lado del
@@ -1562,7 +1569,11 @@
              turno— y además no decía lo que de verdad significa la llave
              apagada: que suena la grabación de la persona y no hay abogado. */
           '<span class="repre__como">' +
-            (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' lo defiende'
+            /* «Luna defiende» y no «Luna lo defiende»: ese «lo» le pone sexo
+               masculino a quien está siendo defendido, y quien está siendo
+               defendido puede ser cualquiera. Sin él la frase es genérica y
+               además más corta, que en este renglón se agradece. */
+            (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' defiende'
                         : 'Voz original, sin abogado') +
           '</span>' +
         '</div>';
