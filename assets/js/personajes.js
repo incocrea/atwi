@@ -21,15 +21,40 @@ window.ATWI = window.ATWI || {};
 (function () {
   'use strict';
 
-  /* Los colores salen de la paleta de la hoja de personajes, que NO es la de
-     la app: Kai va en azul y Luna en rosa. Cada uno lleva tres tonos del mismo
-     color —el de la mancha, el del refuerzo y el fuerte para detalles— porque
-     con uno solo la mancha queda plana y con degradado incumpliría la regla de
-     que aquí no hay degradados. */
+  /* LOS SEIS. Kai y Luna no son nuevos —son la versión castaña de las láminas
+     nuevas— y a su lado entran Nico y Dante, y Nina y Maya. El orden es el de
+     la lámina: castaño, afro, rubio. */
   var GENTE = {
-    kai: { nombre: 'Kai', tinte: '#E8F4FF', medio: '#BFE4FF', fuerte: '#6EC6FF' },
-    luna: { nombre: 'Luna', tinte: '#FDEDF3', medio: '#FFC9DB', fuerte: '#FF8FB1' }
+    kai: { nombre: 'Kai' },
+    nico: { nombre: 'Nico' },
+    dante: { nombre: 'Dante' },
+    luna: { nombre: 'Luna' },
+    nina: { nombre: 'Nina' },
+    maya: { nombre: 'Maya' }
   };
+
+  /* EL COLOR ES DEL JUGADOR, NO DEL PERSONAJE, y esto cambió: antes Kai era
+     azul y Luna rosa, para siempre, y encima había diez colores de aro que solo
+     pintaban el borde del avatar. Ahora hay CUATRO y cada uno es un dibujo
+     distinto —la chaqueta y las zapatillas van pintadas en la lámina—, así que
+     elegir color elige sprite, y con él el fondo y el borde.
+
+     Los tonos NO están elegidos a ojo: se sacaron de la propia ropa. Se
+     compararon las cuatro variantes del mismo personaje píxel a píxel, se
+     tomaron los que cambian entre ellas —que son la ropa, porque la piel y el
+     pelo no cambian— y de ésos el tono dominante con saturación de verdad. A
+     ojo salía el color de la piel, que es lo que más superficie ocupa. */
+  var COLORES = {
+    azul:     { nombre: 'Azul',     tono: '#0878F8' },
+    verde:    { nombre: 'Verde',    tono: '#98D868' },
+    amarillo: { nombre: 'Amarillo', tono: '#F8E838' },
+    morado:   { nombre: 'Morado',   tono: '#C888F8' }
+  };
+  var COLOR_DE_SERIE = 'azul';
+
+  function elColor(color) {
+    return COLORES[color] ? color : COLOR_DE_SERIE;
+  }
 
   var POSES = {
     frente: 'de frente',      // retrato: avatar del perfil y pantalla de versus
@@ -38,10 +63,17 @@ window.ATWI = window.ATWI || {};
     ganar: 'festejando',      // el resultado, para quien gana
     /* El puño va de UNO EN UNO y no los dos juntos a propósito: en Negociación
        no hay versus sino equipo, y cada uno entra desde su lado hasta chocar en
-       el centro. La animación necesita las dos piezas sueltas. Kai mira a la
-       derecha y Luna a la izquierda, que es como se encuentran. */
+       el centro. La animación necesita las dos piezas sueltas. En las láminas
+       nuevas los seis miran a la derecha, así que a quien va a la derecha de la
+       pantalla se le voltea. */
     puno: 'ofreciendo el puño',
-    derrota: 'encajándolo'    // sentado, sin lágrimas: se pierde de buen humor
+    /* SENTADO Y NO «DERROTA». En la lámina vieja esta pose era el consuelo de
+       quien perdía; en la nueva la persona está sentada, sonriendo y con la
+       mano en la barbilla, que no lee como derrota sino como ESPERANDO. Se la
+       llama por lo que se ve, no por dónde se pensaba usarla: para la derrota
+       hará falta otra, y quien lea esto dentro de seis meses no tiene por qué
+       adivinar que «derrota» era un dibujo contento. */
+    sentado: 'esperando'
   };
 
   function esc(s) {
@@ -68,14 +100,13 @@ window.ATWI = window.ATWI || {};
   }
 
   /**
-   * Los dos tonos de la mancha. Si viene un color —el del aro que eligió quien
-   * juega— la mancha se hace con ÉL, y no con el azul o el rosa del personaje.
-   * Es lo que hace que la escena sea de esa persona y no del dibujo: dos Kai en
-   * la misma sala tienen que distinguirse también aquí.
+   * Los dos tonos de la mancha, sacados del color que eligió quien juega. Van
+   * muy aclarados a propósito: detrás de la figura, y la figura ya lleva ese
+   * mismo color en la ropa. A plena saturación se comerían el dibujo.
    */
-  function tonos(c, color) {
-    var t = aclarar(color, 0.86);
-    return t ? { tinte: t, medio: aclarar(color, 0.62) } : c;
+  function tonos(color) {
+    var t = COLORES[elColor(color)].tono;
+    return { tinte: aclarar(t, 0.86), medio: aclarar(t, 0.62) };
   }
 
   /* Las dos manchas. Van en dos óvalos y no en uno con degradado: dos tonos
@@ -111,29 +142,29 @@ window.ATWI = window.ATWI || {};
   /**
    * La mancha de color de un personaje, suelta.
    * @param tipo  'disco' o 'estela'
-   * @param color el aro de quien juega; si no viene, el color del personaje
+   * @param color 'azul' | 'verde' | 'amarillo' | 'morado'
    */
   window.ATWI.fondoPersonaje = function (quien, tipo, color) {
-    var c = GENTE[quien];
     var f = FONDOS[tipo];
-    if (!c || !f) return '';
+    if (!GENTE[quien] || !f) return '';
     return '<svg class="retrato__fondo" viewBox="0 0 100 100" ' +
       'preserveAspectRatio="' + f[1] + '" aria-hidden="true" focusable="false">' +
-      f[0](tonos(c, color)) + '</svg>';
+      f[0](tonos(color)) + '</svg>';
   };
 
   /* HACIA DÓNDE MIRA CADA POSE. Hace falta para poder ponerlas cara a cara: en
      un encuentro quien va a la izquierda tiene que mirar a la derecha y al
      revés, y si no coincide con cómo se dibujó, la figura se voltea.
 
-     No todas se dibujaron igual a propósito: las de guardia miran las dos a la
-     derecha, pero las del puño se dibujaron ya enfrentadas —Kai a la derecha y
-     Luna a la izquierda— porque ahí los puños tienen que encontrarse y el
-     dibujo del brazo no es simétrico. */
+     EN LAS LÁMINAS NUEVAS LOS SEIS MIRAN IGUAL. Antes Kai y Luna se dibujaron
+     ya enfrentados en la pose del puño; ahora los seis la tienen hacia la
+     derecha, así que a quien va a la derecha de la pantalla hay que voltearlo.
+     Las demás poses son frontales y no se voltean: `plante` y `hablando` sí
+     estaban aquí y se quitaron, porque voltear una figura de frente le da la
+     vuelta al logotipo de la camiseta sin ganar nada. */
   var MIRA = {
-    plante: { kai: 'derecha', luna: 'derecha' },
-    puno: { kai: 'derecha', luna: 'izquierda' },
-    hablando: { kai: 'derecha', luna: 'izquierda' }
+    puno: { kai: 'derecha', nico: 'derecha', dante: 'derecha',
+            luna: 'derecha', nina: 'derecha', maya: 'derecha' }
   };
 
   /**
@@ -146,8 +177,9 @@ window.ATWI = window.ATWI || {};
     var c = GENTE[quien];
     if (!c || !POSES[pose]) return '';
     op = op || {};
+    var color = elColor(op.color);
     var fondo = op.fondo === null ? ''
-      : window.ATWI.fondoPersonaje(quien, op.fondo || 'disco', op.color);
+      : window.ATWI.fondoPersonaje(quien, op.fondo || 'disco', color);
     var natural = (MIRA[pose] || {})[quien];
     var voltea = op.mira && natural && op.mira !== natural;
     return '<span class="retrato ' + (op.clase || '') + (voltea ? ' retrato--volteado' : '') +
@@ -158,25 +190,40 @@ window.ATWI = window.ATWI || {};
            bajarlas nunca, porque nunca «entran en vista» a su manera de
            mirarlo. Con una sí y con otra no, que es peor: parece que falta un
            jugador. Son dos imágenes por pantalla, no una lista. */
-        marcos(quien, pose, esc(c.nombre + ', ' + POSES[pose])) +
+        marcos(quien, color, pose, esc(c.nombre + ', ' + POSES[pose])) +
       '</span>';
   };
 
-  /* CUÁNTOS FOTOGRAMAS TIENE CADA POSE. Solo la de hablar tiene tres —boca
-     abierta, media y cerrada—, y son el mismo dibujo con la boca cambiada: se
-     alternan para animar el habla. Las demás poses son una imagen y ya. */
-  var MARCOS = { hablando: 3 };
+  /** La ruta de una pieza. Todas miden lo mismo —280x400— y la figura va
+      apoyada abajo y centrada, así que cambiar de personaje o de color no mueve
+      nada dentro del marco. */
+  window.ATWI.pieza = function (quien, color, pose) {
+    return '../assets/img/personajes/' + quien + '-' + elColor(color) + '-' + pose + '.webp';
+  };
 
-  function marcos(quien, pose, alt) {
+  /* CUÁNTOS FOTOGRAMAS TIENE CADA POSE. Ninguna tiene más de uno, y eso es una
+     PÉRDIDA respecto a lo que había: la pose de hablar llevaba tres —boca
+     abierta, media y cerrada— que se alternaban para animar el habla. Esos tres
+     dibujos venían de una lámina de bocas aparte, y esa lámina solo existe para
+     el dibujo viejo de Kai y Luna; las láminas nuevas traen UNA sola pose de
+     hablar. Hasta que haya bocas nuevas, la figura no mueve los labios: se
+     queda quieta mientras suena la voz.
+
+     La buena noticia, para cuando se retome: la boca está en la cara y la cara
+     NO cambia con el color, así que probablemente baste una lámina por
+     personaje —seis— y no una por personaje y color, que serían veinticuatro. */
+  var MARCOS = {};
+
+  function marcos(quien, color, pose, alt) {
     var n = MARCOS[pose] || 1;
     if (n === 1) {
-      return '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-' + pose + '.png" ' +
+      return '<img class="retrato__fig" src="' + window.ATWI.pieza(quien, color, pose) + '" ' +
              'alt="' + alt + '" loading="eager" decoding="async">';
     }
     var out = '';
     for (var i = 1; i <= n; i++) {
       out += '<img class="retrato__fig" data-marco="' + i + '"' + (i > 1 ? ' hidden' : '') +
-             ' src="../assets/img/personajes/' + quien + '-' + pose + '-' + i + '.png" ' +
+             ' src="' + window.ATWI.pieza(quien, color, pose + '-' + i) + '" ' +
              'alt="' + (i === 1 ? alt : '') + '" loading="eager" decoding="async">';
     }
     return out;
@@ -233,9 +280,9 @@ window.ATWI = window.ATWI || {};
      nadie va a mirar una pantalla quieta más de tres segundos. */
   var MS_TOPE_PRECARGA = 3000;
 
-  window.ATWI.precargarPoses = function (quienes, poses) {
+  window.ATWI.precargarPoses = function (quienes, poses, colores) {
     var esperas = [];
-    (quienes || []).forEach(function (q) {
+    (quienes || []).forEach(function (q, i) {
       (poses || []).forEach(function (p) {
         if (!GENTE[q] || !POSES[p]) return;
         esperas.push(new Promise(function (listo) {
@@ -245,7 +292,9 @@ window.ATWI = window.ATWI || {};
             else listo();
           };
           im.onerror = listo;
-          im.src = '../assets/img/personajes/' + q + '-' + p + '.png';
+          /* El color va en paralelo a `quienes`: en la sala cada lado tiene el
+             suyo, y bajar la pieza del color equivocado no adelanta nada. */
+          im.src = window.ATWI.pieza(q, (colores || [])[i], p);
         }));
       });
     });
@@ -259,9 +308,21 @@ window.ATWI = window.ATWI || {};
   /** Quiénes hay, para pintar el selector de avatar. */
   window.ATWI.quienes = function () {
     return Object.keys(GENTE).map(function (k) {
-      return { clave: k, nombre: GENTE[k].nombre, color: GENTE[k].fuerte };
+      return { clave: k, nombre: GENTE[k].nombre };
     });
   };
+
+  /** Los cuatro colores, para pintar el selector. */
+  window.ATWI.colores = function () {
+    return Object.keys(COLORES).map(function (k) {
+      return { clave: k, nombre: COLORES[k].nombre, tono: COLORES[k].tono };
+    });
+  };
+
+  /** El color válido más cercano. Lo guardado de partidas viejas es un
+      hexadecimal de los diez aros que había, y eso ya no apunta a ningún
+      dibujo: cae en azul en vez de dejar la figura sin imagen. */
+  window.ATWI.elColor = elColor;
 
   /** ¿Es una clave de personaje? Sirve para distinguir lo guardado de lo viejo. */
   window.ATWI.esPersonaje = function (quien) { return Object.prototype.hasOwnProperty.call(GENTE, quien); };
@@ -269,29 +330,38 @@ window.ATWI = window.ATWI || {};
   /** El nombre propio, para leerlo en pantalla. */
   window.ATWI.nombrePersonaje = function (quien) { return (GENTE[quien] || GENTE.kai).nombre; };
 
-  /** Su color fuerte. Es el que marca su voz en la sala. */
-  window.ATWI.colorPersonaje = function (quien) { return (GENTE[quien] || GENTE.kai).fuerte; };
+  /** El tono del color con el que juega alguien. Es el que marca su voz en la
+      sala, y ya no depende del personaje sino de lo que eligió. */
+  window.ATWI.colorPersonaje = function (color) { return COLORES[elColor(color)].tono; };
 
   /**
-   * El OTRO. Con dos personajes esto decide solo, y por eso al invitado local no
-   * se le pregunta: si yo soy Kai, él es Luna. Dos fichas iguales no se
-   * distinguen en la sala, que es justo para lo que sirven.
+   * El OTRO. En la partida local al invitado no se le pregunta: se le da uno
+   * distinto del mío, porque dos fichas iguales no se distinguen en la sala y
+   * eso es justo para lo que sirven. Con seis ya no hay una única respuesta, así
+   * que se coge el siguiente de la lista y se da la vuelta al llegar al final.
    */
-  window.ATWI.otroPersonaje = function (quien) { return quien === 'luna' ? 'kai' : 'luna'; };
+  window.ATWI.otroPersonaje = function (quien) {
+    var l = Object.keys(GENTE);
+    var i = l.indexOf(quien);
+    return l[(i < 0 ? 0 : i + 1) % l.length];
+  };
 
   /**
-   * La ficha redonda: la cara dentro de su disco, con un aro de color alrededor.
-   * El color NO es el fondo —el fondo es el tinte del personaje y no se toca—
-   * sino el borde: es lo que cada quien elige para distinguir su ficha de la
-   * del otro sin tener que cambiar de personaje.
+   * La ficha redonda: la cara dentro de su disco, con un aro alrededor. El aro
+   * y el disco llevan el color de quien juega —el mismo que la ropa del dibujo—
+   * porque desde 2026-09-13 el color no es un adorno aparte: es el sprite.
    */
-  window.ATWI.fichaHTML = function (quien, clase, borde) {
+  window.ATWI.fichaHTML = function (quien, clase, color) {
     if (!window.ATWI.esPersonaje(quien)) quien = 'kai';
+    color = elColor(color);
     return '<span class="avatar avatar--pj ' + (clase || '') + '"' +
-        (borde ? ' style="--borde-ficha:' + esc(borde) + '"' : '') +
+        ' style="--borde-ficha:' + esc(COLORES[color].tono) + '"' +
+        /* Sin `data-color` aqui: el selector de color del perfil escucha ese
+           atributo, y ponerlo tambien en la cara hacia que tocar un personaje
+           se leyera como tocar un color. La ficha no necesita anunciarlo. */
         ' data-quien="' + quien + '">' +
-        window.ATWI.fondoPersonaje(quien, 'disco', borde) +
-        '<img class="retrato__fig" src="../assets/img/personajes/' + quien + '-frente.png" ' +
+        window.ATWI.fondoPersonaje(quien, 'disco', color) +
+        '<img class="retrato__fig" src="' + window.ATWI.pieza(quien, color, 'frente') + '" ' +
           'alt="' + esc(GENTE[quien].nombre) + '" loading="lazy" decoding="async">' +
       '</span>';
   };

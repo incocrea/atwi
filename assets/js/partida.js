@@ -84,7 +84,10 @@ window.ATWI = window.ATWI || {};
    * `abre` es el índice de quien habla primero, y ESO sí sale del sorteo.
    * Son dos cosas distintas y antes iban mezcladas en una sola lista.
    */
-  var COLOR_POR_DEFECTO = ['#7A6AD8', '#F0B429'];
+  /* Dos de los cuatro colores ilustrados, para cuando una partida guardada no
+     trae el suyo. Eran hexadecimales de los diez aros viejos: eso ya no apunta
+     a ningún dibujo y dejaba a la figura sin imagen. */
+  var COLOR_POR_DEFECTO = ['azul', 'amarillo'];
 
   function empezar(op) {
     var gente = (op.posturas || op.quien || ['Tú', 'La otra parte']).map(ficha);
@@ -135,7 +138,10 @@ window.ATWI = window.ATWI || {};
        sin esperarla la entrada arrancaba con las figuras a medio bajar. */
     P.poses = window.ATWI.precargarPoses(
       P.jugadores.map(function (j) { return j.avatar; }),
-      [P.modo === 'debate' ? 'plante' : 'puno']);
+      [P.modo === 'debate' ? 'plante' : 'puno'],
+      /* El color va en paralelo: cada lado tiene el suyo y la pieza que hay que
+         bajar es la de ESE color, no una cualquiera del personaje. */
+      P.jugadores.map(function (j) { return j.color; }));
     pintarAviso();
   }
 
@@ -193,7 +199,8 @@ window.ATWI = window.ATWI || {};
     };
     abrir();
     window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
-                               ['hablando']);
+                               ['hablando'],
+                               P.jugadores.map(function (j) { return j.color; }));
     pintarRepaso();
   }
 

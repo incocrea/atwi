@@ -169,6 +169,12 @@
   --radio-pastilla: 999px;
   --radio-boton: 16px;
   --radio-tarjeta: 22px;
+  /* FALTABA, y se usaba en tres sitios: el selector de personaje, el de modo y
+     una tarjeta de la sala. Una variable que no existe no es un error --el
+     navegador descarta la declaracion y sigue-- asi que esas tres piezas salian
+     con las esquinas RECTAS, en contra de la regla de la casa, y en silencio.
+     18px: entre el boton y la tarjeta, que es el tamano que tienen. */
+  --radio-carta: 18px;
   --radio-modal: 28px;
   --radio-chip: 12px;
 

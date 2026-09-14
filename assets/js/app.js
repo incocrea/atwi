@@ -86,7 +86,10 @@
     if (!b) return;
     var p = datos.perfil();
     b.hidden = vistaActual === 'perfil' || vistaActual === 'jugar';
-    b.innerHTML = window.ATWI.fichaHTML(p.avatar, 'avatar--cabecera-cara');
+    /* CON SU COLOR. Antes daba igual --el color era un aro y esta cara va sin
+       aro-- pero ahora el color ES el dibujo: sin pasarlo, quien juega de
+       amarillo se ve de azul en su propia cabecera. */
+    b.innerHTML = window.ATWI.fichaHTML(p.avatar, 'avatar--cabecera-cara', p.avatarBorde);
   }
 
   /* ======================================================================
@@ -805,11 +808,13 @@
      diez. Ahora son Kai y Luna, y con ellos se va la elección de color: el color
      es del personaje, y dejar elegirlo aparte permitía a Kai salir en rosa y a
      Luna en azul, que es romperles la identidad. */
-  var COLORES_FICHA = ['#7A6AD8', '#B063D6', '#EE7FA8', '#F07F55', '#F0B429',
-                       '#9CC93F', '#34B79B', '#3FB6D0', '#5A9BEF', '#C09A6B'];
-
+  /* EL COLOR DEJÓ DE SER UN ARO. Había diez tonos y lo único que cambiaban era
+     el borde del avatar; ahora hay cuatro y cada uno es un DIBUJO distinto, con
+     la chaqueta y las zapatillas pintadas en la lámina. La lista vive en
+     `personajes.js` junto a las piezas, no aquí: si se separan, el día que
+     entre un color nuevo habrá un selector que ofrece un dibujo que no existe. */
   var personajeElegido = 'kai';
-  var colorElegido = COLORES_FICHA[0];
+  var colorElegido = 'azul';
 
   /** El círculo del avatar: la cara del personaje, con su aro de color. */
   function avatarHTML(p, clase) {
@@ -835,16 +840,17 @@
     var g = deInvitado ? fichaDelInvitado(($('#p-otro') && $('#p-otro').value || '').trim()) : null;
 
     personajeElegido = deInvitado ? g.avatar : p.avatar;
-    colorElegido = deInvitado ? g.color : (p.avatarBorde || COLORES_FICHA[0]);
-    var vetado = deInvitado ? (p.avatarBorde || '').toLowerCase() : '';
-    /* Si el invitado llega con MI aro —porque lo eligió antes de que yo cambiara
-       el mío, o porque se lo asignó el reparto— no se le deja así en silencio:
-       se le mueve a uno libre y se le dice por qué. Dos aros iguales en la misma
-       sala hacen indistinguibles las dos fichas, que es justo para lo que
-       sirven. */
-    var chocaba = deInvitado && colorElegido &&
-                  colorElegido.toLowerCase() === vetado;
-    if (chocaba) colorElegido = colorLibre();
+    colorElegido = window.ATWI.elColor(deInvitado ? g.color : p.avatarBorde);
+
+    /* EL VETO CAMBIÓ DE EJE, y no por gusto. Antes se apartaba MI COLOR —dos
+       aros iguales no se distinguían— y dos Kai en la misma sala valían. Ahora
+       el color ES el dibujo, así que dos Kai en azul son la misma figura
+       exacta: indistinguibles de verdad, no solo parecidas. Lo que se aparta
+       pasa a ser MI PERSONAJE, y el color queda libre —decisión del titular:
+       «no podrán ser el mismo personaje, eso es suficiente»—. */
+    var vetado = deInvitado ? p.avatar : '';
+    var chocaba = deInvitado && personajeElegido === vetado;
+    if (chocaba) personajeElegido = window.ATWI.otroPersonaje(vetado);
 
     $('#m-perfil .modal__titulo').textContent = deInvitado
       ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
@@ -879,51 +885,51 @@
                 'persona en la sala y en el resultado.</span>' +
             '</label>') +
 
-        /* El invitado elige igual que yo, y puede elegir el MISMO personaje: en
-           una sala pueden jugar dos Kai, y lo que los distingue es el aro. Se
-           probó a asignárselo automáticamente —el que yo no soy— y lo que salía
-           era una pantalla sin nada que decidir. */
+        /* CADA PERSONAJE APARECE UNA VEZ, no cuatro. Decisión del titular: la
+           cara se elige aquí y el color aparte, y al tocar una cara se carga su
+           variante del color que esté puesto. Poner las veinticuatro fichas
+           sería la misma decisión partida en dos pantallas. */
         '<div>' +
           '<span class="chico" style="font-weight:700">' +
             (deInvitado ? '¿Con quién juega?' : '¿Con quién juegas?') + '</span>' +
           '<div class="personajes" style="margin-top:var(--e-2)">' +
             window.ATWI.quienes().map(function (q) {
-              return '<button class="personaje" data-personaje="' + q.clave + '"' +
+              var suyo = q.clave === vetado;
+              return '<button class="personaje' + (suyo ? ' personaje--tomado' : '') + '"' +
+                ' data-personaje="' + q.clave + '"' + (suyo ? ' disabled' : '') +
                 (q.clave === personajeElegido ? ' aria-pressed="true"' : '') +
-                ' style="--pj:' + q.color + '">' +
-                window.ATWI.fichaHTML(q.clave, 'personaje__cara') +
+                ' style="--pj:' + window.ATWI.colorPersonaje(colorElegido) + '">' +
+                window.ATWI.fichaHTML(q.clave, 'personaje__cara', colorElegido) +
                 '<span class="personaje__nombre">' + esc(q.nombre) + '</span>' +
               '</button>';
-            }).join('') +
-          '</div>' +
-        '</div>' +
-
-        /* El aro vuelve a elegirse. El personaje dice quién eres; el aro, cuál
-           de las dos fichas es la tuya cuando las dos están en la misma sala. */
-        '<div>' +
-          '<span class="chico" style="font-weight:700">' +
-            (deInvitado ? 'El aro de su ficha' : 'El aro de tu ficha') + '</span>' +
-          /* El punto va en un <i> dentro del botón: así el color puede ser
-             pequeño —caben los diez en una fila— mientras el área que se toca
-             sigue siendo alta y cómoda. */
-          '<div class="colores" style="margin-top:var(--e-2)">' +
-            COLORES_FICHA.map(function (c, i) {
-              var esMio = c.toLowerCase() === vetado;
-              return '<button class="color' + (esMio ? ' color--tomado' : '') + '" data-color="' + c + '"' +
-                (esMio ? ' disabled' : '') +
-                (c.toLowerCase() === colorElegido.toLowerCase() ? ' aria-pressed="true"' : '') +
-                ' aria-label="' + (esMio ? 'Ese aro ya es el tuyo' : 'Color ' + (i + 1)) + '">' +
-                '<i style="background:' + c + '"></i></button>';
             }).join('') +
           '</div>' +
           (deInvitado
             ? '<p class="chico' + (chocaba ? ' aviso-aro' : ' tenue') + '" style="margin-top:6px">' +
               (chocaba
-                ? 'Ese aro ya es el tuyo, así que le pusimos otro. Elige el que quieras ' +
-                  'de los que quedan.'
-                : 'El tuyo está apartado: dos aros del mismo color no se distinguen ' +
-                  'en la sala.') + '</p>'
+                ? 'Ese personaje ya es el tuyo, así que le pusimos otro.'
+                : 'El tuyo está apartado: dos figuras iguales no se distinguen en ' +
+                  'la sala.') + '</p>'
             : '') +
+        '</div>' +
+
+        /* EL COLOR NO ES UN ADORNO: es la ropa del dibujo. Al tocarlo se
+           recargan las seis caras de arriba, porque lo que se está eligiendo es
+           con qué versión se juega. */
+        '<div>' +
+          '<span class="chico" style="font-weight:700">' +
+            (deInvitado ? 'Su color' : 'Tu color') + '</span>' +
+          '<div class="colores" style="margin-top:var(--e-2)">' +
+            window.ATWI.colores().map(function (c) {
+              return '<button class="color" data-color="' + c.clave + '"' +
+                (c.clave === colorElegido ? ' aria-pressed="true"' : '') +
+                ' aria-label="' + esc(c.nombre) + '">' +
+                '<i style="background:' + c.tono + '"></i></button>';
+            }).join('') +
+          '</div>' +
+          '<p class="chico tenue" style="margin-top:6px">' +
+            'Cambia la ropa del personaje, no solo el borde. Los dos pueden ' +
+            'llevar el mismo.</p>' +
         '</div>' +
 
         '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
@@ -1314,17 +1320,12 @@
          cambiar: dos Kai en la misma sala valen, los distingue el aro. */
       avatar: (g && g.avatar) || propuesta.otroAvatar ||
               window.ATWI.otroPersonaje(datos.perfil().avatar),
-      color: (g && g.color) || propuesta.otroColor || colorLibre()
+      /* El color SÍ puede repetirse —lo que distingue ahora es la figura— así
+         que el invitado hereda el mío si no tiene uno propio. Darle otro a la
+         fuerza sería decidir por él algo que ya no hace falta decidir. */
+      color: window.ATWI.elColor((g && g.color) || propuesta.otroColor ||
+                                 datos.perfil().avatarBorde)
     };
-  }
-
-  /** Un aro que no sea el mío: dos iguales no se distinguen en la sala. */
-  function colorLibre() {
-    var mio = (datos.perfil().avatarBorde || '').toLowerCase();
-    for (var i = 0; i < COLORES_FICHA.length; i++) {
-      if (COLORES_FICHA[i].toLowerCase() !== mio) return COLORES_FICHA[i];
-    }
-    return COLORES_FICHA[0];
   }
 
   /**
@@ -1489,7 +1490,12 @@
       var suyo = x.repre || x.ficha;
       var conAbogado = Boolean(x.repre);
       return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '">' +
-          window.ATWI.fichaHTML(suyo, 'avatar--mini', conAbogado ? null : x.color) +
+          /* SIEMPRE EN EL COLOR DEL CLIENTE, también con abogado. Aquí se
+             pasaba `null` cuando había abogado, porque el color era un aro y un
+             aro ajeno confundía. Ahora el color es la ropa y la regla del
+             titular es al revés: el abogado sale en el color de perfil de quien
+             lo contrata, que es lo que lo hace reconociblemente suyo. */
+          window.ATWI.fichaHTML(suyo, 'avatar--mini', x.color) +
           '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
           '<span class="repre__como">' +
             (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' lo defiende'
@@ -1517,6 +1523,9 @@
     var delOtro = cual === 'yo' ? propuesta.repreOtro : propuesta.repreYo;
     var nombre = ($(cual === 'yo' ? '#p-yo' : '#p-otro') || {}).value || '';
 
+    var miColor = window.ATWI.elColor(cual === 'yo'
+      ? datos.perfil().avatarBorde : (propuesta.otroColor || datos.perfil().avatarBorde));
+
     $('#m-abogados .modal__titulo').textContent =
       nombre.trim() ? 'El abogado de ' + nombre.trim() : 'Elegí el abogado';
 
@@ -1532,7 +1541,11 @@
               (mio === q.clave ? ' abogado-ficha--puesta' : '') +
               (ocupado ? ' abogado-ficha--ocupada' : '') + '"' +
               ' data-abogado-es="' + q.clave + '"' + (ocupado ? ' disabled' : '') + '>' +
-              window.ATWI.fichaHTML(q.clave, 'abogado-ficha__cara') +
+              /* EN EL COLOR DE SU CLIENTE. Decisión del titular: el abogado no
+                 elige color, sale en el del perfil de quien lo contrata. Así la
+                 figura que se ve en la sala es reconociblemente tuya aunque la
+                 cara sea de otro. */
+              window.ATWI.fichaHTML(q.clave, 'abogado-ficha__cara', miColor) +
               '<span class="abogado-ficha__n">' + esc(q.nombre) + '</span>' +
               '<span class="abogado-ficha__nota">' +
                 (ocupado ? 'Ya lo tomó la otra parte' : esc(comoHabla(q.clave))) +
@@ -1548,7 +1561,16 @@
      justo en cómo van a decir lo tuyo. */
   var COMO_HABLAN = {
     kai: 'Directo y con frases cortas',
-    luna: 'Cálida y va encadenando'
+    luna: 'Cálida y va encadenando',
+    /* LOS CUATRO DE ABAJO NO TIENEN PERSONALIDAD ESCRITA TODAVÍA. Kai y Luna la
+       tienen en la función de borde, con sus reglas y sus guardas, y se midió
+       que respetaran los marcadores de opinión; éstos entraron con el dibujo,
+       no con el prompt. Lo que dice aquí es una promesa, así que hasta que la
+       tengan se dice lo único que es verdad: que hablan como el personaje. */
+    nico: 'Todavía sin voz propia',
+    dante: 'Todavía sin voz propia',
+    nina: 'Todavía sin voz propia',
+    maya: 'Todavía sin voz propia'
   };
   function comoHabla(clave) { return COMO_HABLAN[clave] || ''; }
 
@@ -1797,19 +1819,28 @@
       return;
     }
 
-    var col = e.target.closest('[data-color]');
+    var col = e.target.closest('#m-perfil .colores [data-color]');
     if (col) {
       colorElegido = col.dataset.color;
       $$('#m-perfil [data-color]').forEach(function (x) {
         if (x.dataset.color === colorElegido) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
+      /* LAS SEIS CARAS SE REPINTAN, que antes no hacía falta. El color ya no es
+         un aro alrededor de una cara que no cambia: es la ropa del dibujo, así
+         que al tocarlo todas las fichas de arriba pasan a ser otra imagen. */
+      $$('#m-perfil [data-personaje]').forEach(function (b) {
+        var q = b.dataset.personaje;
+        b.style.setProperty('--pj', window.ATWI.colorPersonaje(colorElegido));
+        var cara = b.querySelector('.avatar');
+        if (cara) cara.outerHTML = window.ATWI.fichaHTML(q, 'personaje__cara', colorElegido);
+      });
       refrescarMuestra();
       return;
     }
 
     var pj = e.target.closest('[data-personaje]');
-    if (pj) {
+    if (pj && !pj.disabled) {
       personajeElegido = pj.dataset.personaje;
       $$('#m-perfil [data-personaje]').forEach(function (x) {
         if (x.dataset.personaje === personajeElegido) x.setAttribute('aria-pressed', 'true');

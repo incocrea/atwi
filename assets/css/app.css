@@ -375,7 +375,12 @@ body.app {
 /* El selector: las dos caras grandes, una al lado de la otra, con su nombre
    debajo. `minmax(0, 1fr)` y no `1fr`: el mínimo del contenido ensancharía la
    columna y sacaría la fila por el costado. */
-.personajes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--e-3); }
+/* TRES POR FILA, que eran dos. Con seis personajes en dos columnas salen tres
+   filas y el selector pide scroll en una pantalla que se decide de un vistazo;
+   en tres columnas son dos filas y entran enteras. `minmax(0, 1fr)` y no `1fr`:
+   el minimo de `1fr` es el del contenido y un nombre largo ensancharia la
+   columna hasta sacar la pantalla de los 430 px. */
+.personajes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--e-2); }
 .personaje {
   display: grid; justify-items: center; gap: 6px;
   padding: var(--e-3) var(--e-2);
@@ -943,7 +948,9 @@ body.app {
    El punto de color es pequeño, pero el botón que lo contiene es alto: lo que
    se toca no es el círculo sino los 44 px de alto del botón. Encogerlo todo
    habría dejado dianas de 26 px, que es la mitad de lo que hace falta. */
-.colores { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+/* CUATRO, que eran diez. Y al ser cuatro caben grandes: el color ya no es un
+   punto de adorno, es la ropa del dibujo, asi que merece area de toque. */
+.colores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--e-2); }
 .color {
   height: 44px; min-width: 0; padding: 0; border: 0;
   background: none; cursor: pointer;
@@ -951,7 +958,7 @@ body.app {
   transition: transform var(--dur-corta) var(--suave);
 }
 .color i {
-  width: 100%; max-width: 28px; aspect-ratio: 1; border-radius: 50%;
+  width: 100%; max-width: 40px; aspect-ratio: 1; border-radius: 50%;
   /* El aro blanco es el mismo recurso que usan los iconos ilustrados: recorta
      el color del fondo, sea cual sea. */
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .85), var(--sombra-1);
@@ -1535,7 +1542,11 @@ body.app {
 }
 .invitado[aria-pressed="true"] { border-color: var(--lavanda); color: var(--tinta); }
 
+/* Lo que ya se llevo el otro, en gris y sin poder tocarse. Se deja A LA VISTA
+   en vez de esconderlo: si desaparece, la rejilla se recoloca y lo que estaba
+   mirando alguien salta de sitio. */
 .color--tomado { opacity: .28; cursor: not-allowed; }
+.personaje--tomado { opacity: .3; cursor: not-allowed; filter: grayscale(1); }
 
 /* --- El reproductor flotante ---------------------------------------------------
    Se levanta sobre la sala al tocar una rueda. Barra que se arrastra y

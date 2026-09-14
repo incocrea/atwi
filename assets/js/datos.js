@@ -87,10 +87,12 @@ window.ATWI = window.ATWI || {};
        entonces se normaliza al cargar, porque un perfil viejo traería un emoji
        aquí y la sala intentaría pintarlo como si fuera una cara. */
     avatar: 'kai',
-    /* El color YA NO ES EL FONDO: el fondo lo pone el tinte del personaje. Esto
-       es el aro que lo rodea, y sí se elige, porque es lo que distingue mi ficha
-       de la del otro sin obligarnos a ser personajes distintos. */
-    avatarBorde: '#7A6AD8',
+    /* EL COLOR ES LA ROPA DEL DIBUJO. Fue el fondo hasta el 2026-09-12, después
+       un aro de diez tonos, y desde el 2026-09-13 es una de cuatro variantes
+       ilustradas: elegirlo elige sprite. El nombre `avatarBorde` se queda
+       porque es lo que hay guardado en los teléfonos y en la base; renombrarlo
+       obligaría a migrar dos sitios para ganar una palabra. */
+    avatarBorde: 'azul',
     nivel: 1,
     puntos: 0,
     puntosNivel: 100,
@@ -121,6 +123,11 @@ window.ATWI = window.ATWI || {};
        encuentra donde toca y no de vuelta en el de por defecto. */
     if (!perfil.avatarBorde) perfil.avatarBorde = perfil.avatarFondo || PERFIL_NUEVO.avatarBorde;
     delete perfil.avatarFondo;
+    /* Lo guardado antes del 2026-09-13 es un hexadecimal de los diez aros, y
+       eso ya no apunta a ningún dibujo. Cae en el de serie en vez de dejar al
+       personaje sin imagen; no hay forma honesta de repartir diez tonos entre
+       cuatro variantes ilustradas. */
+    if (window.ATWI.elColor) perfil.avatarBorde = window.ATWI.elColor(perfil.avatarBorde);
     /* Lo guardado antes de la regla del nombre viene entero. Aquí se recorta, y
        no se le pide a nadie que lo arregle: el rótulo de la sala tiene que caber
        hoy, con lo que haya, sin pasar por un formulario. */
