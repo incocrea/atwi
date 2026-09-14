@@ -205,23 +205,31 @@ body.app {
 }
 #m-tema .modal__pie { background: none; border-top: 0; }
 
-/* La pantalla de «cómo se juega» lleva EL MISMO fondo que el catálogo de ese
-   modo. No es pereza: son el mismo momento partido en dos pantallas —acabás de
-   elegir modo y estás decidiendo si jugarlo— y darles fondos distintos haría
-   parecer que se cambió de sitio. El modal ya sabe de qué modo es, porque
-   `app.js` le pone `modal--debate` o `modal--negociacion` al abrirlo.
+/* LAS DOS PANTALLAS PREVIAS LLEVAN EL FONDO DE SU MODO: «cómo se juega» y
+   «antes de empezar». Es el mismo fondo que el catálogo de ese modo, y no es
+   pereza: son el mismo momento partido en pantallas —elegiste modo, lo estás
+   entendiendo, estás preparando la partida— y cambiar de fondo entre ellas
+   haría parecer que se cambió de sitio. La sala sí lleva el suyo, porque ahí
+   empieza otra cosa.
+
+   Los dos modales ya saben de qué modo son: `app.js` les pone `modal--debate` o
+   `modal--negociacion` al abrirlos. Una sola regla para los dos, porque el día
+   que el fondo cambie tiene que cambiar en los dos a la vez.
 
    Va en el modal y no en su cuerpo, por lo mismo que `#m-tema`: en el cuerpo,
    el pie trae su propio color y deja una raya cruzando la pantalla. */
-#m-explicar.modal--debate {
+#m-explicar.modal--debate,
+#m-preparar.modal--debate {
   background: url(../img/fondos/debate.webp) center top / cover no-repeat,
               var(--debate-tinte);
 }
-#m-explicar.modal--negociacion {
+#m-explicar.modal--negociacion,
+#m-preparar.modal--negociacion {
   background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
               var(--negociacion-tinte);
 }
-#m-explicar .modal__pie { background: none; border-top: 0; }
+#m-explicar .modal__pie,
+#m-preparar .modal__pie { background: none; border-top: 0; }
 
 @keyframes entra {
   from { opacity: 0; transform: translateY(8px); }
