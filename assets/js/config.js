@@ -51,9 +51,9 @@ window.ATWI.config = {
      de qué va esto en una línea, y eso solo hace falta la primera vez. En una
      pantalla que se abre cada día, repetir la frase de presentación la gasta. */
   descargo:
-    'ATWI se apoya en modelos de IA para facilitar la resolución de conflictos y ' +
-    'promover el ejercicio del debate de forma divertida. Aunque puede ayudar a mediar ' +
-    'diferencias y lograr acuerdos, no reemplaza la terapia ni asesoramiento profesional.',
+    'ATWI usa IA para facilitar la resolución de conflictos y promover el ejercicio ' +
+    'del debate. Aunque ayuda a mediar diferencias y lograr acuerdos de forma ' +
+    'divertida, no reemplaza la terapia ni asesoramiento profesional.',
 
   gancho:
     '<span class="aviso-ia__gancho">«Es como el UNO, pero en vez de provocar ' +
@@ -64,7 +64,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '09619f8',
+  version: '2e924c9',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

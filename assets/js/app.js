@@ -1197,9 +1197,7 @@
        escritos: quien está a un toque de grabar no debería perder nada por
        corregir una frase. */
     if (!$('#m-preparar').hidden) {
-      var yoActual = ($('#p-yo') && $('#p-yo').value || '').trim();
       abrirPreparar(true);
-      if (yoActual && $('#p-yo')) $('#p-yo').value = yoActual;
       revisarPreparar();
     } else if (!$('#m-tema').hidden) {
       abrirTema(guardado.id);
@@ -1435,18 +1433,11 @@
          vale igual, y el juez lo dice: es la discusión de horas en la que los
          dos defendían la misma idea sin enterarse. */
 
-      '<h3 style="margin-bottom:var(--e-2)">¿Quiénes juegan?</h3>' +
-
-      /* Los dos nombres se ven SIEMPRE, y el propio viene ya puesto desde la
-         ficha. Antes solo se preguntaba cuando faltaba, así que quien ya tenía
-         nombre no veía con qué nombre iba a salir en la sala ni podía
-         cambiarlo sin irse a Perfil. Lo que se escriba aquí actualiza la ficha. */
-      '<label style="display:block;margin-bottom:var(--e-3)">' +
-        '<span class="chico" style="font-weight:700">Tu nombre</span>' +
-        '<input class="campo" id="p-yo" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-          'autocomplete="given-name" placeholder="Tu nombre" value="' + esc(p.nombre) + '" ' +
-          'style="margin-top:6px">' +
-      '</label>' +
+      /* SOLO EL INVITADO (decisión del titular, 2026-09-14). El campo del
+         nombre propio se quitó: viene del perfil y ya se ve en la cabecera y en
+         la línea de abogado, así que preguntarlo aquí era pedir dos veces algo
+         que no cambia. Lo que sí cambia cada partida es con quién se juega, y
+         eso es lo único que queda. Para cambiarse el nombre está Perfil. */
 
       /* La ficha del invitado se toca para elegirle dibujo y color. No es una
          cuenta: es alguien que agarró este teléfono. Pero su ficha se recuerda,
@@ -1459,7 +1450,10 @@
          que podía tocarlo. Arriba se ven antes de empezar a escribir, que es
          cuando sirven. */
       '<div class="fila-invitado">' +
-        '<span class="chico" style="font-weight:700">Nombre de invitado</span>' +
+        /* UN SOLO RÓTULO. Estaban «Invitado local» de título y «Nombre de
+           invitado» de etiqueta, uno encima del otro diciendo lo mismo. Se
+           queda el título, con los atajos a su derecha en la misma fila. */
+        '<h3 style="margin:0">Invitado local</h3>' +
         chipsDeInvitados() +
       '</div>' +
       /* EL CAMPO PRIMERO Y LA FICHA DESPUÉS. Va en el orden del HTML y no con
@@ -1474,9 +1468,11 @@
             .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
         '</button>' +
       '</div>' +
-      '<span class="chico tenue" style="display:block;margin-top:6px">' +
-        'Su primer nombre o un apodo, una sola palabra. Van a jugar los dos en este ' +
-        'teléfono, por turnos: toca el círculo para elegirle personaje y aro.</span>' +
+      /* Aquí había un párrafo explicando «una sola palabra, primer nombre o
+         apodo». Se fue: el campo ya no ADMITE un espacio ni una letra de más,
+         así que la regla se aprende al escribir en vez de leyéndola. Lo único
+         que el campo no puede decir solo —que tocando el círculo se le elige
+         personaje— lo dice el propio círculo al tocarlo. */
 
       /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no
          un historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE;
@@ -1498,10 +1494,11 @@
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
-      '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
-        '<span>Quién abre se sortea, como en ajedrez, y se enseña antes de empezar. ' +
-        'En la revancha abre ' + (propuesta.modo === 'debate' ? 'el otro' : 'la otra parte') + '.</span>' +
-      '</div>';
+      /* Y aquí había un aviso diciendo que quién abre se sortea. También se
+         fue: el botón dice «Sortear quién abre» y a continuación se ve la
+         ruleta girando. Explicar por escrito lo que se va a ver en pantalla dos
+         segundos después es contar el final antes de la película. */
+      '';
 
     var b = $('#m-preparar .modal__pie button');
     b.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
@@ -1572,7 +1569,9 @@
     eligiendoPara = cual;
     var mio = cual === 'yo' ? propuesta.repreYo : propuesta.repreOtro;
     var delOtro = cual === 'yo' ? propuesta.repreOtro : propuesta.repreYo;
-    var nombre = ($(cual === 'yo' ? '#p-yo' : '#p-otro') || {}).value || '';
+    /* El propio sale del perfil y ya no de un campo: ese campo se quitó. */
+    var nombre = cual === 'yo' ? datos.perfil().nombre
+                               : (($('#p-otro') || {}).value || '');
 
     var miColor = window.ATWI.elColor(cual === 'yo'
       ? datos.perfil().avatarBorde : (propuesta.otroColor || datos.perfil().avatarBorde));
@@ -1649,7 +1648,7 @@
      «Mi abogado» y «Su abogado» funcionan, pero con dos fichas iguales al lado
      hay que pararse a pensar cuál es cuál, y esto se decide de un vistazo. */
   function nombrarAbogados() {
-    var yo = ($('#p-yo') && $('#p-yo').value || '').trim();
+    var yo = datos.limpiarNombre(datos.perfil().nombre);
     var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
     var a = $('#repre-yo'), b = $('#repre-otro');
     if (a) a.textContent = yo || 'Vos';
@@ -1661,8 +1660,9 @@
     /* El botón se apaga con la MISMA regla con la que se rechaza al pulsarlo.
        Tenía la suya —dos letras y nada más— y eso dejaba encender el botón con
        un nombre que luego no pasaba, que es la peor de las dos opciones. */
-    var mal = datos.errorDeNombre($('#p-otro') && $('#p-otro').value) ||
-              datos.errorDeNombre($('#p-yo') && $('#p-yo').value);
+    /* Solo por el invitado: el propio viene del perfil, que ya pasó por esta
+       misma regla en la puerta, y aquí no hay campo donde corregirlo. */
+    var mal = datos.errorDeNombre($('#p-otro') && $('#p-otro').value);
     $('#m-preparar .modal__pie button').disabled = Boolean(mal);
   }
 
@@ -1672,10 +1672,16 @@
   function sortearYJugar() {
     var t = datos.tema(propuesta.temaId);
     var otro = datos.limpiarNombre($('#p-otro').value);
-    var yo = datos.limpiarNombre($('#p-yo').value);
+    var yo = datos.limpiarNombre(datos.perfil().nombre);
 
-    var malYo = datos.errorDeNombre(yo);
-    if (malYo) { $('#p-error').textContent = malYo; return; }
+    /* El propio ya no se escribe aquí, pero se comprueba igual: un perfil de
+       antes de la regla del nombre puede traer algo que no pasaría hoy, y
+       enterarse en la sala sería tarde. Se manda a Perfil, que es donde se
+       arregla. */
+    if (datos.errorDeNombre(yo)) {
+      $('#p-error').textContent = 'Tu nombre no vale para la sala. Cámbialo en Perfil.';
+      return;
+    }
     var malOtro = datos.errorDeNombre(otro);
     if (malOtro) {
       $('#p-error').textContent = malOtro.replace('Escribe tu nombre.', 'Escribe con quién juegas.');
@@ -2029,6 +2035,25 @@
   var reponerFoco = false;
   document.addEventListener('input', function (e) {
     if (e.target.id === 'p-otro') {
+      /* LA REGLA SE APLICA EN EL CAMPO, no al enviar. Un campo que sencillamente
+         no admite un espacio ni una letra de más se explica solo, y por eso el
+         párrafo que decía «una sola palabra» se pudo quitar.
+
+         Se reescribe SOLO si el filtro quitó algo, y se repone el cursor: tocar
+         `value` en cada tecla manda el cursor al final, así que corregir una
+         letra en medio de un nombre ya escrito se volvía imposible. El cursor
+         retrocede tantas posiciones como caracteres se hayan comido antes de
+         él, que es donde estaría si nunca hubieran entrado. */
+      var crudo = e.target.value;
+      var limpio = datos.filtrarNombre(crudo);
+      if (limpio !== crudo) {
+        var cursor = e.target.selectionStart || 0;
+        var comidos = crudo.slice(0, cursor).length -
+                      datos.filtrarNombre(crudo.slice(0, cursor)).length;
+        e.target.value = limpio;
+        try { e.target.setSelectionRange(cursor - comidos, cursor - comidos); }
+        catch (x) {}
+      }
       /* Se guarda según se escribe: un repintado —al retocar un texto desde
          aquí— dejaba el campo vacío porque solo se leía al sortear. */
       propuesta.otro = e.target.value.trim();
@@ -2050,7 +2075,7 @@
       revisarPreparar();
       return;
     }
-    if (e.target.id === 'p-yo') { revisarPreparar(); return; }
+
     if (e.target.id !== 'q') return;
     busqueda = e.target.value;
     reponerFoco = true;

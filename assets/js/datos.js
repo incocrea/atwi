@@ -61,6 +61,32 @@ window.ATWI = window.ATWI || {};
     return limpiarNombre(s).split(' ')[0].slice(0, NOMBRE_MAX);
   }
 
+  /* LO QUE EL CAMPO NO DEJA ESCRIBIR, decisión del titular (2026-09-14). La
+     regla se aplica TECLA A TECLA y no al enviar: un campo que no admite un
+     espacio se explica solo, y el párrafo que decía «una sola palabra» sobra.
+
+     Pasan letras —con acentos y con ñ—, cifras, y el guion, el apóstrofo y el
+     punto, que sí salen en nombres reales. NO pasa nada más: ni espacios, ni
+     emoji, ni signos. El nombre se copia en cada turno, viaja a la base y se
+     pinta en pantalla, y cuanto menos superficie tenga, menos hay que confiar
+     en que los cuatro sitios que lo escapan lo escapen bien.
+
+     La clase se construye UNA vez y con red: `\p{L}` necesita la bandera `u` y
+     un navegador viejo la rechaza al compilar. Si eso pasa, cae a un rango
+     latino en vez de quedarse sin filtro, porque un filtro que no compila
+     borraría el campo entero o no filtraría nada, y las dos son peores. */
+  var PASAN;
+  try {
+    PASAN = new RegExp('[^\\p{L}\\p{N}\'.\\-]', 'gu');
+  } catch (e) {
+    PASAN = /[^A-Za-zÀ-ÖØ-öø-ÿ0-9'.\-]/g;
+  }
+
+  /** El nombre tal como puede quedarse en el campo mientras se escribe. */
+  function filtrarNombre(s) {
+    return String(s == null ? '' : s).replace(PASAN, '').slice(0, NOMBRE_MAX);
+  }
+
   /** El motivo por el que este nombre no vale, o '' si vale. El texto se enseña
       tal cual, así que dice qué hacer y no solo qué está mal. */
   function errorDeNombre(s) {
@@ -241,6 +267,7 @@ window.ATWI = window.ATWI || {};
     NOMBRE_MAX: NOMBRE_MAX,
     limpiarNombre: limpiarNombre,
     recortarNombre: recortarNombre,
+    filtrarNombre: filtrarNombre,
     errorDeNombre: errorDeNombre,
 
     perfil: cargar,
