@@ -233,16 +233,20 @@ window.ATWI = window.ATWI || {};
     };
   }
 
-  /* Dos fichas iguales no se distinguen, que es justo para lo que sirven. Pero
-     lo que se separa es el ARO, no el personaje: dos Kai en la misma sala valen
-     —cada uno con su aro— y cambiarle el personaje a alguien porque el otro
-     eligió el mismo es decidir por él. */
-  function separarFichas() {
-    var a = P.jugadores[0], b = P.jugadores[1];
-    if (a.color.toLowerCase() !== b.color.toLowerCase()) return;
-    b.color = b.color.toLowerCase() === COLOR_POR_DEFECTO[1].toLowerCase()
-      ? COLOR_POR_DEFECTO[0] : COLOR_POR_DEFECTO[1];
-  }
+  /* LA REGLA VIEJA ERA SEPARAR POR COLOR, y ya no vale. Cuando el color era un
+     aro alrededor de una cara que no cambiaba, dos fichas del mismo color eran
+     indistinguibles y se le movia el aro a uno. Desde que el color es EL DIBUJO,
+     dos personas del mismo color siguen siendo dos dibujos distintos, y en
+     cambio dos del mismo personaje son la misma figura exacta.
+
+     Asi que lo que tiene que diferir es el PERSONAJE, y eso ya no se arregla
+     aqui a escondidas: se avisa antes de lanzar, en la pantalla de preparar,
+     donde todavia se puede cambiar. Cambiarle el color a alguien a espaldas
+     suyas solo conseguia que la sala no se pareciera a lo que habia elegido.
+
+     Se deja la funcion vacia y no se borra la llamada porque el sitio donde se
+     llamaba sigue siendo el bueno el dia que haga falta otra comprobacion. */
+  function separarFichas() {}
 
   function abrir() {
     var m = $('#m-partida');
@@ -951,11 +955,17 @@ window.ATWI = window.ATWI || {};
        donde ya estaban. */
     caja.innerHTML =
       '<span class="encuentro__lado encuentro__lado--izq">' +
+        /* CON SU COLOR. Iba sin el, asi que `retrato` caia en el de serie y las
+           dos figuras salian SIEMPRE EN AZUL por mucho que cada uno hubiera
+           elegido el suyo. Los rotulos de abajo si llevaban el color bueno, que
+           es lo que hacia que no cuadraran: el chip verde y la figura azul. */
         window.ATWI.retrato(izq.avatar, pose, { fondo: null, mira: 'derecha',
+                                                color: izq.color,
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
       '<span class="encuentro__lado encuentro__lado--der">' +
         window.ATWI.retrato(der.avatar, pose, { fondo: null, mira: 'izquierda',
+                                                color: der.color,
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
       '<span class="encuentro__rotulos">' + rotulado(izq) + rotulado(der) + '</span>' +
