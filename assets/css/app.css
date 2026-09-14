@@ -930,7 +930,13 @@ body.app {
      Centrando la CAJA, la cinta quedaba casi 10 % alta y las letras montadas
      en su borde de arriba. Centrando la BANDA, se apoyan donde tienen que
      apoyarse. */
-  transform: translateY(-40.1%);
+  /* Y 5 px más abajo todavía, a ojo del titular sobre lo ya centrado. Van en
+     píxeles y no en porcentaje a propósito: es un retoque fino sobre una cinta
+     que ya está donde le toca, no una proporción que deba crecer con ella.
+     En una variable porque la animación de entrada repite el mismo desplazamiento
+     y con dos números sueltos el listón daría un salto al terminar de entrar. */
+  --liston-y: calc(-40.1% + 5px);
+  transform: translateY(var(--liston-y));
   background: url(../img/atwi/liston.png) center / contain no-repeat;
   filter: drop-shadow(0 4px 12px var(--veredicto-sombra));
   opacity: 0; pointer-events: none;
@@ -939,8 +945,8 @@ body.app {
   animation: liston-entra 420ms var(--rebote) both;
 }
 @keyframes liston-entra {
-  from { opacity: 0; transform: translateY(-40.1%) scaleX(.2); }
-  to { opacity: 1; transform: translateY(-40.1%) scaleX(1); }
+  from { opacity: 0; transform: translateY(var(--liston-y)) scaleX(.2); }
+  to { opacity: 1; transform: translateY(var(--liston-y)) scaleX(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .revelacion__frase--montada::before { animation: none; opacity: 1; }
