@@ -1591,18 +1591,21 @@
   /* Una línea por personaje para que la elección no sea a ciegas: dos dibujos
      sin más no dicen en qué se diferencian, y en lo que se diferencian es
      justo en cómo van a decir lo tuyo. */
+  /* CADA LÍNEA RESUME SU PERSONALIDAD, y la personalidad de verdad vive en
+     `VOCES` de `supabase/functions/turno/index.ts`. Esto es un RESUMEN, no la
+     fuente: si allí se le cambia el carácter a alguno, aquí hay que venir.
+
+     Los cuatro nuevos decían «Todavía sin voz propia» y era cierto hasta que se
+     les escribió una (2026-09-14); quedó sin actualizar y la pantalla siguió
+     diciendo que no tenían lo que ya tenían. Cada línea nombra su EJE, que es
+     en lo que se diferencian: en cómo van a decir lo tuyo. */
   var COMO_HABLAN = {
     kai: 'Directo y con frases cortas',
     luna: 'Cálida y va encadenando',
-    /* LOS CUATRO DE ABAJO NO TIENEN PERSONALIDAD ESCRITA TODAVÍA. Kai y Luna la
-       tienen en la función de borde, con sus reglas y sus guardas, y se midió
-       que respetaran los marcadores de opinión; éstos entraron con el dibujo,
-       no con el prompt. Lo que dice aquí es una promesa, así que hasta que la
-       tengan se dice lo único que es verdad: que hablan como el personaje. */
-    nico: 'Todavía sin voz propia',
-    dante: 'Todavía sin voz propia',
-    nina: 'Todavía sin voz propia',
-    maya: 'Todavía sin voz propia'
+    nico: 'Tranquilo y lo pone por pasos',
+    dante: 'Seco: dice poco y se queda',
+    nina: 'Con chispa, y subraya lo tuyo',
+    maya: 'Pausada y lo pone en imágenes'
   };
   function comoHabla(clave) { return COMO_HABLAN[clave] || ''; }
 
