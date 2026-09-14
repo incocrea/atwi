@@ -130,36 +130,56 @@ body.app {
 }
 .vista[data-activa] { display: block; animation: entra var(--dur-media) var(--suave); }
 
-/* EL FONDO DE LA PORTADA. Va en `.marco` y no en la vista, por dos razones.
-   La vista es la que SCROLLEA: puesto ahí, el dibujo se arrastraría con el
-   contenido, y una trama de burbujas que sube es mareo, no decorado. Y la
-   cabecera queda FUERA de la vista, así que el fondo cortaría justo debajo del
-   logotipo y se vería la costura. En `.marco` es el papel de pared de toda la
-   pantalla, que es lo que parece que es.
+/* LOS FONDOS DE PANTALLA. Van en `.marco` y no en la vista, por dos razones. La
+   vista es la que SCROLLEA: puesta ahi, la trama se arrastraria con el
+   contenido, y un dibujo que sube es mareo, no decorado. Y la cabecera queda
+   FUERA de la vista, asi que el fondo cortaria justo debajo del logotipo y se
+   veria la costura. En `.marco` es el papel de pared de la pantalla entera.
 
    `:has()` en vez de una clase que ponga el JS: la vista activa ya se marca con
-   `data-activa`, y un segundo sitio donde apuntar lo mismo es un segundo sitio
-   donde se puede quedar desincronizado.
+   `data-activa` y el paso del catalogo con `data-paso`; un segundo sitio donde
+   apuntar lo mismo es un segundo sitio donde se puede quedar desincronizado.
 
-   Solo en la portada. El catálogo y el historial son listas largas y una trama
-   debajo de veinte tarjetas pelea con ellas; la portada tiene dos tarjetas
-   grandes y aire de sobra, que es donde un fondo aporta. */
-.marco:has(#v-jugar[data-activa])::before {
+   UNA SOLA REGLA QUE PINTA Y VARIAS QUE ELIGEN. Con `--fondo` a `none` la
+   declaracion sigue siendo valida y no pinta nada, asi que las pantallas sin
+   fondo propio no necesitan apagar nada. */
+.marco { --fondo: none; }
+.marco:has(#v-jugar[data-activa]) { --fondo: url(../img/fondos/home.webp); }
+/* El catalogo tiene tres pasos y cada uno su fondo: acabas de elegir modo, ya
+   dijiste con quien juegas, y estas mirando temas. */
+.marco:has(#v-catalogo[data-activa][data-paso="modo"][data-modo="debate"]) {
+  --fondo: url(../img/fondos/debate.webp);
+}
+.marco:has(#v-catalogo[data-activa][data-paso="modo"][data-modo="negociacion"]) {
+  --fondo: url(../img/fondos/negociacion.webp);
+}
+.marco:has(#v-catalogo[data-activa][data-paso="pareja"]) { --fondo: url(../img/fondos/pareja.webp); }
+.marco:has(#v-catalogo[data-activa][data-paso="amigos"]) { --fondo: url(../img/fondos/amigos.webp); }
+
+.marco::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: url(../img/fondos/home.webp) center top / cover no-repeat;
+  background: var(--fondo) center top / cover no-repeat;
   pointer-events: none;
-  /* Detrás de la cabecera, las vistas y la barra, que son hijos posicionados
-     de la misma rejilla. Sin esto se pintaría encima de la cabecera, que no
-     está posicionada. */
+  /* Detras de la cabecera, las vistas y la barra, que son hijos posicionados
+     de la misma rejilla. Sin esto se pintaria encima de la cabecera, que no
+     esta posicionada. */
   z-index: 0;
 }
 .marco > header, .marco > .vistas, .marco > .barra { position: relative; z-index: 1; }
-/* Y la cabecera se quita el color de encima, o la trama corta justo debajo del
-   logotipo y se ve la costura. Nada scrollea por debajo de ella --es su propia
-   fila de la rejilla-- así que dejarla transparente no tapa nada. */
-.marco:has(#v-jugar[data-activa]) > .cabecera { background: transparent; }
+/* Y la cabecera se quita el color de encima cuando hay fondo, o la trama corta
+   justo debajo del logotipo y se ve la costura. Nada scrollea por debajo de
+   ella --es su propia fila de la rejilla-- asi que dejarla transparente no tapa
+   nada. */
+.marco:has(#v-jugar[data-activa]) > .cabecera,
+.marco:has(#v-catalogo[data-activa]) > .cabecera { background: transparent; }
+
+/* El de elegir entre jugar aqui o invitar va en su modal, que tapa la pantalla
+   entera y por tanto tapa el del catalogo. */
+#m-tema .modal__cuerpo {
+  background: url(../img/fondos/tema.webp) center top / cover no-repeat;
+}
 
 @keyframes entra {
   from { opacity: 0; transform: translateY(8px); }
@@ -1183,13 +1203,11 @@ body.app {
      queda en la CINTURA y de ahi para abajo lo tapa el boton de grabar, asi que
      la figura tiene que ser mas alta que lo que se ve de ella.
 
-     El numero no esta a ojo. En el lienzo de 300x420 la figura de `hablando`
-     empieza al 14,3% y mide el 82,6%, asi que la cintura --mas o menos al 65%
-     de la figura-- cae al 68% del lienzo. Para que el borde de abajo de la caja
-     caiga ahi, la imagen tiene que medir 1/0,68 = 1,47 veces la caja; el boton
-     ya se sube un 10% por su cuenta, asi que con 1,32 la cintura queda EN el
-     borde del boton y no por debajo. */
-  --alto-fig-hablante: 132%;
+     El numero sale de una sola medida: el cortador deja la cintura al 64,6% del
+     lienzo en TODAS las piezas. El boton se sube un 10% de la caja por su
+     cuenta, asi que para que su borde de arriba caiga justo en la cintura, la
+     imagen tiene que medir (1 - 0,10) / 0,646 = 1,39 veces la caja. */
+  --alto-fig-hablante: 139%;
   display: flex; flex-direction: column; gap: var(--e-3);
   min-height: 100%;
 }
@@ -1264,7 +1282,7 @@ body.app {
      aplicarse; asi manda el alto y `margin-inline: auto` la centra, que es lo
      que centra un absoluto con ancho intrinseco. */
   position: absolute; top: 0; bottom: auto; left: 0; right: 0; margin-inline: auto;
-  height: var(--alto-fig-hablante, 132%); width: auto; max-width: none;
+  height: var(--alto-fig-hablante, 139%); width: auto; max-width: none;
   transform: none;
 }
 .retrato__fig[hidden] { display: none; }
@@ -1868,15 +1886,21 @@ body.app {
    Se descuenta el hueco de cada pose, que esta medido sobre las 144 piezas:
    `plante` empieza al 19,8% del lienzo y `puno` al 14,8%. El factor va aparte y
    SIN unidad porque en `calc` no se pueden multiplicar dos porcentajes. */
-/* Medidos sobre las 144 piezas con el marco de 300x420. Cambiaron al pasar de
-   nivelar por la estatura a nivelar por la cintura: las figuras de pelo alto
-   crecieron y el marco subio, asi que los huecos ya no son los de antes. */
-.encuentro__fig { --alto-fig: 116%; --factor-fig: 1.16; }
-.encuentro__fig[data-pose="plante"] { --hueco-arriba: 20.9%; --acerca: 12%; }
-.encuentro__fig[data-pose="puno"]   { --hueco-arriba: 15.9%; --acerca: 15%; }
+/* SE ANCLA POR LA CINTURA, NO POR LA CABEZA, y eso simplifica todo. El cortador
+   deja la cintura SIEMPRE en el mismo sitio del lienzo --el 64,6% de 960, igual
+   en las 168 piezas-- asi que basta ese numero para colocar a cualquiera.
+   Antes se usaba el hueco de arriba, que es el pelo, y el pelo varia 115 px de
+   un personaje a otro: por eso una figura salia mas abajo que la otra.
+
+   `--linea-cintura` es donde va la cintura dentro de la banda. Lo que sube por
+   encima --cabeza y pelo-- queda distinto en cada uno, que es lo correcto: son
+   el mismo cuerpo con distinto peinado. */
+.encuentro__fig { --alto-fig: 116%; --factor-fig: 1.16; --cintura: 64.6%; --linea-cintura: 77%; }
+.encuentro__fig[data-pose="plante"] { --acerca: 12%; }
+.encuentro__fig[data-pose="puno"]   { --acerca: 15%; }
 .encuentro__fig .retrato__fig {
   position: absolute; bottom: auto;
-  top: calc(var(--sube, 20%) - var(--hueco-arriba, 20.9%) * var(--factor-fig));
+  top: calc(var(--linea-cintura, 77%) - var(--cintura, 64.6%) * var(--factor-fig));
   height: var(--alto-fig, 116%); width: auto; max-width: none;
 }
 /* Kai es más ALTO que Luna, que no es lo mismo que más grande. La diferencia la

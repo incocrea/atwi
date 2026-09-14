@@ -368,7 +368,10 @@ window.ATWI = window.ATWI || {};
            se leyera como tocar un color. La ficha no necesita anunciarlo. */
         ' data-quien="' + quien + '">' +
         window.ATWI.fondoPersonaje(quien, 'disco', color) +
-        '<img class="retrato__fig" src="' + window.ATWI.pieza(quien, color, 'frente') + '" ' +
+        /* LA PIEZA CHICA, no la de la sala. El circulo se pinta a 56 px --90 en
+           el editor-- y la pose entera mide 620x960: bajarla para esto son
+           100 KB donde caben 8, y el selector enseña SEIS a la vez. */
+        '<img class="retrato__fig" src="' + window.ATWI.pieza(quien, color, 'ficha') + '" ' +
           'alt="' + esc(GENTE[quien].nombre) + '" loading="lazy" decoding="async">' +
       '</span>';
   };

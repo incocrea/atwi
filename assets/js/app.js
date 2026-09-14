@@ -375,6 +375,11 @@
   function pintarCatalogo() {
     var caja = $('#v-catalogo');
     var cinta = cintaModo();
+    /* EN QUE PASO VA, para que el CSS pueda poner el fondo que toca. Se marca
+       aqui y no se deduce del contenido: el paso ya se decide en esta funcion y
+       leerlo de la pantalla seria adivinar lo que ya se sabe. */
+    caja.dataset.paso = modoPublico || 'modo';
+    caja.dataset.modo = propuesta.modo || '';
 
     // Paso 0: con quien se juega. De eso depende que temas tienen sentido.
     if (!modoPublico) {
