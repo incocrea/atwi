@@ -1316,15 +1316,26 @@
    * Se ignora a propósito lo que hubiera guardado de partidas viejas: si me
    * cambio de personaje, el invitado tiene que moverse conmigo.
    */
+  /** Un personaje que no sea el mío. Si el que viene ya lo es, el siguiente. */
+  function distintoDeMi(quien) {
+    var mio = datos.perfil().avatar;
+    return quien === mio ? window.ATWI.otroPersonaje(mio) : quien;
+  }
+
   function fichaDelInvitado(nombre) {
     var g = nombre ? datos.invitado(nombre) : null;
     return {
       nombre: (g ? g.nombre : nombre) || '',
-      /* Si ya jugó en este teléfono se le devuelve su ficha. Si no, se propone
-         el personaje que yo NO soy —que es lo que suele querer— pero se puede
-         cambiar: dos Kai en la misma sala valen, los distingue el aro. */
-      avatar: (g && g.avatar) || propuesta.otroAvatar ||
-              window.ATWI.otroPersonaje(datos.perfil().avatar),
+      /* Si ya jugó en este teléfono se le devuelve su ficha; si no, el personaje
+         que yo NO soy, que es lo que suele querer.
+
+         Y NUNCA EL MÍO, venga de donde venga. Lo guardado puede chocar sin que
+         nadie haya hecho nada raro: basta que yo cambie de personaje después de
+         la última partida con esa persona. Antes valían dos Kai porque los
+         distinguía el aro; desde que el color es el dibujo, dos Kai en el mismo
+         color son la misma figura exacta. */
+      avatar: distintoDeMi((g && g.avatar) || propuesta.otroAvatar ||
+                           window.ATWI.otroPersonaje(datos.perfil().avatar)),
       /* El color SÍ puede repetirse —lo que distingue ahora es la figura— así
          que el invitado hereda el mío si no tiene uno propio. Darle otro a la
          fuerza sería decidir por él algo que ya no hace falta decidir. */
@@ -1655,6 +1666,21 @@
                      color: p.avatarBorde, abogado: Boolean(propuesta.repreYo) };
     var fichaSuya = { nombre: otro, avatar: propuesta.repreOtro || propuesta.otroAvatar,
                       color: propuesta.otroColor, abogado: Boolean(propuesta.repreOtro) };
+    /* DOS FIGURAS IGUALES NO SE PUEDEN LANZAR. El veto de arriba se aplica al
+       abrir la ficha del invitado, y eso no basta: se puede llegar aquí con las
+       dos iguales cambiando de personaje DESPUÉS, o eligiendo el mismo de
+       abogado. Pasó de verdad --dos Nico enfrentados en el versus-- y hasta la
+       sala no se notaba.
+
+       Se mira la ficha DEL DUELO y no la del perfil: con abogado manda el
+       personaje elegido, y es ése el que se ve. */
+    if (fichaMia.avatar === fichaSuya.avatar) {
+      var comoSe = window.ATWI.nombrePersonaje(fichaMia.avatar);
+      $('#p-error').textContent = 'Los dos van con ' + comoSe + ': en la sala serían ' +
+        'la misma figura y no habría cómo distinguirlos. Cambiá uno de los dos.';
+      return;
+    }
+
     var abre = Math.random() < 0.5 ? 0 : 1;
 
     cerrarModales(['m-preparar', 'm-tema']);
@@ -1809,11 +1835,17 @@
       var g = datos.invitado(inv.dataset.invitado);
       if (g) {
         propuesta.otro = g.nombre;
-        propuesta.otroAvatar = g.avatar;
+        /* Por el mismo filtro que en `fichaDelInvitado`: lo guardado puede
+           chocar con mi personaje de ahora sin que nadie haya hecho nada raro. */
+        propuesta.otroAvatar = distintoDeMi(g.avatar);
         propuesta.otroColor = g.color;
         $('#p-otro').value = g.nombre;
         var bf = $('#p-ficha-otro');
-        if (bf) bf.outerHTML = window.ATWI.fichaHTML(g.avatar, 'avatar--chico', g.color)
+        /* Con `propuesta.otroAvatar` y no con `g.avatar`: lo guardado puede
+           haber chocado con mi personaje y haberse movido una linea mas arriba.
+           Pintando el crudo, la pantalla enseñaba una ficha y la partida salia
+           con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
+        if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
         $$('#m-preparar [data-invitado]').forEach(function (x) {
           if (x.dataset.invitado === g.nombre) x.setAttribute('aria-pressed', 'true');
@@ -1957,10 +1989,14 @@
          ficha: la gracia de recordarla es no tener que elegirla otra vez. */
       var g = datos.invitado(propuesta.otro);
       if (g) {
-        propuesta.otroAvatar = g.avatar;
+        propuesta.otroAvatar = distintoDeMi(g.avatar);
         propuesta.otroColor = g.color;
         var bf = $('#p-ficha-otro');
-        if (bf) bf.outerHTML = window.ATWI.fichaHTML(g.avatar, 'avatar--chico', g.color)
+        /* Con `propuesta.otroAvatar` y no con `g.avatar`: lo guardado puede
+           haber chocado con mi personaje y haberse movido una linea mas arriba.
+           Pintando el crudo, la pantalla enseñaba una ficha y la partida salia
+           con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
+        if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
       }
       revisarPreparar();
