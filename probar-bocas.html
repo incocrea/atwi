@@ -155,7 +155,6 @@
   <label><input type="checkbox" id="animar" checked> animar</label>
   <label><input type="checkbox" id="verCajas" checked> ver las cajas</label>
   <button id="copiar">Copiar</button>
-  <button id="olvidar" style="background:#fff;color:#c33;border:2px solid #f0c8c8">Empezar de cero</button>
   <span class="chico" id="estado"></span>
 </div>
 
@@ -186,7 +185,8 @@
 </p>
 
 <div class="mandos">
-  <button id="v-copiar">Copiar el bloque para turno/index.ts</button>
+  <button id="v-aplicar" style="background:#2b7a4b">Aplicar al juego</button>
+  <button id="v-copiar">Copiar el bloque</button>
   <button id="v-parar" style="background:#fff;color:#c33;border:2px solid #f0c8c8">Parar</button>
   <label style="flex:1 1 320px">frase de prueba
     <input type="text" id="v-frase" style="flex:1; min-width:200px; padding:5px 10px;
@@ -590,11 +590,14 @@ document.getElementById('copiar').addEventListener('click', function () {
   setTimeout(function () { b.textContent = 'Copiar'; }, 1200);
 });
 
-document.getElementById('olvidar').addEventListener('click', function () {
-  if (!confirm('Se pierden las 24 parejas de cajas ajustadas. ¿Seguro?')) return;
-  try { localStorage.removeItem(GUARDADO); } catch (e) {}
-  location.reload();
-});
+/* AQUI HABIA UN «EMPEZAR DE CERO» Y SE QUITO a pedido del titular. Las 24
+   parejas de cajas costaron una tarde de ajuste fino y ese boton las borraba
+   todas; el `confirm` no es proteccion suficiente para algo que no tiene
+   deshacer y que esta a un centimetro de «Copiar».
+
+   Si alguna vez hace falta volver al punto de partida, se borra `arte/bocas.json`
+   a mano: eso obliga a pasar por el disco, que es exactamente la friccion que
+   una operacion sin vuelta atras tiene que tener. */
 
 /* EL ARCHIVO MANDA SOBRE EL NAVEGADOR. Los dos guardan, pero `arte/bocas.json`
    es lo que lee el cortador, o sea lo que de verdad se va a aplicar: si los dos
@@ -811,7 +814,7 @@ function corto(v) { return (v || '—').replace('es-MX-', '').replace('Neural', 
 function esDistinto(q) {
   var h = arranque(q), v = VOCES[q];
   return Boolean(v) && (v.voz !== h.voz || v.tono !== h.tono ||
-                        v.ritmo !== h.ritmo || v.como !== h.como ||
+                        v.ritmo !== h.ritmo || comoDe(q) !== h.como ||
                         (v.estilo || null) !== (h.estilo || null));
 }
 
@@ -878,7 +881,7 @@ function pintarVoces() {
       '<label class="chico" style="display:block;margin-top:10px">Cómo habla ' +
         '(esto es lo que lee el abogado; se pega tal cual en <code>turno/index.ts</code>)' +
         '<textarea data-como="' + q + '">' +
-          (elegida.como || NEUTRO.replace('NOMBRE', q.toUpperCase())) +
+          comoDe(q) +
         '</textarea></label>' +
       '</div>';
   }).join('');
@@ -902,7 +905,7 @@ function pintarSalida() {
            "    voz: '" + v.voz + "', estilo: " +
            (v.estilo ? "'" + v.estilo + "'" : 'null') + ", tono: '" + pct(v.tono) +
            "', ritmo: '" + pct(v.ritmo) + "',\n" +
-           '    quien: `' + citar(v.como) + '`,\n' +
+           '    quien: `' + citar(comoDe(q)) + '`,\n' +
            '  },');
   });
 
@@ -948,7 +951,6 @@ function elegirVoz(q, nombreVoz) {
   v.tono = c ? c.altono : 0;
   v.ritmo = 6;
   v.estilo = null;                 /* el estilo es de la voz anterior, no de esta */
-  if (!v.como) v.como = arranque(q).como;
   guardarVoces();
   pintarVoces();
 }
@@ -968,6 +970,7 @@ document.addEventListener('click', function (e) {
   var pr = e.target.closest('[data-probar]');
   if (pr) { e.preventDefault(); probarAsi(pr.dataset.probar); return; }
   if (e.target.id === 'v-parar') { tocador.pause(); marcarSonando(null); return; }
+  if (e.target.id === 'v-aplicar') return aplicar();
   if (e.target.id === 'v-copiar') {
     navigator.clipboard.writeText(document.getElementById('v-salida').textContent);
     e.target.textContent = 'copiado';
@@ -987,9 +990,23 @@ document.addEventListener('change', function (e) {
 
 /* Toma el ajuste de este personaje, copiando lo desplegado la primera vez: si
    se empezara con un objeto vacio, mover SOLO el tono dejaria la voz en nulo y
-   el bloque saldria sin voz. */
+   el bloque saldria sin voz.
+
+   MENOS `como`, Y ESO IMPORTA. La personalidad NO se copia aqui: se guarda solo
+   si se edita la caja de texto. Se copiaba, y con eso el panel se quedaba con
+   una FOTO del texto del momento en que se eligio la voz; el dia que ese texto
+   cambiara en `turno/index.ts` --que es justo lo que paso: se les escribio una
+   personalidad a los seis-- aplicar lo guardado habria devuelto el texto viejo
+   encima del nuevo. Guardar lo que nadie toco es prometer que sigue vigente. */
 function mio(q) {
-  return VOCES[q] || (VOCES[q] = Object.assign({}, arranque(q)));
+  if (VOCES[q]) return VOCES[q];
+  var a = arranque(q);
+  return (VOCES[q] = { voz: a.voz, tono: a.tono, ritmo: a.ritmo, estilo: a.estilo || null });
+}
+
+/* La personalidad efectiva: la tuya si la editaste, la desplegada si no. */
+function comoDe(q) {
+  return (VOCES[q] && VOCES[q].como != null) ? VOCES[q].como : arranque(q).como;
 }
 
 /* LOS DESLIZADORES SE GUARDAN SOLOS, igual que las cajas de las bocas: se
@@ -1021,9 +1038,55 @@ document.addEventListener('input', function (e) {
 document.addEventListener('focusout', function (e) {
   if (!e.target.dataset || !e.target.dataset.como) return;
   var q = e.target.dataset.como;
-  (VOCES[q] || (VOCES[q] = {})).como = e.target.value;
+  /* SOLO SI DE VERDAD DIFIERE de lo desplegado. Guardar un texto identico al
+     que ya esta lo CONGELA: el dia que ese texto mejore en `turno/index.ts`,
+     aplicar lo guardado devolveria la version vieja encima de la nueva. Paso:
+     el panel tenia copiada la personalidad neutra de los cuatro nuevos y, al
+     escribirseles una de verdad, aplicar habria borrado las cuatro. */
+  if (e.target.value === arranque(q).como) {
+    if (VOCES[q]) delete VOCES[q].como;
+  } else {
+    mio(q).como = e.target.value;
+  }
   guardarVoces();
 });
+
+/* APLICAR AL JUEGO. Dos pasos siempre, y el primero no se puede saltar: se pide
+   en seco, se ENSEÑA que va a cambiar, y recien entonces se pregunta. Un boton
+   que despliega de un solo clic desde una pagina de ajuste es un accidente
+   esperando: aqui se toca el prompt que reescribe lo que dijo una persona.
+
+   Y va contra `tools/aplicar_voces.py`, que reescribe UNICAMENTE las entradas
+   que difieren --nada de regenerar la tabla entera-- y despues se relee para
+   comprobar que los que no cambiaban siguen identicos. */
+function aplicar() {
+  var b = document.getElementById('v-aplicar');
+  b.disabled = true;
+  vDecir('mirando qué cambiaría…', true);
+  fetch('/_aplicar', { method: 'POST' })
+    .then(function (r) { return r.text().then(function (t) { return { ok: r.ok, t: t }; }); })
+    .then(function (r) {
+      document.getElementById('v-salida').textContent = r.t;
+      if (!r.ok) { vDecir('el aplicador se paró; mirá el detalle abajo', false); return; }
+      if (r.t.indexOf('Nada que aplicar') >= 0) { vDecir('nada que aplicar', true); return; }
+      if (!confirm(r.t + '\n\n¿Escribir esto en turno/index.ts y desplegarlo?\n' +
+                   'Cambia cómo suenan y cómo hablan los personajes en el juego real.')) {
+        vDecir('no se aplicó nada', false);
+        return;
+      }
+      vDecir('escribiendo y desplegando…', true);
+      return fetch('/_aplicar?desplegar=1', { method: 'POST' })
+        .then(function (r2) { return r2.text().then(function (t2) { return { ok: r2.ok, t: t2 }; }); })
+        .then(function (r2) {
+          document.getElementById('v-salida').textContent = r2.t;
+          vDecir(r2.ok ? '✓ aplicado y desplegado — ya está en el juego'
+                       : 'FALLÓ al aplicar; mirá el detalle abajo', r2.ok);
+          if (r2.ok) location.reload();     /* para releer lo que quedó desplegado */
+        });
+    })
+    .catch(function (e) { vDecir('no se pudo: ' + e.message, false); })
+    .then(function () { b.disabled = false; });
+}
 
 function cargarCasting() {
   vDecir('leyendo el casting…', true);
