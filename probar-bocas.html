@@ -188,7 +188,7 @@
   <button id="v-aplicar" style="background:#2b7a4b">Aplicar al juego</button>
   <button id="v-copiar">Copiar el bloque</button>
   <button id="v-parar" style="background:#fff;color:#c33;border:2px solid #f0c8c8">Parar</button>
-  <label style="flex:1 1 320px">frase de prueba
+  <label style="flex:1 1 320px" title="Cambiarla obliga a generar una toma nueva de cada voz que pruebes; volver a una frase ya usada es gratis.">frase de prueba
     <input type="text" id="v-frase" style="flex:1; min-width:200px; padding:5px 10px;
            border-radius:999px; border:2px solid #efeaf6; font:inherit">
   </label>
@@ -781,6 +781,8 @@ function estiloHTML(q, elegida) {
    las tomas pregrabadas solo cubren dos ajustes fijos. Esto le pide al servidor
    de desarrollo que lo sintetice --la clave de Azure se queda alli, nunca llega
    al navegador-- y cada combinacion se genera UNA vez y queda en disco. */
+var ultima = { nueva: false, chars: 0, nuevas: 0 };
+
 function probarAsi(q) {
   var v = VOCES[q] || arranque(q);
   if (!v.voz) return vDecir('ese personaje todavia no tiene voz elegida', false);
@@ -794,14 +796,25 @@ function probarAsi(q) {
                            estilo: v.estilo || null, texto: frase })
   }).then(function (r) {
     if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
+    /* Si esta toma se genero o salio del disco. Lo dice el servidor, que es
+       quien lo sabe: la llave del cache es voz+tono+ritmo+estilo+texto, asi que
+       cambiar la frase de prueba cuesta una toma nueva y volver a la de antes
+       no cuesta nada. Sin esto se gasta sin enterarse. */
+    ultima = { nueva: r.headers.get('X-Atwi-Nueva') === '1',
+               chars: Number(r.headers.get('X-Atwi-Caracteres') || 0),
+               nuevas: Number(r.headers.get('X-Atwi-Nuevas') || 0) };
     return r.blob();
   }).then(function (b) {
     tocador.src = URL.createObjectURL(b);
     return tocador.play();
   }).then(function () {
     marcarSonando('probar-' + q);
-    vDecir(q + ' con ' + corto(VOCES[q] ? VOCES[q].voz : '') + ', tono ' + v.tono +
-           '% y ritmo ' + v.ritmo + '%' + (v.estilo ? ', estilo ' + v.estilo : ''), true);
+    vDecir(q + ' con ' + corto(v.voz) + ', tono ' + v.tono +
+           '% y ritmo ' + v.ritmo + '%' + (v.estilo ? ', estilo ' + v.estilo : '') +
+           ' · ' + (ultima.nueva ? 'generada' : 'reusada, sin costo') +
+           ' · ' + ultima.nuevas + ' generadas en total (' +
+           ultima.chars.toLocaleString('es') + ' caracteres, ' +
+           (ultima.chars / 5000).toFixed(1) + '% de los 500 mil gratis al mes)', true);
   }).catch(function (e) {
     vDecir('no se pudo generar: ' + e.message, false);
   });
