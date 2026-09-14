@@ -1178,7 +1178,18 @@ body.app {
      lo necesita para saber cuánto tiene que subirse: el solape es un 5% DE LA
      FIGURA, no una cantidad fija. Con un valor fijo, al cambiar el alto de la
      figura el solape dejaba de ser el que se había decidido. */
-  --alto-hablante: clamp(178px, 30vh, 300px);
+  --alto-hablante: clamp(210px, 36vh, 350px);
+  /* CUANTO MIDE LA FIGURA DENTRO DE SU CAJA. Mas de 100 a proposito: la caja se
+     queda en la CINTURA y de ahi para abajo lo tapa el boton de grabar, asi que
+     la figura tiene que ser mas alta que lo que se ve de ella.
+
+     El 134% no esta a ojo. Dentro del lienzo de 280x400 la figura de `hablando`
+     va de 51 a 387 px, y la cintura cae mas o menos al 65% de la figura, o sea
+     al 67% del lienzo. Para que el borde de abajo de la caja caiga justo ahi,
+     la imagen tiene que medir 1/0,67 = 1,49 veces la caja; el boton ya se sube
+     un 10% por su cuenta, asi que con 1,34 la cintura queda EN el borde del
+     boton y no por debajo. */
+  --alto-fig-hablante: 134%;
   display: flex; flex-direction: column; gap: var(--e-3);
   min-height: 100%;
 }
@@ -1221,6 +1232,10 @@ body.app {
   width: 100%; max-width: 285px;
   height: var(--alto-hablante, 300px);
   border-radius: var(--radio-carta); box-shadow: none;
+  /* LA CAJA RECORTA. Es lo que hace que se vea de la cintura para arriba: la
+     figura sobresale por abajo y lo que sobra no se pinta, en vez de encogerse
+     para caber. */
+  overflow: hidden;
 }
 /* El botón de grabar se sube lo justo para taparle los pies a la figura: un 5%
    de su alto. Con eso deja de estar «encima de» y pasa a parecer que la figura
@@ -1240,8 +1255,17 @@ body.app {
    esconden los otros dos. Sin `position: absolute` la caja mediría por los tres
    y la figura saldría a un tercio de su tamaño. */
 .hablante__fig .retrato__fig {
-  position: absolute; inset: 0;
-  object-fit: contain; object-position: center bottom; transform: none;
+  /* ANCLADA ARRIBA Y MAS ALTA QUE LA CAJA. Antes iba `inset: 0` con
+     `object-fit: contain`, que mete la imagen ENTERA dentro: como el lienzo
+     lleva aire arriba y abajo, la figura salia a un 84% de la caja y se veia
+     pequeña. Ahora se ancla arriba, se pasa de largo por abajo y la caja corta. */
+  /* Por ALTO y con el ancho libre. Con `left/right: 0` y `object-fit` la
+     imagen la limitaba el ANCHO de la caja y el alto pedido no llegaba a
+     aplicarse; asi manda el alto y `margin-inline: auto` la centra, que es lo
+     que centra un absoluto con ancho intrinseco. */
+  position: absolute; top: 0; bottom: auto; left: 0; right: 0; margin-inline: auto;
+  height: var(--alto-fig-hablante, 134%); width: auto; max-width: none;
+  transform: none;
 }
 .retrato__fig[hidden] { display: none; }
 .turno__quien { font-family: var(--display); font-weight: 800; font-size: 1.66rem; }
@@ -1831,9 +1855,26 @@ body.app {
 
    Los porcentajes están medidos contra la banda ya crecida, para que las figuras
    se queden EXACTAMENTE donde estaban: lo que se movió es el techo, no ellas. */
+/* EL 95% ERA DEL LIENZO, NO DE LA FIGURA, y por eso encogieron. Las piezas
+   nuevas miden todas 280x400 con aire alrededor --es lo que las hace
+   intercambiables-- asi que pedir el 95% del alto daba un 77% de figura en
+   `plante` y un 82% en `puno`.
+
+   Y el aire tampoco es solo un problema de tamaño: es de POSICION. `--sube`
+   colocaba la cabeza, y ahora coloca el borde de arriba del lienzo, con la
+   cabeza 20% mas abajo. Se midio en el navegador: la banda empieza en 341 y la
+   cabeza salia en 563, o sea 222 px por debajo de donde tenia que estar.
+
+   Se descuenta el hueco de cada pose, que esta medido sobre las 144 piezas:
+   `plante` empieza al 19,8% del lienzo y `puno` al 14,8%. El factor va aparte y
+   SIN unidad porque en `calc` no se pueden multiplicar dos porcentajes. */
+.encuentro__fig { --alto-fig: 118%; --factor-fig: 1.18; }
+.encuentro__fig[data-pose="plante"] { --hueco-arriba: 19.8%; --acerca: 11%; }
+.encuentro__fig[data-pose="puno"]   { --hueco-arriba: 14.8%; --acerca: 14%; }
 .encuentro__fig .retrato__fig {
-  position: absolute; top: var(--sube, 20%); bottom: auto;
-  height: var(--alto-fig, 95%); width: auto; max-width: none;
+  position: absolute; bottom: auto;
+  top: calc(var(--sube, 20%) - var(--hueco-arriba, 19.8%) * var(--factor-fig));
+  height: var(--alto-fig, 118%); width: auto; max-width: none;
 }
 /* Kai es más ALTO que Luna, que no es lo mismo que más grande. La diferencia la
    hace la POSICIÓN, no el tamaño: los dos se dibujan igual de grandes y él se
@@ -1844,10 +1885,20 @@ body.app {
    Efecto secundario asumido: su puño queda ese 4% por encima del de Luna. En un
    choque de puños eso no desentona —tampoco se chocan a escuadra en la vida
    real— y es el precio de que se le note la altura. */
-.encuentro__fig[data-quien="kai"] .retrato__fig { --sube: 17%; }
-.encuentro__lado--izq .retrato__fig { right: 0; }
+/* El ajuste de «Kai es mas alto» se quito: las piezas nuevas estan NIVELADAS a
+   la misma estatura a proposito --es lo que permite que compartan marco-- asi
+   que subirlo un 4% ya no dice que es mas alto, dice que esta descolocado. */
+/* EL BORDE INTERIOR ES EL DEL LIENZO, NO EL DE LA FIGURA. Pegando el lienzo al
+   centro quedan separadas por su aire lateral --un 11% del ancho en `plante` y
+   un 14% en `puno`-- y en el choque de punos eso es no llegar a tocarse. Se
+   acercan con `translateX`, que es el unico que mide en porcentaje DEL PROPIO
+   elemento y no del contenedor.
+
+   La de la derecha va volteada, y al voltear primero el eje se invierte: por
+   eso las dos usan el MISMO valor positivo y cada una tira hacia el centro. */
+.encuentro__lado--izq .retrato__fig { right: 0; transform: translateX(var(--acerca, 0)); }
 .encuentro__lado--der .retrato__fig { left: 0; }
-.retrato--volteado .retrato__fig { transform: scaleX(-1); }
+.retrato--volteado .retrato__fig { transform: scaleX(-1) translateX(var(--acerca, 0)); }
 
 .encuentro__vs {
   position: absolute; z-index: 3; left: 50%; top: 40%;

@@ -162,9 +162,16 @@ window.ATWI = window.ATWI || {};
      Las demás poses son frontales y no se voltean: `plante` y `hablando` sí
      estaban aquí y se quitaron, porque voltear una figura de frente le da la
      vuelta al logotipo de la camiseta sin ganar nada. */
+  var TODOS_A_LA_DERECHA = { kai: 'derecha', nico: 'derecha', dante: 'derecha',
+                             luna: 'derecha', nina: 'derecha', maya: 'derecha' };
   var MIRA = {
-    puno: { kai: 'derecha', nico: 'derecha', dante: 'derecha',
-            luna: 'derecha', nina: 'derecha', maya: 'derecha' }
+    puno: TODOS_A_LA_DERECHA,
+    /* `plante` TAMBIEN. Estaba fuera y en el versus salian los dos mirando al
+       mismo lado, que en una pantalla que dice VS entre ellos se lee raro: uno
+       le esta dando la espalda al otro. Volteando al de la derecha se ponen
+       cara a cara. El precio es que a esa figura se le invierte el logotipo de
+       la camiseta, y a este tamaño no se lee. */
+    plante: TODOS_A_LA_DERECHA
   };
 
   /**
@@ -183,7 +190,7 @@ window.ATWI = window.ATWI || {};
     var natural = (MIRA[pose] || {})[quien];
     var voltea = op.mira && natural && op.mira !== natural;
     return '<span class="retrato ' + (op.clase || '') + (voltea ? ' retrato--volteado' : '') +
-        '" data-quien="' + quien + '">' +
+        '" data-quien="' + quien + '" data-pose="' + pose + '">' +
         fondo +
         /* `loading="eager"` a propósito. Estas figuras NACEN FUERA DEL LIENZO
            —entran desde el borde— y con carga diferida el navegador puede no
