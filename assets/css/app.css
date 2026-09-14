@@ -2337,8 +2337,15 @@ body.app {
   font-weight: 800; font-size: var(--t-chico); color: var(--tinta);
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+/* EN TINTA Y EN NEGRITA, con abogado y sin él (decisión del titular,
+   2026-09-14). Iba en gris tenue sin abogado y en el color de la ficha con él:
+   el gris se perdía contra el fondo dibujado, y el color de la ficha sobre su
+   propio tinte tampoco levantaba —verde sobre verde—. En tinta hay contraste
+   contra cualquiera de los cuatro colores y contra el fondo, y el color de cada
+   lado ya lo dicen el aro, el tinte, la llave y el halo: no hacía falta que lo
+   dijera también la letra. */
 .repre__como {
-  font-size: var(--t-mini); color: var(--tinta-tenue);
+  font-size: var(--t-mini); color: var(--tinta); font-weight: 800;
   text-align: center; text-wrap: balance;
   /* SOMBRA BLANCA. Este renglón va sobre el fondo dibujado y, con abogado,
      además en el color del modo: coral sobre rosa y menta sobre verde se leen
@@ -2355,7 +2362,7 @@ body.app {
   border-color: var(--suyo, var(--lavanda));
   background: color-mix(in srgb, var(--suyo, var(--lavanda)) 14%, transparent);
 }
-.repre--conabogado .repre__como { color: var(--suyo, var(--lavanda)); font-weight: 800; }
+/* Con abogado NO cambia: el renglón ya va en tinta y en negrita siempre. */
 .repre--conabogado .repre__llave[aria-pressed="true"] { background: var(--suyo, var(--lavanda)); }
 
 /* La llave es una pastilla y no una casilla del sistema: las del sistema se
