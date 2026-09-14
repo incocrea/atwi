@@ -262,8 +262,17 @@ window.ATWI = window.ATWI || {};
     if (latido) { clearInterval(latido); latido = null; }
     if (!caja) return;
     var m = caja.querySelectorAll('[data-marco]');
-    if (m.length < 3) return;
-    var orden = [0, 1, 2, 1];
+    /* DOS FOTOGRAMAS TAMBIÉN VALEN, y aquí no valían: había un `if (m.length < 3)
+       return` de cuando la boca venía de una lámina de tres cabezas. Al pasar a
+       recortar la sonrisa de la pose `frente` la secuencia bajó a dos, y esta
+       función se salía sin decir nada: la figura se quedaba quieta grabando y no
+       había forma de saber por qué.
+
+       Con tres el ciclo es abierta, media, cerrada, media, para que el paso de
+       abierta a cerrada no sea un salto. Con dos no hay intermedio que poner: se
+       alternan, y a 110 ms eso ES el lip flap de toda la vida. */
+    if (m.length < 2) return;
+    var orden = m.length >= 3 ? [0, 1, 2, 1] : [0, 1];
     var i = 0;
     function pinta(n) {
       for (var k = 0; k < m.length; k++) m[k].hidden = (k !== n);
