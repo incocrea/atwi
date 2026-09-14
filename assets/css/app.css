@@ -1660,14 +1660,22 @@ body.app {
    y del texto de ayuda, o sea DESPUÉS de leer «escribí un nombre»: quien ya
    jugó con alguien lo escribía entero antes de ver que podía tocarlo.
 
-   Y SI NO CABEN, SE BAJAN. Tres nombres largos más el rótulo no entran en 375
-   px, y aquí nada scrollea de lado: el `wrap` los deja caer a su propio
-   renglón, que sigue estando arriba del campo, que es lo que importaba. */
+   Y SI NO CABEN, BAJAN LOS TRES JUNTOS al renglón siguiente y lo ocupan
+   entero. El grupo NO se parte por dentro (`nowrap`): partiéndose caían dos
+   arriba y uno solo debajo, en escalera y contra el margen derecho, que se lee
+   como tres cosas distintas en vez de una fila de atajos. Con el grupo entero
+   es una decisión de una línea: o caben al lado del rótulo, o tienen la
+   siguiente para ellos. */
 .fila-invitado {
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--e-2); flex-wrap: wrap;
 }
-.fila-invitado .invitados { flex: 1 1 auto; justify-content: flex-end; min-width: 0; }
+.fila-invitado .invitados {
+  flex: 1 1 auto; flex-wrap: nowrap; justify-content: flex-end; min-width: 0;
+}
+/* Y dentro del grupo cada uno cede lo que haga falta: el nombre se recorta con
+   puntos suspensivos antes que empujar a nadie fuera del renglón. */
+.fila-invitado .invitado { flex: 0 1 auto; min-width: 0; }
 .invitados { display: flex; gap: var(--e-2); flex-wrap: wrap; justify-content: center; }
 /* El nombre se recorta antes que empujar el chip fuera de la fila. */
 .invitado__n { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
