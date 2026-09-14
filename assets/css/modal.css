@@ -74,7 +74,20 @@
   border-color: var(--ctx-linea); box-shadow: var(--sombra-1);
 }
 .modal--inmersivo .boton--suave:hover { background: var(--ctx-halo); }
-.modal--inmersivo .boton[disabled] { opacity: .5; pointer-events: none; }
+/* APAGADO, PERO OPACO. Iba con `opacity: .5` y en la sala eso es un agujero:
+   detras del boton esta la figura de quien habla, que se dibuja mas grande que
+   su hueco y se CORTA justo ahi. Al transparentar el boton se veian las piernas
+   y, peor, la linea del corte. El boton no es un velo, es el suelo por el que
+   la figura desaparece.
+
+   Se apaga bajando el color y el texto, no la opacidad: se lee igual de claro
+   que esta deshabilitado y no deja ver nada de lo que hay detras. */
+.modal--inmersivo .boton[disabled] {
+  pointer-events: none;
+  filter: saturate(.45) brightness(1.12);
+  color: rgba(255, 255, 255, .82);
+  box-shadow: none;
+}
 .modal--inmersivo .boton-icono { background: var(--superficie); box-shadow: var(--sombra-1); }
 .modal--inmersivo .chip { background: var(--ctx-halo); color: var(--ctx-tenue); }
 /* El chip del modo sí lleva color: es lo que dice en qué se está jugando. */
