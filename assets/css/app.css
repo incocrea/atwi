@@ -384,13 +384,15 @@ body.app {
   text-align: left; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
 }
-/* EL TINTE, AL 70 %. Detrás hay un fondo dibujado y la carta lo tapaba entero;
-   con algo de transparencia el fondo se ve pasar por debajo y la portada deja
-   de ser dos bloques planos. El color sale del mismo token de siempre, no de
-   un hex copiado: un segundo hex es un sitio donde el día que cambie la paleta
-   se queda el viejo. */
-.carta-modo--debate { background: color-mix(in srgb, var(--debate-tinte) 70%, transparent); }
-.carta-modo--negociacion { background: color-mix(in srgb, var(--negociacion-tinte) 70%, transparent); }
+/* SIN FONDO NINGUNO (decisión del titular, 2026-09-14). Pasó de tinte sólido a
+   tinte al 70 % y de ahí a nada: detrás hay un fondo dibujado y cualquier capa
+   encima lo parte en bloques. Lo que separa una carta de la otra deja de ser su
+   caja y pasa a ser su rótulo y el color de sus dos discos, que ya lo dicen.
+
+   Y SE VA TAMBIÉN LA SOMBRA. Una sombra alrededor de una caja transparente no
+   desaparece: dibuja un halo gris flotando sobre el fondo, el contorno de algo
+   que no está. Sin fondo no hay caja a la que dar relieve. */
+.carta-modo { box-shadow: none; }
 
 .carta-modo__alto {
   display: flex; align-items: center; flex: 1 1 auto; min-width: 0;
