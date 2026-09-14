@@ -320,10 +320,20 @@ window.ATWI = window.ATWI || {};
    * la sala. `color` lo cambia al de quien juega: se usa al mandar el turno,
    * donde lo que se confirma es algo tuyo y no algo del juego.
    */
+  /* EL COLOR QUE GUARDA UNA PARTIDA ES UNA CLAVE --«azul», «verde»--, NO UN
+     COLOR CSS. Desde que el color pasó a ser el dibujo del personaje se guarda
+     por su nombre, y meterlo tal cual en un `style` deja una declaración
+     inválida: el navegador la descarta entera y en silencio. El botón de mandar
+     el turno salía transparente por esto. Se traduce aquí, en el único sitio
+     donde la clave se convierte en pintura. */
+  function tono(color) {
+    return window.ATWI.colorPersonaje(color);
+  }
+
   function principal(accion, texto, ico, apagado, color) {
     return '<button class="boton boton--bloque boton--grande boton--' + P.modo + '"' +
       ' data-accion="' + accion + '"' + (apagado ? ' disabled' : '') +
-      (color ? ' style="--suyo:' + esc(color) + '"' : '') + '>' +
+      (color ? ' style="--suyo:' + esc(tono(color)) + '"' : '') + '>' +
       (ico || '') + esc(texto) + '</button>';
   }
 
@@ -391,7 +401,7 @@ window.ATWI = window.ATWI || {};
                      (n === total - 1 ? ' rueda--ultima' : '') +
                      (v.preparando ? ' rueda--preparando' : '') +
                      (v.falloLaNube ? ' rueda--sinvoz' : '') + '"' +
-                   ' style="--voz:' + esc(j.color) + '"' +
+                   ' style="--voz:' + esc(tono(j.color)) + '"' +
                    ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
                    ' aria-label="' + (v.preparando
                      ? esc(j.nombre) + ' está poniendo voz a su turno'
@@ -409,7 +419,7 @@ window.ATWI = window.ATWI || {};
           (P.borrador ? (function () {
             var j = P.jugadores[turnoActual().jugador];
             return '<button type="button" class="rueda rueda--nueva"' +
-                   ' style="--voz:' + esc(j.color) + '"' +
+                   ' style="--voz:' + esc(tono(j.color)) + '"' +
                    ' data-oir="b" data-rueda="b"' +
                    ' aria-label="Escuchar lo que acabas de grabar, sin mandar">' +
                 window.ATWI.fichaHTML(j.avatar, 'rueda__cara', j.color) +
@@ -682,7 +692,7 @@ window.ATWI = window.ATWI || {};
       $('#m-partida').appendChild(r);
     }
     r.className = 'reproductor';
-    r.style.setProperty('--voz', q.color || 'var(--ctx-acento)');
+    r.style.setProperty('--voz', q.color ? tono(q.color) : 'var(--ctx-acento)');
     r.innerHTML =
       '<div class="reproductor__alto">' +
         '<button type="button" class="reproductor__play" data-accion="r-play" aria-label="Reproducir o pausar">' +
