@@ -219,15 +219,20 @@ window.ATWI = window.ATWI || {};
      La buena noticia, para cuando se retome: la boca está en la cara y la cara
      NO cambia con el color, así que probablemente baste una lámina por
      personaje —seis— y no una por personaje y color, que serían veinticuatro. */
-  /* APAGADA MIENTRAS TANTO. Los tres fotogramas que hay son del primer intento
-     --achatar la boca abierta para fingir una cerrada-- y no convencieron:
-     deformar un dibujo se nota. Se vuelve a encender con `{ hablando: 2 }`
-     cuando esten las sonrisas recortadas de la pose `frente`, que es el camino
-     bueno. Mejor una boca quieta que una que canta. */
-  var MARCOS = {};
+  /* DOS FOTOGRAMAS: hablando y sonriendo. La sonrisa cerrada no se inventa ni se
+     deforma, se RECORTA de la pose `frente` del mismo personaje y color. Con una
+     boca de verdad en cada extremo, el intermedio sobra.
+
+     Y se enciende UNO POR UNO. Cada pareja personaje-color necesita que alguien
+     marque a mano de donde se corta y donde se pega --se ajusta en
+     `site/probar-bocas.html` y sale en `arte/bocas.json`-- y hasta que eso esta
+     hecho no hay fotogramas que poner: pedirlos daria dos 404 y una figura que
+     parpadea a hueco. Aqui se listan los que ya estan. */
+  var CON_BOCA = ['kai-azul'];
+  var MARCOS = { hablando: 2 };
 
   function marcos(quien, color, pose, alt) {
-    var n = MARCOS[pose] || 1;
+    var n = CON_BOCA.indexOf(quien + '-' + color) < 0 ? 1 : (MARCOS[pose] || 1);
     if (n === 1) {
       return '<img class="retrato__fig" src="' + window.ATWI.pieza(quien, color, pose) + '" ' +
              'alt="' + alt + '" loading="eager" decoding="async">';

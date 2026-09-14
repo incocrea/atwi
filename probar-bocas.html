@@ -26,6 +26,7 @@
   tamaño real, y al reves.
 -->
 <style>
+  html { scroll-padding-top: 70px; }
   body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px;
          background: #FBEEE8; color: #23203a; }
   h1 { font-size: 1.1rem; margin: 0 0 4px; }
@@ -65,8 +66,14 @@
                          width: 2px; height: 20px; background: currentColor; }
   .oculta .caja { display: none; }
 
-  .mandos { display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
-            margin-bottom: 14px; }
+  /* LOS MANDOS SE QUEDAN ARRIBA. Con seis personajes hay que bajar bastante, y
+     perder de vista el selector de color o el de velocidad obliga a subir y
+     bajar para cada prueba. */
+  .mandos { position: sticky; top: 0; z-index: 5;
+            display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+            margin: 0 -16px 14px; padding: 10px 16px;
+            background: rgba(251,238,232,.94); backdrop-filter: blur(8px);
+            box-shadow: 0 4px 14px rgba(60,40,80,.10); }
   label { display: inline-flex; gap: 6px; align-items: center; }
   input[type=number] { width: 62px; }
   pre { background: #24212e; color: #e8e4f0; padding: 12px; border-radius: 10px;
@@ -145,8 +152,17 @@ COLORES.forEach(function (c) {
 var GUARDADO = 'atwi.bocas.v1';
 
 var pendiente = null;
+/* NO SE GUARDA HASTA HABER LEIDO. Paso de verdad: al abrir la pagina, las
+   imagenes terminan de cargar y disparan `rehacer`, que guarda... con lo que
+   hubiera en memoria en ese momento, que es el punto de partida o lo que quedo
+   en ESTE navegador. Y eso pisa el archivo antes de haberlo leido.
+
+   Paso de verdad y costo un ajuste del titular: abrir la pagina en otra maquina
+   borraba el trabajo hecho en la suya. */
+var listoParaGuardar = false;
 
 function guardar() {
+  if (!listoParaGuardar) return;
   try { localStorage.setItem(GUARDADO, JSON.stringify(CAJAS)); } catch (e) {}
   /* Y AL REPO, si hay servidor de desarrollo. El navegador guarda para no
      perder el trabajo, pero eso no sale de esta maquina: sin esto habria que
@@ -180,23 +196,26 @@ function decir(t, bien) {
   e.style.color = bien ? '#2b7a4b' : '#a0603a';
 }
 
-function recuperar() {
+/* Se copia campo a campo y no de golpe: si algun dia se anade una clave nueva a
+   la caja, lo guardado de antes no la tendria y quedaria `undefined` donde se
+   espera un numero. */
+function meter(d) {
   var n = 0;
+  Object.keys(CAJAS).forEach(function (k) {
+    if (!d[k]) return;
+    if (Array.isArray(d[k].de)) CAJAS[k].de = d[k].de.slice();
+    if (Array.isArray(d[k].a)) CAJAS[k].a = d[k].a.slice();
+    CAJAS[k].ang = Number(d[k].ang) || 0;
+    n++;
+  });
+  return n;
+}
+
+function recuperar() {
   try {
     var d = JSON.parse(localStorage.getItem(GUARDADO) || 'null');
-    if (!d) return 0;
-    Object.keys(CAJAS).forEach(function (k) {
-      if (!d[k]) return;
-      /* Se copia campo a campo y no de golpe: si algun dia se anade una clave
-         nueva a la caja, lo guardado de antes no la tiene y quedaria `undefined`
-         donde se espera un numero. */
-      if (Array.isArray(d[k].de)) CAJAS[k].de = d[k].de.slice();
-      if (Array.isArray(d[k].a)) CAJAS[k].a = d[k].a.slice();
-      CAJAS[k].ang = Number(d[k].ang) || 0;
-      n++;
-    });
-  } catch (e) {}
-  return n;
+    return d ? meter(d) : 0;
+  } catch (e) { return 0; }
 }
 
 var casos = {};
@@ -452,13 +471,33 @@ document.getElementById('olvidar').addEventListener('click', function () {
   location.reload();
 });
 
-/* DOS SITIOS Y CADA UNO PARA UNA COSA: el navegador guarda para que no se pierda
-   el trabajo al recargar, y `arte/bocas.json` es lo que lee el cortador. Al
-   abrir se recupera del navegador, que es donde esta lo ultimo que se toco. */
-var recuperadas = recuperar();
-decir(recuperadas ? recuperadas + ' cajas recuperadas de este navegador'
-                  : 'Listo para ajustar', true);
+/* EL ARCHIVO MANDA SOBRE EL NAVEGADOR. Los dos guardan, pero `arte/bocas.json`
+   es lo que lee el cortador, o sea lo que de verdad se va a aplicar: si los dos
+   no coinciden, el bueno es el archivo. Ademas sobrevive a limpiar el navegador
+   y se puede mirar y versionar.
 
-cargar();
+   El del navegador se queda como red: sin servidor --en atwi.app-- es lo unico
+   que hay, y sin el una recarga sin querer se llevaria el trabajo. */
+fetch('/_leer/bocas.json?' + Date.now())
+  .then(function (r) { return r.ok ? r.json() : null; })
+  .catch(function () { return null; })
+  .then(function (d) {
+    var n = 0;
+    if (d && d.cajas) {
+      n = meter(d.cajas);
+      if (d.origen) document.getElementById('origen').value = d.origen;
+      if (d.pluma != null) document.getElementById('pluma').value = d.pluma;
+      decir(n + ' cajas leidas de arte/bocas.json', true);
+    } else {
+      n = recuperar();
+      decir(n ? n + ' cajas recuperadas de este navegador (sin archivo todavia)'
+              : 'Listo para ajustar', true);
+    }
+    cargar();
+    QUIEN.forEach(rehacer);
+    /* Recien ahora. Lo que venga despues ya es de alguien moviendo cosas. */
+    listoParaGuardar = true;
+  });
+
 latir();
 </script>
