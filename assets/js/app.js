@@ -1310,11 +1310,13 @@
      escribirles el nombre ni volver a elegirles la ficha. */
   function invitadosPrevios() { return datos.invitados(); }
 
-  /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no un
-     historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE; el mismo
-     nombre con otro personaje es otra ficha. */
+  /* Los DOS últimos: es una lista para tocar de un vistazo, no un historial.
+     Cuentan como el mismo quien repite NOMBRE Y PERSONAJE; el mismo nombre con
+     otro personaje es otra ficha. Dos y no tres porque con tres nombres largos
+     no caben junto al rótulo y bajan a otro renglón --lo guardado también son
+     dos, en `datos.recordarInvitado`, para que no sobre ninguno escondido--. */
   function chipsDeInvitados() {
-    var l = invitadosPrevios().slice(0, 3);
+    var l = invitadosPrevios().slice(0, 2);
     if (!l.length) return '';
     return '<div class="invitados">' + l.map(function (g) {
       return '<button type="button" class="invitado" data-invitado="' + esc(g.nombre) + '">' +

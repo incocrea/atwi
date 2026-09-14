@@ -63,6 +63,24 @@ window.ATWI = window.ATWI || {};
     if (!m) return '';
     return esc(m.partido[0]) + '<b class="ia">' + esc(m.partido[1]) + '</b>' + esc(m.partido[2]);
   }
+  /* Cuánto se puede hablar en ESTE modo. Un solo sitio que lo sepa: el tope se
+     usa para abrir el micro, para el reloj y para decidir si se puede agregar
+     más, y con tres lecturas sueltas de la configuración basta con cambiar una
+     para que el reloj cuente hasta un sitio y el micro corte en otro. */
+  function topeDeTurno() {
+    var t = cfg.reglas.segundosPorTurno;
+    if (typeof t === 'number') return t;          // por si vuelve a ser uno solo
+    /* SI EL MODO NO ESTÁ EN LA TABLA, SE DA EL TIEMPO MÁS LARGO. `P.modo` es
+       'debate' o 'negociacion' y son las claves de la tabla, pero si algún día
+       dejan de coincidir el fallo tiene que caer del lado bueno: cortar a
+       alguien a la mitad de una frase porque una clave no casaba es invisible
+       --nadie sospecha del reloj-- y da un turno peor. Sobrar tiempo se nota y
+       se arregla. */
+    var suyo = t[P && P.modo];
+    if (typeof suyo === 'number') return suyo;
+    return Math.max.apply(null, Object.keys(t).map(function (k) { return t[k]; }));
+  }
+
   function relojTexto(s) {
     return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
   }
@@ -1076,7 +1094,8 @@ window.ATWI = window.ATWI || {};
       return '<button class="boton boton--bloque boton--grande boton--parar grabando"' +
                     ' data-accion="p-parar">' + iconoSVG('parar', 22) + 'Parar' +
                '<span class="boton__reloj" id="reloj-n">' +
-                 relojTexto(grabadora.segundos()) + '</span></button>';
+                 relojTexto(Math.max(0, topeDeTurno() - grabadora.segundos())) +
+               '</span></button>';
     }
     if (estado === 'agregar') {
       return '<button class="boton boton--suave" data-accion="p-agregar">' +
@@ -1102,9 +1121,16 @@ window.ATWI = window.ATWI || {};
 
     pararEscucha();
 
+    /* EL RELOJ CUENTA HACIA ATRÁS (decisión del titular, 2026-09-14). Subiendo
+       de 0 a 1:00 había que acordarse del tope para saber cuánto quedaba, y
+       justo lo que hace falta saber mientras se habla es cuánto queda. Bajando,
+       el número YA es la respuesta.
+
+       Se calcula sobre lo GRABADO EN TOTAL y no sobre esta toma: el tiempo se
+       gasta entre todas, así que al agregar sigue bajando donde se quedó. */
     var aCadaSegundo = function (s) {
       var n = $('#reloj-n');
-      if (n) n.textContent = relojTexto(s);
+      if (n) n.textContent = relojTexto(Math.max(0, topeDeTurno() - s));
     };
     var alTope = function () { pausarGrabacion(); };
 
@@ -1116,7 +1142,7 @@ window.ATWI = window.ATWI || {};
 
     abriendo = true;
     pintarGrabando(false);
-    grabadora.empezar(aCadaSegundo, cfg.reglas.segundosPorTurno, alTope)
+    grabadora.empezar(aCadaSegundo, topeDeTurno(), alTope)
       .then(function () { abriendo = false; })
       .catch(function () {
         abriendo = false;
@@ -1131,7 +1157,7 @@ window.ATWI = window.ATWI || {};
      botón de parar. Igual venga de grabar o de agregar. */
   function pintarGrabando(agregando) {
     var t = turnoActual();
-    var tope = cfg.reglas.segundosPorTurno;
+    var tope = topeDeTurno();
     P.estado = 'grabando';
 
     /* SIN `medio`: el reloj va DENTRO del botón de parar. Encima de la figura
@@ -1141,8 +1167,12 @@ window.ATWI = window.ATWI || {};
     pintarSala({
       dice: agregando ? 'Sigues sobre lo que ya grabaste.' : 'Te escucho.',
       pie: botonDeGrabar('parar') +
+        /* El reloj ya dice cuánto queda, así que aquí NO se repite el número:
+           dos cuentas del mismo tiempo en la misma pantalla es una de más, y la
+           que baja sola es la que se mira. Lo que sí hay que decir es que ese
+           tiempo se gasta entre todas las tomas del turno. */
         '<p class="chico centrado pie-nota">Estás grabando. Toca para parar. ' +
-          'Máximo ' + relojTexto(tope) + '.</p>'
+          'El reloj dice lo que te queda del turno.</p>'
     });
     /* Mientras se graba, la figura habla. Es la misma señal que el punto rojo
        del botón, dicha por el dibujo. */
@@ -1183,7 +1213,7 @@ window.ATWI = window.ATWI || {};
 
   function pintarRevision(confirmandoBorrado) {
     var t = turnoActual();
-    var tope = cfg.reglas.segundosPorTurno;
+    var tope = topeDeTurno();
     var b = P.borrador;
     var quedan = Math.max(0, tope - b.segundos);
     var corto = b.segundos < MINIMO;

@@ -64,7 +64,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'b02a3b8',
+  version: 'ef0d110',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -129,7 +129,18 @@ window.ATWI.config = {
        longitud de la partida. Se deja la lista, no la regla: volver a poner un
        cupo es añadir un número. */
     turnosConCupo: [],
-    segundosPorTurno: 60,
+    /* CUÁNTO SE PUEDE HABLAR POR TURNO, Y NO ES LO MISMO EN LOS DOS MODOS
+       (decisión del titular, 2026-09-14). En Controversia se acorta a la mitad:
+       medio minuto obliga a decir lo que se sostiene y poco más, que es lo que
+       la rúbrica puntúa. Con un minuto entero se llega al final rellenando, y
+       relleno es lo primero que el abogado tiene que quitar.
+
+       En Negociación se queda en sesenta: ahí no se compite, se propone, y una
+       propuesta necesita sitio para decir qué se ofrece y a cambio de qué.
+
+       El tiempo se gasta ENTRE TODAS las tomas del turno: se puede parar,
+       escuchar y agregar, pero lo que queda es lo que queda. */
+    segundosPorTurno: { debate: 30, negociacion: 60 },
     revanchasPorTema: 2,
     revanchasPorTemporada: 4,
     revanchaVentanaHoras: [24, 336],   // de 24 horas a 14 días
