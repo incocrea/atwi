@@ -1183,13 +1183,13 @@ body.app {
      queda en la CINTURA y de ahi para abajo lo tapa el boton de grabar, asi que
      la figura tiene que ser mas alta que lo que se ve de ella.
 
-     El 134% no esta a ojo. Dentro del lienzo de 280x400 la figura de `hablando`
-     va de 51 a 387 px, y la cintura cae mas o menos al 65% de la figura, o sea
-     al 67% del lienzo. Para que el borde de abajo de la caja caiga justo ahi,
-     la imagen tiene que medir 1/0,67 = 1,49 veces la caja; el boton ya se sube
-     un 10% por su cuenta, asi que con 1,34 la cintura queda EN el borde del
-     boton y no por debajo. */
-  --alto-fig-hablante: 134%;
+     El numero no esta a ojo. En el lienzo de 300x420 la figura de `hablando`
+     empieza al 14,3% y mide el 82,6%, asi que la cintura --mas o menos al 65%
+     de la figura-- cae al 68% del lienzo. Para que el borde de abajo de la caja
+     caiga ahi, la imagen tiene que medir 1/0,68 = 1,47 veces la caja; el boton
+     ya se sube un 10% por su cuenta, asi que con 1,32 la cintura queda EN el
+     borde del boton y no por debajo. */
+  --alto-fig-hablante: 132%;
   display: flex; flex-direction: column; gap: var(--e-3);
   min-height: 100%;
 }
@@ -1264,7 +1264,7 @@ body.app {
      aplicarse; asi manda el alto y `margin-inline: auto` la centra, que es lo
      que centra un absoluto con ancho intrinseco. */
   position: absolute; top: 0; bottom: auto; left: 0; right: 0; margin-inline: auto;
-  height: var(--alto-fig-hablante, 134%); width: auto; max-width: none;
+  height: var(--alto-fig-hablante, 132%); width: auto; max-width: none;
   transform: none;
 }
 .retrato__fig[hidden] { display: none; }
@@ -1868,13 +1868,16 @@ body.app {
    Se descuenta el hueco de cada pose, que esta medido sobre las 144 piezas:
    `plante` empieza al 19,8% del lienzo y `puno` al 14,8%. El factor va aparte y
    SIN unidad porque en `calc` no se pueden multiplicar dos porcentajes. */
-.encuentro__fig { --alto-fig: 118%; --factor-fig: 1.18; }
-.encuentro__fig[data-pose="plante"] { --hueco-arriba: 19.8%; --acerca: 11%; }
-.encuentro__fig[data-pose="puno"]   { --hueco-arriba: 14.8%; --acerca: 14%; }
+/* Medidos sobre las 144 piezas con el marco de 300x420. Cambiaron al pasar de
+   nivelar por la estatura a nivelar por la cintura: las figuras de pelo alto
+   crecieron y el marco subio, asi que los huecos ya no son los de antes. */
+.encuentro__fig { --alto-fig: 116%; --factor-fig: 1.16; }
+.encuentro__fig[data-pose="plante"] { --hueco-arriba: 20.9%; --acerca: 12%; }
+.encuentro__fig[data-pose="puno"]   { --hueco-arriba: 15.9%; --acerca: 15%; }
 .encuentro__fig .retrato__fig {
   position: absolute; bottom: auto;
-  top: calc(var(--sube, 20%) - var(--hueco-arriba, 19.8%) * var(--factor-fig));
-  height: var(--alto-fig, 118%); width: auto; max-width: none;
+  top: calc(var(--sube, 20%) - var(--hueco-arriba, 20.9%) * var(--factor-fig));
+  height: var(--alto-fig, 116%); width: auto; max-width: none;
 }
 /* Kai es más ALTO que Luna, que no es lo mismo que más grande. La diferencia la
    hace la POSICIÓN, no el tamaño: los dos se dibujan igual de grandes y él se
