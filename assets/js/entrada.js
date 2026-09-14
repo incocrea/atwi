@@ -80,7 +80,7 @@ window.ATWI = window.ATWI || {};
   function cabeza(emoji, titulo, bajada) {
     return '<div class="centrado" style="padding:var(--e-5) 0 var(--e-5)">' +
         (emoji === null
-          ? '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="196" height="70" ' +
+          ? '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70" ' +
             'style="margin:0 auto;height:58px;width:auto">'
           : '<div style="font-size:3.25rem;line-height:1">' + emoji + '</div>') +
         '<h1 style="margin-top:var(--e-3)">' + esc(titulo) + '</h1>' +
