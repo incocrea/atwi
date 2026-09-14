@@ -469,6 +469,35 @@ function latir() {
   }, num('ms'));
 }
 
+/* EL SCROLL NO SE MUEVE AL TOCAR LA BARRA.
+ *
+ * El titular lo acoto muy bien: pasa al pinchar el TEXTO del label y no al
+ * pinchar la casilla. Eso apunta a una cosa concreta: pinchar un control lo
+ * enfoca sin mas --ya lo estas viendo, no hay nada que traer-- pero pinchar su
+ * etiqueta le pasa el foco de rebote, y ahi el navegador lo «trae a la vista».
+ *
+ * Y traerlo a la vista, en una barra `sticky`, es irse al principio: lo que el
+ * navegador considera su sitio no es donde se ve pegada arriba, sino donde cae
+ * en el flujo del documento, que para esta barra es el borde superior de la
+ * pagina.
+ *
+ * No se pudo reproducir aqui --depende del navegador-- asi que esto no corrige
+ * un fallo visto sino que lo hace imposible: se apunta donde estaba el scroll
+ * antes de tocar y, si algo lo movio sin que nadie se lo pidiera, se devuelve.
+ * Se mira durante unos fotogramas porque el salto no siempre llega en el
+ * primero. */
+(function () {
+  var barra = document.querySelector('.mandos');
+  barra.addEventListener('pointerdown', function () {
+    var y = window.scrollY;
+    var quedan = 6;
+    (function mirar() {
+      if (window.scrollY !== y) window.scrollTo(0, y);
+      if (--quedan > 0) requestAnimationFrame(mirar);
+    })();
+  });
+})();
+
 document.getElementById('color').addEventListener('change', cargar);
 document.getElementById('origen').addEventListener('change', cargar);
 document.getElementById('pluma').addEventListener('input', function () { QUIEN.forEach(rehacer); });
