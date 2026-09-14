@@ -176,10 +176,17 @@ body.app {
 .marco:has(#v-catalogo[data-activa]) > .cabecera { background: transparent; }
 
 /* El de elegir entre jugar aqui o invitar va en su modal, que tapa la pantalla
-   entera y por tanto tapa el del catalogo. */
-#m-tema .modal__cuerpo {
+   entera y por tanto tapa el del catalogo.
+
+   VA EN EL MODAL, NO EN SU CUERPO. Puesto en el cuerpo cortaba en seco justo
+   encima de los botones, porque el pie trae su propio color de fondo y su linea
+   de arriba: quedaba una raya cruzando la pantalla a dos tercios. En el modal
+   cubre cabecera, cuerpo y pie, y lo unico que hay que hacer es quitarle al pie
+   el color y la linea que ya no separan nada. */
+#m-tema {
   background: url(../img/fondos/tema.webp) center top / cover no-repeat;
 }
+#m-tema .modal__pie { background: none; border-top: 0; }
 
 @keyframes entra {
   from { opacity: 0; transform: translateY(8px); }
