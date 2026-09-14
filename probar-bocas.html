@@ -32,7 +32,8 @@
   h1 { font-size: 1.1rem; margin: 0 0 4px; }
   p.nota { margin: 0 0 14px; color: #6b6480; max-width: 76ch; }
 
-  .rejilla { display: grid; gap: 16px; }
+  /* Y por si acaso: que el navegador no intente compensar nada por su cuenta. */
+  .rejilla { display: grid; gap: 16px; overflow-anchor: none; }
   .caso { background: #fff; border-radius: 18px; padding: 12px;
           box-shadow: 0 6px 18px rgba(60,40,80,.10);
           display: flex; gap: 16px; align-items: flex-start; }
@@ -76,6 +77,12 @@
             box-shadow: 0 4px 14px rgba(60,40,80,.10); }
   label { display: inline-flex; gap: 6px; align-items: center; }
   input[type=number] { width: 62px; }
+  /* EL ESTADO, SIEMPRE EN SU PROPIO RENGLON. Iba en la misma fila que los mandos
+     y el texto cambia de largo --«guardado en arte/bocas.json» contra «3 cajas
+     leidas»--, asi que la barra saltaba de una fila a dos y de dos a una, y todo
+     lo de debajo se movia con ella. En su renglon, el largo del texto deja de
+     importar. */
+  #estado { flex: 1 0 100%; min-height: 1.5em; }
   pre { background: #24212e; color: #e8e4f0; padding: 12px; border-radius: 10px;
         white-space: pre-wrap; margin-top: 16px; font-size: .82rem; }
   button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 0;
@@ -285,30 +292,41 @@ function rehacer(q) {
   var cajas = CAJAS[clave(q)];
   var d = cajas.de, a = cajas.a;
 
-  /* Panel izquierdo: la cara de `frente` centrada en la caja roja, aumentada. */
-  c.fuente.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
-  var lz = document.createElement('canvas');
+  /* LOS LIENZOS SE REUSAN, NO SE REHACEN. Antes se borraban y se volvian a
+     insertar en cada repintado --y repintar pasa en cada pixel de arrastre-- y
+     eso hacia saltar el scroll: el navegador reajusta la posicion cuando cambia
+     el contenido de ARRIBA de lo que se esta viendo, y ahi le cambiaba en todas
+     las tarjetas a la vez. Pasaba «a veces» porque depende de donde este uno
+     mirando. Reusandolos no hay nada que reajustar. */
+  var lz = c.fuente.querySelector('canvas');
+  if (!lz) {
+    lz = document.createElement('canvas');
+    lz.style.position = 'absolute';
+    c.fuente.insertBefore(lz, c.fuente.firstChild);
+  }
   lz.width = 300; lz.height = 300;
-  lz.style.position = 'absolute';
   var lg = lz.getContext('2d');
   var cx = VISTA.cx, cy = VISTA.cy;
   lg.imageSmoothingEnabled = false;
   lg.drawImage(c.frente, cx - 150 / ZOOM, cy - 150 / ZOOM, 300 / ZOOM, 300 / ZOOM,
                0, 0, 300, 300);
-  c.fuente.insertBefore(lz, c.fuente.firstChild);
   poner(c.cajaDe, (d[0] - cx) * ZOOM + 150, (d[1] - cy) * ZOOM + 150,
         (d[2] - d[0]) * ZOOM, (d[3] - d[1]) * ZOOM);
   c.cajaDe.style.transform = 'rotate(' + (cajas.ang || 0) + 'deg)';
 
-  /* Panel derecho: los dos fotogramas, al tamaño de la sala. */
-  c.destino.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
-  var abierta = document.createElement('canvas');
-  abierta.width = c.hablando.naturalWidth; abierta.height = c.hablando.naturalHeight;
-  abierta.getContext('2d').drawImage(c.hablando, 0, 0);
-  c.marcos = [abierta, conSonrisa(c.hablando, c.frente, cajas)];
+  /* Panel derecho: los dos fotogramas, al tamaño de la sala. Tambien reusados:
+     se dibuja encima en vez de cambiarlos por otros. */
+  if (c.marcos.length !== 2) {
+    c.marcos = [document.createElement('canvas'), document.createElement('canvas')];
+    c.marcos.forEach(function (m, i) {
+      m.style.display = i === 0 ? 'block' : 'none';
+      c.destino.insertBefore(m, c.destino.firstChild);
+    });
+  }
+  var nuevos = [c.hablando, conSonrisa(c.hablando, c.frente, cajas)];
   c.marcos.forEach(function (m, i) {
-    m.style.display = i === 0 ? 'block' : 'none';
-    c.destino.insertBefore(m, c.destino.firstChild);
+    m.width = c.hablando.naturalWidth; m.height = c.hablando.naturalHeight;
+    m.getContext('2d').drawImage(nuevos[i], 0, 0);
   });
   var ex = 285 / 620, ey = c.destino.clientHeight * 1.39 / 960;
   poner(c.cajaA, a[0] * ex, a[1] * ey, (a[2] - a[0]) * ex, (a[3] - a[1]) * ey);
