@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="es">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Probar las bocas</title>
+<!--
+  BANCO DE PRUEBAS DE LAS BOCAS. No es parte del juego.
+
+  Sirve para ver la animacion de hablar de cada personaje SIN montar una partida
+  entera: elegir tema, empezar, esperar el sorteo y grabar un turno para ver dos
+  segundos de boca no es una forma de trabajar.
+
+  Reproduce EXACTAMENTE el encuadre de la sala --la caja de `.hablante__fig`, su
+  alto, el 139% de la figura dentro y el recorte por la cintura-- porque el
+  tamaño al que se ve es la mitad del juicio: un parche que canta a 4 aumentos
+  puede ser invisible a tamaño real, y al reves.
+
+  Y CALCULA LOS FOTOGRAMAS AQUI, en un lienzo, con el mismo reparto de bandas
+  que `tools/bocas.py`. Asi la caja de la boca se mueve y se ve el resultado al
+  instante, en vez de reescribir el Python y volver a generar 72 archivos para
+  descubrir que sobraban tres pixeles.
+-->
+<style>
+  :root {
+    --alto-hablante: clamp(210px, 36vh, 350px);
+    --alto-fig: 139%;
+  }
+  body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px;
+         background: #FBEEE8; color: #23203a; }
+  h1 { font-size: 1.1rem; margin: 0 0 4px; }
+  p.nota { margin: 0 0 14px; color: #6b6480; }
+
+  .rejilla { display: flex; flex-wrap: wrap; gap: 18px; }
+  .caso { background: #fff; border-radius: 18px; padding: 10px 10px 6px;
+          box-shadow: 0 6px 18px rgba(60,40,80,.10); }
+  /* EL MISMO ENCUADRE QUE LA SALA. Si esto se desincroniza, la prueba deja de
+     probar lo que se quiere probar. */
+  .fig { position: relative; width: 285px; height: var(--alto-hablante);
+         overflow: hidden; border-radius: 18px; }
+  .fig canvas { position: absolute; top: 0; left: 0; right: 0; margin-inline: auto;
+                height: var(--alto-fig); width: auto; display: block; }
+  .fig .caja { position: absolute; border: 1px solid #f22; pointer-events: none;
+               display: none; }
+  .verCaja .fig .caja { display: block; }
+  .caso h2 { font-size: .95rem; margin: 6px 0 2px; }
+  .caso .chico { color: #6b6480; font-size: .8rem; }
+
+  .mandos { display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
+            margin-bottom: 14px; }
+  label { display: inline-flex; gap: 6px; align-items: center; }
+  input[type=number] { width: 64px; }
+  pre { background: #24212e; color: #e8e4f0; padding: 12px; border-radius: 10px;
+        white-space: pre-wrap; margin-top: 16px; }
+  button { font: inherit; padding: 6px 14px; border-radius: 999px; border: 0;
+           background: #7A6AD8; color: #fff; cursor: pointer; }
+</style>
+
+<h1>Las bocas, al tamaño de la sala</h1>
+<p class="nota">Mismo encuadre que el turno: caja de 285&nbsp;px, figura al 139&nbsp;% y recorte por la cintura.</p>
+
+<div class="mandos">
+  <label>Color
+    <select id="color">
+      <option>azul</option><option>verde</option><option>amarillo</option><option>morado</option>
+    </select>
+  </label>
+  <label>ms por fotograma <input type="number" id="ms" value="110" min="40" max="400" step="10"></label>
+  <label>media <input type="number" id="k2" value="0.45" min="0" max="1" step="0.05"></label>
+  <label>cerrada <input type="number" id="k3" value="0.12" min="0" max="1" step="0.02"></label>
+  <label>piel arriba <input type="number" id="aire" value="1" min="0.2" max="3" step="0.1"></label>
+  <label>pluma <input type="number" id="pluma" value="7" min="0" max="20" step="1"></label>
+  <label><input type="checkbox" id="verCaja"> ver la caja</label>
+  <label><input type="checkbox" id="animar" checked> animar</label>
+  <button id="copiar">Copiar las cajas</button>
+</div>
+
+<div class="rejilla" id="rejilla"></div>
+<pre id="salida"></pre>
+
+<script>
+/* UNA CAJA POR PERSONAJE **Y POR COLOR**, y esto es el arreglo. Estaban
+   marcadas solo sobre el azul y en los otros tres colores se buscaba la misma
+   boca por parecido. Falla: cada color es una generacion distinta, la cara no
+   cae en el mismo sitio, y los dos peores encajes de las 24 fueron justo los de
+   Dante --que es el que se vio mal--.
+
+   Aqui se parte de la del azul y se ajusta cada una mirando. Flechas para mover,
+   Mayus+flechas para estirar. */
+var BASE = {
+  kai:   [277, 347, 331, 380],
+  nico:  [274, 356, 313, 386],
+  dante: [275, 344, 318, 377],
+  luna:  [268, 391, 311, 425],
+  nina:  [278, 391, 327, 424],
+  maya:  [260, 393, 314, 426]
+};
+var QUIEN = Object.keys(BASE);
+var COLORES = ['azul', 'verde', 'amarillo', 'morado'];
+var BOCAS = {};
+COLORES.forEach(function (c) {
+  QUIEN.forEach(function (q) { BOCAS[q + '-' + c] = BASE[q].slice(); });
+});
+var casos = {};
+function color() { return document.getElementById('color').value; }
+function clave(q) { return q + '-' + color(); }
+
+function num(id) { return Number(document.getElementById(id).value); }
+
+/* El mismo reparto de bandas que el Python: la piel de encima se estira y la
+   boca se comprime, y la suma es constante. Lo de fuera no se toca. */
+function fotograma(base, caja, k) {
+  var c = document.createElement('canvas');
+  c.width = base.naturalWidth; c.height = base.naturalHeight;
+  var g = c.getContext('2d');
+  g.drawImage(base, 0, 0);
+  if (k >= 1) return c;
+
+  var x0 = caja[0], by0 = caja[1], x1 = caja[2], y1 = caja[3];
+  var alto = y1 - by0;
+  var y0 = Math.max(0, by0 - Math.round(alto * num('aire')));
+  var total = y1 - y0, an = x1 - x0;
+  var nueva = Math.max(1, Math.round(alto * k));
+
+  var t = document.createElement('canvas');
+  t.width = an; t.height = total;
+  var tg = t.getContext('2d');
+  tg.drawImage(base, x0, y0, an, by0 - y0, 0, 0, an, total - nueva);
+  tg.drawImage(base, x0, by0, an, alto, 0, total - nueva, an, nueva);
+
+  /* La pluma: el parche entra con el borde desvanecido, o se ve el recuadro. */
+  var p = num('pluma');
+  if (p > 0) {
+    var m = document.createElement('canvas');
+    m.width = an; m.height = total;
+    var mg = m.getContext('2d');
+    mg.filter = 'blur(' + (p * 0.7) + 'px)';
+    mg.fillStyle = '#fff';
+    mg.fillRect(p, p, an - 2 * p, total - 2 * p);
+    tg.globalCompositeOperation = 'destination-in';
+    tg.drawImage(m, 0, 0);
+  }
+  g.drawImage(t, x0, y0);
+  return c;
+}
+
+function rehacer(quien) {
+  var c = casos[quien];
+  if (!c || !c.base.complete || !c.base.naturalWidth) return;
+  var caja = BOCAS[clave(quien)];
+  c.marcos = [1, num('k2'), num('k3')].map(function (k) {
+    return fotograma(c.base, caja, k);
+  });
+  c.fig.querySelectorAll('canvas').forEach(function (x) { x.remove(); });
+  c.marcos.forEach(function (m, i) {
+    m.style.display = i === 0 ? 'block' : 'none';
+    c.fig.insertBefore(m, c.fig.firstChild);
+  });
+  var b = caja, e = 285 / 620;   /* la caja se enseña a la escala del lienzo */
+  var alto = c.fig.clientHeight * 1.39 / 960;
+  c.caja.style.cssText = 'left:' + (b[0] * 285 / 620) + 'px;top:' + (b[1] * alto) +
+    'px;width:' + ((b[2] - b[0]) * 285 / 620) + 'px;height:' + ((b[3] - b[1]) * alto) + 'px';
+  c.pie.textContent = color() + ': ' + b.join(', ');
+  salida();
+}
+
+function salida() {
+  var l = [];
+  QUIEN.forEach(function (q) {
+    COLORES.forEach(function (c) {
+      l.push("    ('" + q + "', '" + c + "'): (" + BOCAS[q + '-' + c].join(', ') + "),");
+    });
+  });
+  document.getElementById('salida').textContent = 'BOCAS = {\n' + l.join('\n') + '\n}';
+}
+
+QUIEN.forEach(function (q) {
+  var d = document.createElement('div'); d.className = 'caso';
+  var f = document.createElement('div'); f.className = 'fig';
+  var caja = document.createElement('div'); caja.className = 'caja';
+  f.appendChild(caja);
+  var h = document.createElement('h2'); h.textContent = q;
+  var pie = document.createElement('div'); pie.className = 'chico';
+  d.appendChild(f); d.appendChild(h); d.appendChild(pie);
+  document.getElementById('rejilla').appendChild(d);
+
+  var im = new Image();
+  im.onload = function () { rehacer(q); };
+  casos[q] = { base: im, fig: f, caja: caja, pie: pie, marcos: [] };
+
+  /* Las flechas mueven la caja de este personaje: se pincha la tarjeta y se
+     ajusta mirando, que es lo unico que ha funcionado. Con Mayus se estira en
+     vez de moverse. */
+  d.tabIndex = 0;
+  d.addEventListener('keydown', function (e) {
+    var m = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!m) return;
+    e.preventDefault();
+    var b = BOCAS[clave(q)];
+    if (e.shiftKey) { b[2] += m[0]; b[3] += m[1]; }
+    else { b[0] += m[0]; b[1] += m[1]; b[2] += m[0]; b[3] += m[1]; }
+    rehacer(q);
+  });
+});
+
+function cargar() {
+  var c = document.getElementById('color').value;
+  QUIEN.forEach(function (q) {
+    casos[q].base.src = 'assets/img/personajes/' + q + '-' + c + '-hablando.webp';
+  });
+}
+
+var reloj = null, paso = 0;
+var ORDEN = [0, 1, 2, 1];
+function latir() {
+  if (reloj) clearInterval(reloj);
+  if (!document.getElementById('animar').checked) {
+    QUIEN.forEach(function (q) {
+      (casos[q].marcos || []).forEach(function (m, i) { m.style.display = i === 0 ? 'block' : 'none'; });
+    });
+    return;
+  }
+  reloj = setInterval(function () {
+    paso = (paso + 1) % ORDEN.length;
+    QUIEN.forEach(function (q) {
+      (casos[q].marcos || []).forEach(function (m, i) {
+        m.style.display = i === ORDEN[paso] ? 'block' : 'none';
+      });
+    });
+  }, num('ms'));
+}
+
+['k2', 'k3', 'aire', 'pluma'].forEach(function (id) {
+  document.getElementById(id).addEventListener('input', function () { QUIEN.forEach(rehacer); });
+});
+document.getElementById('color').addEventListener('change', function () {
+  cargar(); QUIEN.forEach(rehacer);
+});
+document.getElementById('ms').addEventListener('input', latir);
+document.getElementById('animar').addEventListener('change', latir);
+document.getElementById('verCaja').addEventListener('change', function () {
+  document.body.classList.toggle('verCaja', this.checked);
+});
+document.getElementById('copiar').addEventListener('click', function () {
+  navigator.clipboard.writeText(document.getElementById('salida').textContent);
+  this.textContent = 'copiado';
+  setTimeout(function () { document.getElementById('copiar').textContent = 'Copiar las cajas'; }, 1200);
+});
+
+cargar();
+latir();
+</script>
