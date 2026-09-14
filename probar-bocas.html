@@ -2,7 +2,7 @@
 <html lang="es">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Probar las bocas</title>
+<title>Panel de los personajes</title>
 <!--
   BANCO DE PRUEBAS DE LAS BOCAS. No es parte del juego.
 
@@ -26,7 +26,7 @@
   tamaño real, y al reves.
 -->
 <style>
-  html { scroll-padding-top: 70px; }
+  html { scroll-padding-top: 114px; }
   body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 16px;
          background: #FBEEE8; color: #23203a; }
   h1 { font-size: 1.1rem; margin: 0 0 4px; }
@@ -70,7 +70,41 @@
   /* LOS MANDOS SE QUEDAN ARRIBA. Con seis personajes hay que bajar bastante, y
      perder de vista el selector de color o el de velocidad obliga a subir y
      bajar para cada prueba. */
-  .mandos { position: sticky; top: 0; z-index: 5;
+  /* LAS PESTAÑAS. Esta pagina empezo siendo solo las bocas y ya no lo es: aqui
+     se decide tambien quien le pone la voz a cada personaje y como habla. Los
+     jueces entraran por el mismo sitio cuando esten cortados. */
+  .pestanas { position: sticky; top: 0; z-index: 6; display: flex; gap: 8px;
+              margin: -16px -16px 0; padding: 10px 16px 8px;
+              background: rgba(251,238,232,.96); backdrop-filter: blur(8px); }
+  .pestanas button { background: #fff; color: #6b6480; box-shadow: 0 2px 8px rgba(60,40,80,.08); }
+  .pestanas button[aria-selected=true] { background: #7A6AD8; color: #fff; }
+  .hoja[hidden] { display: none; }
+
+  /* --- La seccion de voces ------------------------------------------------ */
+  .voz-caso { background: #fff; border-radius: 18px; padding: 14px 16px;
+              box-shadow: 0 6px 18px rgba(60,40,80,.10); margin-bottom: 14px; }
+  .voz-caso > header { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+  .voz-caso > header img { width: 52px; height: 52px; border-radius: 50%;
+                           object-fit: cover; object-position: 50% 12%; background: #f4f1ee; }
+  .voz-caso h2 { margin: 0; font-size: 1rem; text-transform: capitalize; }
+  .candidata { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+               padding: 8px 10px; border-radius: 12px; border: 2px solid #efeaf6; }
+  .candidata + .candidata { margin-top: 8px; }
+  .candidata[data-puesta=si] { border-color: #7A6AD8; background: #f7f5ff; }
+  .candidata b { min-width: 74px; }
+  .candidata .medidas { flex: 1 1 200px; }
+  .suena { background: #efeaf6; color: #4c3f80; }
+  .suena[data-sonando=si] { background: #2b7a4b; color: #fff; }
+  .afinar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap;
+            margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e6e0ee; }
+  .voz-caso textarea { width: 100%; min-height: 120px; margin-top: 8px; padding: 10px;
+                       border-radius: 12px; border: 2px solid #efeaf6; font: inherit;
+                       font-family: ui-monospace, Consolas, monospace; font-size: .8rem; }
+  .patron { background: #fff; border-radius: 18px; padding: 12px 16px; margin-bottom: 14px;
+            box-shadow: 0 6px 18px rgba(60,40,80,.10); }
+  .patron .candidata { border-color: #dcf0e2; background: #f4fbf6; }
+
+  .mandos { position: sticky; top: 44px; z-index: 5;
             display: flex; flex-wrap: wrap; gap: 14px; align-items: center;
             margin: 0 -16px 14px; padding: 10px 16px;
             background: rgba(251,238,232,.94); backdrop-filter: blur(8px);
@@ -89,6 +123,12 @@
            background: #7A6AD8; color: #fff; cursor: pointer; }
 </style>
 
+<div class="pestanas" role="tablist">
+  <button role="tab" data-hoja="bocas" aria-selected="true">Bocas</button>
+  <button role="tab" data-hoja="voces" aria-selected="false">Voces y forma de hablar</button>
+</div>
+
+<section class="hoja" id="s-bocas">
 <h1>La sonrisa cerrada, recortada de verdad</h1>
 <p class="nota">
   A la izquierda la pose <b>frente</b>: arrastrá la caja <b style="color:#e0232a">roja</b> sobre
@@ -121,6 +161,30 @@
 
 <div class="rejilla" id="rejilla"></div>
 <pre id="salida"></pre>
+</section>
+
+<section class="hoja" id="s-voces" hidden>
+<h1>Quién le pone la voz a cada uno</h1>
+<p class="nota">
+  Las quince voces <code>es-MX</code> de Azure dicen <b>la misma frase</b> — una intervención
+  de verdad, con sus «yo digo» y sus «no sé» —, así que se pueden comparar.
+  De cada una hay dos tomas: <b>como es</b> (sin tocarle nada) y <b>al tono</b>
+  (subida hasta donde suena Kai o Luna, que son las dos que ya elegiste).
+  <br>Arriba están Kai y Luna para tener la referencia al oído. Abajo, los dos
+  candidatos recomendados para cada personaje y el desplegable para oír cualquier otro.
+  Lo que elijas se guarda solo en <code>arte/voces.json</code>.
+</p>
+
+<div class="mandos">
+  <button id="v-copiar">Copiar el bloque para turno/index.ts</button>
+  <button id="v-parar" style="background:#fff;color:#c33;border:2px solid #f0c8c8">Parar</button>
+  <span class="chico" id="v-estado"></span>
+</div>
+
+<div id="v-patron"></div>
+<div id="v-rejilla"></div>
+<pre id="v-salida"></pre>
+</section>
 
 <script>
 var QUIEN = ['kai', 'nico', 'dante', 'luna', 'nina', 'maya'];
@@ -547,4 +611,270 @@ fetch('/_leer/bocas.json?' + Date.now())
   });
 
 latir();
+
+/* ===================== VOCES Y FORMA DE HABLAR ============================
+   La otra mitad del panel. Aqui no se dibuja nada: se OYE y se escribe.
+
+   POR QUE HAY MEDIDAS Y NO SOLO BOTONES DE PLAY. El titular pidio voces
+   «animadas, nunca agresivas», y eso se puede medir: `animacion` es cuanto se
+   mueve el tono dentro de la frase --una voz que no se mueve suena a
+   contestador-- y `brillo` es lo dura que se percibe. Los numeros no eligen;
+   sirven para poder mirar dos candidatas en vez de quince y saber por que esas.
+   Los calcula `tools/casting_voces.py`.
+
+   Y EL TONO NO SE COPIA, SE CALCULA. Kai lleva `+20%` y eso NO es un numero
+   general: parte de 130 Hz y con el acaba en 156. El mismo `+20%` sobre Renata,
+   que parte de 222, la deja en 262 --muy por encima de los 228 de Luna-- y una
+   voz pasada de agudo se oye chillona, que es justo por donde «animada» se
+   convierte en «agresiva». La toma «al tono» de cada voz lleva el porcentaje
+   que la deja sonando DONDE KAI Y LUNA, comprobado midiendo el resultado.       */
+
+/* La forma de hablar de quien todavia no tiene una escrita. Es la misma que
+   `supabase/functions/turno/index.ts` usa hoy para los cuatro nuevos: el punto
+   de partida de la caja de texto, para editar sobre algo y no sobre el vacio. */
+var NEUTRO = 'NOMBRE. Habla claro y sin adornos.\n\n' +
+  'COMO HABLA:\n' +
+  '- Dice la idea de su cliente con las palabras de su cliente, ordenadas.\n' +
+  '- Arregla lo que quedo a medias o mal dicho, y nada mas.\n' +
+  '- Ni alarga ni acorta por gusto: la frase dura lo que tiene que durar.\n\n' +
+  'COMO NO HABLA: no ironiza, no adorna, no suaviza y no endurece. Y NO TOCA\n' +
+  'las marcas de opinion --«yo creo», «yo digo», «me parece», «no se»--: esas\n' +
+  'se quedan donde estan y como estan, que es lo unico que separa una opinion\n' +
+  'de una orden.';
+
+var NUEVOS = ['nico', 'dante', 'nina', 'maya'];
+var CASTING = null;
+var VOCES = {};          // lo que el titular va eligiendo
+var GUARDADO_V = 'atwi-voces-panel';
+var sonando = null;
+var tocador = new Audio();
+tocador.addEventListener('ended', function () { marcarSonando(null); });
+
+function vDecir(t, bien) {
+  var e = document.getElementById('v-estado');
+  if (!e) return;
+  e.textContent = t;
+  e.style.color = bien ? '#2b7a4b' : '#a0603a';
+}
+
+function marcarSonando(id) {
+  sonando = id;
+  Array.prototype.forEach.call(document.querySelectorAll('.suena'), function (b) {
+    b.dataset.sonando = (b.dataset.id === id) ? 'si' : 'no';
+  });
+}
+
+/* UNO SOLO SUENA A LA VEZ, y por eso hay un unico `Audio`. Con uno por boton,
+   pulsar el siguiente sin parar el anterior deja los dos encima y lo que se
+   compara deja de ser ninguno de los dos. */
+function oir(corto, variante) {
+  var id = corto + '-' + variante;
+  if (sonando === id) { tocador.pause(); return marcarSonando(null); }
+  tocador.pause();
+  tocador.src = '/_oir/' + id + '.mp3';
+  tocador.play().then(function () { marcarSonando(id); }).catch(function () {
+    marcarSonando(null);
+    vDecir('no suena: esto necesita el servidor de desarrollo (localhost:8127)', false);
+  });
+}
+
+function botonSuena(corto, variante, etiqueta) {
+  return '<button class="suena" data-oir="' + corto + '" data-var="' + variante +
+         '" data-id="' + corto + '-' + variante + '" data-sonando="no">▶ ' +
+         etiqueta + '</button>';
+}
+
+function medidasDe(c) {
+  return '<span class="chico medidas">' + c.alto + ' Hz · animación <b>' +
+    c.animacion.toFixed(1) + '</b> st · brillo ' + c.brillo + ' · ' +
+    c.ritmo.toFixed(1) + ' síl/s' +
+    (c.estilos.length ? ' · estilos: ' + c.estilos.slice(0, 3).join(', ') : '') +
+    '</span>';
+}
+
+function nombreCorto(c) { return c.corto.charAt(0).toUpperCase() + c.corto.slice(1); }
+
+function pintarPatron() {
+  var refs = CASTING.candidatas.filter(function (c) { return c.quien; });
+  document.getElementById('v-patron').innerHTML =
+    '<div class="patron"><b>La referencia: así suenan los dos que ya elegiste.</b>' +
+    '<p class="chico" style="margin:4px 0 10px">Todo lo de abajo se compara contra esto. ' +
+    'La toma «al tono» de cada candidato está subida hasta caer justo aquí.</p>' +
+    refs.map(function (c) {
+      return '<div class="candidata"><b>' + c.quien + '</b>' +
+        '<span class="chico">' + nombreCorto(c) + '</span>' + medidasDe(c) +
+        botonSuena(c.corto, 'comoes', 'como es') +
+        botonSuena(c.corto, 'altono', 'como suena en el juego') + '</div>';
+    }).join('') + '</div>';
+}
+
+function pintarVoces() {
+  document.getElementById('v-rejilla').innerHTML = NUEVOS.map(function (q) {
+    var elegida = VOCES[q] || {};
+    var suyas = CASTING.candidatas.filter(function (c) { return c.para === q; });
+    var otras = CASTING.candidatas.filter(function (c) {
+      return !c.quien && c.para !== q;
+    });
+    return '<div class="voz-caso" data-quien="' + q + '">' +
+      '<header>' +
+        '<img src="assets/img/personajes/' + q + '-azul-frente.webp" alt="">' +
+        '<h2>' + q + '</h2>' +
+        '<span class="chico">hoy: ' + (elegida.voz || '—').replace('es-MX-', '')
+          .replace('Neural', '') + '</span>' +
+      '</header>' +
+      suyas.map(function (c) {
+        var puesta = elegida.voz === c.voz;
+        return '<label class="candidata" data-puesta="' + (puesta ? 'si' : 'no') + '">' +
+          '<input type="radio" name="v-' + q + '" value="' + c.voz + '"' +
+            (puesta ? ' checked' : '') + '>' +
+          '<b>' + nombreCorto(c) + '</b>' + medidasDe(c) +
+          botonSuena(c.corto, 'comoes', 'como es') +
+          botonSuena(c.corto, 'altono', 'al tono ' + (c.altono >= 0 ? '+' : '') + c.altono + '%') +
+          '</label>';
+      }).join('') +
+      '<div class="afinar">' +
+        '<label>oír otra <select data-otra="' + q + '">' +
+          '<option value="">—</option>' +
+          otras.map(function (c) {
+            return '<option value="' + c.voz + '">' + nombreCorto(c) + ' · ' +
+              c.alto + ' Hz · anim ' + c.animacion.toFixed(1) + '</option>';
+          }).join('') +
+        '</select></label>' +
+        '<label>tono <input type="number" data-tono="' + q + '" value="' +
+          (elegida.tono != null ? elegida.tono : 0) + '" step="1" min="-40" max="60">%</label>' +
+        '<label>ritmo <input type="number" data-ritmo="' + q + '" value="' +
+          (elegida.ritmo != null ? elegida.ritmo : 6) + '" step="1" min="-20" max="30">%</label>' +
+      '</div>' +
+      '<label class="chico" style="display:block;margin-top:10px">Cómo habla ' +
+        '(esto es lo que lee el abogado; se pega tal cual en <code>turno/index.ts</code>)' +
+        '<textarea data-como="' + q + '">' +
+          (elegida.como || NEUTRO.replace('NOMBRE', q.toUpperCase())) +
+        '</textarea></label>' +
+      '</div>';
+  }).join('');
+  pintarSalida();
+}
+
+/* El bloque listo para pegar. El panel NO toca la funcion de borde por su
+   cuenta: desplegarla cuesta y se hace a sabiendas, no al arrastrar un numero. */
+function pintarSalida() {
+  var l = NUEVOS.map(function (q) {
+    var v = VOCES[q] || {};
+    if (!v.voz) return '  // ' + q + ': sin elegir todavia';
+    return "  " + q + ": { voz: '" + v.voz + "', estilo: null, tono: '" +
+      (v.tono >= 0 ? '+' : '') + v.tono + "%', ritmo: '" +
+      (v.ritmo >= 0 ? '+' : '') + v.ritmo + "%', quien: " + q.toUpperCase() + ' },';
+  });
+  document.getElementById('v-salida').textContent = l.join('\n');
+}
+
+function guardarVoces() {
+  try { localStorage.setItem(GUARDADO_V, JSON.stringify(VOCES)); } catch (e) {}
+  pintarSalida();
+  fetch('/_guardar/voces.json', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(VOCES)
+  }).then(function (r) {
+    vDecir(r.ok ? 'guardado en arte/voces.json' : 'el servidor dijo ' + r.status, r.ok);
+  }).catch(function () {
+    vDecir('sin servidor: usá «Copiar» y pegame el bloque', false);
+  });
+}
+
+/* Al marcar una voz, el tono se pone SOLO en el que la deja sonando donde Kai y
+   Luna. Es el que hay que querer por defecto; dejarlo en cero obligaria a
+   copiar un numero de la etiqueta del boton, que es pedirle a alguien que haga
+   de calculadora. */
+function elegirVoz(q, nombreVoz) {
+  var c = CASTING.candidatas.filter(function (x) { return x.voz === nombreVoz; })[0];
+  var v = VOCES[q] || (VOCES[q] = {});
+  v.voz = nombreVoz;
+  v.tono = c ? c.altono : 0;
+  v.ritmo = 6;
+  if (!v.como) v.como = NEUTRO.replace('NOMBRE', q.toUpperCase());
+  guardarVoces();
+  pintarVoces();
+}
+
+document.addEventListener('click', function (e) {
+  var p = e.target.closest('.pestanas [data-hoja]');
+  if (p) {
+    Array.prototype.forEach.call(document.querySelectorAll('.pestanas [data-hoja]'),
+      function (b) { b.setAttribute('aria-selected', String(b === p)); });
+    document.getElementById('s-bocas').hidden = p.dataset.hoja !== 'bocas';
+    document.getElementById('s-voces').hidden = p.dataset.hoja !== 'voces';
+    if (p.dataset.hoja === 'voces' && !CASTING) cargarCasting();
+    return;
+  }
+  var s = e.target.closest('[data-oir]');
+  if (s) { e.preventDefault(); oir(s.dataset.oir, s.dataset['var']); return; }
+  if (e.target.id === 'v-parar') { tocador.pause(); marcarSonando(null); return; }
+  if (e.target.id === 'v-copiar') {
+    navigator.clipboard.writeText(document.getElementById('v-salida').textContent);
+    e.target.textContent = 'copiado';
+    setTimeout(function () { e.target.textContent = 'Copiar el bloque para turno/index.ts'; }, 1200);
+  }
+});
+
+document.addEventListener('change', function (e) {
+  var t = e.target;
+  if (t.name && t.name.indexOf('v-') === 0) return elegirVoz(t.name.slice(2), t.value);
+  if (t.dataset.otra && t.value) {
+    var c = CASTING.candidatas.filter(function (x) { return x.voz === t.value; })[0];
+    if (c) oir(c.corto, 'altono');
+    return;
+  }
+  if (t.dataset.tono) {
+    (VOCES[t.dataset.tono] || (VOCES[t.dataset.tono] = {})).tono = Number(t.value);
+    return guardarVoces();
+  }
+  if (t.dataset.ritmo) {
+    (VOCES[t.dataset.ritmo] || (VOCES[t.dataset.ritmo] = {})).ritmo = Number(t.value);
+    return guardarVoces();
+  }
+});
+
+/* La caja de texto se guarda al SALIR de ella y no en cada tecla: escribir una
+   personalidad son parrafos, y mandar el archivo entero en cada letra es ruido
+   sin ninguna ventaja. */
+document.addEventListener('focusout', function (e) {
+  if (!e.target.dataset || !e.target.dataset.como) return;
+  var q = e.target.dataset.como;
+  (VOCES[q] || (VOCES[q] = {})).como = e.target.value;
+  guardarVoces();
+});
+
+function cargarCasting() {
+  vDecir('leyendo el casting…', true);
+  fetch('/_leer/casting-voces.json')
+    .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function (d) {
+      CASTING = d;
+      /* Igual que en las bocas: PRIMERO lo del repo, y el navegador solo si el
+         repo no tiene nada. Al reves, abrir la pagina en otra maquina pisaria
+         lo elegido en la de al lado. */
+      return fetch('/_leer/voces.json').then(function (r) {
+        return r.ok ? r.json() : null;
+      }).catch(function () { return null; });
+    })
+    .then(function (guardadas) {
+      if (!guardadas) {
+        try { guardadas = JSON.parse(localStorage.getItem(GUARDADO_V) || 'null'); }
+        catch (e) { guardadas = null; }
+      }
+      VOCES = guardadas || {};
+      pintarPatron();
+      pintarVoces();
+      vDecir(CASTING.candidatas.length + ' voces medidas · ' +
+             Object.keys(VOCES).length + ' elegidas', true);
+    })
+    .catch(function () {
+      document.getElementById('v-rejilla').innerHTML =
+        '<div class="voz-caso">No se pudo leer <code>arte/casting-voces.json</code>. ' +
+        'Corré <code>python tools/casting_voces.py --panel</code> y abrí esto en ' +
+        '<code>localhost:8127</code>.</div>';
+      vDecir('sin casting: falta arte/casting-voces.json', false);
+    });
+}
 </script>
