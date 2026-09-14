@@ -960,6 +960,7 @@
       var bf0 = $('#p-ficha-otro');
       if (bf0) bf0.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', colorElegido)
         .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
+      refrescarRepresentantes();
       return;
     }
 
@@ -1591,7 +1592,15 @@
   function comoHabla(clave) { return COMO_HABLAN[clave] || ''; }
 
   /* El selector se repinta SOLO, sin tocar la pantalla entera: repintarla se
-     llevaría por delante los dos nombres a medio escribir. */
+     llevaría por delante los dos nombres a medio escribir.
+
+     HAY QUE LLAMARLA CADA VEZ QUE CAMBIA LA FICHA DEL INVITADO, no solo al
+     encender la llave del abogado. La ficha de cada quien sale DOS VECES en
+     esta pantalla —el círculo de al lado del nombre y la línea de «¿quién los
+     representa?»— y los tres sitios que la cambiaban repintaban solo el
+     círculo. Resultado: el invitado aparecía de amarillo arriba y de verde
+     abajo, la misma persona con dos personajes, y lo que sale en la línea de
+     abajo es lo que de verdad se va a jugar. */
   function refrescarRepresentantes() {
     var caja = $('#m-preparar .repres');
     if (!caja) return;
@@ -1851,6 +1860,7 @@
           if (x.dataset.invitado === g.nombre) x.setAttribute('aria-pressed', 'true');
           else x.removeAttribute('aria-pressed');
         });
+        refrescarRepresentantes();
         revisarPreparar();
       }
       return;
@@ -1998,6 +2008,7 @@
            con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
         if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
+        refrescarRepresentantes();
       }
       revisarPreparar();
       return;
