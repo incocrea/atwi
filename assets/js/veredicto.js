@@ -70,6 +70,15 @@ window.ATWI = window.ATWI || {};
      ========================================================================== */
   var MS_GRANDE = 500;    // lo que aguanta cada tramo a tamaño completo
   var MS_VUELO = 380;     // lo que tarda en colocarse
+  /* Cuanto mas ancho es el liston que la frase que lleva encima. Tiene que
+     asomar lo justo: si no asoma, las estrellas de los costados caen DETRAS de
+     las letras y no se ven --en el pliego la banda de la frase mide 1926 y la
+     del liston 1970, casi lo mismo--; y si asoma de mas, las letras se quedan
+     nadando en un charco de oro.
+
+     Con 1,12 asoma un 5 % por cada lado y las letras ocupan el 79 % del alto
+     del liston, que es donde se apoyan sin flotar. */
+  var LISTON = 1.12;
 
   /**
    * La frase ocupa EL MISMO ANCHO que el botón de abajo, y para eso hay que
@@ -98,7 +107,12 @@ window.ATWI = window.ATWI || {};
     if (!natural) return;
 
     var base = parseFloat(getComputedStyle(f).fontSize) || 16;
-    f.style.fontSize = (base * (hueco / natural)).toFixed(2) + 'px';
+    /* La frase no ocupa la columna entera: le deja sitio al LISTÓN, que va
+       detrás y es más ancho porque lleva sus estrellas a los costados. El
+       listón ocupa el 100 % y la frase este trozo, así que asoma por igual a
+       los dos lados. Si la frase llenara la columna, el listón tendría que
+       salirse del lienzo, y aquí nada se sale de lado. */
+    f.style.fontSize = (base * (hueco / LISTON / natural)).toFixed(2) + 'px';
   }
 
   /* Los tramos son imágenes: medir antes de que carguen da un ancho falso y
@@ -129,7 +143,12 @@ window.ATWI = window.ATWI || {};
 
     return tramos.reduce(function (cadena, t) {
       return cadena.then(function () { return unTramo(capa, t); });
-    }, Promise.resolve()).then(function () { capa.remove(); });
+    }, Promise.resolve()).then(function () {
+      capa.remove();
+      /* Y recien ahora el liston: durante el vuelo no hay nada sobre lo que
+         montarse todavia, y verlo esperando vacio delata el truco. */
+      frase.classList.add('revelacion__frase--montada');
+    });
   }
 
   function unTramo(capa, tramo) {

@@ -205,6 +205,24 @@ body.app {
 }
 #m-tema .modal__pie { background: none; border-top: 0; }
 
+/* La pantalla de «cómo se juega» lleva EL MISMO fondo que el catálogo de ese
+   modo. No es pereza: son el mismo momento partido en dos pantallas —acabás de
+   elegir modo y estás decidiendo si jugarlo— y darles fondos distintos haría
+   parecer que se cambió de sitio. El modal ya sabe de qué modo es, porque
+   `app.js` le pone `modal--debate` o `modal--negociacion` al abrirlo.
+
+   Va en el modal y no en su cuerpo, por lo mismo que `#m-tema`: en el cuerpo,
+   el pie trae su propio color y deja una raya cruzando la pantalla. */
+#m-explicar.modal--debate {
+  background: url(../img/fondos/debate.webp) center top / cover no-repeat,
+              var(--debate-tinte);
+}
+#m-explicar.modal--negociacion {
+  background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
+              var(--negociacion-tinte);
+}
+#m-explicar .modal__pie { background: none; border-top: 0; }
+
 @keyframes entra {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
@@ -787,12 +805,48 @@ body.app {
    ocupar exactamente el ancho de la columna, y no hay tamaño fijo que cuadre
    en todos los anchos. Lo de aquí es solo el punto de partida de esa medida. */
 .revelacion__frase {
+  position: relative;
   display: flex; flex-wrap: nowrap; justify-content: center;
   align-items: center; gap: .3em; white-space: nowrap;
   font-size: 1.28rem;
 }
 
-.fm__palabra { display: inline-flex; align-items: flex-end; flex: none; }
+/* EL LISTÓN, detrás de la frase. Es una pieza más del pliego, no un adorno de
+   CSS: viene dibujado con sus estrellas a los costados y su perfil de pegatina,
+   igual que los cuatro tramos.
+
+   Ocupa la columna ENTERA y la frase ocupa menos —`LISTON` en veredicto.js
+   reserva ese margen al medir—, así que el listón asoma por los dos lados y las
+   estrellas caen fuera de las letras, que es donde tienen que estar. Al revés
+   —frase a todo el ancho y listón por encima— el listón se saldría del lienzo,
+   y aquí nada scrollea de lado.
+
+   Aparece cuando la frase ya está montada: durante el vuelo no hay nada sobre
+   lo que montarse todavía, y verlo esperando vacío delata el truco. */
+.revelacion__frase::before {
+  content: ''; position: absolute; z-index: 0;
+  left: 0; right: 0; top: 50%;
+  aspect-ratio: 1970 / 352;
+  transform: translateY(-50%);
+  background: url(../img/atwi/liston.png) center / contain no-repeat;
+  filter: drop-shadow(0 4px 12px var(--veredicto-sombra));
+  opacity: 0; pointer-events: none;
+}
+.revelacion__frase--montada::before {
+  animation: liston-entra 420ms var(--rebote) both;
+}
+@keyframes liston-entra {
+  from { opacity: 0; transform: translateY(-50%) scaleX(.2); }
+  to { opacity: 1; transform: translateY(-50%) scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .revelacion__frase--montada::before { animation: none; opacity: 1; }
+}
+
+.fm__palabra {
+  position: relative; z-index: 1;   /* por encima del listón */
+  display: inline-flex; align-items: flex-end; flex: none;
+}
 
 /* El tramo es una pieza dibujada, no texto. Todas las piezas se recortaron
    sobre un lienzo de la misma altura y apoyadas abajo, así que con darles la

@@ -705,26 +705,54 @@ function marcarSonando(id) {
 
 /* UNO SOLO SUENA A LA VEZ, y por eso hay un unico `Audio`. Con uno por boton,
    pulsar el siguiente sin parar el anterior deja los dos encima y lo que se
-   compara deja de ser ninguno de los dos. */
-function oir(corto, variante) {
-  var id = corto + '-' + variante;
+   compara deja de ser ninguno de los dos.
+
+   TODO SE SINTETIZA AL VUELO, tambien oir una voz «cruda». Antes habia treinta
+   MP3 pregrabados --dos tomas por cada una de las quince de Mexico-- y al
+   ampliar el catalogo a las 71 voces del espanol serian 142 archivos y diez
+   megas en el repo, para algo que se oye una vez y se decide. El servidor de
+   desarrollo las genera y las cachea: la primera vez cuesta, las siguientes no.
+   Y queda UN camino en vez de dos que se parecian. */
+function oirVoz(id, voz, tono, ritmo, estilo, nota) {
   if (sonando === id) { tocador.pause(); return marcarSonando(null); }
   tocador.pause();
-  tocador.src = '/_oir/' + id + '.mp3';
-  tocador.play().then(function () { marcarSonando(id); }).catch(function () {
+  marcarSonando(null);
+  var frase = (document.getElementById('v-frase').value || '').trim() || CASTING.frase;
+  vDecir('generando…', true);
+  return fetch('/_locutar', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ voz: voz, tono: tono, ritmo: ritmo,
+                           estilo: estilo || null, texto: frase })
+  }).then(function (r) {
+    if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
+    ultima = { nueva: r.headers.get('X-Atwi-Nueva') === '1',
+               chars: Number(r.headers.get('X-Atwi-Caracteres') || 0),
+               nuevas: Number(r.headers.get('X-Atwi-Nuevas') || 0) };
+    return r.blob();
+  }).then(function (b) {
+    tocador.src = URL.createObjectURL(b);
+    return tocador.play();
+  }).then(function () {
+    marcarSonando(id);
+    vDecir(nota + ' · ' + (ultima.nueva ? 'generada' : 'reusada, sin costo') +
+           ' · ' + ultima.nuevas + ' generadas (' +
+           (ultima.chars / 5000).toFixed(1) + '% de los 500 mil gratis al mes)', true);
+  }).catch(function (e) {
     marcarSonando(null);
-    vDecir('no suena: esto necesita el servidor de desarrollo (localhost:8127)', false);
+    vDecir('no se pudo: ' + e.message + ' — ¿está el servidor de desarrollo?', false);
   });
 }
 
-function botonSuena(corto, variante, etiqueta) {
-  return '<button class="suena" data-oir="' + corto + '" data-var="' + variante +
-         '" data-id="' + corto + '-' + variante + '" data-sonando="no">▶ ' +
-         etiqueta + '</button>';
+function botonSuena(voz, tono, ritmo, etiqueta, nota, estilo) {
+  var id = voz + '|' + tono + '|' + ritmo + '|' + (estilo || '');
+  return '<button class="suena" data-sonar="1" data-id="' + id +
+    '" data-voz="' + voz + '" data-t="' + tono + '" data-r="' + ritmo +
+    '" data-e="' + (estilo || '') + '" data-nota="' + nota.replace(/"/g, '') +
+    '" data-sonando="no">▶ ' + etiqueta + '</button>';
 }
 
 function medidasDe(c) {
-  return '<span class="chico medidas">' + c.alto + ' Hz · animación <b>' +
+  return '<span class="chico medidas">' + c.pais + ' · ' + c.alto + ' Hz · animación <b>' +
     c.animacion.toFixed(1) + '</b> st · brillo ' + c.brillo + ' · ' +
     c.ritmo.toFixed(1) + ' síl/s' +
     (c.estilos.length ? ' · estilos: ' + c.estilos.slice(0, 3).join(', ') : '') +
@@ -732,6 +760,12 @@ function medidasDe(c) {
 }
 
 function nombreCorto(c) { return c.corto.charAt(0).toUpperCase() + c.corto.slice(1); }
+
+/* El ajuste desplegado de un personaje por su NOMBRE en pantalla («Kai»), que
+   es lo que trae la ficha de la referencia. */
+function hoyDe(nombre) {
+  return arranque(String(nombre || '').toLowerCase());
+}
 
 function pintarPatron() {
   var refs = CASTING.candidatas.filter(function (c) { return c.quien; });
@@ -742,8 +776,10 @@ function pintarPatron() {
     refs.map(function (c) {
       return '<div class="candidata"><b>' + c.quien + '</b>' +
         '<span class="chico">' + nombreCorto(c) + '</span>' + medidasDe(c) +
-        botonSuena(c.corto, 'comoes', 'como es') +
-        botonSuena(c.corto, 'altono', 'como suena en el juego') + '</div>';
+        botonSuena(c.voz, 0, 0, 'como es', c.quien + ' sin tocarle nada') +
+        botonSuena(c.voz, hoyDe(c.quien).tono, hoyDe(c.quien).ritmo,
+                   'como suena en el juego', c.quien + ' como está en el juego') +
+        '</div>';
     }).join('') + '</div>';
 }
 
@@ -861,12 +897,19 @@ function pintarVoces() {
           CASTING.candidatas.map(function (x) {
             return '<option value="' + x.voz + '"' +
               (x.voz === elegida.voz ? ' selected' : '') + '>' +
-              (x.para === q ? '★ ' : '') + nombreCorto(x) + ' · ' + x.alto + ' Hz · ' +
+              (x.para === q ? '★ ' : '') +
+              /* Las que admiten estilo llevan nota musical. Son TRES en las 87
+                 voces en español del catálogo —Jorge y Dalia de México, Álvaro
+                 de España— y son las únicas donde la animación se puede sacar
+                 del estilo en vez de forzando el tono. */
+              (x.estilos.length ? '♪ ' : '') +
+              nombreCorto(x) + ' (' + x.pais + ') · ' + x.alto + ' Hz · ' +
               'anim ' + x.animacion.toFixed(1) + ' · brillo ' + x.brillo +
               (x.quien ? ' · la de ' + x.quien : '') + '</option>';
           }).join('') +
         '</select></label>' +
-        (c ? botonSuena(c.corto, 'comoes', 'oírla cruda') : '') +
+        (c ? botonSuena(c.voz, 0, 0, 'oírla cruda',
+                        nombreCorto(c) + ' sin tocarle nada') : '') +
         /* Kai y Luna no tienen estrellas --no tienen terna, ya se eligieron
            oyendo ocho-- asi que ahi la leyenda no dice nada y no sale. */
         (CASTING.candidatas.some(function (x) { return x.para === q; })
@@ -978,8 +1021,13 @@ document.addEventListener('click', function (e) {
     if (p.dataset.hoja === 'voces' && !CASTING) cargarCasting();
     return;
   }
-  var s = e.target.closest('[data-oir]');
-  if (s) { e.preventDefault(); oir(s.dataset.oir, s.dataset['var']); return; }
+  var s = e.target.closest('[data-sonar]');
+  if (s) {
+    e.preventDefault();
+    oirVoz(s.dataset.id, s.dataset.voz, Number(s.dataset.t), Number(s.dataset.r),
+           s.dataset.e || null, s.dataset.nota);
+    return;
+  }
   var pr = e.target.closest('[data-probar]');
   if (pr) { e.preventDefault(); probarAsi(pr.dataset.probar); return; }
   if (e.target.id === 'v-parar') { tocador.pause(); marcarSonando(null); return; }
