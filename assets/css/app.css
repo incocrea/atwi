@@ -145,16 +145,27 @@ body.app {
    fondo propio no necesitan apagar nada. */
 .marco { --fondo: none; }
 .marco:has(#v-jugar[data-activa]) { --fondo: url(../img/fondos/home.webp); }
-/* El catalogo tiene tres pasos y cada uno su fondo: acabas de elegir modo, ya
-   dijiste con quien juegas, y estas mirando temas. */
-.marco:has(#v-catalogo[data-activa][data-paso="modo"][data-modo="debate"]) {
+
+/* EL FONDO LO DEFINE EL MODO, Y NO CAMBIA HASTA QUE EMPIEZA LA PARTIDA
+   (decision del titular, 2026-09-14). Cada paso de armar la partida tenia el
+   suyo --uno para «con quien juegas», otro para mirar temas-- y al avanzar el
+   fondo cambiaba en cada pantalla, que se lee como ir saltando de sitio cuando
+   en realidad se esta preparando una sola cosa. Ahora desde que se elige modo
+   hasta que se entra a la sala el fondo es el mismo: el del modo. Lo que
+   cambia de fondo es empezar a jugar, que es lo unico que de verdad cambia.
+
+   Sin `data-paso`, porque ya no importa el paso. Y `data-modo` lo lleva el
+   catalogo en TODOS sus pasos, asi que una regla cubre los tres. */
+.marco:has(#v-catalogo[data-activa][data-modo="debate"]) {
   --fondo: url(../img/fondos/debate.webp);
 }
-.marco:has(#v-catalogo[data-activa][data-paso="modo"][data-modo="negociacion"]) {
+.marco:has(#v-catalogo[data-activa][data-modo="negociacion"]) {
   --fondo: url(../img/fondos/negociacion.webp);
 }
-.marco:has(#v-catalogo[data-activa][data-paso="pareja"]) { --fondo: url(../img/fondos/pareja.webp); }
-.marco:has(#v-catalogo[data-activa][data-paso="amigos"]) { --fondo: url(../img/fondos/amigos.webp); }
+/* El catalogo tambien se abre desde la barra de abajo, sin haber elegido modo
+   todavia: ahi no hay modo del que sacar el fondo, y sin esto la pantalla se
+   quedaria en blanco. Se le deja el del home, que es donde se elige. */
+.marco:has(#v-catalogo[data-activa]) { --fondo: url(../img/fondos/home.webp); }
 
 .marco::before {
   content: '';
@@ -200,9 +211,6 @@ body.app {
    de arriba: quedaba una raya cruzando la pantalla a dos tercios. En el modal
    cubre cabecera, cuerpo y pie, y lo unico que hay que hacer es quitarle al pie
    el color y la linea que ya no separan nada. */
-#m-tema {
-  background: url(../img/fondos/tema.webp) center top / cover no-repeat;
-}
 #m-tema .modal__pie { background: none; border-top: 0; }
 
 /* LAS DOS PANTALLAS PREVIAS LLEVAN EL FONDO DE SU MODO: «cómo se juega» y
@@ -218,11 +226,13 @@ body.app {
 
    Va en el modal y no en su cuerpo, por lo mismo que `#m-tema`: en el cuerpo,
    el pie trae su propio color y deja una raya cruzando la pantalla. */
+#m-tema.modal--debate,
 #m-explicar.modal--debate,
 #m-preparar.modal--debate {
   background: url(../img/fondos/debate.webp) center top / cover no-repeat,
               var(--debate-tinte);
 }
+#m-tema.modal--negociacion,
 #m-explicar.modal--negociacion,
 #m-preparar.modal--negociacion {
   background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
@@ -769,6 +779,24 @@ body.app {
   text-align: center;
   animation: revela-fondo var(--dur-media) var(--suave);
 }
+/* EL VEREDICTO LLEVA EL FONDO DE LA SALA DE SU MODO (decisión del titular,
+   2026-09-14). Llevaba el crema dorado de la familia de premio, y eso lo
+   separaba del resto de la partida justo en el momento en que hay que sentir
+   que sigue siendo la misma: se habló ahí y el resultado sale ahí. Con el
+   fondo de la sala, la revelación ocurre EN la sala y no en otra pantalla.
+
+   El tinte del modo va debajo, igual que en la sala: si la imagen tarda o
+   falla, esto sigue siendo coral o menta y no un hueco blanco encima del cual
+   no se leería nada. */
+.revelacion--debate {
+  background: url(../img/fondos/sala-debate.webp) center top / cover no-repeat,
+              var(--debate-tinte);
+}
+.revelacion--negociacion {
+  background: url(../img/fondos/sala-negociacion.webp) center top / cover no-repeat,
+              var(--negociacion-tinte);
+}
+
 
 /* Las tres zonas comparten el ancho del botón: es lo que da la columna. */
 .revelacion__frase,
@@ -862,8 +890,14 @@ body.app {
 /* El tamaño de letra lo calcula veredicto.js midiendo: la frase tiene que
    ocupar exactamente el ancho de la columna, y no hay tamaño fijo que cuadre
    en todos los anchos. Lo de aquí es solo el punto de partida de esa medida. */
+/* Se estrecha un poco para que el LISTÓN quepa más ancho SIN llegar al borde:
+   el listón mide el 110 % de esta caja, así que lo que aquí se cede es lo que
+   allí se gana. Se cede con `width` y no con `margin`: la rejilla de arriba
+   lleva `justify-items: center`, así que esta caja NO se estira a la columna
+   --se queda del tamaño de su contenido-- y un margen no la encogía. Se probó
+   y el listón seguía saliendo a 1 px del borde. */
 .revelacion__frase {
-  position: relative;
+  position: relative; width: calc(100% - 20px);
   display: flex; flex-wrap: nowrap; justify-content: center;
   align-items: center; gap: .3em; white-space: nowrap;
   font-size: 1.28rem;
@@ -883,9 +917,20 @@ body.app {
    lo que montarse todavía, y verlo esperando vacío delata el truco. */
 .revelacion__frase::before {
   content: ''; position: absolute; z-index: 0;
-  left: 0; right: 0; top: 50%;
+  /* MÁS ANCHO QUE LA FRASE, un 10 %, y asomando lo mismo por los dos lados.
+     Con la frase justa el listón quedaba apretado contra las letras y las
+     estrellas casi encima de ellas. */
+  left: -5%; right: -5%; top: 50%;
   aspect-ratio: 1970 / 352;
-  transform: translateY(-50%);
+  /* -40,1 % Y NO -50 %, Y EL NÚMERO ESTÁ MEDIDO. La banda sólida del listón no
+     está centrada en su propio recorte: las puntas rizadas de los extremos
+     bajan más que la banda, así que el alfa llega más abajo y el centro de la
+     caja cae por debajo del centro de la cinta. Medido sobre el archivo, la
+     banda va de y=19 a y=263 de 352, o sea su centro está al 40,1 %.
+     Centrando la CAJA, la cinta quedaba casi 10 % alta y las letras montadas
+     en su borde de arriba. Centrando la BANDA, se apoyan donde tienen que
+     apoyarse. */
+  transform: translateY(-40.1%);
   background: url(../img/atwi/liston.png) center / contain no-repeat;
   filter: drop-shadow(0 4px 12px var(--veredicto-sombra));
   opacity: 0; pointer-events: none;
@@ -894,8 +939,8 @@ body.app {
   animation: liston-entra 420ms var(--rebote) both;
 }
 @keyframes liston-entra {
-  from { opacity: 0; transform: translateY(-50%) scaleX(.2); }
-  to { opacity: 1; transform: translateY(-50%) scaleX(1); }
+  from { opacity: 0; transform: translateY(-40.1%) scaleX(.2); }
+  to { opacity: 1; transform: translateY(-40.1%) scaleX(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .revelacion__frase--montada::before { animation: none; opacity: 1; }
