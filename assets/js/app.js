@@ -243,7 +243,12 @@
         cartaModo('negociacion') +
       '</div>' +
 
-      '<div class="aviso-ia" style="margin-top:var(--e-5)">' +
+      /* EN EL HOME EL AVISO NO LLEVA TARJETA. Detrás hay un fondo dibujado, y
+         una caja lavanda encima lo tapaba justo en el tercio de abajo. Sin caja
+         el fondo se ve entero y el texto se sostiene con una sombra blanca
+         suave, que es lo que lo despega sin poner una pared. En las otras
+         pantallas el aviso sí lleva su caja: ahí el fondo es liso. */
+      '<div class="aviso-ia aviso-ia--desnudo" style="margin-top:var(--e-5)">' +
         icono('aviso', 20) +
         '<span>' + DESCARGO + '</span>' +
       '</div>' +
@@ -270,8 +275,11 @@
           rotuloModo(clave, 'carta-modo__rotulo') +
         '</div>' +
         '<div class="carta-modo__salidas">' +
+          /* «Info» y no «Explícame». En una sola palabra: el botón se estrechó
+             al apilarse y «Explícame» partía en dos renglones o encogía la
+             letra, y de paso es lo que la gente busca ahí. */
           '<button class="boton boton--suave carta-modo__explica" data-explicar="' + clave + '">' +
-            window.ATWI.iconoSVG('aviso', 16) + 'Explícame</button>' +
+            window.ATWI.iconoSVG('aviso', 16) + 'Info</button>' +
           '<button class="boton carta-modo__jugar boton--' + clave + '" data-crear="' + clave + '">' +
             window.ATWI.iconoSVG('play', 16) + 'Jugar</button>' +
         '</div>' +

@@ -352,41 +352,56 @@ body.app {
    tiene que parecer un juego, no un formulario. */
 .cartas-modo { display: grid; gap: var(--e-4); }
 
+/* EL RÓTULO A LA IZQUIERDA Y LAS DOS SALIDAS APILADAS A SU DERECHA, del alto
+   del rótulo entre las dos. Estaban en columna --dibujo arriba, botones abajo
+   en fila-- y la carta era una torre: dos cartas así llenaban la portada y el
+   aviso de IA quedaba fuera de la primera pantalla. De lado ocupan la mitad de
+   alto y el dibujo, que es lo que se reconoce, sigue mandando por tamaño.
+
+   `--alto-rotulo` lo comparten el dibujo y la pila de botones, que es lo que
+   los deja exactamente igual de altos: con dos números sueltos, tocar uno
+   desalinea la carta y no se ve hasta que alguien mira de cerca. */
 .carta-modo {
-  display: grid; justify-items: start; gap: var(--e-3);
+  --alto-rotulo: 88px;
+  display: flex; align-items: center; gap: var(--e-3);
   width: 100%; padding: var(--e-4);
   border: 0; border-radius: var(--radio-modal);
   text-align: left; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
 }
-.carta-modo--debate { background: var(--debate-tinte); }
-.carta-modo--negociacion { background: var(--negociacion-tinte); }
+/* EL TINTE, AL 70 %. Detrás hay un fondo dibujado y la carta lo tapaba entero;
+   con algo de transparencia el fondo se ve pasar por debajo y la portada deja
+   de ser dos bloques planos. El color sale del mismo token de siempre, no de
+   un hex copiado: un segundo hex es un sitio donde el día que cambie la paleta
+   se queda el viejo. */
+.carta-modo--debate { background: color-mix(in srgb, var(--debate-tinte) 70%, transparent); }
+.carta-modo--negociacion { background: color-mix(in srgb, var(--negociacion-tinte) 70%, transparent); }
 
-/* El nombre y el icono, uno en cada extremo del mismo renglón: hace de balanza
-   y deja la carta leyéndose como una ficha, no como un bloque con dibujo. */
 .carta-modo__alto {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: var(--e-3); width: 100%;
+  display: flex; align-items: center; flex: 1 1 auto; min-width: 0;
 }
 /* El nombre del modo va dibujado, no escrito, y ya no hay disco al lado: el
    rótulo lleva su propio icono dentro, así que repetirlo en un círculo era
-   decir dos veces lo mismo. Con la fila entera libre se centra y crece.
+   decir dos veces lo mismo.
    Se le fija el ALTO y no el ancho porque las dos piezas no miden lo mismo de
    largo y así quedan del mismo tamaño aparente; `min-width: 0` para que el
    flex pueda encogerla antes que sacarla por el costado. */
 .carta-modo__rotulo {
-  height: 88px; width: auto; max-width: 100%; min-width: 0; display: block;
-  margin: 0 auto;
+  height: var(--alto-rotulo); width: auto; max-width: 100%; min-width: 0;
+  display: block;
 }
-/* Las dos salidas, centradas abajo y del mismo tamaño: una lleva a entender y
-   la otra a jugar, y ninguna de las dos es la equivocada. */
+/* Las dos salidas, apiladas y repartiéndose el alto del rótulo. `1fr` las dos:
+   una lleva a entender y la otra a jugar, y ninguna de las dos es la
+   equivocada, así que ninguna es más alta. */
 .carta-modo__salidas {
-  display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-2);
-  width: 100%; margin-top: var(--e-2);
+  display: grid; grid-auto-rows: 1fr; gap: var(--e-2);
+  flex: 0 0 auto; width: 38%; max-width: 140px; height: var(--alto-rotulo);
 }
-.carta-modo__salidas .boton { padding: var(--e-3) var(--e-2); gap: 6px; font-size: var(--t-chico); }
-/* «Explícame» también lleva el color del modo, pero en versión secundaria:
-   sobre blanco, con la letra y el borde del modo. Rellenarlo igual que «Jugar»
+.carta-modo__salidas .boton {
+  padding: 0 var(--e-2); gap: 6px; font-size: var(--t-chico); min-width: 0;
+}
+/* «Info» también lleva el color del modo, pero en versión secundaria: sobre
+   blanco, con la letra y el borde del modo. Rellenarlo igual que «Jugar»
    dejaría dos botones idénticos y ninguno mandaría. */
 .carta-modo__explica { background: var(--superficie); border-width: 2px; }
 /* La letra va un punto más honda que el color del modo: a --debate-oscuro y
@@ -678,6 +693,19 @@ body.app {
   font-weight: 600;
 }
 .aviso-ia svg { flex: none; }
+
+/* SIN TARJETA, y sostenido por una sombra blanca. Va donde detrás hay un fondo
+   dibujado: la caja lavanda lo tapaba justo en el tercio de abajo. La sombra es
+   blanca y ancha y va en cuatro direcciones --no una sombra de caída, que
+   dejaría el texto flotando-- así que hace de halo: separa la letra del dibujo
+   sin poner una pared encima. El icono se despega con la suya propia, que en un
+   SVG hay que pedirla con `filter`. */
+.aviso-ia--desnudo {
+  background: none; padding: 0;
+  color: var(--tinta-suave);
+  text-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 1px 2px rgba(255, 255, 255, .9);
+}
+.aviso-ia--desnudo svg { filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 9px #fff); }
 
 /* El gancho: la frase del final, la que se cuenta en una cena. Va aparte del
    descargo —en su renglón, más grande y en cálido— porque hace otro trabajo:
