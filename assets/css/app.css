@@ -1772,6 +1772,10 @@ body.app {
 .avatar--chico { width: 48px; height: 48px; font-size: 1.4rem; border: 0; cursor: pointer; padding: 0; }
 /* El retrato en vivo de la ficha, al lado del campo del nombre. */
 .avatar--retrato { width: 56px; height: 56px; font-size: 1.6rem; }
+/* El del duelo va aparte y NO reusa `avatar--retrato`: ese lo usa el selector
+   de ficha, y agrandarlo aquí le habría cambiado el tamaño a otra pantalla que
+   nadie pidió tocar. */
+.avatar--duelo { width: 84px; height: 84px; font-size: 2.2rem; }
 .avatar--mini { width: 26px; height: 26px; font-size: .85rem; box-shadow: inset 0 0 0 2px rgba(255,255,255,.55); }
 
 /* Con quién se jugó antes en este teléfono. No son cuentas: son fichas.
@@ -1930,6 +1934,12 @@ body.app {
    vez de repartidas. Con `grid-auto-flow: column` la fila vale para las que
    haya, y `config.reglas.turnosMax` deja de tener un segundo sitio donde
    quedarse desincronizado. */
+/* La etiqueta y los círculos comparten renglón: los círculos se van a la
+   derecha con `margin-left: auto` y la etiqueta se queda donde estaba. */
+.turnos-linea { display: flex; align-items: center; gap: var(--e-3); }
+.turnos-linea .turnos-fila { margin-left: auto; flex: 0 1 auto; }
+.turnos-linea .turno-ficha { width: auto; }
+
 /* De qué color va lo que lleva el color del modo dentro de esta pantalla. Se
    declara una vez en el modal, que es quien sabe de qué modo es. */
 #m-preparar.modal--debate, #m-abogados.modal--debate { --del-modo: var(--debate); }
@@ -2283,24 +2293,56 @@ body.app {
    Se probo al reves --las tres opciones desplegadas por persona, seis botones a
    la vista-- y llenaba media pantalla para una decision que la mayoria va a
    dejar como viene. Con cuatro personajes mas serian dieciocho botones. */
-.repres { display: grid; gap: var(--e-2); }
+/* DOS RETRATOS, UNO AL LADO DEL OTRO. Eran dos tarjetas de ancho completo con
+   la ficha diminuta a un costado: media pantalla para enseñar dos dibujos de
+   26 px, y la decisión —quién habla con su voz y quién con la de un personaje—
+   se leía en vez de verse. Ahora se ven como se van a ver en el choque de
+   puños, y debajo van el nombre y la llave.
+
+   Las dos columnas son iguales pase lo que pase: `minmax(0, 1fr)` y no `1fr`,
+   porque `1fr` es `minmax(auto, 1fr)` y un nombre largo ensancharía su columna
+   dejando los dos retratos de distinto tamaño. */
+.repres {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e-3); align-items: start;
+}
 .repre {
-  display: flex; align-items: center; gap: var(--e-2);
-  padding: 10px 12px; border-radius: var(--radio-tarjeta);
-  border: 2px solid var(--linea, #e7e3de); background: var(--superficie);
+  display: grid; justify-items: center; gap: 8px;
+  padding: var(--e-3) var(--e-2) var(--e-3);
+  border-radius: var(--radio-tarjeta);
+  border: 2px solid transparent; background: transparent;
   transition: border-color var(--dur-corta) var(--suave),
               background var(--dur-corta) var(--suave);
 }
+/* El halo del color del modo detrás del retrato: es lo que lo hace una pieza
+   del juego y no una foto de perfil. Va en el contenedor y no en la ficha para
+   no tocar el recurso, que se usa en otras seis pantallas. */
+/* EL HALO NECESITA SITIO O NO SE VE. Iba con 6 px de aire, así que el degradado
+   solo tenía ese anillo para dibujarse y quedaba tapado por el perfil blanco de
+   la propia ficha: estaba puesto y no se notaba. Con 16 el halo empieza donde
+   acaba el dibujo y se lee como el resplandor que rodea a la figura. */
+.repre__retrato {
+  display: grid; place-items: center; padding: 16px; border-radius: 50%;
+  background: radial-gradient(closest-side,
+              color-mix(in srgb, var(--del-modo, var(--lavanda)) 34%, transparent) 62%,
+              transparent 100%);
+}
 .repre__quien {
   font-weight: 800; font-size: var(--t-chico); color: var(--tinta);
-  min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .repre__como {
-  margin-left: auto; font-size: var(--t-mini); color: var(--tinta-tenue);
-  white-space: nowrap; text-align: right;
+  font-size: var(--t-mini); color: var(--tinta-tenue);
+  text-align: center; text-wrap: balance;
 }
-.repre--conabogado { border-color: var(--lavanda); background: var(--lavanda-lavado, #f3f0fd); }
-.repre--conabogado .repre__como { color: var(--lavanda); font-weight: 800; }
+/* Con abogado la pieza se enciende: aro y fondo del color del modo, y el texto
+   en ese color. Antes era lavanda de marca en los dos modos, que aquí rompía
+   el color de la pantalla igual que lo rompía el círculo del turno elegido. */
+.repre--conabogado {
+  border-color: var(--del-modo, var(--lavanda));
+  background: color-mix(in srgb, var(--del-modo, var(--lavanda)) 12%, transparent);
+}
+.repre--conabogado .repre__como { color: var(--del-modo, var(--lavanda)); font-weight: 800; }
 
 /* La llave es una pastilla y no una casilla del sistema: las del sistema se
    dibujan distinto en cada aparato y esta pantalla ya tiene su lenguaje. */
@@ -2315,7 +2357,10 @@ body.app {
   box-shadow: var(--sombra-1);
   transition: transform var(--dur-corta) var(--rebote);
 }
-.repre__llave[aria-pressed="true"] { background: var(--lavanda); }
+/* Encendida va del color del modo, como el aro, el fondo y el texto de la
+   pieza. Era lavanda de marca y quedaba una llave morada dentro de una tarjeta
+   menta: el único resto del color viejo en toda la fila. */
+.repre__llave[aria-pressed="true"] { background: var(--del-modo, var(--lavanda)); }
 .repre__llave[aria-pressed="true"]::after { transform: translateX(19px); }
 
 /* --- El panel de abogados, dentro de su modal --------------------------------- */

@@ -1407,8 +1407,12 @@
         '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
       '</button>' +
 
-      '<h3 style="margin-bottom:var(--e-2)">¿Cuántos turnos?</h3>' +
-      '<div class="turnos-fila">' +
+      /* LA ETIQUETA Y LOS CÍRCULOS EN EL MISMO RENGLÓN. Al encogerlos a la
+         mitad, el título ocupaba un renglón entero para presentar tres piezas
+         que ya no lo llenaban, y la pantalla ganaba altura sin ganar nada. */
+      '<div class="turnos-linea">' +
+        '<h3 style="margin:0">¿Cuántos turnos?</h3>' +
+        '<div class="turnos-fila">' +
         /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
            `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
            la pantalla habría seguido ofreciendo cinco y la base los habría
@@ -1421,6 +1425,7 @@
             '<span class="turno-ficha__min">' + MINUTOS[n] + ' min</span>' +
           '</button>';
         }).join('') +
+        '</div>' +
       '</div>' +
       (cfg.reglas.turnosConCupo.length
         ? '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">' +
@@ -1482,13 +1487,13 @@
          con abogado y el otro a pelo, y esa asimetría es parte de la gracia.
          Va aquí y no dentro de la sala porque cambiar las reglas a mitad de
          partida no es una opción, y porque cambia lo que cuesta cada turno. */
-      '<h3 style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
+      '<h3 class="centrado" style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
       /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
          explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
          para una decisión que la mayoría va a dejar como viene, y encima
          repetidos, porque el modal lo vuelve a decir justo cuando hace falta
          leerlo —al elegir—. */
-      '<p class="chico tenue" style="margin-bottom:var(--e-3)">' +
+      '<p class="chico tenue centrado" style="margin-bottom:var(--e-4)">' +
         'Cada quien se representa a sí mismo. Prendé la llave para que un ' +
         'personaje te haga de abogado.</p>' +
       pintarRepresentantes() +
@@ -1539,13 +1544,23 @@
       var suyo = x.repre || x.ficha;
       var conAbogado = Boolean(x.repre);
       return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '">' +
+          /* EL RETRATO MANDA. Esto eran dos tarjetas de ancho completo con la
+             ficha diminuta a un lado: ocupaban media pantalla para enseñar dos
+             dibujos de 26 px. Ahora son dos retratos grandes uno al lado del
+             otro —que es como se van a ver en el choque de puños— con su nombre
+             y su llave debajo. La decisión se ve, no se lee. */
           /* SIEMPRE EN EL COLOR DEL CLIENTE, también con abogado. Aquí se
              pasaba `null` cuando había abogado, porque el color era un aro y un
              aro ajeno confundía. Ahora el color es la ropa y la regla del
              titular es al revés: el abogado sale en el color de perfil de quien
              lo contrata, que es lo que lo hace reconociblemente suyo. */
-          window.ATWI.fichaHTML(suyo, 'avatar--mini', x.color) +
+          '<div class="repre__retrato">' +
+            window.ATWI.fichaHTML(suyo, 'avatar--duelo', x.color) +
+          '</div>' +
           '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
+          '<button type="button" class="repre__llave" data-abogado="' + x.k + '"' +
+            (conAbogado ? ' aria-pressed="true"' : '') +
+            ' aria-label="Usar abogado"></button>' +
           /* EL MISMO TEXTO PARA LOS DOS. Decía «Tu voz» y «Su voz», que en un
              teléfono compartido no aclara nada —el «tu» cambia de dueño cada
              turno— y además no decía lo que de verdad significa la llave
@@ -1554,9 +1569,6 @@
             (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' lo defiende'
                         : 'Voz original, sin abogado') +
           '</span>' +
-          '<button type="button" class="repre__llave" data-abogado="' + x.k + '"' +
-            (conAbogado ? ' aria-pressed="true"' : '') +
-            ' aria-label="Usar abogado"></button>' +
         '</div>';
     }).join('') + '</div>';
   }
