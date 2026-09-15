@@ -87,6 +87,9 @@ window.ATWI = window.ATWI || {};
 
   /* Estado de la partida en curso */
   var P = null;
+  /* El oyente de `pagehide` mientras se espera el veredicto. Vive fuera de `P`
+     porque hay que poder quitarlo, y `P` se reemplaza entero al abrir otra. */
+  var dejandoLaEspera = null;
   var abriendo = false;      // el permiso del micro tarda; dos toques no valen dos
   var sonando = null;        // clave de la pista que se está oyendo, o null
 
@@ -111,6 +114,10 @@ window.ATWI = window.ATWI || {};
     var gente = (op.posturas || op.quien || ['Tú', 'La otra parte']).map(ficha);
     var abre = typeof op.abre === 'number' ? op.abre : 0;
     P = {
+      /* QUIEN JUZGA ESTA RONDA. Se elige antes de empezar y no cambia a mitad,
+         igual que el abogado: el juez esta presente toda la partida --dice las
+         frases entre turnos-- y es quien presenta el resultado. */
+      juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
       tema: op.tema,
       modo: op.modo,                 // 'debate' | 'negociacion'
       turnos: op.turnos,             // por persona
@@ -139,14 +146,19 @@ window.ATWI = window.ATWI || {};
     P.debate = null;
     if (window.ATWI.nube && window.ATWI.nube.hay()) {
       window.ATWI.nube.abrirPartida({
-        tema: P.tema, modo: P.modo, turnos: P.turnos,
+        tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez,
         abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
         abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
         /* El personaje DEL DUELO. Con abogado es el elegido; sin abogado es el
            avatar de la ficha, que es lo que se ve aunque la voz sea humana. */
         personajeYo: P.jugadores[indiceDeLaCuenta()].avatar,
         personajeOtro: P.jugadores[1 - indiceDeLaCuenta()].avatar,
-        invitado: P.jugadores[1 - indiceDeLaCuenta()]
+        invitado: P.jugadores[1 - indiceDeLaCuenta()],
+        /* Para poder RETOMARLA después: con qué ficha juega esta cuenta en esta
+           ronda, y qué lado abrió. Las dos se deciden aquí y en ningún otro
+           sitio quedan. Ver la migración 0031. */
+        yo: P.jugadores[indiceDeLaCuenta()],
+        abreLado: P.orden[0] === indiceDeLaCuenta() ? 'propone' : 'invitado'
       }).then(function (id) { P.debate = id; });
     }
     abrir();
@@ -175,30 +187,68 @@ window.ATWI = window.ATWI || {};
 
      Lo unico que cambia es el pie --oir la partida en vez de grabar-- y que la
      figura grande arranca en quien abrio, porque no hay turno de nadie. */
-  function repasar(d) {
-    var t = (d.turnos_grabados || []).slice()
-      .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
-    if (!t.length) return;
+  /* ABRIR UNA PARTIDA DEL HISTORIAL, de dos maneras que no son la misma.
+     `repasar(d)` es lo de siempre: se vuelven a oír las intervenciones.
+     `repasar(d, {estrenar: true})` es lo nuevo (petición del titular,
+     2026-09-15) y contesta a «si la ronda se guarda pero el veredicto no se
+     visualiza, ¿cómo lo ve después?»: si esa partida tiene resultado y nadie lo
+     vio nunca --`resultados.visto` en nulo-- no se abre en repaso, se ESTRENA,
+     con la revelación entera. Un veredicto que nadie vio no es material de
+     archivo: es la primera vez, y la primera vez lleva su ceremonia. */
+  /* VOLVER A SENTAR A LOS DOS, con la ficha de ESTA ronda. Lo usan el repaso, el
+     estreno de un veredicto guardado y la retoma, que necesitan exactamente lo
+     mismo: quién es cada lado, quién habla primero y qué se dijo ya.
 
-    /* Los jugadores se reconstruyen DE LOS TURNOS y no del debate: ahi esta
-       sellado con que personaje y con que nombre jugo cada uno ESA vez, que es
-       lo que hay que volver a ver. El debate solo sabe como se llaman hoy. */
-    var lados = [t[0], t.filter(function (x) { return x.orden % 2 === 1; })[0] || t[0]];
-    P = {
-      tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
-      modo: d.modo,
-      turnos: d.turnos,
-      publico: 'pareja',
-      jugadores: lados.map(function (x, i) {
+     LOS ÍNDICES SON POR LADO Y NO POR ORDEN DE PALABRA, y aquí había un fallo
+     de verdad. `jugadores[0]` es SIEMPRE quien propuso y `jugadores[1]` el
+     invitado; quién abre lo dice `orden`. El repaso lo hacía al revés
+     --`jugadores[0]` era quien hablaba primero-- y daba igual mientras el
+     repaso no enseñara resultado, porque nadie leía esos índices. Desde que una
+     partida del historial puede ESTRENAR su veredicto sí se leen:
+     `delArbitro()` da por hecho que `jugadores[0]` es el lado `propone`, así
+     que en una ronda abierta por el invitado habría coronado al otro. Un
+     veredicto con el nombre cambiado es de los peores fallos que esta app puede
+     tener.
+
+     LA FICHA SALE DEL TURNO SI LO HAY, y del debate si no. El turno la sella
+     intervención a intervención, que es lo más preciso; desde la migración 0031
+     el debate también la sella al abrirse, y eso cubre al lado que todavía no
+     habló --una ronda retomada después de una sola intervención--. */
+  function mesaDelDebate(d, t) {
+    var abreP = d.abre_lado !== 'invitado';
+    function fichaDeLado(lado, i) {
+      /* Qué paridad de `orden` le toca a este lado: si abre quien propone, sus
+         turnos son los pares; si abre el invitado, los impares. */
+      var par = ((lado === 'propone') === abreP) ? 0 : 1;
+      var x = t.filter(function (q) { return (q.orden || 0) % 2 === par; })[0];
+      if (x) {
         return { nombre: x.nombre || (i ? 'La otra parte' : 'Vos'),
                  avatar: x.avatar || (i ? 'luna' : 'kai'),
                  color: x.color || COLOR_POR_DEFECTO[i],
                  abogado: Boolean(x.abogado) };
-      }),
-      orden: [0, 1],
+      }
+      /* Y SI EL DEBATE TAMPOCO LA TIENE, el perfil de esta cuenta --pero solo
+         para el lado `propone`, que es quien está sentado aquí--. Pasa con las
+         partidas abiertas ANTES de la migración 0031, que no sellaba la ficha
+         de quien propone: sin esto arrancarían de Kai aunque la persona sea
+         Maya. Para el invitado no hay de dónde sacarla, y ahí sí van los
+         valores de reserva. */
+      var mio = lado === 'propone' && datos && datos.perfil ? datos.perfil() : null;
+      return { nombre: d[lado + '_nombre'] || (mio && mio.nombre) || (i ? 'La otra parte' : 'Vos'),
+               avatar: d[lado + '_avatar'] || (mio && mio.avatar) || (i ? 'luna' : 'kai'),
+               color: d[lado + '_color'] || (mio && mio.color) || COLOR_POR_DEFECTO[i],
+               abogado: Boolean(lado === 'propone' ? d.abogado_propone : d.abogado_invitado) };
+    }
+    var orden = abreP ? [0, 1] : [1, 0];
+    return {
+      jugadores: [fichaDeLado('propone', 0), fichaDeLado('invitado', 1)],
+      orden: orden,
       intervenciones: t.map(function (x, n) {
         return {
-          jugador: n % 2, turno: x.numero || Math.floor(n / 2) + 1,
+          /* El índice del JUGADOR, no la paridad: en una ronda que abrió el
+             invitado, la intervención 0 es suya y ésa es `jugadores[1]`. */
+          jugador: orden[n % 2],
+          turno: x.numero || Math.floor(n / 2) + 1,
           avatar: x.avatar, nombre: x.nombre, color: x.color,
           abogado: Boolean(x.abogado),
           segundos: x.segundos || 0,
@@ -208,18 +258,122 @@ window.ATWI = window.ATWI || {};
           ruta: x.abogado ? x.voz_ruta : x.audio_ruta,
           url: null
         };
-      }),
+      })
+    };
+  }
+
+  /** Los turnos de un debate del historial, en orden y sin sorpresas. */
+  function turnosDe(d) {
+    return (d.turnos_grabados || []).slice()
+      .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+  }
+
+  function repasar(d, op) {
+    op = op || {};
+    var t = turnosDe(d);
+    if (!t.length) return;
+
+    var mesa = mesaDelDebate(d, t);
+    P = {
+      tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+      modo: d.modo,
+      turnos: d.turnos,
+      publico: 'pareja',
+      jugadores: mesa.jugadores,
+      orden: mesa.orden,
+      intervenciones: mesa.intervenciones,
       i: 0,
       borrador: null,
       estado: 'repaso',
-      repaso: true,
+      repaso: !op.estrenar,
+      estrenando: Boolean(op.estrenar),
+      /* SIN ESTO EL VEREDICTO SALE SIN JUEZ. `juez` vive en el debate --se
+         elige antes de empezar y vale para toda la partida-- y el repaso nunca
+         lo había necesitado porque no enseñaba resultado. */
+      juez: d.juez || null,
+      veredicto: op.estrenar ? (d.resultado || null) : null,
       debate: d.id
     };
+    if (op.estrenar) {
+      /* SE SELLA AL ABRIR Y NO AL CERRAR. Quien abre la revelación ya la vio; y
+         esperar al final dejaría sin sellar justo a quien cierra la app a mitad
+         del redoble, que es la persona para la que existe todo esto. */
+      var n = window.ATWI.nube;
+      if (n && n.marcarVisto) n.marcarVisto(d.id);
+      /* No se abre la sala: se va derecho a la revelación, igual que hace el
+         probador. `revelar()` esconde `#m-partida` de todas maneras. */
+      return revelar();
+    }
     abrir();
     window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
                                ['hablando'],
                                P.jugadores.map(function (j) { return j.color; }));
     pintarRepaso();
+  }
+
+  /* ==========================================================================
+     RETOMAR UNA PARTIDA A MEDIO JUGAR
+     Decisión del titular (2026-09-15). El historial centraliza las partidas: las
+     terminadas y las EN CURSO, y una en curso se abre justo donde se quedó.
+
+     No es solo para cuando algo falla. Es una manera de jugar: rondas sueltas en
+     sesiones distintas --se graban dos turnos hoy y los demás mañana-- y, cuando
+     exista la partida remota, en aparatos distintos. Ahí retomar no es un
+     rescate, es EL flujo: mando lo mío, cierro, y vuelvo cuando me avisan.
+
+     LO QUE HACE FALTA YA ESTABA GUARDADO, casi todo: los turnos suben uno a uno
+     en cuanto se mandan, con su audio, su transcripción y su personaje. Lo que
+     faltaba era saber quién abrió y con qué ficha jugó quien propuso, y eso lo
+     puso la migración 0031. Sin esas dos cosas la mesa se volvía a montar a
+     ojo.
+
+     Y NO SE VUELVE A PASAR POR EL SORTEO. Quién abre ya se decidió y se jugó;
+     repetir la ceremonia sería volver a tirar un dado que ya cayó. Se entra
+     derecho al turno que toca. */
+  function reanudar(d) {
+    var t = turnosDe(d);
+    var total = (d.turnos || 3) * 2;
+    /* SIN NINGÚN TURNO TAMBIÉN SE RETOMA, y arranca en el primero. La partida
+       ya tiene decidido todo lo suyo --tema, modo, cuántos turnos, quién juzga
+       y con qué fichas--; lo único que le falta es que alguien hable. Salían
+       bloqueadas en el historial y no era una decisión, era el botón heredado
+       de cuando abrir una partida solo servía para oírla. */
+    /* CON TODOS LOS TURNOS, LO QUE FALTA ES EL VEREDICTO, no una intervención.
+       Es la partida de quien cerró la app mientras el juez leía: se retoma en la
+       pantalla de deliberar, con el botón de volver a pedirlo, que es la misma
+       de la sala. Retomar es una sola puerta y lleva a donde haga falta. */
+    var faltaElVeredicto = t.length >= total;
+
+    var mesa = mesaDelDebate(d, t);
+    P = {
+      juez: (d.juez && window.ATWI.esJuez(d.juez)) ? d.juez : 'bruno',
+      tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+      modo: d.modo,
+      turnos: d.turnos,
+      publico: 'pareja',
+      jugadores: mesa.jugadores,
+      orden: mesa.orden,
+      intervenciones: mesa.intervenciones,
+      /* DONDE SE QUEDÓ. La siguiente intervención es la que sigue a las que ya
+         están: con cuatro grabadas, la que toca es la quinta, índice 4. Y como
+         `turnoActual()` saca de aquí el jugador y el número de turno, con esto
+         solo la sala ya sabe de quién es la palabra. */
+      i: t.length,
+      borrador: null,
+      estado: 'turno',
+      /* NO ES UN REPASO y hay que decirlo: `turnoActual()` se corta en seco si
+         `repaso` está puesto y devuelve siempre el primer jugador. */
+      repaso: false,
+      reanudada: true,
+      debate: d.id
+    };
+    separarFichas();
+    abrir();
+    if (faltaElVeredicto) return deliberar(true);
+    window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
+                               ['hablando'],
+                               P.jugadores.map(function (j) { return j.color; }));
+    pintarTurno();
   }
 
   function pintarRepaso() {
@@ -228,8 +382,10 @@ window.ATWI = window.ATWI || {};
       dice: P.intervenciones.length + ' intervenciones · toca una para oírla',
       pie: '<button class="boton boton--bloque boton--grande" data-accion="p-oir-todo">' +
              iconoSVG('play', 22) + 'Oír la partida entera</button>' +
-           '<button class="boton boton--suave boton--bloque" data-accion="p-revelar">' +
-             'Ver el resultado otra vez</button>'
+           /* MISMO TAMANO QUE EL DE ARRIBA --le faltaba `--grande`-- y punteado
+              por ser el que queda en blanco. Regla del titular. */
+           '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
+             'data-accion="p-revelar">Ver el resultado otra vez</button>'
     });
   }
 
@@ -275,10 +431,85 @@ window.ATWI = window.ATWI || {};
     m.setAttribute('data-ctx', 'sala-' + P.modo);
   }
 
+  /* EL ASPA RETROCEDE UN PASO ANTES DE SACAR A NADIE, y esto era un fallo de
+     verdad (lo encontró el titular, 2026-09-15): estando EDITANDO el acuerdo, el
+     aspa cerraba la partida entera. Quien toca ahí está cancelando una edición
+     --que es lo que el aspa significa en cualquier campo de texto del mundo--
+     y se encontraba fuera de la sala.
+
+     LA REGLA: si la pantalla de ahora está DENTRO de otra, el aspa vuelve a la
+     de fuera. Solo cuando no queda nada detrás, sale. Los dos casos que hay:
+
+       editando el acta  ->  vuelve al acta, con el texto como estaba
+       firmando          ->  vuelve a elegir propuesta, con la suya marcada
+
+     Y ESO ARREGLA TAMBIÉN EL ATRÁS DEL TELÉFONO, sin tocarlo: `retroceder()` en
+     app.js no reimplementa nada, pulsa este mismo aspa. Un sitio, dos entradas.
+
+     Lo que NO cambia: grabando y en revisión sigue preguntando, porque ahí sí
+     hay algo que se pierde. En el repaso y en un ensayo no pregunta, porque ahí
+     no hay nada que perder y avisar de una pérdida falsa enseña a no creer el
+     aviso el día que es verdad. */
+  function salirDeLaSala() {
+    if (!P) return cerrar();
+
+    if (P.estado === 'firmando' && P.actaEditando) {
+      /* CANCELAR ES DESCARTAR, y se vuelve al texto de ANTES de abrir el campo
+         --no al que propuso el mediador--: si ya lo habían editado y guardado
+         una vez, ese trabajo no se tira por cancelar el segundo retoque. */
+      P.actaTexto = P.actaAntes || P.actaTexto;
+      P.actaEditando = false;
+      return firmar();
+    }
+    if (P.estado === 'firmando' && hayQueElegir()) {
+      /* Volver a elegir: «no, mejor la otra» es una cosa razonable de querer, y
+         hasta ahora la única manera de hacerlo era salir de la partida. */
+      return votar();
+    }
+
+    if (P.repaso) return cerrar();
+    if (P.ensayo) {
+      cerrar();
+      if (window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
+      return;
+    }
+    /* AQUÍ HABÍA UN `confirm()` Y SE FUE (petición del titular, 2026-09-15).
+       Primero decía «si salís ahora, la partida se pierde», que dejó de ser
+       verdad en cuanto las partidas en curso empezaron a retomarse desde el
+       historial. Y después sobraba entero: preguntar «¿seguro?» antes de una
+       acción que no destruye nada es enseñar a contestar que sí sin leer, y el
+       día que un aviso sí importe nadie lo va a mirar.
+
+       Encima un `confirm()` del navegador es lo peor que se puede poner en un
+       juego a pantalla completa: rompe la inmersión y sale con la tipografía
+       del sistema.
+
+       Se sale y se avisa DESPUÉS, sin bloquear, diciendo lo que la persona
+       necesita saber: dónde quedó la partida y que se retoma donde iba. Lo
+       único que se pierde de verdad es el borrador sin mandar, y de eso avisa
+       su propio botón antes. */
+    var mandadas = (P.intervenciones || []).length;
+    var total = P.turnos * 2;
+    cerrar();
+    if (window.ATWI.aviso) {
+      window.ATWI.aviso(mandadas
+        ? 'Guardamos la partida con ' + mandadas + ' de ' + total +
+          ' intervenciones. Seguila desde el Historial, justo donde ibas.'
+        : 'La partida queda en el Historial, lista para empezarla cuando quieran.');
+    }
+  }
+
   function cerrar() {
     var m = $('#m-partida');
     if (m) { m.hidden = true; m.removeAttribute('data-ctx'); }
+    dejarDeAvisar();
+    pararPosturas();
     if (P && P.limpiarEncuentro) P.limpiarEncuentro();
+    /* El juez se calla y su temporizador se para. Sin esto queda un intervalo
+       vivo sobre una pantalla cerrada, y la voz podría seguir sonando encima de
+       otra cosa. */
+    pararJuez();
+    try { vozJuez.pause(); vozJuez.onended = vozJuez.onerror = null; } catch (e) {}
     cerrarReproductor();
     tirarBorrador();
     /* Solo los objetos LOCALES. Las URLs firmadas de la voz del personaje no
@@ -362,6 +593,183 @@ window.ATWI = window.ATWI || {};
   function juez(clase, dice) {
     return '<div class="juez' + (clase ? ' ' + clase : '') + '" id="juez">' + cara() +
       '<p class="juez__dice" id="juez-dice">' + esc(dice) + '</p></div>';
+  }
+
+  /* ==========================================================================
+     EL JUEZ EN LA SALA
+     Un globo chico al lado de quien habla. Tres cosas y ninguna más:
+
+       · ESTÁ. Mientras alguien graba, el juez escucha, y se le ve escuchar.
+         Tres poses que se turnan cada tres segundos con un fundido.
+       · ACUSA RECIBO. Al mandar un turno cambia a la pose de hablar, sale su
+         burbuja con la frase y suena su voz.
+       · Y NO HACE NADA MÁS. No valora, no comenta y no adelanta nada: si
+         comentara lo que acabás de decir estaría evaluando a mitad de partida.
+
+     POR QUÉ SU VOZ TAPA UNA ESPERA DE VERDAD. Al mandar el turno, la función de
+     borde transcribe, pule y locuta: 2,7 s medidos. Sin nada en pantalla ese
+     hueco se lee como que la app se colgó. Con el juez diciendo «te escuché»,
+     el hueco es la app haciendo algo.
+
+     LAS OCHO FRASES ESTÁN PREGRABADAS, una por juez, en `assets/audio/juez/`.
+     Generarlas al vuelo añadiría su propia espera al hueco que vienen a tapar,
+     y costaría en cada partida. Las graba `tools/frases_juez.py`.
+     ========================================================================== */
+  /* CINCO SEGUNDOS, no tres. A tres el juez cambiaba de postura demasiado
+     seguido para lo que es --alguien escuchando-- y en 30 s de turno daba diez
+     vueltas: eso no es escuchar, es inquietud. A cinco da seis, que es el ritmo
+     de alguien que se reacomoda mientras atiende. */
+  var MS_POSE = 5000;
+  var vueltaJuez = null;      // el temporizador de las poses
+  var vozJuez = new Audio();
+
+  function figurasDelJuez() {
+    var poses = window.ATWI.posesDeEscucha().concat(['hablando']);
+    return poses.map(function (pose, i) {
+      return '<img class="juez-globo__fig" data-pose="' + pose + '"' +
+        (i === 0 ? '' : ' hidden') +
+        ' src="' + window.ATWI.piezaJuez(P.juez, pose) + '" alt="" ' +
+        'loading="eager" decoding="async">';
+    }).join('');
+  }
+
+  /* LAS CUATRO SE PINTAN DE UNA Y SE ESCONDEN TRES, en vez de cambiarle el
+     `src` a una sola. Cambiando el `src` la primera vuelta parpadea --el
+     navegador vacía la imagen mientras baja la siguiente-- y justo la que más
+     importa, la de hablar, llegaría tarde. Pesan 25 KB las cuatro. */
+  function globoDelJuez() {
+    /* EL DISCO ABAJO Y LA BURBUJA ENCIMA. Estuvo arriba a la derecha y no podía
+       quedarse: ahí es donde sale el REPRODUCTOR cuando se oye una intervención
+       --va sobre la cabeza de quien habla-- y le caía encima al juez. Abajo a la
+       derecha de la figura no hay nada que tapar ni que lo tape, y la burbuja
+       cabe por encima, sobre el torso.
+
+       No se pone debajo del todo: el botón de grabar se sube un 5 % del alto de
+       la figura para taparle los pies, así que el disco se aparta de ese borde. */
+    return '<div class="juez-globo" id="juez-globo">' +
+      '<p class="juez-globo__burbuja" id="juez-burbuja" hidden></p>' +
+      '<span class="juez-globo__disco">' + figurasDelJuez() + '</span>' +
+    '</div>';
+  }
+
+  function ponerPose(pose) {
+    var g = document.getElementById('juez-globo');
+    if (!g) return;
+    [].forEach.call(g.querySelectorAll('.juez-globo__fig'), function (im) {
+      im.hidden = im.dataset.pose !== pose;
+    });
+  }
+
+  /* SOLO SE MUEVE CUANDO HAY ALGO QUE ESCUCHAR: mientras el micrófono está
+     abierto o mientras suena una intervención. Decisión del titular, y es lo
+     que convierte el bucle en una reacción: un juez que cambia de postura sobre
+     una pantalla quieta es un adorno girando, y encima le roba la mirada al
+     botón de grabar, que es lo único que hay que tocar ahí.
+
+     Se comprueba EN CADA VUELTA en vez de encender y apagar el temporizador
+     desde los sitios donde se empieza a grabar y a reproducir. Son seis sitios
+     --empezar, pausar, reanudar, terminar, oír, cerrar el reproductor-- y el
+     día que aparezca un séptimo nadie se acordaría de este.
+
+     Cuando no hay nada que escuchar NO se vuelve a una pose fija: se queda en la
+     que esté. Volver haría que el juez pegara un salto cada vez que termina un
+     audio, que es justo el movimiento que esto viene a quitar. */
+  /* «GRABANDO» NO ES SOLO `state === 'recording'`, Y POR ESO EL JUEZ SE QUEDABA
+     QUIETO (lo cazó el titular, 2026-09-15: «la animación no corre mientras la
+     grabadora está en modo grabar»).
+
+     La grabadora RECORTA SILENCIOS: en cuanto alguien se calla un segundo se
+     pone en `paused`, y vuelve a `recording` al hablar otra vez. O sea que
+     durante un turno normal el estado va y viene todo el rato. Como esto se
+     comprueba EN CADA VUELTA, la mayoría de las vueltas caían en un silencio,
+     devolvían falso y se saltaban el cambio de postura: el juez se quedaba diez
+     o quince segundos en la misma, que es justo lo que se veía --y lo que
+     también explica la impresión de «se repitió la pose»--.
+
+     Es la MISMA trampa que ya estaba escrita en `pausarGrabacion()`, donde el
+     botón de parar no hacía nada por preguntar solo por `grabando()`. Aquí la
+     pregunta correcta es si el micrófono está ABIERTO, que es grabando O
+     pausada: en las dos hay un turno en curso y hay a quién escuchar. */
+  function microAbierto() {
+    var g = window.ATWI.grabadora;
+    return Boolean(g && (g.grabando() || g.pausada()));
+  }
+
+  function hayQueEscuchar() {
+    if (microAbierto()) return true;
+    var a = $('#sala-audio');
+    return Boolean(a && !a.paused && !a.ended);
+  }
+
+  /* SIGUE DESDE LA POSE QUE YA ESTÁ PUESTA, no desde la primera. `pintarSala()`
+     llama aquí cada vez que la pantalla cambia --turno, grabando, revisión-- y
+     arrancando siempre en `poses[0]` el juez volvía a la misma postura en cada
+     salto. Visto seguido, dos veces la misma. */
+  function juezEscucha() {
+    pararJuez();
+    var poses = window.ATWI.posesDeEscucha();
+    /* La que se ve es la única sin `hidden`: `ponerPose()` las esconde todas
+       menos una, no las marca con una clase. */
+    var puesta = document.querySelector('#juez-globo .juez-globo__fig:not([hidden])');
+    var i = Math.max(0, poses.indexOf(puesta && puesta.dataset.pose));
+    ponerPose(poses[i]);
+    vueltaJuez = setInterval(function () {
+      if (!document.getElementById('juez-globo')) return pararJuez();
+      if (!hayQueEscuchar()) return;
+      i = (i + 1) % poses.length;
+      ponerPose(poses[i]);
+    }, MS_POSE);
+  }
+
+  function pararJuez() {
+    if (vueltaJuez) { clearInterval(vueltaJuez); vueltaJuez = null; }
+  }
+
+  /**
+   * El juez dice una frase: pose de hablar, burbuja y voz. Devuelve una promesa
+   * que se cumple cuando termina, pero NADIE LA ESPERA para seguir jugando: si
+   * el audio no carga o el navegador lo bloquea, el turno sigue igual. La frase
+   * escrita se ve siempre; la voz es el extra.
+   */
+  function juezDice(texto, archivo) {
+    var burbuja = document.getElementById('juez-burbuja');
+    if (!burbuja) return Promise.resolve();
+    pararJuez();
+    ponerPose('hablando');
+    burbuja.textContent = texto;
+    burbuja.hidden = false;
+    var volver = function () {
+      if (!document.getElementById('juez-globo')) return;
+      burbuja.hidden = true;
+      juezEscucha();
+    };
+    return new Promise(function (listo) {
+      var fin = function () { volver(); listo(); };
+      /* Un tope por si el audio no llega: la burbuja no se puede quedar puesta
+         para siempre porque un mp3 dio 404. */
+      var red = setTimeout(fin, 6000);
+      vozJuez.onended = function () { clearTimeout(red); fin(); };
+      vozJuez.onerror = function () { clearTimeout(red); setTimeout(fin, 1800); };
+      try {
+        vozJuez.src = '../assets/audio/juez/' + P.juez + '-' + archivo + '.mp3';
+        var t = vozJuez.play();
+        if (t && t.catch) t.catch(function () { /* sin gesto todavía: queda el texto */ });
+      } catch (e) { /* lo mismo */ }
+    });
+  }
+
+  /** Una de las cinco de entre turnos, con su archivo. */
+  function fraseEntreTurnos() {
+    var l = cfg.frasesDelJuez;
+    var i = Math.floor(Math.random() * l.length);
+    return { texto: l[i], archivo: 'entre-' + (i + 1) };
+  }
+
+  /** Una de las tres de cerrar. */
+  function fraseDeCierre() {
+    var l = cfg.frasesDeCierre;
+    var i = Math.floor(Math.random() * l.length);
+    return { texto: l[i], archivo: 'cierre-' + (i + 1) };
   }
 
   /* ==========================================================================
@@ -1063,10 +1471,16 @@ window.ATWI = window.ATWI || {};
           window.ATWI.retrato(t.avatar, 'hablando', { fondo: 'disco', mira: 'derecha',
                                                       color: t.color,
                                                       clase: 'hablante__fig' }) +
+          /* EL JUEZ VA DENTRO DE `.hablante` Y NO SUELTO EN LA SALA, para que
+             flote AL LADO de quien habla: así se ve que le está escuchando a
+             ÉL, no a la pantalla. Se pinta después de la figura y se coloca
+             encima con posición absoluta. */
+          globoDelJuez() +
         '</div>' +
       '</div>';
 
     pie().innerHTML = op.pie;
+    juezEscucha();
   }
 
   function pintarTurno() {
@@ -1530,11 +1944,21 @@ window.ATWI = window.ATWI || {};
     P.estado = 'recibo';
     P.cerrando = t.esUltima;
 
+    /* LA FRASE SUENA AQUÍ, que es donde está el hueco. Se lanza y no se espera:
+       la sala se repinta igual y el juez habla encima. Esperar a que terminara
+       de hablar para pasar el turno sería añadir dos segundos a mano a un hueco
+       que ya existe, en vez de taparlo. */
+    var f = P.cerrando ? fraseDeCierre() : fraseEntreTurnos();
+
     if (P.cerrando) {
-      pintarSala({
-        dice: alAzar(cfg.frasesDeCierre),
-        pie: principal('p-seguir', 'Ver el resultado')
-      });
+      /* EL JUEZ EMPIEZA A LEER AHORA, no cuando la persona toque «Ver el
+         resultado». Tarda un minuto largo, y ese minuto se solapa con la frase
+         de cierre, con oír la última intervención, con lo que sea: lo que se
+         espera después es solo lo que falte. La promesa se guarda en P y la
+         recoge `seguir()`. */
+      P.juicio = pedirVeredicto();
+      pintarSala({ dice: '', pie: principal('p-seguir', 'Ver el resultado') });
+      juezDice(f.texto, f.archivo);
       return;
     }
 
@@ -1546,6 +1970,7 @@ window.ATWI = window.ATWI || {};
        que esperar. */
     P.i++;
     pintarTurno();
+    juezDice(f.texto, f.archivo);
   }
 
   function seguir() {
@@ -1564,44 +1989,587 @@ window.ATWI = window.ATWI || {};
        para esa espera es DESPUÉS del toque: la cuenta atrás y el redoble tapan
        los segundos que el modelo tarde en pensar, en vez de enseñar una
        pantalla quieta antes. `deliberar()` se queda escrita para entonces. */
-    if (P.cerrando) return revelar();
+    if (P.cerrando) {
+      /* EN NEGOCIACIÓN NO SE REVELA NADA TODAVÍA: primero votan. El resultado
+         lo deciden ellos eligiendo entre las tres propuestas, así que la
+         revelación va después de la votación y no en su lugar. */
+      if (P.modo === 'negociacion') {
+        if (P.propuestasListas) return arrancarVotacion();
+        return deliberar();
+      }
+      /* Si el juez ya contestó, directo al veredicto y el toque desbloquea el
+         audio. Si todavía está leyendo, la pantalla de deliberar, que espera
+         por él y ofrece el botón cuando llega. */
+      if (P.veredictoListo) return revelar();
+      return deliberar();
+    }
     pintarTurno();
   }
 
   /* ==========================================================================
      6. EL RESULTADO
-     Todavía sin servidor: no hay transcripción ni juez de verdad, así que se
-     enseña el efecto con un resultado simulado y se dice que lo es.
      ========================================================================== */
-  /* SIN USO POR AHORA, a propósito. Es la pantalla del árbitro pensando, y hoy
-     no hay árbitro: `seguir()` va directo al veredicto. Cuando lo haya, esta
-     vuelve —pero DESPUÉS del toque, mientras el modelo trabaja. */
-  function deliberar() {
+  /* Le pide el veredicto al servidor y lo deja en P. Se llama AL MANDAR LA
+     ÚLTIMA INTERVENCIÓN --no al entrar al último turno: eso juzgaría una ronda
+     a la que le falta una intervención-- así que el minuto largo del juez se
+     solapa con la frase de cierre y con lo que quede por oír.
+
+     SI NO CONTESTA, DEJA `veredicto` EN NULO Y YA. Antes eso llevaba a un
+     resultado sorteado; ahora la partida se queda en `deliberar()` y se ofrece
+     volver a pedirlo. `veredictoMotivo` se guarda para poder decir POR QUÉ
+     falló: no es lo mismo «no hay servidor» que «el juez no devolvió nada». */
+  function pedirVeredicto() {
+    P.veredicto = null;
+    P.veredictoListo = false;
+    P.veredictoMotivo = '';
+    var n = window.ATWI.nube;
+    var listo = function (res, motivo) {
+      P.veredicto = res || null;
+      P.veredictoMotivo = motivo || '';
+      P.veredictoListo = true;
+      return P.veredicto;
+    };
+    if (P.modo !== 'debate') return Promise.resolve(listo(null, 'en Negociación no hay árbitro'));
+    if (!n || !n.hay() || !P.debate) return Promise.resolve(listo(null, 'partida sin servidor'));
+    return n.arbitrar(P.debate).then(function (d) {
+      if (d && d.resultado) return listo(d.resultado, '');
+      return listo(null, n.ultimoFallo() || 'el juez no devolvió nada');
+    }, function (e) {
+      return listo(null, String(e && e.message || e));
+    });
+  }
+
+  /* Le pide las propuestas al mediador. MISMA FORMA que `pedirVeredicto`, y la
+     misma regla: si no contesta no se revela nada y se ofrece reintentar.
+
+     AQUÍ SE DISTINGUÍA «NO HAY MEDIADOR» DE «FALLÓ LA LLAMADA» Y YA NO (decisión
+     del titular, 2026-09-15). Eran dos estados porque el primero terminaba la
+     partida en «Ronda guardada» y el segundo se reintentaba; quitada esa
+     pantalla, las dos son lo mismo visto desde la pareja --nadie miró la
+     ronda-- y las dos terminan igual: en deliberando, con el botón de volver a
+     pedirlo. Que el reintento de hoy no pueda funcionar mientras la función no
+     exista es cierto y no cambia nada: la alternativa era enseñar un final que
+     no lo es. */
+  function pedirPropuestas() {
+    P.propuestas = null;
+    P.propuestasListas = false;
+    P.paradaNegociacion = null;
+    var n = window.ATWI.nube;
+    if (!n || !n.mediar || !n.hay() || !P.debate) return Promise.resolve(null);
+    return n.mediar(P.debate).then(function (d) {
+      if (!d) return null;
+      P.propuestasListas = true;
+      P.paradaNegociacion = d.parada || null;
+      P.propuestas = d.propuestas || null;
+      return null;
+    }, function () { return null; });
+  }
+
+  /* LAS DOS POSTURAS DE DELIBERAR. `pensando` es la barbilla y `escucha-2` es
+     tomando notas: las dos únicas que se leen como «está trabajando en esto».
+     NO se usan `escucha-1` ni `escucha-3` aunque también tengan la boca cerrada:
+     la 1 y la 3 son casi la misma que `pensando` --cambia poco más que el
+     ángulo, y ya está escrito en `CLAUDE.md`-- así que alternarlas se vería como
+     un parpadeo en vez de como un cambio de postura. */
+  var POSTURAS_DELIBERAR = ['pensando', 'escucha-2'];
+  /* CUATRO SEGUNDOS, que es el triple que el ciclo de escuchar de la sala. Allí
+     el juez acompaña a quien graba y el movimiento tiene que notarse; aquí no
+     pasa nada más en pantalla, y a tres segundos el cambio se convierte en el
+     protagonista. A cuatro, con el fundido largo, respira. */
+  var MS_POSTURA = 4000;
+  var relojPostura = null;
+
+  function pararPosturas() {
+    clearInterval(relojPostura);
+    relojPostura = null;
+  }
+
+  /* EL JUEZ DE DELIBERAR: grande, de la cintura para arriba y saliendo desde
+     abajo (decisión del titular, 2026-09-15, para los dos modos).
+
+     ANTES ERA UN DISCO DE 84 px con «Deliberando…» debajo, el párrafo de qué
+     está haciendo y un renglón con el recuento de intervenciones y segundos. En
+     una pantalla donde no pasa nada más y que puede durar un minuto largo, eso
+     es un cartel de carga con adornos: se lee una vez y después solo queda
+     esperar mirando un icono pequeño.
+
+     Con la figura grande la espera tiene a alguien dentro. Las dos posturas se
+     turnan cada cuatro segundos con un fundido, así que la pantalla está viva
+     sin pedir nada: se ve que hay alguien trabajando, que es exactamente lo que
+     está pasando. Y el recuento se va: quien acaba de grabar sus turnos sabe
+     cuántos fueron. */
+  function juezDeliberando() {
+    var quien = (P.juez && window.ATWI.esJuez(P.juez)) ? P.juez : 'bruno';
+    return '<div class="delibera" id="delibera">' +
+      POSTURAS_DELIBERAR.map(function (pose, i) {
+        return '<img class="delibera__fig' + (i ? '' : ' delibera__fig--puesta') + '" ' +
+          'src="' + window.ATWI.piezaJuez(quien, pose) + '" alt="" ' +
+          'decoding="async">';
+      }).join('') +
+    '</div>';
+  }
+
+  function rotarPosturas() {
+    pararPosturas();
+    relojPostura = setInterval(function () {
+      var figs = $$('#delibera .delibera__fig');
+      if (!figs.length) return pararPosturas();
+      var puesta = 0;
+      figs.forEach(function (f, i) { if (f.classList.contains('delibera__fig--puesta')) puesta = i; });
+      figs[puesta].classList.remove('delibera__fig--puesta');
+      figs[(puesta + 1) % figs.length].classList.add('delibera__fig--puesta');
+    }, MS_POSTURA);
+  }
+
+  /* La pantalla del juez leyendo. Solo se ve si la persona toca antes de que
+     el veredicto llegue; el botón aparece cuando llega, para que el toque que
+     revela sea también el que desbloquea el audio del redoble. */
+  function deliberar(fallado) {
     P.estado = 'deliberando';
+    avisarSiSeVan();
+    pararJuez();
     cerrarReproductor();
+    /* SIN TEXTO MIENTRAS SE ESPERA, y con texto cuando algo falló: son dos
+       pantallas distintas con la misma figura. En la espera no hay nada que
+       decir que la figura no diga; en el fallo hay que explicar qué pasó y
+       ofrecer volver a pedirlo, que es la mitad del sentido de esa pantalla. */
     caja().innerHTML =
-      '<div class="sala sala--centrada">' +
-        juez('juez--pensando', 'Deliberando…') +
-        '<p class="sala__nota">' + P.intervenciones.length + ' intervenciones grabadas · ' +
-          P.intervenciones.reduce(function (a, b) { return a + b.segundos; }, 0) + ' segundos</p>' +
+      '<div class="sala sala--centrada sala--delibera' +
+          (fallado ? ' sala--delibera-dice' : '') + '">' +
+        (fallado
+          ? '<div class="delibera__dice">' +
+              '<p class="delibera__titular">' + esc(cfg.veredicto.falloTitulo) + '</p>' +
+              '<p class="sala__nota">' + esc(cfg.veredicto.fallo) + '</p>' +
+            '</div>'
+          : '') +
+        juezDeliberando() +
       '</div>';
-    pie().innerHTML = principal('p-revelar', 'Ver el resultado');
+    pie().innerHTML = fallado
+      ? '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
+          'data-accion="p-reintentar">' + esc(cfg.veredicto.reintentar) + '</button>'
+      : '';
+    rotarPosturas();
+    if (fallado) return;
+
+    var cuando = P.juicio || Promise.resolve(null);
+    cuando.then(function () {
+      if (P.estado !== 'deliberando') return;
+      /* SI NO HUBO RESPUESTA, NO SE REVELA NADA: se queda aquí y se ofrece
+         volver a pedirlo (decisión del titular, 2026-09-15). La ronda ya está
+         grabada y guardada entera; lo que falló es UNA llamada, así que lo que
+         hay que reintentar es la llamada y no la partida. */
+      if (noContesto()) {
+        bitacora('veredicto_no_llego', { detalle: P.veredictoMotivo || '' });
+        return deliberar(true);
+      }
+      pie().innerHTML = principal('p-revelar', 'Ver el resultado');
+    });
+  }
+
+  /* LO QUE PASA CUANDO SE VAN DE AQUÍ, que es la pregunta del titular
+     (2026-09-15): «¿qué pasa si el user abandona la aplicación?». La ronda no
+     se pierde --los seis turnos ya están guardados-- pero el veredicto sí,
+     porque quien lo estaba pidiendo era esta pestaña. Mientras eso no se
+     encole en el servidor, lo mínimo es que quede anotado: una partida que se
+     quedó esperando no aparece en ninguna otra tabla, y sin esto nadie se
+     entera nunca de cuántas hay.
+     Va en `pagehide` y no en `beforeunload`: el segundo no dispara en iOS
+     cuando se cambia de app, que es la manera normal de irse en un teléfono. */
+  function avisarSiSeVan() {
+    if (dejandoLaEspera) return;
+    dejandoLaEspera = function () {
+      if (P && P.estado === 'deliberando' && !P.ensayo) {
+        bitacora('ronda_abandonada_esperando', { alIrse: true, nivel: 'aviso' });
+      }
+    };
+    window.addEventListener('pagehide', dejandoLaEspera);
+  }
+
+  function dejarDeAvisar() {
+    if (!dejandoLaEspera) return;
+    window.removeEventListener('pagehide', dejandoLaEspera);
+    dejandoLaEspera = null;
+  }
+
+  /* Un solo sitio por donde pasa todo lo que se anota desde la sala, para que
+     el `debate` y el `ensayo` no haya que acordarse de ponerlos. UN ENSAYO NO
+     ANOTA: el probador dispara fallos a propósito y llenaría la bitácora de
+     averías que nunca ocurrieron. */
+  function bitacora(suceso, op) {
+    if (!P || P.ensayo) return;
+    var n = window.ATWI.nube;
+    if (!n || !n.anotar) return;
+    op = op || {};
+    op.debate = P.debate || null;
+    op.datos = { modo: P.modo, turnos: P.intervenciones ? P.intervenciones.length : 0 };
+    n.anotar(suceso, op);
+  }
+
+  /* SI NO LLEGÓ RESPUESTA, NO HAY NADA QUE REVELAR. En Controversia es no tener
+     veredicto; en Negociación, no tener ni propuestas ni parada.
+
+     NO CONTESTAR NO ES UN RESULTADO (decisión del titular, 2026-09-15). Sin
+     veredicto sí lo es --el juez leyó la ronda entera y decidió no puntuarla, y
+     eso se sostiene y se explica--; que una llamada no llegue no le dice nada a
+     nadie. Por eso ninguna de las dos ramas produce pantalla de final: las dos
+     se quedan aquí, con la ronda entera guardada y el botón de volver a pedirlo. */
+  function noContesto() {
+    if (P.modo === 'negociacion') return !P.propuestasListas;
+    return !P.veredicto;
+  }
+
+  function reintentar() {
+    bitacora('veredicto_reintento', { nivel: 'aviso' });
+    if (P.modo === 'negociacion') {
+      P.juicio = pedirPropuestas();
+    } else {
+      P.juicio = pedirVeredicto();
+    }
+    deliberar();
+  }
+
+  /* ==========================================================================
+     LA NEGOCIACIÓN: ELEGIR, AJUSTAR Y FIRMAR
+     El mediador propone DOS maneras de quedar y la pareja elige una. Si eligen,
+     ajustan el texto si quieren y lo firman; recién ahí se revela el resultado.
+
+     EL ORDEN IMPORTA Y ESTUVO MAL UN RATO (corrección del titular, 2026-09-15):
+     primero se cierra la negociación y DESPUÉS se celebra. La revelación llega
+     cuando el acuerdo queda en firme o cuando queda claro que no lo hay, no
+     entre medio. Celebrar antes de firmar deja la fiesta apoyada en algo que
+     todavía se puede caer, y encima pone un formulario después del clímax.
+
+     DOS PROPUESTAS Y NO TRES (decisión del titular, 2026-09-15). Pedir tres
+     obliga al modelo a inventar una tercera distinta de las otras dos cuando el
+     material da para dos; la tercera sale peor y encima ensucia la elección.
+
+     EL VOTO ES UNO SOLO, Y AQUÍ ESO ES LO CORRECTO. Se construyó primero con
+     voto ciego y pasarse el teléfono, copiando la regla de los turnos, y el
+     titular lo corrigió: en partida local LOS DOS ESTÁN DELANTE y eligen juntos,
+     así que no hay nada que ocultar. Si no se ponen de acuerdo, para eso está
+     «Ninguna». La confidencialidad hace falta cuando cada quien está en su
+     teléfono, y eso es la partida remota, que no existe todavía; cuando exista,
+     cada voto va por su cuenta con la RLS de `votos` --«veo mi voto y, si ya
+     voté, el del otro»-- y si eligen distinto se le enseña a cada uno lo que
+     eligió el otro y se le ofrece cambiarse o quedarse. Esa segunda vuelta es de
+     la remota y se construye con ella: escrita hoy sería una pantalla que nadie
+     puede alcanzar.
+
+     Y CADA PROPUESTA ENSEÑA QUÉ RECOGE DE CADA UNO. No es adorno: `docs/02` §13
+     llama «el peor error posible de este sistema» a emitir un acuerdo que no
+     está anclado en los dos. Enseñar las dos anclas pone esa comprobación en
+     manos de la pareja: si una de las líneas no les suena a algo que dijeron,
+     esa propuesta no es de ellos y lo van a ver.
+     ========================================================================== */
+  function tarjetaPropuesta(p, n, marcada) {
+    return '<button class="propuesta' + (marcada ? ' propuesta--marcada' : '') + '" ' +
+        'data-propuesta="' + n + '">' +
+      '<span class="propuesta__texto">' + esc(p.texto) + '</span>' +
+      (p.recogeUno || p.recogeDos
+        ? '<span class="propuesta__anclas">' +
+            (p.recogeUno ? '<span class="propuesta__ancla">' + esc(p.recogeUno) + '</span>' : '') +
+            (p.recogeDos ? '<span class="propuesta__ancla">' + esc(p.recogeDos) + '</span>' : '') +
+          '</span>'
+        : '') +
+    '</button>';
+  }
+
+  /* LO QUE EL MEDIADOR PUEDE DEVOLVER, Y NO ES LO MISMO. Los dos finales se
+     parecen --en los dos acaba sin acuerdo-- pero dicen cosas distintas:
+
+       · PARÓ POR SEGURIDAD  ->  «Sin veredicto». Miró y eligió no trabajar.
+       · MIRÓ Y NO ENCONTRÓ NADA  ->  la pantalla de elegir, con una sola
+         opción: «Sin acuerdo por ahora».
+
+     Y NO CONTESTAR NO ES NINGUNO DE LOS DOS: no se llega hasta aquí. Eso lo
+     ataja `noContesto()`, que deja la partida en deliberando con el botón de
+     volver a pedirlo. Decirle a la pareja que no se pusieron de acuerdo cuando
+     lo que pasó fue que se cayó una llamada es la mentira que esto evita. */
+  function arrancarVotacion() {
+    if (!P.propuestasListas) return deliberar(true);
+    if (P.paradaNegociacion) return revelar();
+    P.voto = null;
+    return votar();
+  }
+
+  function hayQueElegir() {
+    return Boolean(P.propuestas && P.propuestas.length);
+  }
+
+  /* SIN PROPUESTAS NO HAY NADA QUE ELEGIR, Y ESO NO ES UNA AVERÍA. El mediador
+     tiene permiso explícito para declarar que no hay terreno común (`docs/02`
+     §13, paso 5g) y también puede pararse por seguridad; y a veces las seis
+     intervenciones sencillamente no dan material para proponer nada que se
+     sostenga. En esos casos la pantalla enseña UNA sola opción --«Sin acuerdo
+     por ahora»-- y sugiere repetir el ejercicio (decisión del titular,
+     2026-09-15). Sigue siendo un toque suyo y no un cartel: lo que no hay es
+     acuerdo, no partida. */
+  function votar() {
+    P.estado = 'votando';
+    pararJuez();
+    cerrarReproductor();
+    var n = cfg.negociacion;
+
+    if (!hayQueElegir()) {
+      P.voto = -1;
+      caja().innerHTML =
+        '<div class="votacion">' +
+          '<p class="votacion__quien">' + esc(n.sinPropuestasTitulo) + '</p>' +
+          '<p class="sala__nota">' + esc(n.sinPropuestas) + '</p>' +
+          '<div class="propuestas">' +
+            '<button class="propuesta propuesta--ninguna propuesta--marcada" ' +
+              'data-propuesta="-1">' + esc(n.sinPropuestasOpcion) + '</button>' +
+          '</div>' +
+        '</div>';
+      pie().innerHTML = principal('p-voto-listo', 'Entendido');
+      return;
+    }
+
+    caja().innerHTML =
+      '<div class="votacion">' +
+        '<p class="votacion__quien">' + esc(n.titulo) + '</p>' +
+        /* SIN `--tenue`: esa clase baja al 60 % y es para lo accesorio. Esto no
+           lo es --es la condición de la elección, y saberla cambia cómo se
+           elige-- así que va a pleno. */
+        '<p class="sala__nota">' + esc(n.aviso) + '</p>' +
+        '<div class="propuestas">' +
+          P.propuestas.map(function (p, k) {
+            return tarjetaPropuesta(p, k, P.voto === k);
+          }).join('') +
+          '<button class="propuesta propuesta--ninguna' +
+            (P.voto === -1 ? ' propuesta--marcada' : '') + '" data-propuesta="-1">' +
+            esc(n.ninguna) + '</button>' +
+        '</div>' +
+      '</div>';
+    pie().innerHTML = principal('p-voto-listo', 'Listo', '', P.voto === null);
+  }
+
+  /* Elegida una, se pasa a firmarla. «Ninguna» se va derecho a la revelación:
+     no hay texto que ajustar. */
+  function cerrarVotacion() {
+    if (P.voto === null) return;
+    if (P.voto < 0) {
+      P.acuerdo = null;
+      /* SIN ACUERDO TAMBIÉN SE GUARDA, y es la mitad del sentido de la tabla.
+         `docs/02` §13 le da permiso expreso al mediador para declarar que no
+         hay terreno común, y marcar «Ninguna» es la pareja diciendo lo mismo:
+         las dos son maneras legítimas de cerrar una Negociación, no averías.
+         Si solo se guardaran los acuerdos, el historial contaría una historia
+         en la que siempre se acuerda, que no es la de nadie. */
+      guardarElActa('desacuerdo', (cfg.negociacion || {}).actaSinAcuerdo || '');
+      return revelar();
+    }
+    P.acuerdo = P.propuestas[P.voto];
+    P.actaTexto = P.acuerdo.texto;
+    /* EL TEXTO TAL COMO LO PROPUSO EL MEDIADOR, guardado aparte. Sirve para una
+       sola cosa y hace falta: saber si el acta que se firma es la suya o la que
+       la pareja reescribió. No se puede comparar contra `P.acuerdo` al firmar,
+       porque para entonces `P.acuerdo` ya es el texto final. */
+    P.actaOriginal = P.acuerdo.texto;
+    P.actaEditando = false;
+    return firmar();
+  }
+
+  /* MANDA EL ACTA Y NO ESPERA. Igual que la bitácora: lo que no puede pasar es
+     que la celebración se quede colgada porque el servidor tarda, y lo que se
+     va a enseñar ya está en `P.acuerdo`. Si falla, queda anotado --con su
+     motivo-- y el texto sigue en pantalla.
+
+     UN ENSAYO NO ESCRIBE NADA. El probador recorre este camino entero para
+     mirar las pantallas, y sin esto cada vuelta dejaría un acta inventada en el
+     historial de alguien. */
+  function guardarElActa(tipo, texto) {
+    if (!P || P.ensayo || !P.debate) return;
+    var n = window.ATWI.nube;
+    if (!n || !n.guardarActa) return;
+    n.guardarActa({
+      debate: P.debate,
+      texto: texto,
+      tipo: tipo,
+      version: 1,
+      /* Editada = el texto final no es el que propuso el mediador. */
+      editada: Boolean(P.actaOriginal && P.actaOriginal !== texto)
+    }).then(function (fila) {
+      if (fila) {
+        /* LA LISTA EN MEMORIA YA NO ES LA DE AHORA. Sin esto se firmaba un
+           acuerdo, se iba al chip «Acuerdos» y no estaba: la lista se guarda
+           entre visitas a propósito --para no pedirla cada vez-- así que hay
+           que tirarla justo cuando deja de ser cierta. `app.js` ya tenía el
+           enganche escrito y no lo llamaba nadie. */
+        if (window.ATWI.olvidarActas) window.ATWI.olvidarActas();
+        return bitacora('acta_guardada', { nivel: 'nota', detalle: tipo });
+      }
+      bitacora('acta_no_se_guardo', { detalle: n.ultimoFallo ? n.ultimoFallo() : '' });
+    });
+  }
+
+  /* ==========================================================================
+     EL ACTA: se ajusta y se firma ANTES de celebrar
+     El texto que propuso el mediador es editable antes de guardarse. Si no lo
+     tocan, se pregunta si lo aceptan tal cual; si quieren cambiarlo, el campo se
+     abre y se edita aquí mismo, como se retoca el enunciado de un tema antes de
+     lanzar la ronda.
+
+     LA PREGUNTA SE HACE AUNQUE NO HAYAN TOCADO NADA, y es a propósito: firmar
+     sin que nadie diga «sí, así» convierte el acta en algo que pasó mientras
+     miraban. `docs/02` §13 cuenta la aceptación en menos de diez segundos y sin
+     edición humana entre las señales de rendición.
+     ========================================================================== */
+  function firmar() {
+    P.estado = 'firmando';
+    var n = cfg.negociacion;
+    caja().innerHTML =
+      '<div class="votacion">' +
+        '<p class="votacion__quien">' + esc(n.actaTitulo) + '</p>' +
+        (P.actaEditando
+          ? '<textarea class="campo acta__campo" id="acta-texto" rows="6" ' +
+              'maxlength="600">' + esc(P.actaTexto) + '</textarea>'
+          : '<div class="acta__texto">' + esc(P.actaTexto) + '</div>') +
+        /* LA PREGUNTA NO ES UNA NOTA AL PIE. `sala__nota` es la letra chica de
+           lo accesorio, y aquí la pregunta ES la pantalla: es lo que hay que
+           contestar con los dos botones de abajo. Va en su propia clase y más
+           grande (ajuste del titular, 2026-09-15). */
+        '<p class="acta__pregunta' + (P.actaCorto ? ' acta__pregunta--corto' : '') + '">' +
+          esc(P.actaCorto ? n.actaCorto
+            : P.actaEditando ? n.actaEditando : n.actaPregunta) + '</p>' +
+      '</div>';
+    /* LOS DOS DEL MISMO TAMAÑO, Y EDITAR ARRIBA (ajuste del titular,
+       2026-09-15). Al secundario le faltaba `boton--grande` y salía más bajo
+       que el otro, como si fuera la opción menor: no lo es. Son las dos
+       respuestas a la pregunta de arriba y las dos valen lo mismo; lo que las
+       distingue es el color, que ya basta.
+       Y el de editar va ENCIMA porque el de firmar es el que cierra: en un
+       teléfono el de abajo es el que cae bajo el pulgar, y ahí tiene que estar
+       el que confirma, no el que se echa atrás. */
+    pie().innerHTML = P.actaEditando
+      ? principal('p-acta-guardar', n.actaGuardar)
+      : '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
+          'data-accion="p-acta-editar">' + esc(n.actaEditar) + '</button>' +
+        principal('p-acta-firmar', n.actaFirmar);
+  }
+
+  /* La fila de `resultados` traducida a lo que la pantalla sabe pintar. Los
+     lados vienen como `propone`/`invitado` y aquí son personas con nombre: la
+     cuenta es siempre `propone`, la otra ficha es el invitado. */
+  function delArbitro(res) {
+    var yo = indiceDeLaCuenta();
+    var quien = { propone: P.jugadores[yo], invitado: P.jugadores[1 - yo] };
+    var persona = function (lado) { return quien[lado] || { nombre: '?' }; };
+    var tipo = res.tipo_resultado;
+    var d = res.desglose;
+    return {
+      simulado: false,
+      ganador: res.ganador_lado ? persona(res.ganador_lado).nombre : null,
+      empate: tipo === 'empate_tecnico',
+      motivoEmpate: res.motivo_empate || 'generico',
+      sinResultado: tipo === 'sin_resultado_blando' ? 'blanda'
+                  : tipo === 'sin_resultado_duro' ? 'dura' : null,
+      justificacion: res.justificacion || '',
+      loMejor: res.lo_mejor ? ['propone', 'invitado'].map(function (l) {
+        return { nombre: persona(l).nombre, texto: (res.lo_mejor || {})[l] || '' };
+      }).filter(function (q) { return q.texto; }) : null,
+      /* LOS DOS, EN EL ORDEN DE LA MESA --quien propuso primero-- y no en el
+         del resultado. Ponerlos «ganador a la izquierda» sería un podio, y la
+         regla 3 del producto prohíbe el marcador entre los dos. */
+      duelo: ['propone', 'invitado'].map(function (l) {
+        var q = persona(l);
+        return { nombre: q.nombre, avatar: q.avatar, color: q.color,
+                 gano: res.ganador_lado === l };
+      }),
+      juez: P.juez,
+      desglose: d ? {
+        criterios: d.criterios || 5,
+        personas: ['propone', 'invitado'].map(function (l) {
+          return { nombre: persona(l).nombre, avatar: persona(l).avatar,
+                   color: persona(l).color, rubrica: d[l] || {} };
+        })
+      } : null,
+      loQueDijo: res.lo_que_dijo ? ['propone', 'invitado'].map(function (l) {
+        return { nombre: persona(l).nombre, texto: res.lo_que_dijo[l] || '' };
+      }) : null
+    };
   }
 
   function revelar() {
     var m = $('#m-partida');
     m.hidden = true;
-    var ganador = alAzar(P.jugadores).nombre;
-    veredicto.revelar({
-      /* DE UN SORTEO, y se dice en pantalla. El dia que el arbitro conteste de
-         verdad, esto pasa a falso y el aviso desaparece solo. */
-      simulado: true,
+    var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto) : null;
+    veredicto.revelar(Object.assign({
+      /* AQUÍ SE SORTEABA UN GANADOR A CARA O CRUZ, Y SE FUE (decisión del
+         titular, 2026-09-15). Cuando el árbitro no contestaba, la app elegía un
+         ganador al azar y lo rotulaba «resultado simulado, salido de un
+         sorteo». Dos cosas mal: en un juego que le dice a una pareja quién
+         argumentó mejor, inventar ese dato y avisar en letra chica es dejar que
+         alguien use como argumento el resultado de una moneda; y desde que el
+         nombre del ganador se pinta sobre la figura que entra, el sorteo ni se
+         veía --la pantalla anunciaba la moneda y no enseñaba de qué lado había
+         caído--.
+         Ahora sin respuesta no se revela nada: la partida se queda en
+         `deliberar()` y se ofrece volver a pedirlo. Ver `noContesto()`. */
+      juez: P.juez,
+      /* Los dos, con `gano` en falso: lo que ponga el árbitro en `real` pisa
+         esto entero. En Negociación no hay `real`, y ahí quien «gana» lo decide
+         la firma del acuerdo, no esta línea. */
+      duelo: P.jugadores.map(function (q) {
+        return { nombre: q.nombre, avatar: q.avatar, color: q.color, gano: false };
+      }),
       modo: P.modo,
       publico: P.publico,
-      ganador: ganador,
       tema: P.tema.titulo,
-      acuerdo: P.modo === 'negociacion' ? P.tema.ejemplo : null,
+      /* Para que la pantalla pueda elegir SIEMPRE EL MISMO juez de respaldo
+         cuando la ronda se jugó sin ninguno. Ver `juezDeRespaldo()`. */
+      debate: P.debate || null,
+      /* AQUÍ IBA UN `sinMediador` Y SE FUE (decisión del titular, 2026-09-15).
+         Marcaba la partida cuyo mediador no llegó a proponer nada y llevaba a
+         «Ronda guardada», que no era un resultado sino un aviso de avería con
+         la puesta en escena de un final. Ahora esa partida no llega hasta aquí:
+         se queda en deliberando y se vuelve a pedir (ver `noContesto()`).
+         El antepasado de aquello fue peor y conviene no perderlo de vista: hasta
+         el 2026-09-14 esta rama mandaba `P.tema.ejemplo` --el campo de EJEMPLO
+         DEL CATÁLOGO, escrito meses antes-- y el juez lo presentaba
+         entrecomillado como el acuerdo que la pareja acababa de escribir
+         jugando. La app afirmando algo falso sobre la pareja es el riesgo que
+         `CLAUDE.md` señala como el que puede matar el producto. */
+      /* EL ACUERDO ES LA PROPUESTA QUE ELIGIERON Y FIRMARON, con el texto tal
+         como lo dejaron. Si marcaron «ninguna», aquí va nulo y la pantalla cae
+         en la escena de sin acuerdo, que es la que corresponde. */
+      acuerdo: P.acuerdo ? P.acuerdo.texto : null,
+      /* LA PARADA DEL MEDIADOR. En Controversia esto lo trae `real`, que pisa
+         todo lo de aquí; en Negociación no hay árbitro que lo traiga, así que
+         va por su cuenta. Nulo cuando no hubo parada, que es casi siempre. */
+      sinResultado: P.paradaNegociacion || null,
       alCerrar: function () {
+        /* UN ENSAYO NO ES UNA PARTIDA Y NO SE ANOTA. Esto contaba el tema como
+           jugado y subía el contador de debates o de acuerdos CADA VEZ que el
+           titular miraba una escena en el probador: al cabo de una tarde de
+           ajustar píxeles, su perfil decía que había jugado cuarenta veces y el
+           catálogo daba por estrenados temas que nadie tocó. Y termina donde
+           empezó --el probador-- y no en la portada, que obligaba a volver a
+           entrar para mirar la escena siguiente. */
+        if (P.ensayo) {
+          cerrar();
+          if (window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
+          return;
+        }
+        /* ESTRENADO DESDE EL HISTORIAL. La contabilidad SÍ corre, y no es un
+           doble conteo: quien cerró la app esperando el veredicto nunca llegó a
+           cerrar esta pantalla, así que esa partida no se había contado nunca.
+           Y se vuelve al historial, que es de donde salió: la insignia de «sin
+           ver» tiene que desaparecer delante de sus ojos. */
+        if (P.estrenando) {
+          var pe = datos.perfil();
+          var je = pe.temasJugados.slice();
+          if (P.tema.id && je.indexOf(P.tema.id) === -1) je.push(P.tema.id);
+          datos.actualizar({
+            temasJugados: je,
+            debates: pe.debates + (P.modo === 'debate' ? 1 : 0),
+            acuerdos: pe.acuerdos + (P.modo === 'negociacion' ? 1 : 0)
+          });
+          var cual = P.debate;
+          cerrar();
+          if (window.ATWI.alEstrenarVeredicto) window.ATWI.alEstrenarVeredicto(cual);
+          return;
+        }
         var p = datos.perfil();
         var jugados = p.temasJugados.slice();
         if (jugados.indexOf(P.tema.id) === -1) jugados.push(P.tema.id);
@@ -1613,7 +2581,7 @@ window.ATWI = window.ATWI || {};
         cerrar();
         if (window.ATWI.alTerminarPartida) window.ATWI.alTerminarPartida();
       }
-    });
+    }, real));
   }
 
   function fallo(texto) {
@@ -1625,6 +2593,14 @@ window.ATWI = window.ATWI || {};
   document.addEventListener('click', function (e) {
     var oirlo = e.target.closest('#m-partida [data-oir]');
     if (oirlo) return oir(oirlo.dataset.oir);
+
+    /* Marcar una propuesta no cierra nada: deja el botón de abajo encendido y
+       se puede cambiar de idea hasta pulsarlo. */
+    var voto = e.target.closest('#m-partida [data-propuesta]');
+    if (voto) {
+      P.voto = Number(voto.dataset.propuesta);
+      return votar();
+    }
 
     var b = e.target.closest('#m-partida [data-accion]');
     if (!b) return;
@@ -1640,19 +2616,41 @@ window.ATWI = window.ATWI || {};
     else if (a === 'p-borrar-no') pintarRevision(false);
     else if (a === 'p-borrar-si') borrar();
     else if (a === 'p-seguir') seguir();
-    else if (a === 'p-revelar') revelar();
+    else if (a === 'p-revelar') { if (P.modo === 'negociacion') arrancarVotacion(); else revelar(); }
+    /* LA VOTACIÓN. `p-voto-listo` cierra el voto de quien está delante: si es
+       el primero, a pasar el teléfono; si es el segundo, a comparar. */
+    else if (a === 'p-reintentar') reintentar();
+    else if (a === 'p-voto-listo') cerrarVotacion();
+    else if (a === 'p-acta-editar') { P.actaAntes = P.actaTexto; P.actaEditando = true; firmar(); }
+    else if (a === 'p-acta-guardar') {
+      /* Se lee del campo ANTES de repintar: repintar lo destruye. */
+      var campo = $('#acta-texto');
+      var texto = campo ? campo.value.trim() : P.actaTexto;
+      /* DEMASIADO CORTO NO SE TRAGA EN SILENCIO. Esto hacía
+         `if (texto.length >= 10) P.actaTexto = texto;` y se quedaba tan ancho:
+         quien vaciara el campo y pulsara «Listo» veía volver el texto viejo sin
+         una palabra, como si la app hubiera ignorado lo que escribió. El tope
+         no es un capricho de la pantalla, es el `check` de la tabla `acuerdos`
+         --entre 10 y 600--, así que hay que decirlo y quedarse aquí.
+         Lo escrito NO se pierde: se guarda igual en `actaTexto` y el campo lo
+         conserva; lo único que no pasa es salir del modo edición. */
+      P.actaTexto = texto;
+      P.actaCorto = texto.length < 10;
+      P.actaEditando = P.actaCorto;
+      firmar();
+    }
+    else if (a === 'p-acta-firmar') {
+      /* FIRMADA: el acuerdo que va a la revelación es el TEXTO FINAL, el que
+         ellos dejaron, y no el que propuso el mediador. */
+      P.acuerdo = { texto: P.actaTexto };
+      guardarElActa('acuerdo', P.actaTexto);
+      revelar();
+    }
     else if (a === 'r-play') { var au = $('#sala-audio'); if (au.paused) au.play(); else au.pause(); }
     else if (a === 'r-vel') cambiarVelocidad();
     else if (a === 'r-cerrar') cerrarReproductor();
-    else if (a === 'p-salir') {
-      /* EN EL REPASO NO HAY NADA QUE PERDER. La partida ya se jugó y ya está
-         guardada; salir es cerrar una grabación, no abandonar a nadie. Avisar
-         ahí no solo sobra: dice algo falso —«la partida se pierde»— sobre algo
-         que no se puede perder, y quien lo lee no vuelve a creer el aviso el día
-         que sí es verdad. */
-      if (P && P.repaso) return cerrar();
-      if (confirm('Si salís ahora, la partida se pierde y no cuenta para nadie. ¿Salir?')) cerrar();
-    }
+    else if (a === 'p-salir') salirDeLaSala();
+
   });
 
   function cambiarVelocidad() {
@@ -1680,5 +2678,127 @@ window.ATWI = window.ATWI || {};
     });
   });
 
-  window.ATWI.partida = { empezar: empezar, repasar: repasar, cerrar: cerrar };
+  /* ENSAYAR LA VOTACIÓN SIN JUGAR UNA RONDA. Lo usa el probador de resultados,
+     que solo ve el titular. Existe por la misma razón que el probador: mirar el
+     encuadre de esta pantalla cuesta, si no, grabar seis intervenciones y
+     esperar al mediador, y ajustar una medida así no se hace nunca.
+     Monta el MÍNIMO de partida que la votación necesita --dos jugadores, quién
+     abre, el modo y las propuestas-- y nada más: no abre partida en el
+     servidor, no graba y no escribe. Al terminar cae en `revelar()`, o sea que
+     también sirve para ver el empalme entero. */
+  function ensayarDesdeElFinal(op) {
+    P = {
+      juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
+      tema: op.tema || { titulo: 'los platos', enunciado: '' },
+      modo: op.modo === 'negociacion' ? 'negociacion' : 'debate',
+      turnos: 3,
+      publico: op.publico || 'pareja',
+      jugadores: op.quien.map(ficha),
+      orden: [0, 1],
+      /* SEIS INTERVENCIONES DE MENTIRA, y no por capricho: la pantalla de
+         deliberar dice cuántas hubo y cuántos segundos duraron. Con la lista
+         vacía saldría «0 intervenciones · 0 segundos», que es la única línea de
+         esa pantalla que no se estaría ensayando. */
+      intervenciones: [{ segundos: 41 }, { segundos: 38 },
+                       { segundos: 52 }, { segundos: 44 },
+                       { segundos: 36 }, { segundos: 49 }],
+      i: 0,
+      borrador: null,
+      estado: 'aviso',
+      debate: null,
+      veredicto: null,
+      veredictoListo: false,
+      veredictoMotivo: '',
+      propuestas: null,
+      propuestasListas: false,
+      paradaNegociacion: null,
+      ensayo: true
+    };
+    separarFichas();
+    abrir();
+
+    /* EL ENSAYO ARRANCA DONDE ARRANCA LA PARTIDA DE VERDAD: en el instante en
+       que se mandó la última intervención (petición del titular, 2026-09-15).
+       Por eso pasa por `deliberar()` y por su espera, en vez de saltar al
+       resultado: lo que hay que poder mirar es la secuencia entera, incluida la
+       pausa, que es donde cae el minuto largo del modelo.
+
+       LA ESPERA ES FALSA Y CORTA. Aquí no hay llamada que esperar; se dejan
+       1,6 s, que es lo justo para ver la pantalla sin volverla un peaje. El día
+       que el mediador exista, esta promesa se cambia por la llamada de verdad y
+       no cambia nada más --en Controversia ya es así: `pedirVeredicto()`--. */
+    P.juicio = new Promise(function (listo) { setTimeout(listo, 1600); })
+      .then(function () {
+        if (P.modo === 'negociacion') {
+          /* «No llega respuesta» no deja propuestas, y eso es todo lo que hace
+             falta: `noContesto()` lo lee de aquí y deja la partida en
+             deliberando con el botón de volver a pedirlo. */
+          P.propuestasListas = op.contesta !== 'no-contesta';
+          /* La dura tampoco deja propuestas: para antes de mirarlas. */
+          P.paradaNegociacion = op.contesta === 'parada' ? 'blanda'
+                              : op.contesta === 'parada-dura' ? 'dura' : null;
+          P.propuestas = op.contesta === 'dos' ? op.propuestas : null;
+        } else {
+          /* EN CONTROVERSIA EL ENSAYO MONTA LA FILA CRUDA DE `resultados`, no
+             el objeto ya traducido. Así el ensayo pasa por `delArbitro()`, que
+             es donde se convierten los lados `propone`/`invitado` en personas
+             con nombre y donde se arma el desglose: si eso se rompiera, el
+             probador que salta directo a la revelación no se enteraría. */
+          P.veredicto = op.contesta === 'no-contesta' ? null : filaDeMentira(op.contesta);
+          P.veredictoMotivo = op.contesta === 'no-contesta'
+            ? 'el juez no contestó' : '';
+          P.veredictoListo = true;
+        }
+        return null;
+      });
+    return deliberar();
+  }
+
+  /* Una fila de `resultados` como la que escribe el árbitro. Los números salen
+     de la partida de prueba que ya se juzgó (eccb39ff), así que son plausibles
+     y no redondos. */
+  function filaDeMentira(caso) {
+    var floja = { pertinencia: 78, solidez: 67, evidencia: 34, escucha: 52, tono: 90, total: 63.6 };
+    var buena = caso === 'empate'
+      ? { pertinencia: 78, solidez: 68, evidencia: 33, escucha: 59, tono: 90, total: 64.6 }
+      : { pertinencia: 80, solidez: 74, evidencia: 66, escucha: 71, tono: 90, total: 74.2 };
+
+    if (caso === 'parada' || caso === 'parada-dura') {
+      /* LA DURA NO TRAE `lo_que_dijo` y no es un descuido: `docs/02` §578 dice
+         «ningun registro». Devolverlo aqui haria que el ensayo ensenara una
+         pantalla que la de verdad no puede ensenar. */
+      if (caso === 'parada-dura') return { tipo_resultado: 'sin_resultado_duro' };
+      return {
+        tipo_resultado: 'sin_resultado_blando',
+        lo_que_dijo: {
+          propone: 'Habló de que gastar de más cuando hay gente le deja una sensación ' +
+                   'que le dura, y de que a veces siente que se gasta por la situación.',
+          invitado: 'Sostuvo que con gente delante se gasta lo que corresponde, y que ' +
+                    'lo que representan fuera de casa importa.'
+        }
+      };
+    }
+    return {
+      tipo_resultado: caso === 'empate' ? 'empate_tecnico' : 'gana_uno',
+      ganador_lado: caso === 'empate' ? null : 'invitado',
+      motivo_empate: caso === 'empate' ? 'parejo' : null,
+      justificacion: caso === 'empate'
+        ? 'La pertinencia fue pareja: las dos respuestas se ajustaron al enunciado. En ' +
+          'solidez, cada postura trajo una razón identificable. La evidencia concreta ' +
+          'fue escasa en los dos casos, y eso dejó la diferencia bajo el umbral.'
+        : 'La evidencia concreta inclinó el resultado: dos ocasiones frente a ninguna. ' +
+          'En pertinencia quedaron parejas. La escucha sumó del lado que marcó el punto ' +
+          'exacto de desacuerdo.',
+      lo_mejor: {
+        propone: 'Sostuvo que el problema es el tamaño de la manta y no el número, y lo ' +
+                 'apoyó en algo que ya habían probado juntos.',
+        invitado: 'Marcó que lo que la despierta es el movimiento y no la tela, y ofreció ' +
+                  'una prueba con plazo para comprobarlo.'
+      },
+      desglose: { criterios: 5, propone: floja, invitado: buena }
+    };
+  }
+
+  window.ATWI.partida = { empezar: empezar, repasar: repasar, reanudar: reanudar,
+                          cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal };
 })();

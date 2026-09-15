@@ -187,7 +187,7 @@
     });
     $('#lienzo').innerHTML = '<p class="chico">Cargando…</p>';
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
-       material: verMaterial, navegadores: verNavegadores,
+       material: verMaterial, bitacora: verBitacora, navegadores: verNavegadores,
        limites: verLimites })[pestana]();
   }
 
@@ -400,6 +400,72 @@
                         esc(String(f.voz_modelo || '').replace('azure:', '')) + '</span>'
                       : '<span class="mal">no</span>'];
           }), [false, false, false, false, false]);
+    }).catch(fallo);
+  }
+
+  /* --- BITÁCORA ---------------------------------------------------------------
+     QUÉ SALIÓ Y QUÉ NO, en una sola lista (petición del titular, 2026-09-15:
+     «debemos tener una consola de errores... log de veredictos y errores»).
+
+     Y LOS ACIERTOS VAN AL LADO DE LOS FALLOS a propósito. Un log que solo
+     enseña lo roto no deja contestar la única pregunta que importa —¿esto pasa
+     mucho?—: tres fallos son una catástrofe si hubo cinco veredictos y ruido de
+     fondo si hubo doscientos. La proporción está arriba.
+
+     Tres fuentes, y la vista `bitacora` (migración 0029) las une donde ya
+     viven: `sucesos` --lo que no deja rastro en ningún otro sitio--, los
+     `consumos` con `ok=false` --las llamadas de pago que fallaron, que estaban
+     anotadas y nadie miraba-- y `resultados` --los veredictos emitidos--. */
+  function verBitacora() {
+    pedir('bitacora?order=creado.desc&limit=200').then(function (f) {
+      if (!f.length) {
+        $('#lienzo').innerHTML = '<div class="aviso">La bitácora está vacía. Se llena ' +
+          'sola: cada veredicto que sale, cada llamada de pago que falla y cada vez ' +
+          'que a alguien no le llega la respuesta.</div>';
+        return;
+      }
+      var malos  = f.filter(function (x) { return x.nivel === 'error'; });
+      var jueces = f.filter(function (x) { return x.suceso.indexOf('veredicto_') === 0 &&
+                                                  x.nivel === 'nota'; });
+      /* LAS DOS QUE SE MIRAN PRIMERO, y las dos salen de la pregunta del
+         titular: cuántas rondas se quedaron esperando el veredicto, y cuántas
+         de ésas se fueron de la app sin él. La segunda es la que no tiene
+         arreglo desde el navegador: si nadie vuelve, ese veredicto no llega
+         nunca, porque quien lo pedía era la pestaña. */
+      var esperando = f.filter(function (x) { return x.suceso === 'veredicto_no_llego'; }).length;
+      var idas = f.filter(function (x) { return x.suceso === 'ronda_abandonada_esperando'; }).length;
+
+      $('#lienzo').innerHTML =
+        '<h2>Bitácora</h2>' +
+        '<div class="tarjetas">' +
+          tarjeta('Veredictos emitidos', String(jueces.length), 'de las tres fuentes') +
+          tarjeta('Fallos', String(malos.length),
+                  f.length ? Math.round(malos.length / f.length * 100) + ' % de lo anotado' : '') +
+          tarjeta('Rondas sin respuesta', String(esperando), 'se ofreció reintentar') +
+          tarjeta('Se fueron esperando', String(idas), 'sin veredicto y sin nadie pidiéndolo') +
+        '</div>' +
+        (idas
+          ? '<div class="aviso"><b>' + idas + ' ronda(s) se quedaron sin veredicto y ' +
+            'nadie las está pidiendo.</b> La petición la hace el navegador, así que al ' +
+            'cerrar la app no queda nadie preguntando, y el historial no ofrece volver ' +
+            'a pedirlo. Hasta que el trabajo se encole en el servidor, esto es lo único ' +
+            'que las señala.</div>'
+          : '') +
+        '<p class="chico" style="margin-bottom:12px">Lo último arriba. ' +
+        'Las últimas 200 anotaciones.</p>' +
+        tabla(['Cuándo', 'Origen', 'Qué pasó', 'Detalle', 'Partida', 'ms'],
+          f.map(function (x) {
+            var clase = x.nivel === 'error' ? 'mal' : x.nivel === 'aviso' ? '' : 'bien';
+            return [fecha(x.creado),
+                    esc(x.origen),
+                    '<span class="' + clase + '">' + esc(x.suceso) + '</span>',
+                    '<pre>' + esc(x.detalle || '—') + '</pre>' +
+                      (x.datos ? '<span class="chico">' +
+                        esc(JSON.stringify(x.datos).slice(0, 160)) + '</span>' : ''),
+                    x.debate ? '<span class="chico">' + esc(String(x.debate).slice(0, 8)) +
+                               '</span>' : '—',
+                    x.ms == null ? '—' : String(x.ms)];
+          }), [false, false, false, false, false, true]);
     }).catch(fallo);
   }
 

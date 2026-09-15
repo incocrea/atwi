@@ -172,6 +172,11 @@
   <br>Arriba están Kai y Luna para tener la referencia al oído. Abajo están <b>los seis</b>,
   cada uno con lo que tiene hoy en el juego, sus candidatos y el desplegable para oír
   cualquier otra. Lo que elijas se guarda solo en <code>arte/voces.json</code>.
+  <br><b>Y abajo van los seis jueces</b>, que tambien llevan voz propia. No tienen
+  cuadro de «como habla» porque no reescriben nada: su voz solo dice las frases de
+  entre turnos y presenta el veredicto. «Aplicar al juego» no los toca --ahi solo
+  viven los abogados-- pero si cuentan para que nadie repita voz: son doce los que
+  tienen que distinguirse.
 </p>
 <p class="nota" style="border-left:4px solid #d88; padding-left:10px">
   <b>El tono y el ritmo cambian cómo suena. «Cómo habla» cambia lo que dice.</b>
@@ -682,6 +687,19 @@ var NEUTRO = 'NOMBRE. Habla claro y sin adornos.\n\n' +
    como se escribe una --con los contraejemplos medidos dentro-- asi que
    esconderla era esconder justo lo que hay que copiar. */
 var NUEVOS = ['kai', 'luna', 'nico', 'dante', 'nina', 'maya'];
+/* LOS SEIS JUECES, con voz propia y sin personalidad. Comparten rejilla con los
+   abogados porque comparten la decision --que voz lleva cada quien y como suena
+   ajustada-- y comparten la regla de que nadie repite voz: son DOCE los que
+   tienen que distinguirse entre si, no seis y seis por separado.
+
+   Lo que NO comparten es el cuadro de «como habla». Ese texto lo lee el abogado
+   para REESCRIBIR la intervencion de su cliente, y el juez no reescribe nada:
+   su voz solo dice las frases de entre turnos y presenta el veredicto. Poner
+   ahi un cuadro vacio invitaria a llenarlo, y lo que se escribiera no lo leeria
+   nadie. */
+var JUECES = ['bruno', 'remo', 'teo', 'vera', 'iris', 'ada'];
+var TODOS = NUEVOS.concat(JUECES);
+var esJuez = function (q) { return JUECES.indexOf(q) !== -1; };
 var CASTING = null;
 var VOCES = {};          // lo que el titular va eligiendo
 var GUARDADO_V = 'atwi-voces-panel';
@@ -790,6 +808,12 @@ function pintarPatron() {
    copia se desfasa el primer dia y entonces el panel miente. */
 function arranque(q) {
   var h = (CASTING.hoy && CASTING.hoy[q]) || {};
+  /* Los jueces no estan en `turno/index.ts`, asi que no tienen «lo de hoy»: se
+     arranca en la primera candidata recomendada, que es de donde salio. */
+  if (!h.voz && esJuez(q)) {
+    var reco = (CASTING.elegidas && CASTING.elegidas[q]) || [];
+    return { voz: reco[0] || null, tono: 0, ritmo: 0, como: '' };
+  }
   return {
     voz: h.voz || null,
     tono: h.tono ? parseInt(h.tono, 10) : 0,
@@ -868,23 +892,26 @@ function esDistinto(q) {
 }
 
 function pintarVoces() {
-  document.getElementById('v-rejilla').innerHTML = NUEVOS.map(function (q) {
+  document.getElementById('v-rejilla').innerHTML = TODOS.map(function (q) {
     var hoy = arranque(q);
     var elegida = VOCES[q] || hoy;
     var c = CASTING.candidatas.filter(function (x) { return x.voz === elegida.voz; })[0];
     /* Quien mas lleva esta voz. Dos abogados con la misma voz no se distinguen,
        igual que no se puede jugar con el mismo personaje. */
-    var choca = NUEVOS.filter(function (o) {
+    var choca = TODOS.filter(function (o) {
       return o !== q && (VOCES[o] || arranque(o)).voz === elegida.voz;
     });
     return '<div class="voz-caso" data-quien="' + q + '">' +
       '<header>' +
-        '<img src="assets/img/personajes/' + q + '-azul-frente.webp" alt="">' +
-        '<h2>' + q + '</h2>' +
-        '<span class="chico">en el juego: ' + corto(hoy.voz) + ' ' +
-          (hoy.tono >= 0 ? '+' : '') + hoy.tono + '% / ' +
-          (hoy.ritmo >= 0 ? '+' : '') + hoy.ritmo + '%' +
-          (esDistinto(q) ? ' &nbsp;→&nbsp; <b>cambiado</b>' : '') +
+        '<img src="assets/img/personajes/' +
+          (esJuez(q) ? q + '-ficha.webp' : q + '-azul-frente.webp') + '" alt="">' +
+        '<h2>' + q + (esJuez(q) ? ' <span class="chico">juez</span>' : '') + '</h2>' +
+        '<span class="chico">' + (esJuez(q)
+          ? 'todavía sin voz en el juego · dice las frases entre turnos y presenta el veredicto'
+          : 'en el juego: ' + corto(hoy.voz) + ' ' +
+            (hoy.tono >= 0 ? '+' : '') + hoy.tono + '% / ' +
+            (hoy.ritmo >= 0 ? '+' : '') + hoy.ritmo + '%' +
+            (esDistinto(q) ? ' &nbsp;→&nbsp; <b>cambiado</b>' : '')) +
         '</span>' +
       '</header>' +
 
@@ -931,14 +958,17 @@ function pintarVoces() {
         estiloHTML(q, elegida) +
         '<button class="suena" data-probar="' + q + '" data-id="probar-' + q +
           '" data-sonando="no">▶ oírlo así</button>' +
-        (c ? '<span class="chico">' + (c.altono >= 0 ? '+' : '') + c.altono +
+        (c && !esJuez(q) ? '<span class="chico">' + (c.altono >= 0 ? '+' : '') + c.altono +
              '% la deja sonando donde Kai y Luna</span>' : '') +
+        (esJuez(q) ? '<span class="chico">al juez no se le sube el tono: no es un ' +
+             'chico de veinte, y la altura de la voz es media de la partida</span>' : '') +
       '</div>' +
-      '<label class="chico" style="display:block;margin-top:10px">Cómo habla ' +
+      (esJuez(q) ? '' :
+        '<label class="chico" style="display:block;margin-top:10px">Cómo habla ' +
         '(esto es lo que lee el abogado; se pega tal cual en <code>turno/index.ts</code>)' +
         '<textarea data-como="' + q + '">' +
           comoDe(q) +
-        '</textarea></label>' +
+        '</textarea></label>') +
       '</div>';
   }).join('');
   pintarSalida();
@@ -953,10 +983,13 @@ function pintarSalida() {
   var citar = function (s) { return s.replace(/`/g, '\\`').replace(/\$\{/g, '\\${'); };
   var usadas = {}, l = [];
 
-  NUEVOS.forEach(function (q) {
+  TODOS.forEach(function (q) {
     var v = VOCES[q] || arranque(q);
     if (v.voz) (usadas[v.voz] || (usadas[v.voz] = [])).push(q);
-    if (!esDistinto(q)) return;
+    /* El juez no se pega en `turno/index.ts`: ahi solo viven los abogados. Su
+       voz se guarda en `arte/voces.json` y de ahi la tomara la herramienta que
+       grabe sus frases. */
+    if (esJuez(q) || !esDistinto(q)) return;
     l.push('  ' + q + ': {\n' +
            "    voz: '" + v.voz + "', estilo: " +
            (v.estilo ? "'" + v.estilo + "'" : 'null') + ", tono: '" + pct(v.tono) +
@@ -1085,7 +1118,7 @@ document.addEventListener('input', function (e) {
   var eco = document.querySelector('[data-eco="' + cual + '-' + q + '"]');
   if (eco) eco.textContent = (n >= 0 ? '+' : '') + n + '%';
   var cab = document.querySelector('.voz-caso[data-quien="' + q + '"] header .chico');
-  if (cab && esDistinto(q) && cab.innerHTML.indexOf('cambiado') < 0) {
+  if (cab && !esJuez(q) && esDistinto(q) && cab.innerHTML.indexOf('cambiado') < 0) {
     cab.innerHTML += ' &nbsp;→&nbsp; <b>cambiado</b>';
   }
   pintarSalida();
@@ -1168,6 +1201,23 @@ function cargarCasting() {
         catch (e) { guardadas = null; }
       }
       VOCES = guardadas || {};
+      /* LO QUE EL PANEL ENSEÑA ES LO QUE EL PROYECTO TIENE, y hasta hoy no.
+         El abogado que no se toca se queda con lo que hay DESPLEGADO, asi que
+         no guardar nada es correcto. El juez no esta desplegado en ningun
+         sitio: su ficha enseñaba la primera candidata recomendada como si
+         fuera la elegida, pero eso solo se escribia en `arte/voces.json` al
+         mover algo. Resultado medido el 2026-09-14: el titular eligio los seis
+         y llegaron cuatro, porque a dos les dejo la recomendada y nunca las
+         toco. Se siembran al abrir, asi lo que se ve y lo que se guarda dicen
+         lo mismo. */
+      var sembradas = JUECES.filter(function (q) {
+        if (VOCES[q]) return false;
+        var a = arranque(q);
+        if (!a.voz) return false;
+        VOCES[q] = { voz: a.voz, tono: a.tono, ritmo: a.ritmo, estilo: null };
+        return true;
+      });
+      if (sembradas.length) guardarVoces();
       document.getElementById('v-frase').value = CASTING.frase;
       pintarPatron();
       pintarVoces();

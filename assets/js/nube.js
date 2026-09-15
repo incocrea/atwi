@@ -37,6 +37,174 @@ window.ATWI = window.ATWI || {};
     return null;
   }
 
+  /* ANOTAR EN LA BITACORA (migración 0029, petición del titular 2026-09-15).
+     `apuntar` deja el motivo en ESTE teléfono y se pierde al cerrar la pestaña;
+     esto lo manda al servidor, que es el único sitio donde alguien lo va a
+     leer. Va por la función `anotar()` y no por un insert: ahí se fija el
+     origen, se comprueba que el debate sea de quien llama y se topa en veinte
+     por minuto.
+
+     NO DEVUELVE NADA Y NO SE ESPERA. Una anotación que hiciera esperar al
+     juego, o que pudiera romperlo al fallar, costaría más de lo que vale: lo
+     que se está anotando ya es un fallo.
+
+     Y TIENE UN LÍMITE QUE CONVIENE SABER: si lo que falló es la conexión
+     entera, esta llamada también falla y la anotación se pierde. Justo el caso
+     que más interesa es el que el navegador no puede contar, y es otro motivo
+     para que el veredicto acabe encolándose en el servidor. */
+  function anotar(suceso, op) {
+    op = op || {};
+    if (!cfg.supabaseUrl || !cfg.supabaseAnon || !auth || !auth.dentro()) return;
+    try {
+      fetch(cfg.supabaseUrl + '/rest/v1/rpc/anotar', {
+        method: 'POST',
+        /* `keepalive` PARA LO QUE SE ANOTA AL IRSE. Una petición normal se
+           cancela cuando la pestaña se cierra, que es justo cuando hay que
+           mandar «se fue esperando el veredicto». `sendBeacon` no sirve aquí:
+           no deja poner la cabecera de sesión. */
+        keepalive: Boolean(op.alIrse),
+        headers: {
+          'apikey': cfg.supabaseAnon,
+          'Authorization': 'Bearer ' + conSesion(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          p_suceso: String(suceso || 'sin_nombre').slice(0, 40),
+          p_nivel: op.nivel || 'error',
+          p_detalle: String(op.detalle || ultimoFallo || '').slice(0, 500) || null,
+          p_debate: op.debate || null,
+          p_datos: op.datos || null
+        })
+      }).catch(function () {});
+    } catch (e) { /* ni eso puede tumbar una partida */ }
+  }
+
+  /* SELLA QUE ESTE VEREDICTO YA SE VIO (migración 0030). Se llama al ABRIR la
+     revelación y no al cerrarla: quien la abre ya lo vio, y esperar al final
+     dejaría sin sellar a quien cierra la app a mitad del redoble --que es
+     justamente la persona que este arreglo existe para atender--.
+     Como `anotar`, no se espera y no puede romper nada: si el sello se pierde,
+     lo peor que pasa es que la próxima vez se lo vuelvan a estrenar. */
+  function marcarVisto(debate) {
+    if (!debate || !hayNube()) return;
+    try {
+      fetch(cfg.supabaseUrl + '/rest/v1/rpc/marcar_visto', {
+        method: 'POST',
+        headers: {
+          'apikey': cfg.supabaseAnon,
+          'Authorization': 'Bearer ' + conSesion(),
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ p_debate: debate })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
+  /**
+   * Guarda el acta de una Negociación. Devuelve la fila escrita, o null.
+   *
+   * SE ESCRIBE AL FIRMAR Y NO AL CERRAR LA REVELACIÓN, que es lo que la hace
+   * un acta: lo que se guarda es lo que los dos dijeron que sí, en el momento
+   * en que lo dijeron. Esperar al final la dejaría colgando de que nadie cierre
+   * la app durante la celebración.
+   *
+   * `tipo` DICE CÓMO CERRÓ y no es adorno: `acuerdo` cuando firmaron un texto,
+   * `desacuerdo` cuando marcaron «Ninguna» o el mediador no encontró terreno
+   * común. Las dos son cierres legítimos --`docs/02` §13 le da permiso expreso
+   * al mediador para declarar que no hay acuerdo-- y el historial las enseña
+   * distinto. `aplazado` existe en el enum y todavía no lo usa nadie.
+   *
+   * LA VERSIÓN LA CUENTA EL CLIENTE porque hoy no hay revisiones: la primera
+   * acta de un debate es la 1 y no hay segunda. El día que exista la revisión
+   * (`docs/02` §5) esto tiene que pasar a resolverse en el servidor, o dos
+   * teléfonos pueden pedir la misma versión a la vez; el índice único
+   * `(debate, version)` de la migración 0032 hará que la segunda falle, que es
+   * lo correcto, pero entonces habrá que reintentar con la siguiente.
+   */
+  function guardarActa(op) {
+    if (!hayNube() || !op || !op.debate) return Promise.resolve(null);
+    var texto = String(op.texto || '').trim();
+    /* EL MÍNIMO NO ES DE LA PANTALLA, ES DE LA TABLA: `check (10..600)`, y vale
+       IGUAL para el acta de desacuerdo --ahí el texto es la frase de cierre, no
+       está vacío--. Si no llega, no se manda: un 400 de PostgREST aquí no diría
+       nada útil. */
+    if (texto.length < 10 || texto.length > 600) {
+      return Promise.resolve(apuntar('el acta tiene que medir entre 10 y 600 letras'));
+    }
+    var ahora = new Date().toISOString();
+    return fetch(cfg.supabaseUrl + '/rest/v1/acuerdos', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        debate: op.debate,
+        texto: texto,
+        tipo: op.tipo === 'desacuerdo' ? 'desacuerdo' : 'acuerdo',
+        version: op.version || 1,
+        /* LAS DOS FIRMAS A LA VEZ, y es verdad en partida local: los dos están
+           delante del mismo teléfono y el toque que firma es de los dos. En
+           remota cada una se sella por su lado y esto deja de valer. */
+        firma_uno: ahora,
+        firma_dos: ahora,
+        /* Quién tocó el texto, solo si lo tocaron. Sirve para saber si el acta
+           es la que propuso el mediador o la que ellos reescribieron. */
+        editado_por: op.editada ? (auth.sesion().user || {}).id || null : null
+      })
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok) return apuntar('no se pudo guardar el acta (' + r.status + '): ' +
+                                  ((d && (d.message || d.error)) || ''));
+        return (d && d[0]) || null;
+      }, function () { return apuntar('el servidor contestó algo raro al guardar el acta'); });
+    }).catch(function (e) { return apuntar('no se pudo guardar el acta: ' + e.message); });
+  }
+
+  /**
+   * Las actas de esta cuenta, de la más nueva a la más vieja, con el tema de la
+   * partida de la que salieron.
+   *
+   * SE PIDEN LAS SUYAS, EXPLÍCITAMENTE, igual que el historial y por lo mismo:
+   * la cuenta del titular es admin y tiene una política que le deja ver todas
+   * las actas --que es para el tablero, no para jugar--. El filtro va sobre la
+   * tabla ANIDADA, con `!inner` para que el join filtre de verdad en vez de
+   * devolver el acta con el debate en nulo.
+   */
+  /** Una partida suelta, con la misma forma que las del historial. Hace falta
+   *  para abrir desde un acta una partida que el historial no trajo: llega
+   *  hasta 20 y las actas hasta 50. */
+  function partida(id) {
+    if (!hayNube() || !id) return Promise.resolve(null);
+    return historial(1, id).then(function (l) { return (l && l[0]) || null; });
+  }
+
+  function acuerdos(cuantos) {
+    if (!hayNube()) return Promise.resolve([]);
+    var yo = auth.sesion().user;
+    if (!yo || !yo.id) return Promise.resolve([]);
+    var campos = 'id,texto,tipo,version,creado,firma_uno,firma_dos,editado_por,' +
+      'debate:debates!inner(id,enunciado,modo,creado)';
+    return fetch(cfg.supabaseUrl + '/rest/v1/acuerdos' +
+        '?select=' + encodeURIComponent(campos) +
+        '&debate.or=(propone.eq.' + yo.id + ',aceptado_por.eq.' + yo.id + ')' +
+        '&order=creado.desc&limit=' + (cuantos || 50), {
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Accept': 'application/json'
+      }
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) {
+        apuntar('actas (' + r.status + '): ' + t.slice(0, 160));
+        return [];
+      });
+      return r.json();
+    }).catch(function (e) { apuntar('no se pudieron traer las actas: ' + e.message); return []; });
+  }
+
   function hayNube() {
     if (!cfg.supabaseUrl || !cfg.supabaseAnon) { apuntar('sin servidor configurado'); return false; }
     if (!auth || !auth.dentro()) { apuntar('sin sesión: entra con tu cuenta'); return false; }
@@ -77,9 +245,24 @@ window.ATWI = window.ATWI || {};
          servidor lo lee de aquí y no de lo que diga cada petición. */
       abogado_propone: Boolean(p.abogadoYo),
       abogado_invitado: Boolean(p.abogadoOtro),
+      /* Y quien juzga, por lo mismo: se elige antes de empezar y vale para toda
+         la partida. Sin esto, una partida abierta desde el historial no sabria
+         quien la juzgo y habria que inventarle uno. */
+      juez: p.juez || null,
       invitado_nombre: String(p.invitado && p.invitado.nombre || '').slice(0, 16),
       invitado_avatar: p.invitado && p.invitado.avatar || null,
-      invitado_color: p.invitado && p.invitado.color || null
+      invitado_color: p.invitado && p.invitado.color || null,
+      /* LAS TRES COSAS QUE HACEN FALTA PARA VOLVER A SENTARLOS (migración 0031),
+         y ninguna estaba. La ficha del invitado ya viajaba aquí desde la 0012
+         «para reconstruir después quién era»; la de quien propone vivía en el
+         perfil local, que se puede cambiar --y una ronda empezada como Kai se
+         retoma como Kai, que el personaje es del turno--. Y quién abrió no se
+         guardaba en ninguna parte: `abre` es un uuid a perfiles y el invitado
+         de una partida local no tiene cuenta. */
+      abre_lado: p.abreLado === 'invitado' ? 'invitado' : 'propone',
+      propone_nombre: String(p.yo && p.yo.nombre || '').slice(0, 16),
+      propone_avatar: p.yo && p.yo.avatar || null,
+      propone_color: p.yo && p.yo.color || null
     };
 
     return fetch(cfg.supabaseUrl + '/rest/v1/debates', {
@@ -188,24 +371,119 @@ window.ATWI = window.ATWI || {};
   }
 
   /**
+   * Le pide el veredicto al arbitro. Tarda: normalizacion mas dos pasadas en
+   * serie, un minuto largo con Opus 5. Devuelve lo que devuelve la funcion
+   * --`{resultado, uso, ms}`-- o null con el fallo apuntado.
+   *
+   * Es IDEMPOTENTE del lado del servidor: pedirlo dos veces devuelve el mismo
+   * veredicto y no cuesta nada la segunda. Asi que se puede pedir en cuanto
+   * entra el ultimo turno, sin esperar a que la persona toque nada.
+   */
+  function arbitrar(debate, variante) {
+    if (!hayNube()) return Promise.resolve(apuntar('sin servidor ni sesión'));
+    /* CADA CAMINO DE FALLO SE ANOTA, Y CON SU NOMBRE. Un solo
+       `veredicto_fallo` para los cuatro obligaría a leer el texto libre para
+       saber si se cayó la red, si contestó 500 o si devolvió algo que no es
+       JSON, y son tres averías distintas con tres arreglos distintos. La clave
+       es lo que se agrupa; el detalle solo acompaña. */
+    var desde = Date.now();
+    function mal(clave, que) {
+      apuntar(que);
+      anotar(clave, { debate: debate, datos: { ms: Date.now() - desde } });
+      return null;
+    }
+    return fetch(cfg.supabaseUrl + '/functions/v1/arbitro', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ debate: debate, variante: variante || 'es-419' })
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok) return mal('veredicto_http_' + r.status,
+                              'el juez dijo ' + r.status + ': ' + ((d && d.error) || ''));
+        if (d && d.error) return mal('veredicto_error', d.error);
+        return d;
+      }, function () {
+        return mal('veredicto_no_es_json',
+                   'el juez contestó algo que no es JSON (' + r.status + ')');
+      });
+    }).catch(function (e) {
+      return mal('veredicto_sin_red', 'no se pudo llamar al juez: ' + e.message);
+    });
+  }
+
+  /**
    * Las partidas de quien esta dentro, de la mas nueva a la mas vieja, con sus
    * turnos. En UNA sola peticion: PostgREST sabe traer la tabla hija anidada, y
    * pedir primero los debates y despues los turnos de cada uno serian N+1
    * viajes para pintar una lista.
    */
-  function historial(cuantas) {
+  /** @param uno  si viene, trae SOLO ese debate. Lo usa `partida()`. */
+  function historial(cuantas, uno) {
     if (!hayNube()) return Promise.resolve([]);
-    var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,invitado_nombre,' +
+    /* Y EL RESULTADO ANIDADO, que hasta el 2026-09-15 no se traía: el historial
+       enseñaba las partidas sin saber si habían llegado a tener veredicto, así
+       que una ronda cuyo resultado nadie vio se veía igual que una ya vista.
+       Con `visto` nulo, la entrada se estrena con la revelación entera.
+
+       SIN `veredicto`, a propósito. Esa columna es el expediente completo del
+       árbitro --normalización, las dos pasadas, los reintentos-- y pesa; aquí
+       solo hacen falta los campos que pinta `delArbitro()`. Bajar el expediente
+       de veinte partidas para dibujar una lista sería gastar los datos de
+       alguien por si acaso.
+       `juez` VIENE DEL DEBATE y también faltaba: sin él, un veredicto abierto
+       desde el historial no sabría quién lo dictó. */
+    var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,juez,' +
+      'abre_lado,abogado_propone,abogado_invitado,' +
+      'propone_nombre,propone_avatar,propone_color,' +
+      'invitado_nombre,invitado_avatar,invitado_color,' +
       'turnos_grabados:turnos(orden,numero,nombre,avatar,color,abogado,segundos,' +
-      'voz_ruta,audio_ruta,transcripcion,guion,creado)';
+      'voz_ruta,audio_ruta,transcripcion,guion,creado),' +
+      'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,' +
+      'desglose,lo_mejor,lo_que_dijo,visto,creado)';
+    /* Y SE PIDEN LAS MÍAS, EXPLÍCITAMENTE. Esto no estaba y costó una tarde
+       (2026-09-15): la consulta traía «los debates que RLS me deje ver» y se
+       daba por hecho que eran los míos. Para casi todo el mundo lo son, pero la
+       cuenta del titular es ADMIN, y la migración 0014 le dio una política
+       `el admin ve todos los debates` para el tablero. Resultado: su historial
+       de JUGAR se llenaba de las partidas de otra cuenta, y al intentar
+       borrarlas la función de borde contestaba «esa partida no es tuya» --que
+       era verdad-- sin que nada explicara de dónde habían salido.
+
+       RLS dice lo que se PUEDE ver; la consulta tiene que decir lo que se
+       QUIERE ver. Confundir las dos cosas es cómodo hasta que una política nueva
+       ensancha lo primero, y entonces la pantalla enseña de más sin que nadie
+       haya tocado la pantalla.
+
+       LAS DOS ORILLAS, no solo `propone`: en una partida remota el invitado
+       también la jugó y también es suya, así que va por `aceptado_por`. Hoy
+       todas son locales y esa mitad no devuelve nada, pero escribirlo ahora
+       evita que el día de la remota el invitado no encuentre sus partidas. */
+    var yo = auth.sesion().user;
+    if (!yo || !yo.id) return Promise.resolve([]);
+    var mias = 'or=(propone.eq.' + yo.id + ',aceptado_por.eq.' + yo.id + ')';
+
     return fetch(cfg.supabaseUrl + '/rest/v1/debates' +
-        '?select=' + encodeURIComponent(campos) +
-        /* SOLO LAS QUE TERMINARON. Una ronda dejada a medias no es una partida,
-           es un intento: no se puede oír entera, no tiene resultado, y verla en
-           la lista ofrece algo que al abrirlo no está. Lo marca el servidor
-           --`debates.cerrado`, migración 0022-- porque quien abandona cierra la
-           pestaña y no queda navegador que lo apunte. */
-        '&cerrado=not.is.null' +
+        '?select=' + encodeURIComponent(campos) + '&' + mias +
+        /* AQUÍ HABÍA UN `&cerrado=not.is.null` Y SE FUE (decisión del titular,
+           2026-09-15). Dejaba fuera todo lo que no hubiera terminado, con este
+           motivo escrito: «una ronda dejada a medias no es una partida, es un
+           intento: no se puede oír entera, no tiene resultado, y verla en la
+           lista ofrece algo que al abrirlo no está».
+           Era verdad mientras al abrirla no hubiera nada. Desde que se puede
+           RETOMAR, al abrirla hay exactamente lo que promete: la ronda donde se
+           quedó. Y esconderlas costaba caro en las dos direcciones --se juega
+           por sesiones y por aparatos, y cerrar la pestaña a mitad del tercer
+           turno se llevaba cinco grabaciones sin dejar rastro--.
+           Lo que sí sigue siendo verdad: una partida sin NINGÚN turno no se
+           puede retomar ni oír, y ésa la filtra el cliente, no esta consulta.
+           OJO CON `limpiar_abandonadas.py`: su regla vieja --`cerrado` nulo y
+           más de una hora-- borraba justo lo que ahora hay que conservar. Se
+           cambió en la misma tanda. */
+        (uno ? '&id=eq.' + uno : '') +
         '&order=creado.desc&limit=' + (cuantas || 20), {
       headers: {
         'apikey': cfg.supabaseAnon,
@@ -223,6 +501,14 @@ window.ATWI = window.ATWI || {};
            una partida contada al reves no es una partida. */
         d.turnos_grabados = (d.turnos_grabados || [])
           .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+        /* Y EL RESULTADO SE DESENVUELVE AQUÍ. PostgREST devuelve la tabla
+           anidada como ARRAY aunque la relación sea de uno a uno --`debate` es
+           `unique` en `resultados`--, y quien la recibe no tiene por qué
+           saberlo. Costó una vuelta: `delArbitro()` leyó el array, no encontró
+           `ganador_lado` en él y pintó un veredicto sin ganador y sin desglose,
+           sin que nada fallara por ninguna parte. */
+        var res = d.resultado;
+        d.resultado = Array.isArray(res) ? (res[0] || null) : (res || null);
         return d;
       });
     }).catch(function (e) { apuntar(e.message); return []; });
@@ -285,6 +571,12 @@ window.ATWI = window.ATWI || {};
     hay: hayNube,
     abrirPartida: abrirPartida,
     mandarTurno: mandarTurno,
+    arbitrar: arbitrar,
+    anotar: anotar,
+    marcarVisto: marcarVisto,
+    guardarActa: guardarActa,
+    acuerdos: acuerdos,
+    partida: partida,
     ultimoFallo: function () { return ultimoFallo; }
   };
 })();

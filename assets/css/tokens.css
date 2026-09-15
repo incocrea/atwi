@@ -133,7 +133,19 @@
      Redondeada, como Finch. Las familias propias todavía no están
      autoalojadas: ver site/assets/fonts/LEEME.txt. Mientras tanto cae en la
      redondeada del sistema, que en iOS es SF Pro Rounded. */
-  --display: 'Baloo 2', 'Nunito', ui-rounded, 'SF Pro Rounded', 'Segoe UI Variable', system-ui, sans-serif;
+  /* UNA SOLA FAMILIA (decisión del titular, 2026-09-14): Nunito, en 800 para
+     lo que titula y 400 para lo que se lee. Eran dos, Baloo 2 para display y
+     Nunito para texto, pero NINGUNA DE LAS DOS ESTABA CARGADA --no había
+     `@font-face` ni enlace en ningún sitio-- así que la app llevaba desde el
+     principio viéndose con la redondeada del sistema: SF Pro Rounded en iOS y
+     otra distinta en cada Android. La dirección gráfica existía solo en el
+     token.
+
+     Ahora está autoalojada y es variable, así que las dos variables apuntan al
+     mismo sitio: lo que las separa es el peso, no la familia. Se dejan las dos
+     en vez de fundirlas en una porque `--display` y `--texto` se usan en
+     sesenta sitios y dicen QUÉ hace cada texto, no con qué letra se pinta. */
+  --display: 'Nunito', ui-rounded, 'SF Pro Rounded', 'Segoe UI Variable', system-ui, sans-serif;
   --texto: 'Nunito', ui-rounded, 'SF Pro Rounded', 'Segoe UI Variable', system-ui, -apple-system, sans-serif;
 
   /* Escala pensada para 360-430 px de ancho. La app no crece más. */

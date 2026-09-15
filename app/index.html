@@ -11,10 +11,11 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo como adulto, Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/tokens.css?v=2e2f17c">
-<link rel="stylesheet" href="../assets/css/base.css?v=2e2f17c">
-<link rel="stylesheet" href="../assets/css/app.css?v=2e2f17c">
-<link rel="stylesheet" href="../assets/css/modal.css?v=2e2f17c">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=965718f">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=965718f">
+<link rel="stylesheet" href="../assets/css/base.css?v=965718f">
+<link rel="stylesheet" href="../assets/css/app.css?v=965718f">
+<link rel="stylesheet" href="../assets/css/modal.css?v=965718f">
 </head>
 
 <body class="app">
@@ -100,9 +101,11 @@
       <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui">Jugar los dos en este móvil</button>
       <!-- Los dos del mismo tamaño. Son las DOS MANERAS DE JUGAR, no una opción
            y su alternativa menor: jugar aquí y jugar invitando valen lo mismo, y
-           uno más bajo que el otro dice lo contrario. Lo que los separa es el
-           color, que ya basta para saber cuál es el camino de siempre. -->
-      <button class="boton boton--suave boton--bloque boton--grande" data-accion="proponer">Enviar invitación</button>
+           uno más bajo que el otro dice lo contrario.
+           Y EL QUE QUEDA EN BLANCO VA PUNTEADO: regla del titular para todos los
+           pares de botones del juego. Sin el punteado, el blanco se lee como un
+           botón apagado; con él se lee como la otra puerta. -->
+      <button class="boton boton--suave boton--bloque boton--grande boton--punteado" data-accion="proponer">Enviar invitación</button>
     </div>
   </div>
 
@@ -165,6 +168,41 @@
     <div class="modal__cuerpo"></div>
   </div>
 
+  <!-- Elegir juez: los seis, sin veto. El juez es uno para toda la partida. -->
+  <div class="modal" id="m-jueces" hidden role="dialog" aria-modal="true" aria-labelledby="t-jueces">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-jueces" aria-label="Volver" data-icono="atras"></button>
+      <span class="modal__titulo" id="t-jueces">¿Quién juzga?</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+  </div>
+
+  <!-- EL PROBADOR DE RESULTADOS. No es para jugadores: solo se ve con la cuenta
+       del titular o en modo de pruebas (localhost con ?local=1). Arma la escena
+       del veredicto a mano —modo, final, juez, las dos fichas— para poder mirar
+       la pantalla sin jugar una partida ni gastar un veredicto de verdad. -->
+  <div class="modal" id="m-probador" hidden role="dialog" aria-modal="true" aria-labelledby="t-probador">
+    <div class="modal__cabecera">
+      <button class="boton-icono" data-cerrar="m-probador" aria-label="Volver" data-icono="atras"></button>
+      <span class="modal__titulo" id="t-probador">Probador de resultados</span>
+    </div>
+    <div class="modal__cuerpo"></div>
+    <div class="modal__pie">
+      <!-- LOS DOS SON «REPRODUCIR», y lo que cambia es DESDE DÓNDE. «Fin de
+           ronda» arranca en el instante en que se manda la última intervención y
+           recorre todo lo que viene después --la espera, lo que conteste el
+           modelo, y en Negociación elegir y firmar--; «victoria» salta directo a
+           la escena del resultado. Los nombres viejos --«la escena» y «ensayar»--
+           no decían eso: uno no decía qué escena y el otro sonaba a otra cosa
+           distinta en vez de a la misma vista desde más atrás. -->
+      <!-- Los dos del mismo tamano, como en el acta: son dos maneras de mirar lo
+           mismo y ninguna es la opcion menor. Lo que las distingue es el color. -->
+      <button class="boton boton--suave boton--bloque boton--grande boton--punteado"
+              data-accion="pb-votar" id="pb-votar">Reproducir fin de ronda</button>
+      <button class="boton boton--bloque boton--grande" data-accion="pb-jugar">Reproducir victoria</button>
+    </div>
+  </div>
+
   <!-- Borrar una partida del historial: qué se lleva y qué no -->
   <div class="modal" id="m-olvidar" hidden role="dialog" aria-modal="true" aria-labelledby="t-olvidar">
     <div class="modal__cabecera">
@@ -172,7 +210,20 @@
       <span class="modal__titulo" id="t-olvidar">Borrar esta partida</span>
     </div>
     <div class="modal__cuerpo"></div>
+    <!-- LOS BOTONES ABAJO Y DEL MISMO TAMAÑO (corrección del titular,
+         2026-09-15). Vivían dentro del cuerpo, pegados al texto, con uno
+         `--grande` y el otro no: era el único modal del juego que no seguía el
+         patrón. Y no es solo estética: con el pie fijo los dos quedan donde el
+         pulgar los busca en todas las pantallas, y el cuerpo puede crecer sin
+         empujarlos fuera de la vista. -->
+    <div class="modal__pie"></div>
   </div>
+
+  <!-- AQUÍ HUBO UN `m-actas` Y SE FUE (corrección del titular, 2026-09-15). Las
+       actas eran una pantalla aparte, a la que se entraba desde una tarjeta del
+       historial y de la que había que volver. Ahora son un CHIP más del propio
+       historial —«En este móvil · En línea · Lo que acordaron»— y la lista se
+       carga en el sitio: se cambia de lo que se está mirando sin moverse. -->
 
   <!-- Antes de empezar: quién defiende qué, y con quién se juega -->
   <div class="modal" id="m-preparar" hidden role="dialog" aria-modal="true" aria-labelledby="t-preparar">
@@ -202,17 +253,17 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=2e2f17c"></script>
-<script src="../assets/js/iconos.js?v=2e2f17c"></script>
-<script src="../assets/js/personajes.js?v=2e2f17c"></script>
-<script src="../assets/js/datos.js?v=2e2f17c"></script>
-<script src="../assets/js/sonido.js?v=2e2f17c"></script>
-<script src="../assets/js/veredicto.js?v=2e2f17c"></script>
-<script src="../assets/js/grabadora.js?v=2e2f17c"></script>
-<script src="../assets/js/partida.js?v=2e2f17c"></script>
-<script src="../assets/js/auth.js?v=2e2f17c"></script>
-<script src="../assets/js/entrada.js?v=2e2f17c"></script>
-<script src="../assets/js/nube.js?v=2e2f17c"></script>
-<script src="../assets/js/app.js?v=2e2f17c"></script>
+<script src="../assets/js/config.js?v=965718f"></script>
+<script src="../assets/js/iconos.js?v=965718f"></script>
+<script src="../assets/js/personajes.js?v=965718f"></script>
+<script src="../assets/js/datos.js?v=965718f"></script>
+<script src="../assets/js/sonido.js?v=965718f"></script>
+<script src="../assets/js/veredicto.js?v=965718f"></script>
+<script src="../assets/js/grabadora.js?v=965718f"></script>
+<script src="../assets/js/partida.js?v=965718f"></script>
+<script src="../assets/js/auth.js?v=965718f"></script>
+<script src="../assets/js/entrada.js?v=965718f"></script>
+<script src="../assets/js/nube.js?v=965718f"></script>
+<script src="../assets/js/app.js?v=965718f"></script>
 </body>
 </html>

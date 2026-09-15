@@ -256,6 +256,18 @@ body.app {
 #m-explicar .modal__pie,
 #m-preparar .modal__pie { background: none; border-top: 0; }
 
+/* EL BUZÓN LLEVA FONDO PROPIO, y no el de ningún modo: ahí caen avisos de las
+   dos clases —una invitación a Controversia y un resultado de Negociación en la
+   misma lista—, así que pintarlo de coral o de menta diría que el buzón es de un
+   modo, que es justo lo que no es. Es el crema neutro de la marca.
+
+   Va en el modal y no en su cuerpo, por lo mismo que los de arriba: en el cuerpo
+   corta en seco donde empieza el pie. */
+#m-buzon {
+  background: url(../img/fondos/notificaciones.webp) center top / cover no-repeat,
+              var(--crema);
+}
+
 @keyframes entra {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: none; }
@@ -507,6 +519,102 @@ body.app {
   object-fit: contain; object-position: center bottom;
   transform: scale(1.3); transform-origin: 50% 20%;
 }
+
+/* LA FICHA DEL JUEZ. Mismo disco que la de un personaje --mismo tamaño, misma
+   sombra, mismo acercamiento-- para que puestos al lado pesen igual. Lo que
+   cambia es el fondo: el juez va en crema y sin aro de color, porque el color
+   es del jugador que contrata y el juez no es de nadie. */
+.avatar--juez {
+  position: relative; overflow: hidden; padding: 0; display: block;
+  background: var(--crema-hondo);
+}
+/* EL ACERCAMIENTO ES OTRO, y no es capricho: la figura del juez ocupa MENOS
+   lienzo que la de un personaje. Medido sobre las fichas de 200x310: un
+   personaje llena el 85 % del alto y empieza al 8 %; un juez llena el 65 % y
+   empieza al 20 %, porque se nivelaron por la pierna --tienen toga y no caben
+   igual--. Con el 1,3 de los personajes el juez sale nadando en el disco.
+   1,3 x 85/65 = 1,7, y el origen baja al 32 % porque su cabeza empieza mas
+   abajo. Si algun dia se vuelven a cortar con otra regla, estos dos numeros se
+   vuelven a medir; no se adivinan. */
+.avatar--juez .retrato__fig {
+  position: relative; display: block; width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom;
+  transform: scale(1.7); transform-origin: 50% 32%;
+}
+
+/* EL RENGLÓN DEL JUEZ, debajo de los dos duelistas. Una fila: ficha, nombre y
+   una pista de que se toca. Va como botón entero y no con un botón dentro,
+   porque lo que se toca es «cambiar de juez» y no una parte del renglón. */
+.juez-linea {
+  display: flex; align-items: center; gap: var(--e-3);
+  width: 100%; text-align: left; cursor: pointer; font: inherit;
+  background: rgba(255, 255, 255, .72); border: 0;
+  border-radius: var(--radio-carta); padding: var(--e-2) var(--e-3);
+  box-shadow: var(--sombra-1);
+}
+.juez-linea:active { transform: scale(.99); }
+.juez-linea .avatar--juez { width: 52px; height: 52px; }
+.juez-linea__texto { flex: 1; min-width: 0; }
+.juez-linea__n {
+  display: block; font-family: var(--display); font-weight: 800; color: var(--tinta);
+}
+.juez-linea__que { display: block; font-size: var(--t-mini); color: var(--tinta-suave); }
+.juez-linea__cambiar {
+  font-size: var(--t-mini); font-family: var(--display); font-weight: 800;
+  color: var(--lavanda-oscuro); white-space: nowrap;
+}
+
+/* La rejilla de los seis jueces, igual que la de abogados. */
+.jueces-rejilla {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e-3); margin-top: var(--e-3);
+}
+.juez-ficha {
+  display: grid; justify-items: center; gap: 6px;
+  background: var(--superficie); border: 0; border-radius: var(--radio-carta);
+  padding: var(--e-3) 6px; cursor: pointer; font: inherit;
+  box-shadow: var(--sombra-1);
+}
+.juez-ficha .avatar--juez { width: 64px; height: 64px; }
+.juez-ficha__n {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico); color: var(--tinta);
+}
+.juez-ficha--puesta { box-shadow: inset 0 0 0 3px var(--lavanda), var(--sombra-2); }
+
+/* --- El probador de resultados -------------------------------------------------
+   Pantalla de herramienta, no de juego: solo la ve el titular. Por eso aprieta
+   mucho más que el resto —seis caras en una fila, el color en la línea de
+   abajo— y no pide el aire que pide una pantalla de jugar. Aun así respeta las
+   dos reglas de la casa: nada scrollea de lado y ningún `1fr` sin `minmax(0,·)`,
+   que es por donde se sale una rejilla de seis. */
+.pb-ficha {
+  display: grid; gap: var(--e-2);
+  background: var(--superficie); border-radius: var(--radio-carta);
+  padding: var(--e-3); box-shadow: var(--sombra-1);
+}
+.pb-ficha__t {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  color: var(--tinta); display: block;
+}
+.pb-caras { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+.pb-cara {
+  border: 2px solid transparent; border-radius: 50%; background: none;
+  padding: 0; cursor: pointer; line-height: 0;
+}
+.pb-cara .avatar { width: 100%; height: auto; aspect-ratio: 1; }
+/* LA ELEGIDA SE MARCA APAGANDO LAS OTRAS, no solo con un aro. La ficha ya trae
+   su propio disco de color —azul, verde, amarillo o morado— así que un aro
+   alrededor compite con un círculo que ya está ahí y a 54 px no se distingue
+   cuál de los seis es. Bajar las otras se lee de un vistazo. */
+.pb-cara { opacity: .42; }
+.pb-cara[aria-pressed="true"] { opacity: 1; border-color: var(--lavanda); }
+.pb-cara:active { transform: scale(.92); }
+/* Los seis jueces del probador van más chicos que en el selector de la partida:
+   ahí es una decisión del juego y aquí es una casilla más de un formulario. */
+#m-probador .jueces-rejilla { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; }
+#m-probador .juez-ficha { padding: 6px 2px; gap: 2px; }
+#m-probador .juez-ficha .avatar--juez { width: 100%; height: auto; aspect-ratio: 1; }
+#m-probador .juez-ficha__n { font-size: .62rem; }
 
 /* El selector: las dos caras grandes, una al lado de la otra, con su nombre
    debajo. `minmax(0, 1fr)` y no `1fr`: el mínimo del contenido ensancharía la
@@ -821,10 +929,22 @@ body.app {
 .revelacion__frase,
 .revelacion__centro,
 .revelacion__abajo { width: 100%; max-width: 22rem; }
+/* LA FRASE Y EL BOTÓN, POR ENCIMA DE LAS FIGURAS SUELTAS. El juez y el campeón
+   van colgados de la pantalla con `position: absolute`, y una caja posicionada
+   se pinta por encima del contenido que no lo está aunque su z-index sea 0: sin
+   esto, el ganador entrando tapaba el botón de seguir. */
+.revelacion__frase,
+.revelacion__abajo { position: relative; z-index: 2; }
 
 .revelacion__centro {
   display: grid; align-content: center; justify-items: center; gap: var(--e-4);
 }
+/* EN LA PANTALLA DEL JUEZ EL CUADRO SE VA ARRIBA. El centro CENTRA lo que lleva
+   --que es lo correcto en la revelación, donde hay dos caras y un nombre y
+   quedan en mitad de la pantalla-- pero aquí solo hay un cuadro y una persona:
+   centrado dejaba 110 px de aire encima y le comía las piernas al juez por
+   abajo. Pegado arriba, el aire que sobra queda todo para él. */
+.revelacion__centro:has(.juez-dice) { align-content: start; }
 .revelacion[hidden] { display: none; }
 
 @keyframes revela-fondo { from { opacity: 0; } to { opacity: 1; } }
@@ -835,23 +955,9 @@ body.app {
   letter-spacing: .01em;
 }
 
-/* El número de la cuenta atrás: entra grande, se encoge y se desvanece */
-.revelacion__numero {
-  font-family: var(--display);
-  font-weight: 800;
-  font-size: 8rem;
-  line-height: 1;
-  min-height: 8rem;
-  display: grid;
-  place-items: center;
-  color: var(--premio-hondo);
-  animation: numero var(--dur-larga) var(--suave);
-}
-@keyframes numero {
-  0% { opacity: 0; transform: scale(2.1); filter: blur(6px); }
-  35% { opacity: 1; transform: scale(1); filter: blur(0); }
-  100% { opacity: .85; transform: scale(.94); }
-}
+/* AQUÍ VIVÍA EL NÚMERO DE LA CUENTA ATRÁS, y se fue con ella (decisión del
+   titular, 2026-09-14): el 3-2-1 no añadía tensión, añadía espera. Lo que queda
+   entre la frase montada y el resultado es un segundo quieto con redoble. */
 
 .revelacion__ganador {
   font-family: var(--display);
@@ -859,11 +965,36 @@ body.app {
   font-size: clamp(2rem, 12vw, 3.25rem);
   line-height: 1.05;
   animation: ganador var(--dur-larga) var(--rebote);
+  /* POR ENCIMA DE LOS QUE ENTRAN. En Negociación con acuerdo entran los dos y
+     el titular cae entre ellos: sin esto quedaba detrás, porque una caja
+     posicionada se pinta sobre el contenido que no lo está. Va aquí, en el
+     titular solo, y no en `#rev-centro` entero: ese contenedor también lleva la
+     explicación del juez, y ahí es el juez el que tiene que asomar por delante
+     del borde de la tarjeta. */
+  position: relative; z-index: 2;
 }
 /* Sobre crema, el color del modo a plena fuerza no llega al contraste que pide
    ni un texto grande: va la versión oscura, que es el mismo color. */
 .revelacion--debate .revelacion__ganador { color: var(--debate-oscuro); }
 .revelacion--negociacion .revelacion__ganador { color: var(--negociacion-oscuro); }
+/* CUANDO ENTRAN DOS, EL TITULAR CAE ENTRE ELLOS —encima del dibujo— y un texto
+   plano ahí se pierde. Lleva el mismo tratamiento que el nombre del ganador:
+   borde blanco con `paint-order: stroke` para que el trazo no se coma la letra
+   por dentro, y una sombra oscura apoyándolo. El color no cambia: sigue siendo
+   el del modo, porque aquí no hay un dueño de quien tomarlo. */
+.revelacion__ganador--etiqueta {
+  -webkit-text-stroke: 9px var(--blanco); paint-order: stroke;
+  filter: drop-shadow(0 3px 0 rgba(46, 42, 63, .22))
+          drop-shadow(0 6px 14px rgba(46, 42, 63, .18));
+  /* Y SE SUBE, FUERA DEL FLUJO (ajuste del titular, 2026-09-14). Centrado en
+     `#rev-centro` caía a media pantalla, que es justo donde las dos figuras se
+     acercan: la palabra quedaba encima de ellas y las dos cosas se estorbaban.
+     Colgada de la pantalla al 22 % queda por encima de las dos cabezas, y eso
+     libera el medio para que las figuras puedan entrar más.
+     Va en porcentaje y no en píxeles porque lo que tiene que respetar es la
+     proporción de la pantalla, no una altura concreta. */
+  position: absolute; top: 22%; left: 0; right: 0; margin: 0;
+}
 
 @keyframes ganador {
   0% { opacity: 0; transform: scale(.5) rotate(-4deg); }
@@ -889,6 +1020,406 @@ body.app {
 .revelacion__boton { margin-top: 0; }
 .revelacion--debate .revelacion__boton { background: var(--debate); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
 .revelacion--negociacion .revelacion__boton { background: var(--negociacion); box-shadow: 0 8px 20px rgba(52,183,155,.34); }
+
+/* Los dos párrafos de «lo que dijo cada uno», en parada blanda. */
+.revelacion__dijo {
+  margin: var(--e-2) 0 0; font-size: var(--t-chico); line-height: 1.4; text-align: left;
+  color: var(--tinta-suave); background: rgba(255,255,255,.7); border-radius: var(--radio-carta);
+  padding: var(--e-2) var(--e-3);
+}
+.revelacion__dijo b { color: var(--tinta); }
+
+/* LOS DOS, LADO A LADO. Aquí sí van enfrentados, y es la única pantalla donde
+   eso vale: es el resultado de UNA ronda, no un acumulado entre ellos.
+   `minmax(0,1fr)` y no `1fr` porque un nombre largo ensancharía su columna y el
+   juego no scrollea de lado. */
+.duelo {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e-2); width: 100%; align-items: end; margin-bottom: var(--e-2);
+}
+.duelo__lado { display: grid; justify-items: center; gap: 2px; min-width: 0; }
+.duelo__fig { width: 100%; max-width: 132px; height: 148px; }
+.duelo__n {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  color: var(--tinta); max-width: 100%; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Quien ganó, un punto más grande y con el nombre en el color del modo. Nada de
+   coronas ni de medallas: la pose ya lo dice. Sigue valiendo para el EMPATE de
+   Negociación —ahí ganan los dos y los dos llevan disco—; en Controversia con
+   ganador el suyo ya no se pinta aquí: entra grande (ver `.campeon`). */
+.duelo__lado--gana .duelo__fig { height: 168px; }
+.revelacion--debate .duelo__lado--gana .duelo__n { color: var(--debate-oscuro); }
+
+/* CUANDO UNO ENTRA GRANDE, EL OTRO SE APARTA (decisión del titular,
+   2026-09-14). Sube y se corre hacia SU costado —el contrario al del ganador—
+   porque la figura grande crece hacia el centro y hacia arriba, y con el disco
+   donde estaba los dos se pisaban por el hombro. Apartarlo también lo separa de
+   la celebración, que es lo que tiene que pasar: quien no ganó no está
+   celebrando.
+   Va en píxeles y no en porcentaje: lo que hay que despejar es el hueco de una
+   figura, que mide lo que mide midan lo que midan las columnas.
+
+   Y SUBE HASTA ARRIBA DEL TODO (ajuste del titular, 2026-09-14): 120 px, no 52.
+   Lo que se busca es PERSPECTIVA —que se lea como alguien que está lejos,
+   mirando la escena desde el fondo— y eso lo hace la altura, no el tamaño. Por
+   eso el disco no se encoge: un disco chico y bajo es un disco chico; uno del
+   mismo tamaño puesto arriba es alguien que está al fondo. */
+.duelo--solo .duelo__lado { transform: translate(var(--aparta, 0), -120px); }
+.duelo--solo .duelo__lado:first-child { --aparta: -18px; }
+.duelo--solo .duelo__lado:last-child { --aparta: 18px; }
+
+/* --- EL GANADOR ENTRA GRANDE ---------------------------------------------------
+   Decisión del titular (2026-09-14): la victoria usa el mismo efecto que el
+   versus. La figura entra desde SU lado, grande, y el puño llega al centro.
+
+   ES LA MECÁNICA DEL ENCUENTRO, con sus mismos números y por las mismas razones,
+   que están explicadas largo en `.encuentro__fig`: el lienzo se ancla al centro
+   —no la figura, que lleva aire a los lados— y se acerca con `--acerca`; la
+   colocación vertical va por la CINTURA, que el cortador deja siempre en el
+   64,6 % del lienzo, y no por la cabeza, que depende del peinado.
+
+   Lo que cambia respecto al versus es que aquí entra UNO. Por eso ocupa más
+   —88 % contra 62 %— y se sale por el costado: cortada se lee como alguien que
+   no cabe en la pantalla, que es lo que se pidió; entera se lee como una
+   pegatina puesta en una esquina. */
+.campeon {
+  position: absolute; bottom: 0; z-index: 1;
+  /* El 85 % son el 74 % de antes más el 15 % que pidió el titular. El ancho no
+     hace falta tocarlo: la figura se dimensiona por ALTO —`--alto-fig` es un
+     porcentaje de esta caja— y la caja solo aporta el borde al que se ancla. */
+  width: 88%; height: 85%;
+  pointer-events: none;
+}
+/* El borde interior pegado al centro, que es donde tiene que caer el puño. */
+.campeon--izq { right: 50%; transform: translateX(-180%); }
+.campeon--der { left: 50%; transform: translateX(180%); }
+/* Y CUANDO ES UNO SOLO, ADENTRO (decisión del titular, 2026-09-14). Terminaba
+   con el lienzo justo en el centro, así que se le iba por el costado casi la
+   mitad: se veía media figura. Entra un 11 % más hacia el centro —su puño lo
+   cruza, que con el otro ya apartado no molesta a nadie— y lo que se recorta
+   pasa a ser un tercio, como en el versus.
+   NO VALE PARA LOS DOS: ahí el centro es de la palabra «Ambos» y lo que se
+   acerque se le pone delante, así que esos se quedan en cero. */
+.campeon { --fin: 0%; --toca: 0%; }
+.campeon--izq:not(.campeon--dos) { --fin: 11%; --toca: 15%; }
+.campeon--der:not(.campeon--dos) { --fin: -11%; --toca: -15%; }
+.campeon--izq.campeon--dos { --toca: 4%; }
+.campeon--der.campeon--dos { --toca: -4%; }
+/* Tres puntos y no dos, igual que el encuentro: la figura pasa de largo un poco
+   —el 72 % del recorrido— y rebota a su sitio. Una transición de fuera a dentro
+   frena y se posa; esto aterriza. */
+.campeon--puesto.campeon--izq { animation: campeon-izq 620ms cubic-bezier(.22, .72, .3, 1) both; }
+.campeon--puesto.campeon--der { animation: campeon-der 620ms cubic-bezier(.22, .72, .3, 1) both; }
+@keyframes campeon-izq {
+  from { transform: translateX(-180%); }
+  72% { transform: translateX(var(--toca, 4%)); }
+  to { transform: translateX(var(--fin, 0%)); }
+}
+@keyframes campeon-der {
+  from { transform: translateX(180%); }
+  72% { transform: translateX(var(--toca, -4%)); }
+  to { transform: translateX(var(--fin, 0%)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .campeon--izq, .campeon--der { transform: none; }
+  .campeon--puesto.campeon--izq, .campeon--puesto.campeon--der { animation: none; }
+}
+
+/* `.retrato` trae `overflow: hidden` y aquí estorba: la figura mide más que su
+   lienzo a propósito —128 % de alto— y lo que sobra tiene que poder salirse para
+   que lo corte la pantalla y no la caja. */
+.campeon__fig {
+  position: absolute; inset: 0; overflow: visible;
+  --alto-fig: 128%; --factor-fig: 1.28; --cintura: 64.6%; --linea-cintura: 88%;
+  /* El aire lateral de `ganar`, medido sobre las seis piezas: 14,8 % a 20,0 %,
+     media 18 %. Es más que el de `puno` --14,6 %-- porque el brazo levantado
+     obliga a dejar sitio arriba y el marco es cuadrado para todas. */
+  --acerca: 18%;
+}
+.campeon__fig .retrato__fig {
+  position: absolute; bottom: auto;
+  top: calc(var(--linea-cintura) - var(--cintura) * var(--factor-fig)
+            - var(--sube-pose, 0%));
+  height: var(--alto-fig); width: auto; max-width: none;
+}
+/* Y LA POSE SENTADA SUBE, porque si no se queda casi fuera del cuadro. Las seis
+   poses de un personaje comparten el borde de ABAJO --es lo que las hace pisar
+   el mismo suelo-- y `sentado` es un 75 % de alto de lo que mide `ganar`, así
+   que con el mismo suelo su cabeza arranca mucho más abajo: medido sobre los
+   seis, la tinta empieza al 20,2 % del lienzo más abajo que en `ganar` (de
+   16,2 a 24,1 según el personaje). Compartir suelo es lo correcto en la sala y
+   en el disco del duelo, donde se ve la figura entera; aquí no, porque aquí la
+   pantalla las corta por abajo y lo único que pasaba era que se veían menos.
+   El 20,2 % es del lienzo y `--alto-fig` es el 128 % de la caja, así que en
+   unidades de la caja son 25,9. */
+.campeon__fig[data-pose="sentado"] { --sube-pose: 25.9%; }
+/* Y CUANDO ADEMÁS SE ACHICA, HAY QUE SUBIRLA MÁS. La caja está anclada abajo,
+   así que encogerla no encoge la figura en su sitio: se la lleva hacia abajo
+   con el techo de la caja. Con `--sube-pose` en 25,9 la pareja sentada acababa
+   con las cabezas en 390, hundida en el tercio de abajo. A 38 los pies caen en
+   738 --18 px por detrás del borde del botón, que empieza en 720-- así que se
+   ven enteros y apoyados detrás de él en vez de encaramados encima. Medido, no
+   elegido: se probaron 25,9 / 33 / 38 / 41,5 y a 41,5 los pies aterrizan
+   exactamente en el borde del botón, que es un píxel de más. */
+.campeon--dos[data-pose="sentado"] .campeon__fig { --sube-pose: 38%; }
+/* La de la derecha va volteada, y al voltear el eje se invierte: por eso las dos
+   usan el MISMO `--acerca` positivo y cada una tira hacia el centro. El volteo
+   lo aplica `.retrato--volteado .retrato__fig`, que ya existe. */
+/* EL ACERCAMIENTO DEPENDE DEL LADO, NO DE SI ESTÁ VOLTEADA, y las cuatro
+   combinaciones hacen falta de verdad. El encuentro se podía permitir una sola
+   regla porque allí «volteada» y «a la derecha» eran lo mismo: la pose del puño
+   está dibujada igual en los seis, así que siempre se voltea la de la derecha.
+   Aquí no: `sentado` lleva la mano a la IZQUIERDA de la lámina y las otras dos
+   poses de `MIRA` a la derecha, así que la que se voltea es la del lado
+   contrario. Con la regla vieja, esa figura volteada en el lado izquierdo se
+   alejaba del centro en vez de acercarse.
+   El signo: `scaleX(-1)` invierte el eje local, así que con volteo el valor va
+   al revés de como iría sin él. Y estas cuatro ganan por especificidad a la
+   `.retrato--volteado .retrato__fig` genérica del encuentro (0,3,0 contra
+   0,2,0), así que no dependen del orden del archivo. */
+.campeon--izq .retrato__fig { right: 0; transform: translateX(var(--acerca, 0%)); }
+.campeon--der .retrato__fig { left: 0; transform: translateX(calc(-1 * var(--acerca, 0%))); }
+.campeon--izq .retrato--volteado .retrato__fig {
+  transform: scaleX(-1) translateX(calc(-1 * var(--acerca, 0%)));
+}
+.campeon--der .retrato--volteado .retrato__fig {
+  transform: scaleX(-1) translateX(var(--acerca, 0%));
+}
+
+/* EL NOMBRE DEL GANADOR VA ENFRENTE DE ÉL, no en el centro (decisión del
+   titular, 2026-09-14). En el centro se había quitado porque la figura le
+   pasaba por encima; el hueco bueno es el del OTRO lado, que la figura deja
+   libre, a la altura de la cara, que es adonde va la mirada.
+
+   VA COLGADO DE LA PANTALLA y no de `#rev-centro`: ese contenedor mide 22 rem y
+   está centrado, así que un texto suyo nunca llega al costado. Aquí el ancho es
+   el del lienzo y el nombre puede pegarse al borde que le toca.
+
+   Sin caja ni pastilla: lleva un halo blanco en vez de fondo, porque detrás hay
+   un dibujo y una caja opaca encima lo tapa justo donde no hay nadie.
+
+   ES UNA ETIQUETA DE JUEGO, no un texto: relleno del COLOR DEL JUGADOR --el
+   mismo con el que se le vio toda la partida, su ropa, su disco y su columna en
+   la tabla-- con borde blanco alrededor y una sombra oscura apoyándolo. El
+   borde blanco es lo que la despega del dibujo; la sombra es lo que salva al
+   amarillo (#F8E838), que sobre crema y con solo el borde blanco se perdería.
+   `paint-order: stroke` es la clave: sin él el trazo se pinta ENCIMA del
+   relleno y se come la letra por dentro. Es el mismo recurso del VS del versus.
+
+   Y NUNCA PARTE EN DOS RENGLONES (regla del titular): `nowrap`, y si no cabe lo
+   achica `encajarRotulo()`. Ver allí por qué se mide en vez de contar letras. */
+.campeon-n {
+  position: absolute; z-index: 2; top: 70%; transform: translateY(-50%);
+  margin: 0; width: 62%;
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(1.15rem, 7.6vw, 2.25rem); line-height: 1.12;
+  text-align: center; white-space: nowrap;
+  color: var(--pj, var(--tinta));
+  -webkit-text-stroke: 7px var(--blanco); paint-order: stroke;
+  filter: drop-shadow(0 3px 0 rgba(46, 42, 63, .22))
+          drop-shadow(0 6px 14px rgba(46, 42, 63, .18));
+  /* Aparece cuando el ganador aterriza, no antes: los 450 ms son el punto de
+     contacto, los mismos que las serpentinas. */
+  animation: campeon-n-entra 380ms var(--rebote) both 450ms;
+}
+/* El modificador dice de qué lado ENTRÓ EL GANADOR, y el rótulo va al contrario,
+   en el hueco que la figura deja delante de ella. */
+.campeon-n--izq { right: 2%; }
+.campeon-n--der { left: 2%; }
+@keyframes campeon-n-entra {
+  from { opacity: 0; transform: translateY(-50%) scale(.7); }
+  to { opacity: 1; transform: translateY(-50%) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .campeon-n { animation: none } }
+
+/* CUANDO GANAN LOS DOS entran los dos, uno por lado: es la Negociación con
+   acuerdo (decisión del titular, 2026-09-14). Van más chicos —las proporciones
+   del versus, que es donde ya se sabe que dos figuras conviven— porque a tamaño
+   de campeón único se comerían el centro entre las dos.
+
+   Y EN EL EMPATE TAMBIÉN, que es el otro final de dos: ahí no gana nadie y
+   entran igual. Ver `losQueEntran` en veredicto.js.
+
+   ENTRAN MÁS DE LO QUE ENTRABAN (ajuste del titular, 2026-09-14): 70 % de alto
+   en vez de 58, y `--acerca` en 15 en vez de 0. Las dos cosas hacen falta
+   juntas, y la segunda no es obvia: al agrandar la figura su AIRE LATERAL crece
+   con ella --es un 16-17 % de su ancho, medido sobre la tinta de verdad y no
+   sobre la caja-- así que hacerlas más grandes, por sí solo, ABRE el hueco del
+   medio en vez de cerrarlo. `--acerca` es lo que las mete.
+   El `--acerca` estuvo en cero mientras el titular caía en mitad de la
+   pantalla: lo que se acercara se le ponía delante. Ahora el titular se cuelga
+   al 22 % --por encima de las dos cabezas-- y el medio queda libre.
+
+   EL 15 ES EL TOPE ÚTIL, y es lo que hay: cada figura mide 470 px en una
+   pantalla de 375, así que se le van 134 por el costado y ahí no hay nada que
+   hacer sin encogerla. Lo que se gana acercándolas es lo que mida el hueco del
+   medio, y ese hueco eran 55 px: repartidos entre las dos, 24 px de figura por
+   cabeza. A 15 quedan 14 px de aire entre ellas --se leen como dos que están
+   juntas, no como dos que se pisan-- y pasar de ahí las hace solaparse, que con
+   el perfil blanco de pegatina se ve como una recortada sobre la otra. */
+.campeon--dos { width: 62%; height: 70%; }
+.campeon--dos .campeon__fig { --acerca: 15%; }
+/* Y LA SENTADA VA MÁS CHICA (ajuste del titular, 2026-09-14), aunque el pedido
+   fuera «mismo tamaño que el empate». No es una excepción caprichosa: la pose
+   sentada es MUCHO más ancha por unidad de alto --0,62 contra 0,43 en `ganar`,
+   medido sobre la tinta-- porque las piernas se cruzan hacia los lados. A la
+   misma altura de caja ocupa un tercio más de ancho, y lo que sobra se va por
+   el costado. Bajarla un 11 % es lo que hace que entre entera de lado a lado.
+   `--sube-pose` no hay que retocarlo: va en porcentaje de la caja, así que
+   encoge con ella. */
+.campeon--dos[data-pose="sentado"] { height: 62%; }
+
+/* LA PANTALLA DEL JUEZ: él grande desde abajo y su globo encima, igual que un
+   personaje hablando en la sala. */
+/* EL GLOBO SE QUEDA CON LO QUE SOBRE, y el juez tiene medida fija. Se midió:
+   el centro de la revelación da 611 px, la explicación completa ocupa 466 y el
+   juez 210 --que solapando 64 pesan 146--, así que caben justos y no hace falta
+   scroll. Con `minmax(0,1fr)` el globo se encoge si un veredicto viene más
+   largo, en vez de empujar al juez fuera de pantalla, y solo entonces scrollea.
+   Un `max-height` en vh no servía: 46vh son 374 px y dejaban la fila del TOTAL
+   cortada, que es justo el número que hay que ver. */
+.juez-dice {
+  display: grid; grid-template-rows: minmax(0, 1fr) auto;
+  justify-items: center; gap: 0; width: 100%; height: 100%;
+}
+/* VIDRIO ESMERILADO y no un panel opaco (decisión del titular): el fondo de la
+   sala se sigue viendo a través, así que la explicación ocurre EN la sala y no
+   sobre un papel puesto encima. `-webkit-` porque Safari lo pide, y el blanco al
+   86 % es el suelo: donde el navegador no sepa desenfocar, el texto se lee
+   igual. */
+.juez-dice__globo {
+  width: 100%; color: var(--tinta);
+  background: rgba(255, 255, 255, .86);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  border-radius: var(--radio-carta); padding: var(--e-3);
+  box-shadow: var(--sombra-2); text-align: left;
+  max-height: 100%; overflow-y: auto; z-index: 1;
+}
+.dice__linea {
+  margin: 0 0 var(--e-2); font-size: var(--t-chico); line-height: 1.45;
+  color: var(--tinta-suave);
+}
+.dice__linea b { color: var(--tinta); }
+/* El acuerdo, con sus palabras y destacado: lo escribieron ellos. */
+.dice__acuerdo {
+  margin: 0 0 var(--e-3); font-family: var(--display); font-weight: 800;
+  font-size: var(--t-chico); line-height: 1.4; color: var(--tinta);
+  background: var(--negociacion-tinte); border-radius: var(--radio-carta);
+  padding: var(--e-2) var(--e-3);
+}
+.juez-dice__globo .tabla { box-shadow: none; padding: 0; margin-top: var(--e-3); }
+/* SALE DE DETRÁS DEL GLOBO Y SE CORTA POR ABAJO: las dos cosas juntas son lo
+   que lo hace aparecer «desde abajo» en vez de flotar como una pegatina. El
+   solape de 64 px mete su cabeza detrás del globo, que es lo que hace que el
+   globo parezca suyo; `object-position: center top` le corta las piernas, así
+   que se ve de la cintura para arriba, igual que quien habla en la sala. */
+/* SUELTO SOBRE LA PANTALLA, abajo y a la derecha, asomando por fuera. Lo corta
+   el borde del lienzo --`.revelacion` recorta-- y no una altura fija, que es lo
+   que lo hace parecer alguien de pie al que la pantalla no le llega. El `right`
+   negativo le come un poco por el costado a propósito: recortado por dos lados
+   se lee como que hay más juez del que cabe. */
+.revelacion { overflow: hidden; }
+/* DE LA CINTURA PARA ARRIBA, como en el versus y como quien habla en la sala.
+   Es el encuadre de la casa y no una excepción: las piezas miden 620x960 con la
+   figura entre el 20 % y el 85 % del lienzo, así que para que el corte caiga en
+   la cintura hay que sacar por debajo del borde algo más de un tercio de la
+   figura. Con 88 % de ancho --330 px, o sea 511 de alto-- y 190 px por fuera,
+   queda visible el 66 % de ella: cabeza, torso y manos, que es donde está el
+   mazo. Antes asomaba entera y de 232 px: se leía como una pegatina de pie
+   sobre el botón. */
+/* Y SE VA MÁS A LA DERECHA AUNQUE SE SALGA (decisión del titular, 2026-09-14):
+   con -60 px la figura arrancaba en x=203 y el botón terminaba en x=194 --nueve
+   píxeles de aire-- y a esa distancia se lee como que el juez está apoyado en el
+   botón. Entre perder un poco de juez por el costado y que se toquen, prefiere
+   perder juez: lo que sobresale ya está recortado por el lienzo y el recorte es
+   parte del encuadre, mientras que dos cosas rozándose parece un error de
+   maquetación. */
+/* Y UN 10 % MÁS GRANDE (ajuste del titular, 2026-09-14). Crecen las TRES
+   medidas juntas, no solo el ancho: `bottom` es cuánto asoma por debajo del
+   lienzo y es lo que decide DÓNDE corta el borde inferior, así que dejarlo
+   quieto mientras la figura crece sube el corte por el cuerpo y el encuadre
+   deja de ser de la cintura para arriba. 190 -> 209. */
+.juez-suelto {
+  position: absolute; right: -110px; bottom: -209px; z-index: 0;
+  width: 100%; max-width: 453px; height: auto; pointer-events: none;
+  filter: drop-shadow(0 -6px 18px rgba(46, 42, 63, .16));
+  animation: juez-sube .45s var(--suave) both;
+}
+@keyframes juez-sube { from { transform: translateY(26%); opacity: 0 } to { transform: none; opacity: 1 } }
+
+/* Y el botón se aparta a la izquierda para dejarle sitio. Lo que lo centraba no
+   era un margen --`.boton--bloque` solo pone `width: 100%`--: `.boton` es
+   `inline-flex`, o sea de nivel en línea, y lo centraba el `text-align: center`
+   de la revelación. Estrecharlo sin tocar eso lo dejaba centrado --medido,
+   arrancaba en x=93 y se le metía debajo a la jueza-- y pelear con márgenes no
+   habría servido. */
+.revelacion__abajo--conjuez { text-align: left; }
+.revelacion__abajo--conjuez .revelacion__boton { width: 52%; min-width: 8.5rem; }
+
+@media (prefers-reduced-motion: reduce) { .juez-suelto { animation: none } }
+
+.juez-dice__fig {
+  display: block; width: 100%; max-width: 290px; height: 230px;
+  /* `cover` Y NO `contain`, y es lo que lo hace grande. Con `contain` la pieza
+     entera --620x960, casi el doble de alta que ancha-- tiene que caber en la
+     caja, así que manda el alto y el juez salía de 135 px de ancho: una
+     pegatina. Con `cover` manda el ancho, la pieza se escala a 290 y lo que
+     sobra por abajo se recorta, que es justo el recorte que se quiere.
+     El 40 % vertical salta el aire que la pieza lleva encima de la cabeza --la
+     figura del juez empieza al 20 % del lienzo-- y deja el encuadre de la
+     cabeza a las caderas. */
+  object-fit: cover; object-position: center 40%; margin-top: -64px;
+  filter: drop-shadow(0 -6px 16px rgba(46, 42, 63, .12));
+}
+
+/* QUÉ DEFENDIÓ BIEN CADA UNO: dos renglones, uno por persona, justo debajo del
+   titular. Es lo primero que se lee y por eso va sin caja pesada. */
+.lo-mejor { margin-top: var(--e-3); }
+.lo-mejor__linea {
+  margin: 0 0 var(--e-2); font-size: var(--t-chico); line-height: 1.45; text-align: left;
+  color: var(--tinta-suave); background: rgba(255,255,255,.72); border-radius: var(--radio-carta);
+  padding: var(--e-2) var(--e-3);
+}
+.lo-mejor__linea b { color: var(--tinta); }
+
+/* El rotulo de «Lo que dijo cada uno» en la parada. Lo que separa un reporte de
+   dos renglones sueltos es que alguien los presente. */
+.dice__rotulo {
+  margin: var(--e-3) 0 0; font-family: var(--display); font-weight: 800;
+  font-size: var(--t-chico); color: var(--tinta);
+}
+
+/* LA MINITABLA. Tres columnas: criterio y los dos números. `minmax(0,1fr)` en
+   las de nombre porque un nombre largo ensancharía la columna y el juego no
+   scrollea de lado. */
+.tabla {
+  margin-top: var(--e-2); text-align: left; background: var(--superficie);
+  border-radius: var(--radio-carta); padding: var(--e-3); box-shadow: var(--sombra-1);
+}
+.tabla__fila {
+  display: grid; grid-template-columns: minmax(0, 1fr) 2.8rem 2.8rem;
+  align-items: baseline; gap: var(--e-2); padding: 1px 0; font-size: var(--t-mini);
+  line-height: 1.5;
+}
+.tabla__fila--cabeza { border-bottom: 1px solid var(--crema-hondo); padding-bottom: 6px; }
+.tabla__fila--total {
+  border-top: 1px solid var(--crema-hondo); margin-top: 3px; padding-top: 5px;
+  font-family: var(--display); font-weight: 800; font-size: .95rem;
+}
+.tabla__criterio { color: var(--tinta-suave); min-width: 0; }
+.tabla__fila--total .tabla__criterio { color: var(--tinta); }
+.tabla__quien {
+  text-align: right; font-family: var(--display); font-weight: 800; color: var(--tinta);
+  font-size: var(--t-mini); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tabla__n { text-align: right; font-family: var(--display); font-weight: 800; color: var(--tinta); }
+.tabla__nota {
+  margin: var(--e-2) 0 0; font-size: var(--t-mini); line-height: 1.45; color: var(--tinta-suave);
+}
+
+.sala__nota--tenue { opacity: .6; }
 
 /* El confeti va por encima de todo y no se puede tocar: es decoración, y
    robarle el toque al botón de «Ver el desglose» sería un fastidio. */
@@ -1321,6 +1852,90 @@ body.app {
 .sala__posturas p { color: var(--ctx-tenue); line-height: 1.45; }
 .sala__nota { font-size: var(--t-chico); color: var(--ctx-tenue-2); text-align: center; }
 
+/* --- La votación de Negociación ------------------------------------------------
+   Tres maneras de quedar y «ninguna». Cada quien marca una a ciegas.
+
+   LAS TARJETAS LLEVAN TEXTO GRANDE Y ANCLAS CHICAS, y ese orden importa: lo que
+   se vota es la propuesta, y las dos anclas están para poder comprobar que sale
+   de los dos --`docs/02` §13 llama «el peor error posible de este sistema» a un
+   acuerdo anclado en uno solo--. Si las anclas pesaran lo mismo que el texto, la
+   pantalla pediría leer seis cosas para elegir entre tres. */
+.votacion { display: grid; gap: var(--e-3); padding-bottom: var(--e-3); }
+.votacion__quien {
+  margin: 0; text-align: center;
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h3);
+  color: var(--suyo, var(--tinta));
+}
+.propuestas { display: grid; gap: var(--e-3); }
+.propuesta {
+  display: grid; gap: var(--e-2); text-align: left; width: 100%;
+  border: 2px solid transparent; border-radius: var(--radio-carta);
+  background: var(--superficie); box-shadow: var(--sombra-1);
+  padding: var(--e-3); cursor: pointer; font: inherit; color: var(--tinta);
+}
+.propuesta__texto {
+  font-size: 1.0625rem; line-height: 1.4; font-weight: 700;
+}
+/* LAS DOS ANCLAS, UNA DEBAJO DE OTRA Y EN COLUMNA. En fila no caben: son dos
+   frases de una línea larga cada una, y en 375 px partirían en cuatro renglones
+   descolgados. En columna se leen como lo que son: qué recoge de cada quien. */
+.propuesta__anclas { display: grid; gap: 4px; }
+.propuesta__ancla {
+  font-size: var(--t-mini); line-height: 1.35; color: var(--ctx-tenue-2);
+  padding-left: var(--e-3); border-left: 3px solid var(--ctx-pastilla);
+}
+.propuesta--marcada {
+  border-color: var(--ctx-acento); box-shadow: var(--sombra-2);
+}
+.propuesta--ninguna {
+  justify-items: center; font-weight: 700; color: var(--ctx-tenue-2);
+  background: none; box-shadow: none; border-style: dashed;
+  border-color: var(--ctx-tenue-2);
+}
+.propuesta--ninguna.propuesta--marcada {
+  border-style: solid; border-color: var(--ctx-acento); color: var(--tinta);
+}
+.propuesta:active { transform: scale(.99); }
+
+/* --- El acta, antes de firmarla ------------------------------------------------
+   El mismo texto en dos estados: quieto para leerlo y decidir, y abierto para
+   escribirlo. Miden lo mismo a propósito: si al tocar «cambiarlo» la caja salta
+   de tamaño, la frase que estaban leyendo se mueve justo cuando van a tocarla. */
+.acta__texto,
+.acta__campo {
+  font-size: 1.0625rem; line-height: 1.45; font-weight: 700; color: var(--tinta);
+  background: var(--superficie); border-radius: var(--radio-carta);
+  padding: var(--e-4); box-shadow: var(--sombra-1);
+}
+.acta__texto { min-height: 9rem; }
+.acta__campo {
+  width: 100%; border: 2px solid var(--ctx-acento); font-family: inherit;
+  resize: none; display: block;
+}
+/* EL BOTÓN DE EDITAR VA CON LÍNEA CORTADA (ajuste del titular, 2026-09-15), y
+   del MISMO GROSOR que el del otro: los dos a 4 px. El `.boton--suave` trae 2 y
+   al lado del primario --que lleva 4 de aro blanco-- se leía más flojo aunque
+   midieran lo mismo de alto.
+   Va `dashed` y no `dotted`: a 4 px los puntos salen del tamaño de cuentas y se
+   leen como un adorno. `dashed` es además lo que ya usa «Ninguna me convence»,
+   que es la misma clase de opción --la que no sigue el camino de siempre-- así
+   que el juego dice lo mismo con la misma línea en los dos sitios. */
+.boton--punteado { border-style: dashed; border-width: 4px; }
+
+/* LA PREGUNTA ES LA PANTALLA, no una nota al pie. Estaba con `sala__nota`
+   --letra chica y al 60 % de opacidad, que es lo que esa clase es-- y se leía
+   como un pie de foto debajo del acta. Es lo que hay que contestar con los dos
+   botones, así que va al tamaño del cuerpo y con la tinta de verdad. */
+.acta__pregunta {
+  margin: 0; text-align: center;
+  font-size: 1.0625rem; line-height: 1.4; font-weight: 700;
+  color: var(--ctx-tinta, var(--tinta));
+}
+/* El aviso de que no cabe. Mismo sitio y mismo tamaño que la pregunta que
+   reemplaza: si saltara a otro renglón, lo que se movería es el campo que
+   acaban de escribir. */
+.acta__pregunta--corto { color: var(--peligro); }
+
 /* --- El sorteo de quién abre -------------------------------------------------
    La ficha salta entre las dos personas y va frenando. Durante la tirada late;
    al parar, rebota una vez y se queda. */
@@ -1451,7 +2066,61 @@ body.app {
    la postura— es justo lo que cuenta que está exponiendo su idea. El disco de
    color se queda detrás, ovalado y suelto, porque es lo que tiñe la escena del
    color de quien habla. */
-.hablante { display: grid; justify-items: center; gap: 2px; }
+.hablante { display: grid; justify-items: center; gap: 2px; position: relative; }
+
+/* EL JUEZ, FLOTANDO AL LADO DE QUIEN HABLA. Arriba a la derecha y por encima de
+   la figura: así se lee que le escucha a ÉL. `pointer-events: none` porque no
+   se toca —no hay nada que hacer con el juez durante la ronda— y dejarlo
+   tocable robaría toques al botón de grabar, que está justo debajo. */
+/* A LA DERECHA DE LA FIGURA Y A MEDIA ALTURA. Arriba no puede ir: es donde sale
+   el REPRODUCTOR al oír una intervención --va sobre la cabeza de quien habla--
+   y le caía encima. Y a ras del suelo tampoco: quedaba pegado al botón de
+   grabar, que se sube un 5 % del alto de la figura para taparle los pies, y los
+   dos discos juntos se leían como una fila de botones. A 64 px el juez queda a
+   la altura del codo de quien habla, que es donde se pondría alguien que
+   escucha: al lado, no a los pies. */
+.juez-globo {
+  position: absolute; bottom: 64px; right: 0; z-index: 2;
+  display: grid; justify-items: end; align-items: end; gap: 6px;
+  pointer-events: none; max-width: 62%;
+}
+.juez-globo__disco {
+  position: relative; display: block; width: 84px; height: 84px;
+  border-radius: 50%; overflow: hidden;
+  background: rgba(255, 255, 255, .86);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .8), var(--sombra-2);
+}
+/* AQUÍ SE ACERCA MÁS QUE EN LA FICHA, y no es el mismo número por una razón:
+   la ficha del selector se mira para elegir --hace falta ver a la persona
+   entera-- y este disco se mira de refilón mientras alguien graba. A 1,7 la
+   cabeza medía ocho píxeles y el juez no se reconocía: se veía que había algo.
+   A 2,6 entran cara y hombros, que es lo que hace que se le vea ESCUCHAR.
+   El origen sube al 31 % porque la cabeza empieza al 20 % del lienzo. */
+.juez-globo__fig {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: contain; object-position: center bottom;
+  transform: scale(2.6); transform-origin: 50% 31%;
+  animation: juez-asoma .45s ease;
+}
+.juez-globo__fig[hidden] { display: none; }
+@keyframes juez-asoma { from { opacity: 0 } to { opacity: 1 } }
+
+/* Encima del disco, que ahora está abajo. Al lado no cabe en 375 px sin empujar
+   a la figura, y con el disco arriba la burbuja tapaba el nombre de quien habla.
+   Con el disco abajo, la burbuja cae sobre el torso, donde no hay nada escrito. */
+.juez-globo__burbuja {
+  margin: 0; max-width: 100%;
+  background: var(--superficie); color: var(--tinta);
+  border-radius: var(--radio-carta); padding: 8px 10px;
+  font-size: var(--t-mini); line-height: 1.35; text-align: right;
+  box-shadow: var(--sombra-2);
+  animation: juez-asoma .3s ease;
+}
+.juez-globo__burbuja[hidden] { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .juez-globo__fig, .juez-globo__burbuja { animation: none; }
+}
 .hablante__fig {
   width: 100%; max-width: 285px;
   height: var(--alto-hablante, 300px);
@@ -2445,15 +3114,49 @@ body.app {
 /* LA TARJETA PASA A SER LA FILA, y dentro van dos botones: abrir y borrar. No
    se puede meter un boton dentro de otro --el navegador desarma el HTML-- y la
    tarjeta entera ERA el boton de abrir. */
+/* LA PAPELERA ABAJO A LA DERECHA, Y FUERA DEL FLUJO (ajuste del titular,
+   2026-09-15). Estaba al lado del boton, en la misma fila, y eso le robaba
+   38 px de ancho al contenido: el dia y el rotulo del modo se quedaban cortos
+   del borde y no llegaban a alinearse con ella.
+   Sacandola con `absolute` el boton ocupa la tarjeta entera, asi que su
+   contenido llega hasta el padding derecho --el mismo que marca el borde de la
+   papelera-- y las tres cosas quedan en la misma vertical.
+   NO PUEDE IR DENTRO DEL BOTON: un boton dentro de otro el navegador lo
+   desarma, y ya estaba escrito arriba. */
 .partida-fila {
-  display: flex; align-items: center; gap: var(--e-2);
+  position: relative;
   margin-bottom: var(--e-3);
 }
+.partida-fila .partida__borrar {
+  position: absolute;
+  right: var(--e-4); bottom: var(--e-4);
+}
+/* Y el enunciado se aparta de ella, o el renglon de abajo le pasaria por
+   debajo. Solo el enunciado: las dos filas de cabecera terminan mucho antes. */
+.partida__tema { padding-right: 42px; }
+
+/* EL TINTE POR FAMILIA, y MUY suave (decision del titular, 2026-09-15). Los
+   cinco estados hacen falta para saber que pasa al tocar; tres son los que se
+   ven bajando por la lista con el ojo, y esos tres son los que se pintan.
+   TAN SUAVE QUE CASI NO SE VE, y es a proposito: sirve para agrupar de un
+   vistazo, no para avisar de nada. Ninguna de las tres familias es un problema,
+   asi que un color fuerte aqui leeria como alarma sobre una partida que
+   simplemente esta a medias. Quien dice exactamente cual es sigue siendo el
+   rotulo de arriba. */
+.partida-fila[data-familia="curso"]     { background: color-mix(in srgb, var(--lavanda) 6%, var(--superficie)); }
+.partida-fila[data-familia="veredicto"] { background: color-mix(in srgb, var(--premio) 9%, var(--superficie)); }
+/* `hecha` se queda con el blanco de la tarjeta: lo terminado es el estado
+   normal de un historial y no necesita anunciarse. */
+
+/* LAS DOS SEÑAS DE LA PARTIDA --cuando fue y a que se jugo-- en la misma linea
+   y centradas entre si. Separadas, el rotulo caia un par de pixeles por debajo
+   del dia: de esas cosas que no se saben nombrar pero se ven. */
+.partida__senas { display: flex; align-items: center; gap: 6px; flex: none; }
 .partida {
   display: grid; gap: 4px; text-align: left;
   /* `min-width: 0` o el enunciado largo ensancha la fila y saca la pantalla de
-     los 430 px. En un flex el minimo por defecto es el del contenido. */
-  flex: 1; min-width: 0;
+     los 430 px. El minimo por defecto de un item es el de su contenido. */
+  width: 100%; min-width: 0;
   background: none; border: 0; padding: 0; font: inherit; color: inherit;
   cursor: pointer;
 }
@@ -2475,11 +3178,297 @@ body.app {
   font-size: var(--t-mini); color: var(--tinta-tenue);
   text-transform: uppercase; letter-spacing: .06em; font-weight: 700;
 }
+/* LA PREGUNTA ES EL CUERPO y va debajo de las dos filas de cabecera, con aire
+   por encima: es lo unico que se lee entero, y pegada a los datos se leia como
+   un dato mas. */
+/* 13 px Y NO 16 (titular, 2026-09-15): tres menos. Con la cabecera de dos
+   filas encima, el enunciado a tamaño de cuerpo hacia tarjetas de cuatro
+   renglones y la lista dejaba de recorrerse de un vistazo. Sigue siendo lo mas
+   destacado de la tarjeta, que eso lo hace el peso y no el tamaño. */
 .partida__tema {
+  font-size: var(--t-chico);
   font-weight: 800; color: var(--tinta); line-height: 1.35;
-  overflow-wrap: anywhere;
+  overflow-wrap: anywhere; margin-top: 4px;
 }
 .partida__pie { display: flex; align-items: center; gap: var(--e-2); margin-top: 4px; }
 .partida__modo { height: 18px; width: auto; flex: none; }
+
+/* LAS PARTIDAS QUE PIDEN ALGO. Se marca la fila entera y no solo una etiqueta:
+   la lista se recorre de un vistazo y una palabra mas entre otras cuatro no se
+   ve. La barra de la izquierda si.
+   DOS TONOS Y NINGUNO DE ALERTA. `premio` es el resultado que te esta
+   esperando --buena noticia-- y `curso` es la partida a medias, que no es un
+   fallo de nadie: es una manera de jugar. Un rojo aqui convertiria en problema
+   lo que es una invitacion. */
+/* ==========================================================================
+   DELIBERANDO: EL JUEZ GRANDE, DE LA CINTURA PARA ARRIBA, SALIENDO DESDE ABAJO
+   Decision del titular (2026-09-15), para los dos modos. Antes habia un disco
+   de 84 px, un «Deliberando…», el parrafo de que esta haciendo y un renglon con
+   el recuento de intervenciones: un cartel de carga con adornos para una espera
+   que puede durar un minuto largo.
+   ========================================================================== */
+/* SIN `position: relative` Y SIN `overflow`, Y LAS DOS AUSENCIAS SON EL ARREGLO
+   (correccion del titular, 2026-09-15: «no debes ser tu quien corte al juez, que
+   lo haga el mismo viewport»).
+
+   Estaba recortado por una ventana mia con `overflow: hidden`, y eso deja un
+   corte horizontal a media pantalla --una linea recta bajo la barbilla-- que se
+   ve como lo que es: una caja. Lo que tiene que cortarlo es el borde de la
+   pantalla, con las piernas por fuera.
+
+   Para eso el juez tiene que ESCAPAR del cuerpo del modal, que es
+   `overflow-y: auto` y lo recortaria igual. Se consigue no posicionando nada
+   entre medias: sin `position` aqui, el bloque contenedor de `.delibera` pasa a
+   ser `.modal` --que si esta posicionado, ocupa la pantalla entera y ya tiene su
+   `overflow: hidden`--. Un absoluto cuyo contenedor esta FUERA de una caja de
+   scroll no lo recorta esa caja.
+
+   `align-content` Y NO `justify-content`: `.sala` es una REJILLA, y ahi
+   `justify-` es el eje horizontal. Puesto mal, el texto del fallo seguia
+   centrado verticalmente --medido: arrancaba a 259 px en una sala de 487-- y se
+   le montaba encima al juez. */
+.sala--delibera {
+  align-content: start;
+}
+/* EL JUEZ, COLOCADO Y NADA MAS. Sin alto, sin recorte y sin caja: se ancla al
+   13 % de la PANTALLA --no de la sala-- y de ahi para abajo ocupa lo que ocupe.
+   Las piernas se salen por el borde de abajo y las corta el modal.
+
+   EL TEXTO NO LO MUEVE, va fijo (regla del titular). Por eso mide contra la
+   pantalla y no contra su padre: el parrafo del fallo cambia el alto de la sala
+   y con un `%` del padre el juez daba un salto entre una pantalla y la otra.
+
+   `z-index: -1` LO DEJA DETRAS DEL BOTON sin esconderlo. Un positivo lo pondria
+   encima de «Volver a pedirlo» --los elementos posicionados pintan sobre los que
+   no lo estan, aunque vayan antes en el HTML--; en negativo pinta sobre el fondo
+   del modal pero debajo de su contenido, que es exactamente el orden que hace
+   falta. */
+/* UN 30 % MAS CHICO (titular, 2026-09-15): el lienzo pasa de 160 % a 112 %, asi
+   que la figura baja del 80 % de la pantalla al 56 %.
+
+   Y HAY QUE BAJARLO EN LA MISMA TANDA, que es geometria y no gusto: lo que
+   corta al juez es el borde de abajo, y una figura mas chica anclada donde
+   estaba deja de llegar a el --con el lienzo a 112 % los pies caen en 659 y la
+   pantalla acaba en 812-- asi que se veria el cuerpo entero flotando, que es lo
+   que el encuadre viene a evitar. Del 13 % al 40 % los pies vuelven a salirse
+   por abajo (878 contra 812, medido). */
+.delibera {
+  position: absolute; left: 50%; top: 40%;
+  width: 112%; max-width: none;
+  /* CAJA DE VERDAD Y NO UNA DE ALTO CERO. Las dos posturas van `inset: 0`, asi
+     que sin esto el contenedor colapsa a 0 y el alto lo resuelve cada imagen por
+     su cuenta con la proporcion del lienzo. Funciona --esta medido: 929 px las
+     dos-- pero deja un padre degenerado que se rompe al primer cambio. Con la
+     proporcion declarada, la caja es la del lienzo. */
+  aspect-ratio: 620 / 960;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: delibera-sube .5s var(--suave) both;
+}
+@keyframes delibera-sube {
+  from { transform: translate(-50%, 8%); opacity: 0 }
+  to   { transform: translate(-50%, 0); opacity: 1 }
+}
+
+/* EL 160 % NO ES UN NUMERO A OJO, ESTA MEDIDO. Las piezas de los jueces son de
+   620x960 y la figura ocupa solo el 45-55 % del ancho del lienzo --medido en
+   los seis: Teo 48 %, Vera 49 %, Bruno 45 %, y hasta 55 % en las de tomar
+   notas, que sacan el codo--. O sea que el lienzo es casi el doble de ancho que
+   el juez, y dimensionar la pieza «al ancho de la pantalla» deja un juez de
+   media pantalla. Aqui se le da al LIENZO un 160 % del ancho de la pantalla
+   para que la FIGURA quede cerca del 79 %.
+   Esta es la misma leccion que `CLAUDE.md` ya tenia escrita para los personajes
+   --«el marco compartido tiene un precio y hay que pagarlo en CSS»-- y la volvi
+   a tropezar: primero con `contain`, que dejaba al juez flotando pequeño en el
+   centro, y despues con `cover` al ancho de la caja, que lo dejaba a la mitad.
+
+   Y EL AIRE DE ENCIMA DE LA CABEZA --la figura arranca al 18-20 % del lienzo--
+   ya no se compensa a mano: lo tiene en cuenta el `top` del padre, y quien
+   decide donde acaba es el borde de la pantalla.
+
+   LAS DOS POSTURAS VAN APILADAS EN EL MISMO SITIO y se cruzan con un fundido:
+   nada se mueve, solo cambia quien se ve. Con `display:none` habria un salto. */
+.delibera__fig {
+  /* `max-width: none` O EL 160 % DEL PADRE NO SIRVE DE NADA: `base.css` pone
+     `img, svg { max-width: 100% }` para que ninguna imagen saque la pantalla de
+     los 430 px, y eso recortaba el lienzo al ancho del padre dejando al juez a
+     la mitad. Aqui el desbordamiento es el efecto, y quien lo contiene es el
+     `overflow: hidden` del modal. */
+  position: absolute; inset: 0;
+  width: 100%; max-width: none; height: auto;
+  opacity: 0;
+  filter: drop-shadow(0 -6px 18px rgba(46, 42, 63, .16));
+  /* EL FUNDIDO ES LARGO A PROPOSITO: 900 ms sobre un ciclo de 4 s. Un corte
+     rapido entre dos dibujos casi iguales se lee como un fallo de carga; lento,
+     se lee como alguien que cambia de postura. */
+  transition: opacity .9s var(--suave);
+}
+.delibera__fig--puesta { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .delibera { animation: none }
+  .delibera__fig { transition: none }
+}
+
+/* El fallo SI lleva texto --hay que decir que paso y ofrecer volver a pedirlo--
+   y va arriba. PERO ENTONCES EL JUEZ TIENE QUE BAJAR: con la ventana al 78 % la
+   figura sube hasta detras del parrafo y lo deja ilegible --pasó, y sobre un
+   texto que explica una averia, que es el peor sitio--. No se arregla con
+   `z-index`: el texto quedaria encima de una cara, que se lee igual de mal.
+   AQUI SE LE BAJABA EL ALTO AL JUEZ CUANDO HABIA TEXTO, y el titular lo corto:
+   «el texto no lo mueve, el va fijo». Tenia razon --el juez saltaba de sitio
+   entre la pantalla de esperar y la de fallo-- y ademas ya no hace falta: sin
+   recorte propio y anclado al 13 % de la pantalla, la cabeza queda por debajo
+   del parrafo en las dos. */
+/* CENTRADO (titular, 2026-09-15). El parrafo ya lo estaba y el titular no, asi
+   que el bloque se leia desalineado consigo mismo. */
+.delibera__dice {
+  position: relative; z-index: 1; padding-top: var(--e-5); text-align: center;
+}
+.delibera__titular {
+  font-family: var(--display); font-size: var(--t-h2); font-weight: 800;
+  color: var(--ctx-tinta, var(--tinta)); margin: 0 0 var(--e-2);
+}
+
+/* AQUI HABIA UNA BARRA DE COLOR A LA IZQUIERDA Y SE FUE (titular, 2026-09-15).
+   Marcaba la fila cuando el fondo de la tarjeta era blanco para todas; desde
+   que la tarjeta lleva su propio tinte por familia, la barra dice lo mismo dos
+   veces y ademas parte la tarjeta en dos. */
+.partida__estado {
+  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
+  color: var(--premio); text-transform: uppercase;
+}
+.partida[data-tono="curso"] .partida__estado { color: var(--lavanda-oscuro); }
+/* La terminada tambien lleva su palabra, en tono apagado: sin ella las filas
+   sin estado se leian como si les faltara algo. */
+.partida__estado--hecha { color: var(--tinta-tenue); }
+
+/* LAS DOS FILAS DE CABECERA. Todo lo que identifica la partida va arriba y la
+   pregunta queda sola debajo: el estado y la fecha en la primera, quienes
+   jugaron y por donde van en la segunda.
+   `min-width: 0` EN LAS DOS MITADES o el nombre largo o el enunciado ensanchan
+   la fila y sacan la pantalla de los 430 px --en un flex el minimo por defecto
+   es el del contenido, que es la trampa de siempre--. */
+.partida__alto {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--e-2); width: 100%; min-width: 0;
+}
+.partida__alto > * { min-width: 0; }
+.partida__alto + .partida__alto { margin-top: 3px; }
+/* El estado y el avance van juntos --«SIN TERMINAR · 3 de 6»-- porque dicen lo
+   mismo desde dos lados, y separarlos gastaba una fila para dos palabras. */
+.partida__estado { display: flex; align-items: baseline; gap: 6px; flex: none; }
+.partida__avance {
+  font-weight: 700; letter-spacing: 0; text-transform: none;
+  color: var(--tinta-tenue);
+}
+.partida__avance::before { content: '·'; margin-right: 6px; }
+.partida__cuando { flex: none; }
+/* En la esquina, y mas chico que cuando vivia en la fila: ahi era una etiqueta
+   entre texto y aqui es un sello. */
+.partida__modo { height: 22px; width: auto; flex: none; }
+
+/* EL FILTRO DE DONDE SE JUEGA. Dos y solo dos, sin «todas»: son dos maneras de
+   jugar que esperan cosas distintas, y juntarlas otra vez seria no tener
+   filtro. Pegado al titulo y separado de la lista. */
+.filtros--donde { margin-bottom: var(--e-4); }
+
+/* Y EL MISMO AVISO EN LA PORTADA, que mientras no haya notificacion de fuera
+   es la unica manera de enterarse sin ir a buscarlo. Ocupa el ancho entero
+   porque compite con las dos cartas de modo, que son lo mas grande que hay. */
+.aviso-veredicto {
+  display: grid; gap: 2px; width: 100%; text-align: left;
+  margin-bottom: var(--e-4); cursor: pointer;
+  font: inherit; color: inherit;
+  border: 1px solid rgba(233, 162, 59, .34);
+  background: var(--premio-tinte);
+}
+.aviso-veredicto[data-tono="curso"] {
+  border-color: rgba(122, 106, 216, .3);
+  background: var(--lavanda-tinte);
+}
+.aviso-veredicto__eti {
+  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
+  color: var(--premio); text-transform: uppercase;
+}
+
+/* QUIENES JUGARON, en la fila y en el aviso de la portada. Las caras chicas
+   porque el dato es CUAL de las partidas es, no quienes son: el nombre ya lo
+   dice y la cara es lo que se reconoce de un vistazo. */
+.jugaron {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: nowrap; min-width: 0; overflow: hidden;
+}
+.jugaron__uno { display: flex; align-items: center; gap: 5px; min-width: 0; }
+.jugaron__cara { width: 22px; height: 22px; flex: none; }
+.jugaron__nombre {
+  font-size: var(--t-mini); font-weight: 700; color: var(--tinta-suave);
+  /* Un nombre largo no puede ensanchar la fila: la pantalla son 430 px y esto
+     vive dentro de una tarjeta que ya tiene su papelera al lado. */
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 9ch;
+}
+.jugaron__vs {
+  font-size: var(--t-mini); font-weight: 800; color: var(--tinta-tenue);
+  text-transform: uppercase; letter-spacing: .06em;
+}
+
+/* AQUI HUBO UNA TARJETA `.acta-puerta` Y SE FUE (titular, 2026-09-15). Llevaba
+   a una pantalla aparte de la que habia que volver; ahora las actas son un chip
+   mas del filtro del historial y la lista se carga en el sitio. */
+
+/* CADA ACTA USA LA TARJETA DEL HISTORIAL --`.tarjeta > .partida`, con su
+   cabecera y su enunciado-- y solo añade lo suyo: el texto de lo que quedaron.
+   No lleva rotulo de modo --todas son de Pacto, marcarlo en todas no distingue
+   ninguna-- ni papelera: un acta no se borra por su cuenta, se va con su
+   partida.
+
+   EL TEXTO DEL ACUERDO ES DETALLE, NO TITULAR (titular, 2026-09-15): 13 px
+   --tres menos-- y sin negrita. Lo que titula la fila es el enunciado; el acta
+   es lo que se lee despues, y a tamaño de cuerpo y en negrita competia con el.
+
+   AQUI HABIA UNA BARRA DE COLOR A LA IZQUIERDA Y SE FUE, igual que en las
+   tarjetas del historial y por lo mismo: la tarjeta ya tiene su tinte y la
+   barra decia lo mismo dos veces.
+
+   TAMPOCO LLEVA «OIR LA PARTIDA». Toda tarjeta de estas listas abre la partida
+   de la que sale --es el comportamiento natural del historial-- y escribirlo
+   solo en una sugiere que las demas hacen otra cosa. */
+.acta-fila__texto {
+  display: block; margin-top: var(--e-2);
+  font-size: var(--t-chico);
+  color: var(--tinta); line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+[data-tipo="desacuerdo"] .acta-fila__texto { color: var(--tinta-suave); }
+
+/* EL AVISO QUE NO BLOQUEA. Reemplaza al `confirm()` del navegador al salir de
+   la sala: ahi ya no hay nada que preguntar --la partida se retoma-- y si algo
+   que decir.
+   VA POR ENCIMA DE TODO, incluida la revelacion (60) y los modales apilados,
+   porque puede aparecer justo cuando uno se cierra; y NO ATRAPA TOQUES salvo el
+   suyo, o taparia el boton que la persona iba a pulsar despues. */
+.aviso-flotante {
+  position: absolute; z-index: 90;
+  left: var(--borde-pantalla); right: var(--borde-pantalla);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 84px);
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--radio-tarjeta);
+  background: var(--tinta); color: var(--crema);
+  font-size: var(--t-chico); font-weight: 700; line-height: 1.4;
+  box-shadow: 0 10px 28px rgba(60, 44, 32, .28);
+  cursor: pointer;
+  opacity: 0; transform: translateY(10px);
+  transition: opacity var(--dur-corta) var(--suave),
+              transform var(--dur-corta) var(--suave);
+}
+.aviso-flotante--puesto { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .aviso-flotante { transition: none; transform: none; }
+}
+.aviso-veredicto[data-tono="curso"] .aviso-veredicto__eti { color: var(--lavanda-oscuro); }
+.aviso-veredicto__tema {
+  font-weight: 800; color: var(--tinta); line-height: 1.35;
+  overflow-wrap: anywhere;
+}
 
 

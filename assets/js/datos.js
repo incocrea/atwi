@@ -527,6 +527,11 @@ window.ATWI = window.ATWI || {};
         localStorage.removeItem(CLAVE);
         localStorage.removeItem(CLAVE_TEMAS);
         localStorage.removeItem(CLAVE_INVITADOS);
+        /* Y el set del probador, que es de `app.js` --`CLAVE_PROBADOR`-- y se
+           nombra aquí a mano. No es una partida ni un acta, pero SE SIEMBRA CON
+           EL NOMBRE DEL PERFIL, así que dejarlo dejaría una copia del nombre
+           después de haber prometido borrarlo de este dispositivo. */
+        localStorage.removeItem('atwi.probador.v1');
       } catch (e) {}
       perfil = null;
       listaTemas = null;

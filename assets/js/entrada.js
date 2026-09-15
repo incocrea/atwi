@@ -390,6 +390,13 @@ window.ATWI = window.ATWI || {};
   }
 
   window.ATWI.entrada = {
+    /* LA PUERTA DE PRUEBAS, EXPUESTA. La mira el probador de resultados para
+       saber si puede enseñarse: en modo local no hay sesión, así que no hay
+       correo que comparar con el del titular. Se exporta en vez de repetir la
+       comprobación allá, que es como se acaba teniendo dos definiciones de
+       «esto es una prueba» y una de las dos mal. */
+    dePruebas: modoPruebas,
+
     /** Abre la puerta si hace falta. Llama a `hecho` cuando se puede jugar. */
     exigir: function (hecho) {
       alTerminar = hecho;

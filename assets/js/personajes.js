@@ -33,6 +33,35 @@ window.ATWI = window.ATWI || {};
     maya: { nombre: 'Maya' }
   };
 
+  /* LOS SEIS JUECES, que son otra cosa que los seis personajes y por eso van
+     en su propia tabla. Tres diferencias que importan al dibujar:
+
+     · NO TIENEN COLOR. La toga es negra en las seis fichas, así que su archivo
+       es `<quien>-<pose>.webp` y no `<quien>-<color>-<pose>.webp`. Pasarles un
+       color por descuido pediría un archivo que no existe.
+     · TIENEN OTRAS POSES. Ni `frente` ni `puno` ni `ganar`: escuchan, hablan y
+       dictan veredicto.
+     · NO SE JUEGA CON ELLOS. No hay veto de «no podés ser el mismo personaje»
+       porque el juez es UNO para toda la partida y no se enfrenta a nadie.
+
+     El orden es el del selector, y no es alfabético: alterna los tres de la
+     plancha de ellos con los tres de la de ellas, para que la rejilla de seis
+     no salga partida en dos bloques. */
+  var JUECES = {
+    bruno: { nombre: 'Bruno' },
+    vera: { nombre: 'Vera' },
+    remo: { nombre: 'Remo' },
+    iris: { nombre: 'Iris' },
+    teo: { nombre: 'Teo' },
+    ada: { nombre: 'Ada' }
+  };
+
+  /* LAS TRES DE ESCUCHAR, en el orden en que se alternan. No son las tres
+     primeras columnas de la plancha: la 1 y la 3 son casi la misma —cambia
+     poco más que el ángulo— y alternarlas se vería como un parpadeo. Van
+     barbilla, notas y brazos cruzados, que son tres cosas distintas de ver. */
+  var ESCUCHA = ['escucha-1', 'escucha-2', 'escucha-3'];
+
   /* EL COLOR ES DEL JUGADOR, NO DEL PERSONAJE, y esto cambió: antes Kai era
      azul y Luna rosa, para siempre, y encima había diez colores de aro que solo
      pintaban el borde del avatar. Ahora hay CUATRO y cada uno es un dibujo
@@ -166,6 +195,25 @@ window.ATWI = window.ATWI || {};
                              luna: 'derecha', nina: 'derecha', maya: 'derecha' };
   var MIRA = {
     puno: TODOS_A_LA_DERECHA,
+    /* `ganar` TAMBIÉN, y por lo mismo: los seis levantan el puño con el brazo
+       DERECHO del dibujo, o sea hacia la derecha de la lámina --medido sobre
+       las seis--. En la pantalla de victoria el ganador entra desde su lado y
+       el puño tiene que quedar del lado del centro, así que a quien gana por la
+       derecha hay que voltearlo. Sin `mira` no se voltea nadie, que es lo que
+       necesita la ficha redonda del duelo. */
+    ganar: TODOS_A_LA_DERECHA,
+    /* `sentado` TAMBIEN, Y MIRA AL OTRO LADO QUE LAS DEMAS. En la pose sentada
+       hay una mano que sube --a la nuca en ellos, a la mejilla en ellas-- con
+       la cabeza inclinada hacia ese lado, y en los seis esta a la IZQUIERDA de
+       la lamina. Las otras dos poses de MIRA estan dibujadas a la derecha, asi
+       que aqui se voltea la figura del lado contrario que alli.
+       Importa porque en la revelacion los dos entran desde sus costados y la
+       mano tiene que apuntar al centro, que es donde esta la otra persona
+       (decision del titular, 2026-09-14).
+       Sin `mira` no se voltea nadie, que es lo que necesitan el disco del duelo
+       y la sala. */
+    sentado: { kai: 'izquierda', nico: 'izquierda', dante: 'izquierda',
+               luna: 'izquierda', nina: 'izquierda', maya: 'izquierda' },
     /* `plante` TAMBIEN. Estaba fuera y en el versus salian los dos mirando al
        mismo lado, que en una pantalla que dice VS entre ellos se lee raro: uno
        le esta dando la espalda al otro. Volteando al de la derecha se ponen
@@ -354,7 +402,36 @@ window.ATWI = window.ATWI || {};
   window.ATWI.esPersonaje = function (quien) { return Object.prototype.hasOwnProperty.call(GENTE, quien); };
 
   /** El nombre propio, para leerlo en pantalla. */
-  window.ATWI.nombrePersonaje = function (quien) { return (GENTE[quien] || GENTE.kai).nombre; };
+  window.ATWI.nombrePersonaje = function (quien) {
+    return (GENTE[quien] || JUECES[quien] || GENTE.kai).nombre;
+  };
+
+  /* --- Los jueces ---------------------------------------------------------- */
+  window.ATWI.esJuez = function (quien) { return Object.prototype.hasOwnProperty.call(JUECES, quien); };
+  window.ATWI.jueces = function () {
+    return Object.keys(JUECES).map(function (k) { return { clave: k, nombre: JUECES[k].nombre }; });
+  };
+  window.ATWI.posesDeEscucha = function () { return ESCUCHA.slice(); };
+  /* Sin color en la ruta: la toga es negra en las seis fichas. */
+  window.ATWI.piezaJuez = function (quien, pose) {
+    return '../assets/img/personajes/' + quien + '-' + (pose || 'ficha') + '.webp';
+  };
+  /* La ficha redonda del juez, con el mismo marco y el mismo disco que la de
+     los personajes para que en pantalla pesen igual. El disco va en crema y no
+     en un color de jugador: el juez no es de nadie. */
+  window.ATWI.fichaJuezHTML = function (quien, clase) {
+    var j = JUECES[quien] ? quien : 'bruno';
+    /* MISMA ESTRUCTURA QUE `fichaHTML`, a proposito: mismo `.avatar`, mismo
+       `.retrato__fig` dentro, mismo tamaño de pieza. Asi el juez y un personaje
+       puestos uno al lado del otro pesan igual en pantalla, que es lo que hace
+       que el juez se lea como el tercero de la mesa y no como un icono. Lo que
+       cambia es que no lleva `--borde-ficha` ni disco de color: el juez no es
+       de nadie. */
+    return '<span class="avatar avatar--juez ' + (clase || '') + '" data-quien="' + j + '">' +
+      '<img class="retrato__fig" src="' + window.ATWI.piezaJuez(j, 'ficha') + '" ' +
+      'alt="' + esc(JUECES[j].nombre) + '" loading="lazy" decoding="async">' +
+    '</span>';
+  };
 
   /** El tono del color con el que juega alguien. Es el que marca su voz en la
       sala, y ya no depende del personaje sino de lo que eligió. */

@@ -1,0 +1,354 @@
+{
+ "frases": {
+  "entre": [
+   "Te escuché. Veamos qué dice la otra parte.",
+   "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "Lo tengo. Ahora escucho a la otra persona.",
+   "Registrado. Que hable la otra parte.",
+   "Hasta aquí lo tuyo. Escuchemos el otro lado."
+  ],
+  "cierre": [
+   "Ya tengo todos los argumentos. Voy a deliberar.",
+   "Con esto me basta. Denme un momento para pensarlo.",
+   "Terminamos la ronda. Ahora me toca a mí."
+  ]
+ },
+ "grabado": {
+  "bruno-cierre-1.mp3": {
+   "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 27360
+  },
+  "remo-cierre-1.mp3": {
+   "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 28800
+  },
+  "teo-cierre-1.mp3": {
+   "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 22896
+  },
+  "vera-cierre-1.mp3": {
+   "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 30672
+  },
+  "iris-cierre-1.mp3": {
+   "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 27360
+  },
+  "ada-cierre-1.mp3": {
+   "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 27792
+  },
+  "bruno-cierre-2.mp3": {
+   "texto": "Con esto me basta. Denme un momento para pensarlo.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 28512
+  },
+  "remo-cierre-2.mp3": {
+   "texto": "Con esto me basta. Denme un momento para pensarlo.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 28944
+  },
+  "teo-cierre-2.mp3": {
+   "texto": "Con esto me basta. Denme un momento para pensarlo.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 22752
+  },
+  "vera-cierre-2.mp3": {
+   "texto": "Con esto me basta. Denme un momento para pensarlo.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 30672
+  },
+  "iris-cierre-2.mp3": {
+   "texto": "Con esto me basta. Denme un momento para pensarlo.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 27360
+  },
+  "ada-cierre-2.mp3": {
+   "texto": "Con esto me basta. Denme un momento para pensarlo.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 28944
+  },
+  "bruno-cierre-3.mp3": {
+   "texto": "Terminamos la ronda. Ahora me toca a mí.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 24912
+  },
+  "remo-cierre-3.mp3": {
+   "texto": "Terminamos la ronda. Ahora me toca a mí.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 26352
+  },
+  "teo-cierre-3.mp3": {
+   "texto": "Terminamos la ronda. Ahora me toca a mí.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 20448
+  },
+  "vera-cierre-3.mp3": {
+   "texto": "Terminamos la ronda. Ahora me toca a mí.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 27360
+  },
+  "iris-cierre-3.mp3": {
+   "texto": "Terminamos la ronda. Ahora me toca a mí.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 24480
+  },
+  "ada-cierre-3.mp3": {
+   "texto": "Terminamos la ronda. Ahora me toca a mí.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 26064
+  },
+  "bruno-entre-1.mp3": {
+   "texto": "Te escuché. Veamos qué dice la otra parte.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 25344
+  },
+  "remo-entre-1.mp3": {
+   "texto": "Te escuché. Veamos qué dice la otra parte.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 27072
+  },
+  "teo-entre-1.mp3": {
+   "texto": "Te escuché. Veamos qué dice la otra parte.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 21168
+  },
+  "vera-entre-1.mp3": {
+   "texto": "Te escuché. Veamos qué dice la otra parte.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 27792
+  },
+  "iris-entre-1.mp3": {
+   "texto": "Te escuché. Veamos qué dice la otra parte.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 24768
+  },
+  "ada-entre-1.mp3": {
+   "texto": "Te escuché. Veamos qué dice la otra parte.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 26208
+  },
+  "bruno-entre-2.mp3": {
+   "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 27072
+  },
+  "remo-entre-2.mp3": {
+   "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 27792
+  },
+  "teo-entre-2.mp3": {
+   "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 23040
+  },
+  "vera-entre-2.mp3": {
+   "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 30096
+  },
+  "iris-entre-2.mp3": {
+   "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 26784
+  },
+  "ada-entre-2.mp3": {
+   "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 28800
+  },
+  "bruno-entre-3.mp3": {
+   "texto": "Lo tengo. Ahora escucho a la otra persona.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 25776
+  },
+  "remo-entre-3.mp3": {
+   "texto": "Lo tengo. Ahora escucho a la otra persona.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 27360
+  },
+  "teo-entre-3.mp3": {
+   "texto": "Lo tengo. Ahora escucho a la otra persona.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 21024
+  },
+  "vera-entre-3.mp3": {
+   "texto": "Lo tengo. Ahora escucho a la otra persona.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 28944
+  },
+  "iris-entre-3.mp3": {
+   "texto": "Lo tengo. Ahora escucho a la otra persona.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 25920
+  },
+  "ada-entre-3.mp3": {
+   "texto": "Lo tengo. Ahora escucho a la otra persona.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 26640
+  },
+  "bruno-entre-4.mp3": {
+   "texto": "Registrado. Que hable la otra parte.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 23472
+  },
+  "remo-entre-4.mp3": {
+   "texto": "Registrado. Que hable la otra parte.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 24624
+  },
+  "teo-entre-4.mp3": {
+   "texto": "Registrado. Que hable la otra parte.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 20016
+  },
+  "vera-entre-4.mp3": {
+   "texto": "Registrado. Que hable la otra parte.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 26208
+  },
+  "iris-entre-4.mp3": {
+   "texto": "Registrado. Que hable la otra parte.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 23328
+  },
+  "ada-entre-4.mp3": {
+   "texto": "Registrado. Que hable la otra parte.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 24336
+  },
+  "bruno-entre-5.mp3": {
+   "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
+   "voz": "es-GQ-JavierNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "bytes": 26064
+  },
+  "remo-entre-5.mp3": {
+   "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
+   "voz": "es-ES-ArnauNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 26352
+  },
+  "teo-entre-5.mp3": {
+   "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
+   "voz": "es-PY-MarioNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "bytes": 22032
+  },
+  "vera-entre-5.mp3": {
+   "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
+   "voz": "es-PR-KarinaNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "bytes": 28944
+  },
+  "iris-entre-5.mp3": {
+   "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
+   "voz": "es-US-PalomaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 25920
+  },
+  "ada-entre-5.mp3": {
+   "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
+   "voz": "es-AR-ElenaNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "bytes": 26784
+  }
+ }
+}

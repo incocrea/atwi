@@ -64,7 +64,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '2e2f17c',
+  version: '965718f',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -92,6 +92,63 @@ window.ATWI.config = {
 
   /* Dirección canónica, para compartir. */
   urlCanonica: 'https://atwi.app/',
+
+  /* LA VOTACIÓN DE NEGOCIACIÓN. El mediador propone tres maneras de quedar y
+     cada quien marca una a ciegas; si coinciden hay acuerdo y lo firman.
+
+     VA FUERA DE `veredicto` A PROPÓSITO: esto ocurre en la SALA, antes de que
+     haya resultado, y es la pantalla que decide cuál de las dos revelaciones
+     sale. Metido ahí dentro se leería como parte del veredicto, que es
+     justamente lo que no es.
+
+     EL AVISO SE DA ANTES DE VOTAR, no después: saber que todavía se va a poder
+     retocar el texto es lo que hace que se vote la idea y no la redacción, que
+     es lo único que la votación puede decidir. */
+  negociacion: {
+    /* LA ELECCIÓN. En partida local los dos están delante y eligen juntos, así
+       que la pantalla les habla a los dos y no a uno. */
+    titulo: 'Elijan una, entre los dos',
+    aviso: 'Si ninguna les convence, márquenlo: no acordar hoy también vale. La que ' +
+           'elijan la van a poder ajustar antes de firmarla.',
+    ninguna: 'Ninguna nos convence',
+
+    /* CUANDO EL MEDIADOR NO PUDO PROPONER NADA. Puede pasar porque declaró que
+       no hay terreno común, porque paró por seguridad, o porque lo que se dijo
+       no da material para un acuerdo que se sostenga. Se ofrece repetir, y la
+       única salida es una que ellos tocan: «por ahora» es la palabra que
+       importa, porque no cierra el tema. */
+    sinPropuestasTitulo: 'No hay acuerdo que proponerles',
+    sinPropuestas: 'Con lo que se dijo hoy no sale ninguna propuesta que se sostenga en ' +
+                   'lo que dijeron los dos, y preferimos no inventar una. El tema sigue ' +
+                   'ahí: pueden repetir el ejercicio cuando quieran.',
+    sinPropuestasOpcion: 'Sin acuerdo por ahora',
+
+    /* EL ACTA. Se pregunta siempre, aunque no hayan tocado el texto. */
+    actaTitulo: 'El acuerdo',
+    actaPregunta: '¿Lo aceptan los dos tal como está?',
+    actaEditando: 'Escríbanlo como quieran que quede. Es lo que se va a guardar.',
+    actaFirmar: 'Sí, firmarlo',
+    actaEditar: 'Queremos editarlo antes',
+    /* El mínimo no es de la pantalla: es el `check` de la tabla `acuerdos`,
+       que exige entre 10 y 600 caracteres. */
+    actaCorto: 'Quedó demasiado corto para guardarlo. Escriban un poco más.',
+    actaGuardar: 'Listo',
+
+    /* EL ACTA DE CUANDO NO HUBO ACUERDO. Se guarda igual, con `tipo` en
+       `desacuerdo`, y por eso necesita un texto: la tabla exige de 10 a 600
+       letras y aquí no hay nada que la pareja haya escrito.
+
+       ESTO NO ES UN RELLENO PARA CONTENTAR A LA RESTRICCIÓN. `docs/02` §13 le
+       da permiso expreso al mediador para declarar que no hay terreno común, y
+       marcar «Ninguna» es la pareja diciendo lo mismo: es un cierre legítimo y
+       merece quedar escrito como los otros. Si solo se guardaran los acuerdos,
+       el historial contaría una historia en la que siempre se acuerda.
+
+       Y NO PROMETE NADA, que es la regla 1: no dice que el tema quede resuelto
+       ni pendiente, solo lo que pasó. */
+    actaSinAcuerdo: 'Esta vez no encontramos un acuerdo sobre este tema. Lo hablamos ' +
+                    'por turnos y cada quien dejó dicha su posición.'
+  },
 
   /* Reglas de juego que la interfaz necesita conocer. Las de verdad las
      aplica el servidor; estas son solo para no enseñar botones imposibles.
@@ -173,7 +230,7 @@ window.ATWI.config = {
   frasesDeCierre: [
     'Ya tengo todos los argumentos. Voy a deliberar.',
     'Con esto me basta. Denme un momento para pensarlo.',
-    'Hemos terminado la ronda. Ahora me toca a mí.'
+    'Terminamos la ronda. Ahora me toca a mí.'
   ],
 
   /* El momento del resultado. Frase, cuenta atrás y redoble.
@@ -186,13 +243,228 @@ window.ATWI.config = {
        ATWI un instante antes de leerse la frase.
        Cada tramo va como [archivo en img/atwi, lo que se lee en voz alta]. */
     frase: [['And', 'And'], ['The', 'The'], ['Winner', 'Winner'], ['Is', 'Is…']],
-    segundosCuentaAtras: 3,
 
-    /* En Negociación no gana una persona. Con pareja gana siempre la relación. */
-    ganadorNegociacion: { pareja: 'la relación', amigos: 'los dos' },
+    /* `segundosCuentaAtras` VIVIA AQUI Y SE FUE (decision del titular,
+       2026-09-14). Eran 3-2-1 con un numero grande y su redoble; se probo una
+       tarde entera el timing corto del probador y es mejor: el 3-2-1 no anade
+       tension, anade espera, y en un juego que se abre muchas veces la
+       ceremonia larga es lo primero que cansa. Ahora la secuencia es frase ->
+       un segundo quieto con redoble -> resultado, y ese segundo vive en
+       `veredicto.js` porque es parte de la animacion, no una preferencia. */
 
-    conAcuerdo: 'Tienen un acuerdo sobre {tema}, escrito por ustedes y firmado por los dos.',
+    /* En Negociación no gana una persona: o ganan los dos o no gana nadie.
+       CON ACUERDO DICE «AMBOS» Y NADA MÁS (decisión del titular, 2026-09-14).
+       Decía «la relación» con pareja y «los dos» con amigos, y con el acuerdo
+       los dos avatares entran grandes desde sus lados: el titular tiene que
+       caber entre ellos, así que una palabra corta e igual para los dos. La
+       frase que explicaba el acuerdo se fue entera a la pantalla del juez, que
+       es quien lo presenta. */
+    ganadorNegociacion: { pareja: 'Ambos', amigos: 'Ambos' },
+
+    /* CUANDO NO LLEGA RESPUESTA. No se revela nada y no se inventa nada: la
+       partida se queda donde estaba --deliberando-- y se ofrece volver a
+       pedirlo. La ronda entera está grabada y guardada; lo que falló es UNA
+       llamada, así que lo que se reintenta es la llamada y no la partida, y eso
+       es lo que el texto tiene que dejar claro para que nadie tema perder lo
+       que ya grabó. */
+    /* NO CONTESTAR NO ES UN RESULTADO, Y ESTA PANTALLA TIENE QUE DECIRLO
+       (queja del titular, 2026-09-15: «el no contesta no nos sirve de nada»).
+       Decía «No pude traer el resultado», que se lee igual que «no hubo
+       resultado», y las dos cosas no se parecen en nada: sin veredicto es una
+       decisión del juez sobre la ronda —la leyó entera— y esto es una llamada
+       que no llegó, con nadie habiendo leído nada. Por eso aquí se dice en voz
+       alta que no pasó nada todavía y que la ronda sigue entera. */
+    falloTitulo: 'No llegó la respuesta',
+    fallo: 'Esto no es un resultado: nadie alcanzó a leer la ronda. Lo que ' +
+           'grabaron está guardado entero y no se pierde. Volvemos a pedirlo y ya.',
+    reintentar: 'Volver a pedirlo',
+
+    /* SIN ACUERDO NO DICE «AMBOS», y el titular tiene que ser otro. Antes los
+       dos finales compartían titular --«la relación»-- y ya chirriaba; con
+       «Ambos» pasa a ser una contradicción de dos renglones: «Ambos» encima de
+       «esta vez no hubo acuerdo». Aquí no ganó nadie y el titular lo dice sin
+       adornarlo; que negociar valió igual lo dice la frase de debajo, y el juez
+       lo desarrolla en la pantalla siguiente. */
+    tituloSinAcuerdo: 'Sin acuerdo',
+
+    /* AQUÍ ESTABA `tituloSinMediador`, «Ronda guardada», Y SE FUE (decisión del
+       titular, 2026-09-15). Era el final de la partida cuyo mediador no
+       contestaba, y el titular lo llamó por su nombre: no sirve de nada. Tenía
+       el cartel grande, los dos avatares entrando y el botón de «qué dijo el
+       juez» —toda la puesta en escena de un desenlace— para decir que no había
+       ninguno. Ahora esa partida no llega a la revelación: se queda en
+       deliberando y se vuelve a pedir. Ver `noContesto()` en `partida.js`. */
+    /* `conAcuerdo` VIVÍA AQUÍ Y SE QUITÓ. Era la frase de debajo del titular
+       cuando había acuerdo, y con los dos avatares entrando grandes no hay sitio
+       ni falta hace: lo que el acuerdo dice lo presenta el juez en la pantalla
+       siguiente, con el texto entrecomillado y `juezNegociacion.conAcuerdo`
+       debajo. Un texto visible que ya no se pinta en ningún sitio es peor que no
+       tenerlo: el día que alguien lo cambie va a creer que cambió algo.
+       `sinAcuerdo` SE QUEDA: ahí no entra nadie grande y esa frase es lo único
+       que hay en pantalla. */
     sinAcuerdo: 'Esta vez no hubo acuerdo, y no pasa nada. Practicaron el arte de diferir ' +
-                'sin molestarse, y eso ya es una gran victoria.'
+                'sin molestarse, y eso ya es una gran victoria.',
+
+    /* AL EMPATE SE LLEGA POR CUATRO CAMINOS Y NO SIGNIFICAN LO MISMO. Aquí
+       decía una sola frase, «los dos defendieron igual de bien», y era falsa en
+       tres de los cuatro: cuando nadie llegó a sostener nada, cuando el juez se
+       contradijo entre pasadas y cuando los dos puntuaron bajo y parecido.
+       Felicitar por un empate que fue un desierto es de las pocas maneras de
+       que un veredicto se lea como burla.
+       La clave la manda el árbitro; `parejo` es la única que celebra. */
+    empate: {
+      parejo: 'Quedaron muy parejos: la diferencia era demasiado chica para separarlos. ' +
+              'El empate es un resultado, no un fallo.',
+      seDioVuelta: 'El juez leyó la ronda dos veces, y cada vez le dio el punto a uno ' +
+                   'distinto. Cuando eso pasa, el resultado es empate: separarlos sería ' +
+                   'fiarse de por dónde empezó a leer.',
+      sinPostura: 'Ninguno de los dos llegó a fijar una posición, así que no hubo dos ' +
+                  'cosas que comparar. Queda empate.',
+      generico: 'La ronda quedó empatada. El empate es un resultado, no un fallo.'
+    },
+
+    /* LA FRASE DE CIERRE LA ESCRIBE EL CLIENTE, no el árbitro. Era un campo
+       suyo (`texto_visible`) y salió del esquema el 2026-09-14: la propia §11
+       del prompt dice dos renglones más arriba que el texto localizado va como
+       CLAVE y lo resuelve el cliente, así que pedirle una frase libre se
+       contradecía consigo mismo. Y hacía falta un hueco: la API topa en 16
+       campos opcionales para este esquema, medido, y las dos frases nuevas de
+       «qué defendió bien cada uno» valen más que una frase de cierre que
+       siempre dice lo mismo. */
+    conGanador: 'Defendió mejor su idea en esta ronda.',
+
+    /* Mientras el árbitro trabaja: normalización más dos pasadas en serie, un
+       minuto largo. Se dice cuánto va a tardar para que nadie crea que se colgó. */
+    deliberando: 'El juez está leyendo las intervenciones. Suele tardar cerca de un minuto.',
+
+    /* LAS DOS PARADAS. No hay ganador ni empate: la partida no cuenta para
+       nadie. En la blanda se enseñan los dos párrafos de «lo que dijo cada uno»,
+       que son lo único compartible; en la dura no se enseña nada y el sistema
+       pone la pantalla de recursos (docs/02 §12.4), que todavía no existe. Ni
+       una ni otra dicen por qué: nombrar el patrón está prohibido.
+
+       EL TITULAR PIDIÓ QUE ESTO DIJERA «EMPATE» y aquí no puede (2026-09-14).
+       «Sin resultado» sonaba a avería, y en eso tenía razón; pero empate es un
+       resultado ganado por los dos, y a esta pantalla se llega sobre todo por
+       el veto de sometimiento: alguien se estuvo rindiendo y el juez se negó a
+       coronar al otro. Escribir «empataron, los dos defendieron muy bien» ahí
+       es justo la mentira que el veto existe para evitar, y encima no hay
+       puntuación que enseñar —en esa rama el juez no puntúa nada—. Va el
+       vocabulario que el propio producto ya tenía para esto («hoy no había
+       partido», docs/02 §13.1): no es una avería y no es un empate. */
+    sinResultado: {
+      /* «SIN VEREDICTO» Y NO «HOY NO HUBO PARTIDO» (2026-09-14). El titular
+         dijo que la pantalla anterior se leía «como si el juez hubiese
+         fallado», y tenía razón: «no hubo partido» describe algo que no
+         ocurrió, y lo que ocurrió es que el juez MIRÓ la ronda y decidió no
+         puntuarla. Ahora lo dice él y en primera persona, que es la diferencia
+         entre una avería y una decisión. Lo que sigue sin decirse es POR QUÉ:
+         nombrar el patrón está prohibido. */
+      blandaTitular: 'Sin veredicto',
+      blanda: 'El juez decidió no puntuar esta ronda. Lo que dijo cada quien queda registrado.',
+
+      /* LA DURA NO ES LA BLANDA Y NO PUEDE DECIR LO MISMO. La blanda es
+         asimetría --la ronda no tuvo partido-- y lleva copy lúdico y su reporte.
+         La dura salta con señales de otra clase: daño físico, amenazas, armas,
+         ideación suicida, miedo explícito, control, un menor en riesgo
+         (`docs/02` §578). Ahí el texto es EL MISMO PARA LOS DOS, neutro, y está
+         escrito en el documento palabra por palabra. Se copia tal cual.
+
+         Y NO SE DICE NI QUIÉN NI POR QUÉ, igual que en la blanda pero por otro
+         motivo: aquí decirlo le enseñaría a quien amenaza qué detectó la app, y
+         le pondría una etiqueta encima a quien tiene miedo. El prompt tiene
+         prohibido hasta mencionar violencia, autolesión o salud mental: el
+         sistema pinta el mensaje, no el modelo. */
+      duraTitular: 'Esta partida se detiene aquí',
+      dura: 'ATWI es un juego y hay conversaciones que no son para un juego.',
+      /* LAS DOS PRIMERAS FRASES DICEN QUIÉN DECIDIÓ Y SOBRE QUÉ, porque de ahí
+         venía la confusión del titular (2026-09-15: «no entiendo la diferencia
+         entre parada dura y no contesta»). Las tres pantallas terminaban una
+         ronda sin puntuación y ninguna decía en qué se diferencian, así que las
+         tres se leían como la misma avería. Ahora cada una abre diciéndolo:
+         la blanda, que el juez leyó la ronda y la decisión es suya; la dura,
+         que la detiene el juego a propósito; y la de no contestar, que no pasó
+         nada todavía (ver `fallo`, más arriba). Sigue sin decirse POR QUÉ en
+         las dos paradas: nombrar el patrón está prohibido. */
+      diceBlanda: 'Leí la ronda entera y la decisión es mía: esta no la puntúo. No ' +
+                  'siempre hay un veredicto que dar, y forzarlo sería peor que no darlo.',
+      diceDura: 'ATWI es un juego y hay conversaciones que no son para un juego. Esta ' +
+                'partida la detiene el juego a propósito, no es que algo fallara: no hay ' +
+                'puntuación, no hay ganador y no queda registrada.',
+
+      /* EL REPORTE DE LA PARADA, que `docs/02` §594 llama obligatorio: «lo que
+         dijo cada uno», con la misma maquetación y el mismo peso visual que la
+         tarjeta de veredicto, sin ganador, sin desglose y sin valoración.
+         Estaba produciéndose y se pintaba como dos renglones sueltos. */
+      rotuloDichos: 'Lo que dijo cada uno',
+
+      /* PROVISIONAL, Y SE VE QUE LO ES. Aquí va la pantalla de recursos por
+         país que `docs/01` §327 y §735 exigen. Hasta que los números estén
+         verificados, la pantalla dice lo único que se puede sostener sin
+         ellos. */
+      recursosPendiente: 'Si algo de esto está pasando de verdad, hablarlo con alguien ' +
+                         'fuera del juego ayuda más que cualquier partida.',
+
+      /* QUÉ PASA CON LA RONDA Y PARA QUÉ SIRVE LO QUE QUEDA. Esto faltaba
+         entero y era la mitad de la queja del titular (2026-09-15): la pantalla
+         decía que lo dicho quedaba registrado y no decía por qué ni para qué,
+         así que se leía como un archivo muerto.
+         Las tres cosas que sí se pueden decir sin nombrar el patrón: que nadie
+         perdió, que la ronda no cuenta, y que lo guardado es la postura de cada
+         uno con sus propias palabras --que es justo lo que hace falta para
+         poder retomarlo sin empezar de cero, y lo que evita el «yo nunca dije
+         eso»--.
+         LO QUE NO SE DICE ES EL MOTIVO: ver la nota larga en veredicto.js.
+
+         AQUÍ DECÍA «SIRVE PARA VOLVER SOBRE EL TEMA SIN EMPEZAR DE CERO» Y ERA
+         MENTIRA (lo cazó el titular, 2026-09-15). No hay nada que reutilice el
+         material de una ronda guardada: la revancha de Controversia arranca con
+         las intervenciones en blanco y el árbitro no recibe la ronda anterior
+         como contexto; lo único que hereda algo es la REVISIÓN de un acuerdo de
+         Pacto, que toma el acta registrada (`docs/02` §5 y §13, llamada 4). Así
+         que esa frase prometía una función que no existe, en la pantalla donde
+         menos se puede prometer de más.
+         Lo que sí es verdad es lo que dice ahora: queda en el historial y se
+         puede volver a oír, con la voz del personaje. El día que la revancha
+         lleve la ronda anterior como contexto, esta frase vuelve a crecer. */
+      paraQue: 'Nadie perdió y la ronda no cuenta para ninguno de los dos. Lo que ' +
+               'queda guardado son esas dos posturas, con las palabras de cada quien: ' +
+               'les queda en el historial y la pueden volver a oír cuando quieran. ' +
+               'El tema sigue ahí para jugarlo otra vez.'
+    },
+
+    /* LA NEGOCIACIÓN NO TIENE GANADOR, pero sí tiene resultado, y los dos
+       avatares salen igual (decisión del titular, 2026-09-14). Con acuerdo, los
+       dos en pose de victoria: aquí ganar es de los dos o no es de nadie. Sin
+       acuerdo, los dos sentados, y el juez explica que negociar ya valió. */
+    juezNegociacion: {
+      conAcuerdo: 'Esto es lo que acordaron jugando. Es un recordatorio, no un ' +
+                  'contrato: nadie está obligado a cumplirlo, y si deja de servirles lo ' +
+                  'vuelven a hablar.',
+      sinAcuerdo: 'No llegaron a un acuerdo, y negociar ya valió la pena: se escucharon ' +
+                  'por turnos, sin pisarse, y cada quien sabe ahora dónde está el otro. ' +
+                  'El tema sigue ahí y lo pueden volver a intentar cuando quieran.'
+
+      /* AQUÍ ESTABA `sinMediador` Y SE FUE con «Ronda guardada» (2026-09-15).
+         Era lo que el juez decía cuando nadie había propuesto nada, y no había
+         nada que decir: una partida sin respuesta no llega a la pantalla del
+         juez, se queda esperando la respuesta.
+         Lo que sí conviene no olvidar es lo que había antes de eso: hasta el
+         2026-09-14 Negociación presentaba como acuerdo de la pareja el campo
+         `ejemplo` DEL CATÁLOGO, un párrafo escrito meses antes, entrecomillado
+         en boca del juez como si lo hubieran escrito ellos jugando. */
+    },
+
+    /* El desglose por criterio, con nombres que se entienden sin leer la
+       rúbrica. El orden es el del peso. */
+    criterios: [
+      ['pertinencia', 'Al tema', 30],
+      ['solidez', 'Razones', 25],
+      ['evidencia', 'Ejemplos', 20],
+      ['escucha', 'Escucha', 15],
+      ['tono', 'Tono', 10]
+    ],
+    encabezadoTabla: 'Cómo argumentaron',
+    conUnTurno: 'Con un solo turno no hay escucha que puntuar: son cuatro criterios.'
   }
 };
