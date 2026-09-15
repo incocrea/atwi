@@ -67,7 +67,20 @@ window.ATWI = window.ATWI || {};
       language: 'es',
       theme: 'light',
       size: 'flexible',
-      appearance: 'interaction-only',
+      /* `always` Y NO `interaction-only` (2026-09-15). En `interaction-only` el
+         widget no dibuja nada mientras Cloudflare no exija resolver un reto, y
+         eso se ve precioso... en escritorio, donde casi nunca lo exige. En un
+         teléfono lo exige MUCHO más --es táctil, la señal es peor, la IP es de
+         móvil-- y entonces hay una casilla que hay que tocar. Si esa casilla
+         tarda en aparecer, o aparece donde no se mira, la persona se queda
+         mirando una pantalla que le dice que no puede entrar y no tiene nada
+         que tocar.
+         Eso es exactamente lo que el titular vivió: en su PC entra y en su
+         móvil no, sin ningún código de error --porque no hubo error: el reto
+         estaba esperando un toque que nadie sabía que había que dar--.
+         Con `always` la casilla está siempre, se ve y se toca. Cuesta un hueco
+         en la pantalla de entrar y vale lo que vale poder entrar. */
+      appearance: 'always',
       callback: function (t) { estado.captcha = t; estado.captchaFallo = ''; },
       'expired-callback': function () { estado.captcha = ''; },
       /* EL CODIGO DE ERROR SE GUARDA, QUE ES TODO EL DIAGNOSTICO. Esto era
@@ -304,6 +317,12 @@ window.ATWI = window.ATWI || {};
       if (estado.captcha) return;
       var hueco = $('#captcha');
       if (hueco && hueco.querySelector('iframe')) return;   // se dibujó: va lento, no roto
+      /* Y SI TURNSTILE NO SE QUEJÓ, NO SE DECLARA ROTO. Sin `error-callback`,
+         sin `timeout` y sin `unsupported`, lo único que sabemos es que todavía
+         no hay token --puede estar esperando un toque, o la red del móvil--.
+         Decir «no podemos dejarte entrar» ahí es acusar de avería a algo que
+         está funcionando, y fue lo que le pasó al titular en su teléfono. */
+      if (!estado.captchaFallo && !enLocalhost()) return;
 
       /* A quien juega se le dice algo que pueda entender y hacer. El diagnóstico
          —qué dominio hay que dar de alta y en qué widget— va a la consola, que
@@ -338,7 +357,10 @@ window.ATWI = window.ATWI || {};
           'dejarte entrar todavía. Probá a recargar la página. Si sigue igual, ' +
           'puede ser un bloqueador tuyo o un problema nuestro: no es algo que ' +
           'puedas arreglar desde aquí.');
-    }, 4000);
+      /* DOCE SEGUNDOS Y NO CUATRO. El plazo viejo medía una red de escritorio:
+         en un móvil, entre que baja el script de Cloudflare, monta el iframe y
+         resuelve el reto se van más de cuatro sin que nada vaya mal. */
+    }, 12000);
   }
 
   /* --- Acciones --------------------------------------------------------------- */

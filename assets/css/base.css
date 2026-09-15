@@ -141,9 +141,14 @@ textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
    falta resolver un reto, así que este bloque casi siempre está vacío y no debe
    ocupar ni dejar hueco. Cuando aparece, va centrado y sin caja. */
 .captcha { display: grid; justify-items: center; }
-/* Con «interaction-only» el widget no dibuja nada salvo que de verdad haya que
-   resolver un reto, y entonces este bloque ni ocupa ni deja hueco. Cuando SÍ
-   aparece hay que dejarlo ver entero: esconderlo dejaría tirado justo a quien
-   necesita resolverlo. Por eso aquí no hay transform ni márgenes negativos. */
-.captcha:has(> div:empty) { display: none; }
+/* AQUI HABIA UN `.captcha:has(> div:empty) { display: none }` Y SE FUE
+   (2026-09-15). Escondia el hueco mientras el widget estuviera vacio, que con
+   `interaction-only` es casi siempre... y tambien durante los segundos en que
+   Turnstile todavia se esta montando. O sea que en un telefono --donde tarda
+   mas y donde Cloudflare exige interaccion mucho mas a menudo-- la casilla que
+   hay que tocar aparecia dentro de un contenedor que el CSS habia escondido.
+   Sumado al plazo de cuatro segundos del aviso, el resultado era una pantalla
+   que decia «no podemos dejarte entrar» sin nada que tocar y sin codigo de
+   error: no habia error, habia un reto esperando un toque.
+   Ahora el widget va en `always` y este hueco se queda puesto. */
 .captcha > div { max-width: 100%; }
