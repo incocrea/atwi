@@ -39,7 +39,10 @@ window.ATWI = window.ATWI || {};
      y entonces se vuelve a pedir en el último paso. */
   var CLAVE_NOMBRE = 'atwi.nombre.pendiente';
 
-  var estado = { paso: 'datos', nombre: '', correo: '', captcha: '', enviando: false };
+  var estado = { paso: 'datos', nombre: '', correo: '', captcha: '',
+                 /* Lo último que dijo Turnstile cuando no dio token. Vacío
+                    mientras todo va bien. */
+                 captchaFallo: '', enviando: false };
   var alTerminar = null;
 
   /* --- Turnstile ------------------------------------------------------------ */
@@ -65,10 +68,55 @@ window.ATWI = window.ATWI || {};
       theme: 'light',
       size: 'flexible',
       appearance: 'interaction-only',
-      callback: function (t) { estado.captcha = t; },
+      callback: function (t) { estado.captcha = t; estado.captchaFallo = ''; },
       'expired-callback': function () { estado.captcha = ''; },
-      'error-callback': function () { estado.captcha = ''; }
+      /* EL CODIGO DE ERROR SE GUARDA, QUE ES TODO EL DIAGNOSTICO. Esto era
+         `function () { estado.captcha = ''; }`: Turnstile pasa un codigo y la
+         app lo tiraba, asi que cuando el 2026-09-15 dejo de dejar entrar a nadie
+         no habia forma de saber por que. Los que importan:
+           110200  el dominio no esta en la lista del widget
+           110100 / 110110  clave de sitio invalida o desconocida
+           300xxx / 600xxx  el reto fallo o la interaccion fallo
+           400xxx  problema del navegador --extension, reloj en hora falsa--
+         Sin el numero, todo esto se parece a «no funciona». */
+      'error-callback': function (codigo) {
+        estado.captcha = '';
+        estado.captchaFallo = String(codigo || 'sin codigo');
+        if (window.console) console.warn('[ATWI] Turnstile error-callback: ' + estado.captchaFallo);
+        pintarFalloCaptcha();
+      },
+      /* Y LOS OTROS DOS CAMINOS, que no son el mismo. `timeout` es que el reto
+         caduco sin resolverse; `unsupported` es que este navegador no puede
+         hacerlo --pasa en navegadores dentro de otras apps--. Los dos acababan
+         en el mismo silencio. */
+      'timeout-callback': function () {
+        estado.captcha = '';
+        estado.captchaFallo = 'caduco (timeout)';
+        pintarFalloCaptcha();
+      },
+      'unsupported-callback': function () {
+        estado.captcha = '';
+        estado.captchaFallo = 'navegador no admitido (unsupported)';
+        pintarFalloCaptcha();
+      }
     });
+  }
+
+  /* SE ENSEÑA EN PANTALLA, no solo en consola. Quien no puede entrar esta en un
+     telefono, donde no hay consola que abrir; y quien puede arreglarlo necesita
+     el numero. Va debajo del hueco del captcha, en chico. */
+  function pintarFalloCaptcha() {
+    var hueco = $('#captcha');
+    if (!hueco || !estado.captchaFallo) return;
+    var n = document.getElementById('captcha-fallo');
+    if (!n) {
+      n = document.createElement('p');
+      n.id = 'captcha-fallo';
+      n.className = 'chico';
+      n.style.cssText = 'color:var(--peligro);margin-top:var(--e-2);text-align:center';
+      hueco.parentNode.insertBefore(n, hueco.nextSibling);
+    }
+    n.textContent = 'Antirrobots: ' + estado.captchaFallo;
   }
 
   function refrescarCaptcha() {
@@ -260,12 +308,23 @@ window.ATWI = window.ATWI || {};
       /* A quien juega se le dice algo que pueda entender y hacer. El diagnóstico
          —qué dominio hay que dar de alta y en qué widget— va a la consola, que
          es donde lo busca quien puede arreglarlo. */
+      /* ESTE AVISO DECÍA LA CAUSA Y NO LA SABE. Afirmaba «casi siempre es que
+         ese dominio no está en la lista», y el 2026-09-15 el titular comprobó
+         dos veces que el dominio SÍ estaba: el fallo era otro y el aviso mandó
+         a mirar donde no era. Ahora dice lo que ve --que a los cuatro segundos
+         no hay token-- y el código, si Turnstile llegó a darlo.
+         OJO CON `appearance: 'interaction-only'`: en ese modo el widget NO se
+         dibuja mientras no haga falta interacción, así que «no se ve nada» es
+         normal y lo único que decide es si hay token. */
       if (window.console && console.warn) {
-        console.warn('[ATWI] Turnstile no dibujó el widget en «' + location.hostname +
-          '». Casi siempre es que ese dominio no está en la lista del widget ' +
-          cfg.turnstileSiteKey + ' en Cloudflare. Con el captcha obligatorio en ' +
-          'Supabase Auth, entrar va a fallar con captcha_failed.');
+        console.warn('[ATWI] Turnstile no dio token en «' + location.hostname +
+          '» a los 4 s. Clave ' + cfg.turnstileSiteKey +
+          (estado.captchaFallo ? '. Código: ' + estado.captchaFallo
+                               : '. Sin código: no llamó a error-callback.') +
+          '. Con el captcha obligatorio en Supabase Auth, entrar va a fallar ' +
+          'con captcha_failed.');
       }
+      pintarFalloCaptcha();
       error(enLocalhost()
         ? 'Aviso de local: el antirrobots no dio token para «localhost», así que ' +
           'entrar va a fallar aquí. Revisa los dominios del widget ' +
