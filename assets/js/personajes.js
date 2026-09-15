@@ -352,31 +352,29 @@ window.ATWI = window.ATWI || {};
      preferible una figura que falta a una partida que no arranca. Y el tope de
      tiempo existe porque en una red mala esto puede tardar lo que quiera, y
      nadie va a mirar una pantalla quieta más de tres segundos. */
-  var MS_TOPE_PRECARGA = 3000;
-
+  /* LA ESPERA VIVE EN UN SOLO SITIO: `ATWI.precarga.listas()`, en `precarga.js`.
+     Aquí estaba duplicada —el mismo `decode()` con el mismo tope— y duplicada
+     tiene el problema de siempre: se arregla una y la otra se queda como estaba.
+     Esto solo traduce personaje y color a rutas, que es lo único propio. */
   window.ATWI.precargarPoses = function (quienes, poses, colores) {
-    var esperas = [];
+    var rutas = [];
     (quienes || []).forEach(function (q, i) {
       (poses || []).forEach(function (p) {
         if (!GENTE[q] || !POSES[p]) return;
-        esperas.push(new Promise(function (listo) {
-          var im = new Image();
-          im.onload = function () {
-            if (im.decode) im.decode().then(listo, listo);
-            else listo();
-          };
-          im.onerror = listo;
-          /* El color va en paralelo a `quienes`: en la sala cada lado tiene el
-             suyo, y bajar la pieza del color equivocado no adelanta nada. */
-          im.src = window.ATWI.pieza(q, (colores || [])[i], p);
-        }));
+        /* El color va en paralelo a `quienes`: en la sala cada lado tiene el
+           suyo, y bajar la pieza del color equivocado no adelanta nada. */
+        rutas.push(window.ATWI.pieza(q, (colores || [])[i], p));
       });
     });
-    if (!esperas.length) return Promise.resolve();
-    return Promise.race([
-      Promise.all(esperas),
-      new Promise(function (listo) { setTimeout(listo, MS_TOPE_PRECARGA); })
-    ]);
+    return window.ATWI.precarga.listas(rutas);
+  };
+
+  /** Lo mismo para los jueces, que no llevan color en la ruta. */
+  window.ATWI.precargarJuez = function (quien, poses) {
+    if (!JUECES[quien]) return Promise.resolve();
+    return window.ATWI.precarga.listas((poses || []).map(function (p) {
+      return window.ATWI.piezaJuez(quien, p);
+    }));
   };
 
   /** Quiénes hay, para pintar el selector de avatar. */

@@ -172,7 +172,25 @@ window.ATWI = window.ATWI || {};
       /* El color va en paralelo: cada lado tiene el suyo y la pieza que hay que
          bajar es la de ESE color, no una cualquiera del personaje. */
       P.jugadores.map(function (j) { return j.color; }));
+    precargarElFinal();
     pintarAviso();
+  }
+
+  /* LAS PIEZAS DEL FINAL SE PIDEN AL PRINCIPIO, que es cuando sobra tiempo.
+     Entre abrir la sala y ver al juez deliberando pasan varios minutos de grabar
+     y escuchar; pedirlas al llegar allí es pedirlas tarde, y ahí es donde peor
+     se ve —el juez entra desde abajo y las dos posturas se funden una en otra:
+     con la pieza a medio bajar, el movimiento arranca contra un hueco—.
+     No se espera a nada: es fondo puro. Para cuando la pantalla llegue, están. */
+  function precargarElFinal() {
+    var quien = (P.juez && window.ATWI.esJuez(P.juez)) ? P.juez : 'bruno';
+    P.piezasDelJuez = window.ATWI.precargarJuez(
+      quien, POSTURAS_DELIBERAR.concat(['veredicto']));
+    /* Y las dos poses de la revelación, que llegan justo después. */
+    window.ATWI.precargarPoses(
+      P.jugadores.map(function (j) { return j.avatar; }),
+      ['ganar', 'sentado'],
+      P.jugadores.map(function (j) { return j.color; }));
   }
 
   /* ==========================================================================
@@ -369,6 +387,10 @@ window.ATWI = window.ATWI || {};
     };
     separarFichas();
     abrir();
+    /* Va antes del desvío a deliberar: una partida que se retoma a pedir su
+       veredicto entra en esa pantalla de inmediato, sin los minutos de grabar
+       que en una partida nueva dan tiempo de sobra a bajar al juez. */
+    precargarElFinal();
     if (faltaElVeredicto) return deliberar(true);
     window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
                                ['hablando'],
@@ -2134,7 +2156,21 @@ window.ATWI = window.ATWI || {};
     '</div>';
   }
 
+  /* LA ROTACIÓN NO ARRANCA HASTA QUE LAS DOS POSTURAS ESTÁN DECODIFICADAS.
+     Es el fallo que pidió arreglar el titular, en el sitio donde peor se ve: si
+     el fundido empieza con la segunda pieza todavía bajando, la figura se
+     desvanece hacia un hueco y vuelve. Esperar aquí no cuesta nada —a esta
+     pantalla se llega minutos después de que `precargarElFinal()` las pidiera—
+     y `listas()` lleva su propio tope de tres segundos, así que una red mala
+     retrasa la rotación pero no la cuelga. */
   function rotarPosturas() {
+    pararPosturas();
+    (P.piezasDelJuez || Promise.resolve()).then(function () {
+      if (P.estado === 'deliberando') girarPosturas();
+    });
+  }
+
+  function girarPosturas() {
     pararPosturas();
     relojPostura = setInterval(function () {
       var figs = $$('#delibera .delibera__fig');
