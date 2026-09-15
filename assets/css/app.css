@@ -1879,11 +1879,19 @@ body.app {
 /* LAS DOS ANCLAS, UNA DEBAJO DE OTRA Y EN COLUMNA. En fila no caben: son dos
    frases de una línea larga cada una, y en 375 px partirían en cuatro renglones
    descolgados. En columna se leen como lo que son: qué recoge de cada quien. */
-.propuesta__anclas { display: grid; gap: 4px; }
-.propuesta__ancla {
-  font-size: var(--t-mini); line-height: 1.35; color: var(--ctx-tenue-2);
-  padding-left: var(--e-3); border-left: 3px solid var(--ctx-pastilla);
+.propuesta__anclas { display: grid; gap: 6px; }
+/* CADA ANCLA CON SU CARA Y SU NOMBRE, y sin barra a la izquierda: la cara ya
+   dice donde empieza y de quien es, y la barra lo decia una tercera vez. Es el
+   mismo criterio que se aplico a las tarjetas del historial y a las actas. */
+.ancla { display: flex; align-items: flex-start; gap: 6px; min-width: 0; }
+.ancla__cara { width: 20px; height: 20px; flex: none; margin-top: 1px; }
+.ancla__dice {
+  font-size: var(--t-mini); line-height: 1.4; color: var(--ctx-tenue-2);
+  min-width: 0; overflow-wrap: anywhere;
 }
+/* El nombre en el color de su jugador, que es lo que lo hace reconocible de un
+   vistazo sin tener que leerlo. */
+.ancla__quien { color: var(--pj); font-weight: 800; }
 .propuesta--marcada {
   border-color: var(--ctx-acento); box-shadow: var(--sombra-2);
 }

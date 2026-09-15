@@ -1956,7 +1956,12 @@ window.ATWI = window.ATWI || {};
          de cierre, con oír la última intervención, con lo que sea: lo que se
          espera después es solo lo que falte. La promesa se guarda en P y la
          recoge `seguir()`. */
-      P.juicio = pedirVeredicto();
+      /* Y CADA MODO LLAMA AL SUYO. Esto era siempre `pedirVeredicto()`, que en
+         Negociación devuelve null a propósito --no hay árbitro ahí-- así que
+         `propuestasListas` no se ponía nunca y la partida acababa SIEMPRE en
+         «No llegó la respuesta», con un botón de reintentar que tampoco podía
+         funcionar. Era el agujero que dejaba el modo entero sin cerrar. */
+      P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
       pintarSala({ dice: '', pie: principal('p-seguir', 'Ver el resultado') });
       juezDice(f.texto, f.archivo);
       return;
@@ -2054,13 +2059,33 @@ window.ATWI = window.ATWI || {};
     P.propuestas = null;
     P.propuestasListas = false;
     P.paradaNegociacion = null;
+    P.loQueDijoNegociacion = null;
     var n = window.ATWI.nube;
     if (!n || !n.mediar || !n.hay() || !P.debate) return Promise.resolve(null);
     return n.mediar(P.debate).then(function (d) {
       if (!d) return null;
       P.propuestasListas = true;
       P.paradaNegociacion = d.parada || null;
-      P.propuestas = d.propuestas || null;
+      /* LA FILA DE `propuestas` NO TIENE LA FORMA DE LA PANTALLA, y se traduce
+         aquí y en un solo sitio. En la base son `recoge_a` y `recoge_b` --los
+         dos textos anclados, uno por persona-- y la tarjeta los pinta como
+         `recogeUno` y `recogeDos`. Es el mismo trabajo que hace `delArbitro()`
+         con la fila del veredicto: la base guarda por lado y la pantalla pinta
+         por persona. */
+      P.propuestas = (d.propuestas || []).map(function (p) {
+        return { texto: p.texto, recogeUno: p.recoge_a, recogeDos: p.recoge_b };
+      });
+      if (!P.propuestas.length) P.propuestas = null;
+      /* LOS DOS PÁRRAFOS DE LA PARADA BLANDA. Vienen de su propia llamada y son
+         lo único compartible cuando no hubo partido; sin esto la pantalla del
+         juez saldría con el titular y sin el reporte que `docs/02` §594 llama
+         obligatorio. */
+      if (d.lo_que_dijo) {
+        P.loQueDijoNegociacion = [
+          { nombre: P.jugadores[P.orden[0]].nombre, texto: d.lo_que_dijo.p1 || '' },
+          { nombre: P.jugadores[P.orden[1]].nombre, texto: d.lo_que_dijo.p2 || '' }
+        ].filter(function (q) { return q.texto; });
+      }
       return null;
     }, function () { return null; });
   }
@@ -2261,14 +2286,40 @@ window.ATWI = window.ATWI || {};
      manos de la pareja: si una de las líneas no les suena a algo que dijeron,
      esa propuesta no es de ellos y lo van a ver.
      ========================================================================== */
+  /* CADA ANCLA DICE DE QUIÉN ES, con su cara y con su color (petición del
+     titular, 2026-09-15). Salían como dos frases anónimas una debajo de otra, y
+     eso les quita justo lo que hace que sirvan: la pantalla las enseña para que
+     cada quien reconozca SU frase --«esto lo dije yo»-- y así puedan ver si la
+     propuesta está anclada de verdad en los dos. Sin saber cuál es de quién, la
+     comprobación no se puede hacer.
+
+     `recogeUno` es P1 y `recogeDos` es P2, y P1 es quien abrió la ronda: eso lo
+     fija el mediador al etiquetar los turnos, y aquí `orden[0]` es el mismo.
+
+     Y SE FUE LA BARRA DECORATIVA de la izquierda: con la cara y el nombre
+     delante ya se sabe dónde empieza cada una, y la barra decía lo mismo una
+     tercera vez. */
+  function anclaDe(texto, lado) {
+    if (!texto) return '';
+    var q = P.jugadores[P.orden[lado]];
+    return '<span class="ancla">' +
+        window.ATWI.fichaHTML(q.avatar, 'ancla__cara', q.color) +
+        '<span class="ancla__dice">' +
+          '<b class="ancla__quien" style="--pj:' +
+            window.ATWI.colorPersonaje(q.color) + '">' + esc(q.nombre) + '</b> ' +
+          esc(texto) +
+        '</span>' +
+      '</span>';
+  }
+
   function tarjetaPropuesta(p, n, marcada) {
     return '<button class="propuesta' + (marcada ? ' propuesta--marcada' : '') + '" ' +
         'data-propuesta="' + n + '">' +
       '<span class="propuesta__texto">' + esc(p.texto) + '</span>' +
       (p.recogeUno || p.recogeDos
         ? '<span class="propuesta__anclas">' +
-            (p.recogeUno ? '<span class="propuesta__ancla">' + esc(p.recogeUno) + '</span>' : '') +
-            (p.recogeDos ? '<span class="propuesta__ancla">' + esc(p.recogeDos) + '</span>' : '') +
+            anclaDe(p.recogeUno, 0) +
+            anclaDe(p.recogeDos, 1) +
           '</span>'
         : '') +
     '</button>';
@@ -2538,6 +2589,11 @@ window.ATWI = window.ATWI || {};
          todo lo de aquí; en Negociación no hay árbitro que lo traiga, así que
          va por su cuenta. Nulo cuando no hubo parada, que es casi siempre. */
       sinResultado: P.paradaNegociacion || null,
+      /* Y SU REPORTE. Los dos párrafos de «lo que dijo cada uno» son lo único
+         compartible cuando el mediador para en blando, y `docs/02` §594 los
+         llama obligatorios. En Controversia los trae `real`; aquí, su propia
+         llamada. */
+      loQueDijo: P.loQueDijoNegociacion || null,
       alCerrar: function () {
         /* UN ENSAYO NO ES UNA PARTIDA Y NO SE ANOTA. Esto contaba el tema como
            jugado y subía el contador de debates o de acuerdos CADA VEZ que el

@@ -81,8 +81,17 @@ window.ATWI = window.ATWI || {};
          Con `always` la casilla está siempre, se ve y se toca. Cuesta un hueco
          en la pantalla de entrar y vale lo que vale poder entrar. */
       appearance: 'always',
+      /* EL TOKEN SE RENUEVA SOLO. Turnstile lo caduca a los cinco minutos, y
+         quien abre la app, escribe su correo, busca la contraseña y vuelve
+         tarda perfectamente eso. Sin esto el token muere en silencio, se manda
+         vacío y Supabase contesta `captcha_failed`: es el «falló la primera y a
+         la segunda entré» que reportó el titular el 2026-09-15. */
+      'refresh-expired': 'auto',
       callback: function (t) { estado.captcha = t; estado.captchaFallo = ''; },
-      'expired-callback': function () { estado.captcha = ''; },
+      /* Y SI AUN ASI CADUCA, SE PIDE OTRO SIN QUE NADIE HAGA NADA. Antes esto
+         solo vaciaba el token y se quedaba esperando a que la persona fallara
+         para renovarlo. */
+      'expired-callback': function () { estado.captcha = ''; reintentarCaptcha(); },
       /* EL CODIGO DE ERROR SE GUARDA, QUE ES TODO EL DIAGNOSTICO. Esto era
          `function () { estado.captcha = ''; }`: Turnstile pasa un codigo y la
          app lo tiraba, asi que cuando el 2026-09-15 dejo de dejar entrar a nadie
@@ -97,6 +106,7 @@ window.ATWI = window.ATWI || {};
         estado.captchaFallo = String(codigo || 'sin codigo');
         if (window.console) console.warn('[ATWI] Turnstile error-callback: ' + estado.captchaFallo);
         pintarFalloCaptcha();
+        reintentarCaptcha();
       },
       /* Y LOS OTROS DOS CAMINOS, que no son el mismo. `timeout` es que el reto
          caduco sin resolverse; `unsupported` es que este navegador no puede
@@ -113,6 +123,39 @@ window.ATWI = window.ATWI || {};
         pintarFalloCaptcha();
       }
     });
+  }
+
+  /* NO SE MANDA SIN TOKEN, Y ESTE ES EL ARREGLO DE VERDAD. Las dos entradas
+     mandaban `estado.captcha` fuera lo que fuera --incluido vacío, que es lo
+     que queda cuando el reto todavía no terminó o cuando caducó-- y entonces
+     quien contesta es Supabase, con un `captcha_failed` que la persona lee como
+     «mi contraseña está mal».
+
+     Ahora se espera al token hasta seis segundos. Si llega, se sigue; si no, se
+     dice que el antirrobots no terminó, que es lo que pasó de verdad, y no se
+     gasta un intento de contraseña fallido. */
+  function conToken() {
+    if (estado.captcha) return Promise.resolve(estado.captcha);
+    if (!cfg.turnstileSiteKey) return Promise.resolve('');
+    return new Promise(function (listo) {
+      var t0 = Date.now();
+      (function mirar() {
+        if (estado.captcha) return listo(estado.captcha);
+        if (Date.now() - t0 > 6000) return listo('');
+        setTimeout(mirar, 200);
+      })();
+    });
+  }
+
+  /* UN REINTENTO SOLO, Y AUTOMÁTICO. Un reto que falla por red o por caducidad
+     casi siempre va a la segunda --es lo que le pasó al titular a mano-- así que
+     lo hace la app en vez de hacerlo la persona. Uno solo: si el segundo
+     tampoco, es un problema de verdad y reintentar en bucle solo lo esconde. */
+  var yaReintente = false;
+  function reintentarCaptcha() {
+    if (yaReintente || !window.turnstile) return;
+    yaReintente = true;
+    setTimeout(function () { montarCaptcha(); }, 800);
   }
 
   /* SE ENSEÑA EN PANTALLA, no solo en consola. Quien no puede entrar esta en un
@@ -134,6 +177,10 @@ window.ATWI = window.ATWI || {};
 
   function refrescarCaptcha() {
     estado.captcha = '';
+    /* Un refresco PEDIDO --tras un fallo de entrada-- devuelve el derecho a un
+       reintento automático: el tope de uno es para no encadenar reintentos
+       solos, no para castigar a quien vuelve a intentarlo a mano. */
+    yaReintente = false;
     if (window.turnstile) montarCaptcha();
   }
 
@@ -385,8 +432,15 @@ window.ATWI = window.ATWI || {};
     /* La vuelta es esta misma pantalla. Tiene que estar dada de alta en el panel
        de Supabase, en Authentication -> URL Configuration -> Redirect URLs. */
     var vuelta = location.origin + location.pathname;
-    auth.mandarEnlace(correo, estado.captcha, vuelta)
-      .then(function () { estado.paso = 'revisa'; ocupado(false, 'Volver a mandarlo'); pintar(); })
+    conToken().then(function (ficha) {
+      if (cfg.turnstileSiteKey && !ficha) {
+        ocupado(false, 'Mandarme el enlace');
+        reintentarCaptcha();
+        return error('La verificación antirrobots no terminó. Esperá un momento y tocá otra vez.');
+      }
+      return auth.mandarEnlace(correo, ficha, vuelta)
+        .then(function () { estado.paso = 'revisa'; ocupado(false, 'Volver a mandarlo'); pintar(); });
+    })
       .catch(function (e) {
         ocupado(false, 'Mandarme el enlace');
         error(porQue(e));
@@ -426,7 +480,14 @@ window.ATWI = window.ATWI || {};
     error('');
     ocupado(true);
 
-    auth.entrarConContrasena(correo, clave, estado.captcha)
+    conToken().then(function (ficha) {
+      if (cfg.turnstileSiteKey && !ficha) {
+        ocupado(false, 'Entrar');
+        reintentarCaptcha();
+        throw new Error('__sin_captcha');
+      }
+      return auth.entrarConContrasena(correo, clave, ficha);
+    })
       .then(function () { return auth.miPerfil(); })
       .then(function (perfil) {
         datos.actualizar({ nombre: (perfil && perfil.nombre) || '' });
@@ -434,6 +495,10 @@ window.ATWI = window.ATWI || {};
         cerrar();
       })
       .catch(function (e) {
+        /* El aviso de «no terminó el antirrobots» ya se pintó al lanzarlo; si
+           lo volviera a pasar por `porQue()` saldría un mensaje de credenciales
+           para algo que no tiene que ver con la contraseña. */
+        if (e && e.message === '__sin_captcha') return;
         ocupado(false, 'Entrar');
         error(porQue(e));
         refrescarCaptcha();

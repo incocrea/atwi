@@ -164,6 +164,58 @@ window.ATWI = window.ATWI || {};
   }
 
   /**
+   * Le pide al mediador las dos maneras de quedar. Devuelve lo que devuelve la
+   * función --`{propuestas, parada, lo_que_dijo}`-- o null con el fallo
+   * apuntado.
+   *
+   * MISMA FORMA QUE `arbitrar`, y por lo mismo: es IDEMPOTENTE del lado del
+   * servidor --pedirlo dos veces devuelve las mismas propuestas y no cuesta la
+   * segunda-- así que se puede pedir en cuanto entra el último turno, sin
+   * esperar a que nadie toque nada.
+   *
+   * TARDA MÁS QUE EL ÁRBITRO: son dos llamadas al modelo en serie y el prompt
+   * es medio más largo. La pantalla de deliberar está hecha para eso.
+   */
+  function mediar(debate, variante) {
+    if (!hayNube()) return Promise.resolve(apuntar('sin servidor ni sesión'));
+    var desde = Date.now();
+    function mal(clave, que) {
+      apuntar(que);
+      anotar(clave, { debate: debate, datos: { ms: Date.now() - desde } });
+      return null;
+    }
+    return fetch(cfg.supabaseUrl + '/functions/v1/mediador', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ debate: debate, variante: variante || 'es-419' })
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        /* UN 422 NO ES UN FALLO DE RED: es el mediador diciendo que no pudo
+           cumplir su propio contrato en dos intentos. Se distingue porque se
+           arregla de otra manera --mirando `fallos`, no reintentando--. */
+        if (r.status === 422) {
+          return mal('mediador_no_cumplio',
+                     'el mediador no cumplió el contrato: ' +
+                     ((d && d.fallos && d.fallos.join('; ')) || ''));
+        }
+        if (!r.ok) return mal('mediador_http_' + r.status,
+                              'el mediador dijo ' + r.status + ': ' + ((d && d.error) || ''));
+        if (d && d.error) return mal('mediador_error', d.error);
+        return d;
+      }, function () {
+        return mal('mediador_no_es_json',
+                   'el mediador contestó algo que no es JSON (' + r.status + ')');
+      });
+    }).catch(function (e) {
+      return mal('mediador_sin_red', 'no se pudo llamar al mediador: ' + e.message);
+    });
+  }
+
+  /**
    * Las actas de esta cuenta, de la más nueva a la más vieja, con el tema de la
    * partida de la que salieron.
    *
@@ -572,6 +624,7 @@ window.ATWI = window.ATWI || {};
     abrirPartida: abrirPartida,
     mandarTurno: mandarTurno,
     arbitrar: arbitrar,
+    mediar: mediar,
     anotar: anotar,
     marcarVisto: marcarVisto,
     guardarActa: guardarActa,
