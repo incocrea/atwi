@@ -270,8 +270,15 @@ window.ATWI = window.ATWI || {};
         ? 'Aviso de local: el antirrobots no dio token para «localhost», así que ' +
           'entrar va a fallar aquí. Revisa los dominios del widget ' +
           cfg.turnstileSiteKey + ' en Cloudflare.'
-        : 'No pudimos cargar la verificación antirrobots. Probá a recargar la ' +
-          'página; si sigue igual, puede ser tu red o un bloqueador.');
+        /* NO SE LE ECHA LA CULPA A SU RED. Esto decía «puede ser tu red o un
+           bloqueador», y el 2026-09-15 falló para TODO EL MUNDO por una razón
+           nuestra --el dominio no estaba en la lista del widget en Cloudflare--:
+           cada persona que no podía entrar se fue a revisar su wifi. Cuando el
+           aviso no sabe de quién es la culpa, no la reparte. */
+        : 'No pudimos cargar la verificación antirrobots, así que no podemos ' +
+          'dejarte entrar todavía. Probá a recargar la página. Si sigue igual, ' +
+          'puede ser un bloqueador tuyo o un problema nuestro: no es algo que ' +
+          'puedas arreglar desde aquí.');
     }, 4000);
   }
 
