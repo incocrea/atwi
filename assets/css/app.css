@@ -387,81 +387,82 @@ body.app {
    blanco con el icono ilustrado, nombre grande y una pastilla abajo que dice
    qué va a pasar al tocarla—, porque esto es lo primero que se ve al abrir y
    tiene que parecer un juego, no un formulario. */
-.cartas-modo { display: grid; gap: var(--e-4); }
+/* LAS DOS, LADO A LADO (mockup del titular, 2026-09-16). Estaban apiladas y de
+   lado por dentro; ahora son dos cartas de juego en dos columnas.
 
-/* EL RÓTULO A LA IZQUIERDA Y LAS DOS SALIDAS APILADAS A SU DERECHA, del alto
-   del rótulo entre las dos. Estaban en columna --dibujo arriba, botones abajo
-   en fila-- y la carta era una torre: dos cartas así llenaban la portada y el
-   aviso de IA quedaba fuera de la primera pantalla. De lado ocupan la mitad de
-   alto y el dibujo, que es lo que se reconoce, sigue mandando por tamaño.
+   LO QUE SE GANA ES LA COMPARACIÓN. Elegir modo es la decisión de esta pantalla
+   y apiladas no se comparaban: se leía una, se bajaba, se leía la otra. Una al
+   lado de la otra se ven juntas, con su dibujo, su línea y su pie, y se decide
+   de un vistazo. `minmax(0, 1fr)` y no `1fr`, que el mínimo del contenido
+   ensancharía la columna y esto no scrollea de lado. */
+.cartas-modo {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e-3); align-items: stretch;
+}
 
-   `--alto-rotulo` lo comparten el dibujo y la pila de botones, que es lo que
-   los deja exactamente igual de altos: con dos números sueltos, tocar uno
-   desalinea la carta y no se ve hasta que alguien mira de cerca. */
+/* VUELVE EL FONDO DE COLOR, y revoca la decisión del 2026-09-14 de dejar la
+   carta sin fondo ninguno. Aquélla se tomó cuando la carta era una banda
+   horizontal sobre el fondo dibujado, donde cualquier capa opaca lo partía en
+   bloques. Con dos cartas verticales y estrechas el problema se da la vuelta:
+   sin fondo no hay dos piezas, hay dos dibujos sueltos flotando, y la franja
+   del pie no tiene dónde apoyarse.
+
+   Va en degradado del propio tinte del modo, no en gris: el color es lo que
+   dice cuál es cuál antes de leer nada. Y es suave a propósito --de `-tinte` a
+   casi blanco-- porque encima van el rótulo y los dos signos, que ya son
+   saturados; con la carta a plena fuerza competirían. */
 .carta-modo {
-  /* 96 Y NO 88, y el número sale de una cuenta: dos discos de 44 --el mínimo
-     para que un botón redondo no se falle al tocarlo-- más los 8 del hueco. Con
-     88 los rows salían de 40 y los discos se desbordaban 8 px de su caja por el
-     mínimo, así que dejaban de estar alineados con el dibujo justo en lo que se
-     pedía que coincidiera. El rótulo crece 8 px y todo vuelve a cuadrar. */
-  --alto-rotulo: 96px;
-  /* LOS SIGNOS SE DESATARON DEL RÓTULO (petición del titular, 2026-09-16: «un
-     poco más grandes los iconos de ayuda y play»). Iban a la altura del rótulo,
-     y de ahí salían los 44 de cada uno. Dos de 60 más los 8 del hueco.
-
-     No crece el rótulo con ellos porque lo que se pidió más grande es el signo:
-     la carta ya la manda el dibujo del modo, que se lee a metros, y lo que
-     costaba encontrar era dónde tocar. */
-  --alto-signos: 128px;
-  display: flex; align-items: center; gap: var(--e-3);
-  width: 100%; padding: var(--e-4);
-  border: 0; border-radius: var(--radio-modal);
-  text-align: left; font: inherit; color: var(--tinta);
+  display: flex; flex-direction: column; align-items: center;
+  width: 100%; padding: var(--e-3) var(--e-3) 0;
+  border: 0; border-radius: var(--radio-carta); overflow: hidden;
+  text-align: center; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
 }
-/* SIN FONDO NINGUNO (decisión del titular, 2026-09-14). Pasó de tinte sólido a
-   tinte al 70 % y de ahí a nada: detrás hay un fondo dibujado y cualquier capa
-   encima lo parte en bloques. Lo que separa una carta de la otra deja de ser su
-   caja y pasa a ser su rótulo y el color de sus dos discos, que ya lo dicen.
-
-   LA SOMBRA SÍ SE QUEDA, y me equivoqué al quitarla. El razonamiento era que
-   una sombra alrededor de una caja transparente dibuja el contorno de algo que
-   no está; en la práctica hace lo contrario: sobre un fondo claro queda un halo
-   suave que delimita la carta sin llenarla. Es lo único que sigue diciendo
-   «esto es una pieza» cuando ya no hay caja. Se ve y se decide mirando, no
-   razonando, y la decisión es del titular. */
-
-.carta-modo__alto {
-  display: flex; align-items: center; flex: 1 1 auto; min-width: 0;
+.carta-modo--debate {
+  background: linear-gradient(170deg, var(--debate-tinte), #FFF8F4 78%);
 }
-/* El nombre del modo va dibujado, no escrito, y ya no hay disco al lado: el
-   rótulo lleva su propio icono dentro, así que repetirlo en un círculo era
-   decir dos veces lo mismo.
-   Se le fija el ALTO y no el ancho porque las dos piezas no miden lo mismo de
-   largo y así quedan del mismo tamaño aparente; `min-width: 0` para que el
-   flex pueda encogerla antes que sacarla por el costado. */
-.carta-modo__rotulo {
-  height: var(--alto-rotulo); width: auto; max-width: 100%; min-width: 0;
-  display: block;
+.carta-modo--negociacion {
+  background: linear-gradient(170deg, var(--negociacion-tinte), #F4FCF9 78%);
 }
-/* Las dos salidas, apiladas y repartiéndose el alto del rótulo. Los dos del
-   mismo tamaño: una lleva a entender y la otra a jugar, y ninguna de las dos es
-   la equivocada, así que ninguna manda por tamaño. Lo que las separa es el
-   relleno, no el diámetro. */
+
+/* El dibujo manda y por eso va a todo el ancho de la carta. Se le fija el ANCHO
+   y no el alto --al revés que cuando iban de lado--: en dos columnas lo que
+   escasea es el ancho, y las dos piezas tienen proporciones distintas, así que
+   fijando el alto una se saldría por el costado. */
+.carta-modo__alto { width: 100%; }
+.carta-modo__rotulo { width: 100%; height: auto; display: block; }
+
+/* La línea de qué se juega. Dos renglones, y `min-height` para reservarle los
+   dos aunque una quepa en uno: sin eso, la carta más corta sube sus botones y
+   las dos filas de signos dejan de estar alineadas entre cartas. */
+.carta-modo__gancho {
+  margin: var(--e-2) 0 var(--e-3);
+  font-size: var(--t-chico); line-height: 1.3; font-weight: 700;
+  color: var(--tinta-suave); min-height: 2.6em;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* Las dos salidas, ahora EN FILA y de distinto tamaño. Cuando iban apiladas y
+   sin palabra medían lo mismo a propósito: nada más que el diámetro distinguía
+   «entender» de «jugar», y hacer una más chica la habría hecho parecer la
+   opción menor. Con la palabra debajo esa duda ya no existe, así que el tamaño
+   queda libre para decir lo que de verdad pasa aquí: a esta pantalla se viene
+   a jugar, y «Cómo funciona» es la salida de quien todavía no sabe a qué. */
 .carta-modo__salidas {
-  display: grid; grid-auto-rows: 1fr; gap: var(--e-2);
-  flex: 0 0 auto; height: var(--alto-signos); justify-items: center;
+  --signo-alto: 62px;
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: var(--e-3); width: 100%; margin-top: auto;
 }
-/* CADA UNO ES UN CÍRCULO DEL ALTO QUE LE TOCA. `aspect-ratio` sobre la altura
-   de la fila: así el diámetro sale del alto del rótulo y no de un número
-   suelto, y los dos siguen cuadrando si el rótulo cambia de tamaño.
-   44 px de mínimo porque por debajo de eso un botón redondo se falla al tocar,
-   y «Jugar» es LA acción de esta pantalla. */
+/* LOS DOS DISCOS SE APOYAN EN LA MISMA LÍNEA, y por eso la fila del icono mide
+   lo que el MÁS GRANDE en los dos botones: el chico se alinea al fondo de esa
+   fila en vez de flotar. Alineando los botones por abajo —que fue lo primero—
+   lo que cuadraba eran las etiquetas, y como una tiene dos renglones y la otra
+   uno, el signo de ayuda subía y los dos dejaban de leerse como una fila. */
 .carta-modo__signo {
-  aspect-ratio: 1; height: 100%; min-width: 44px; min-height: 44px;
-  display: grid; place-items: center; padding: 0;
+  display: grid; grid-template-rows: var(--signo-alto) auto;
+  justify-items: center; align-items: end; gap: 4px; padding: 0;
   border: 0; background: none; box-shadow: none;
-  font: inherit; cursor: pointer;
+  font: inherit; color: inherit; cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
 }
 .carta-modo__signo:active { transform: scale(.92); }
@@ -472,13 +473,39 @@ body.app {
    con un trazo de línea dentro. Los iconos nuevos ya son eso: traen su forma,
    su color y su perfil blanco, así que el disco de CSS quedaba como un aro
    alrededor de otra figura redonda.
-
-   La jerarquía que el relleno resolvía —«rellenar los dos dejaría dos discos
-   iguales y ninguno mandaría»— ahora viene dibujada: el de ayuda es un
-   bocadillo en pastel y el de jugar un disco en el color saturado del modo.
-   Y el color del modo sigue estando, porque cada carta pide su propio archivo:
+   El color del modo sigue estando, porque cada carta pide su propio archivo:
    `ayuda-coral` y `play-coral` en Juicio, `-menta` en Pacto. */
-.carta-modo__signo .ico { width: 100%; height: 100%; }
+.carta-modo__explica .ico { width: 46px; height: 46px; }
+.carta-modo__jugar .ico { width: var(--signo-alto); height: var(--signo-alto); }
+
+/* La palabra va DEBAJO del signo y no al lado: en una carta de media pantalla
+   al lado no cabe, y fue por eso por lo que se quitó la primera vez. */
+.carta-modo__palabra {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+  line-height: 1.15; color: var(--tinta);
+  /* Dos renglones reservados a las dos, aunque «Jugar» use uno: si no, la carta
+     cuya palabra es más corta sube su pie y las dos franjas dejan de estar a la
+     misma altura. */
+  min-height: 2.3em;
+}
+.carta-modo__jugar .carta-modo__palabra { font-size: var(--t-chico); }
+
+/* El pie de la carta, a sangre de lado a lado. Lleva los márgenes negativos del
+   padding de la carta porque es el pie de la pieza, no una pastilla encima. */
+.carta-modo__chip {
+  width: auto; align-self: stretch;
+  margin: var(--e-3) calc(var(--e-3) * -1) 0;
+  padding: 7px var(--e-2);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+}
+.carta-modo--debate .carta-modo__chip {
+  background: color-mix(in srgb, var(--debate) 22%, transparent);
+  color: var(--debate-oscuro);
+}
+.carta-modo--negociacion .carta-modo__chip {
+  background: color-mix(in srgb, var(--negociacion) 22%, transparent);
+  color: var(--negociacion-oscuro);
+}
 
 /* Lo que de verdad hay que entender de cada modo: en Controversia, que no se
    juzga quién tiene razón; en Negociación, que no estar de acuerdo también es

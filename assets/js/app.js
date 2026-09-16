@@ -759,11 +759,26 @@
      de qué va —o sea, a partir de la segunda partida— tenía que saltárselos
      cada vez para llegar al botón. Ahora la portada se lee de un vistazo y la
      explicación está a un toque de quien la necesite. */
+  /* LAS DOS CARTAS VAN LADO A LADO Y EN COLUMNA (mockup del titular,
+     2026-09-16). Estaban de lado —dibujo a la izquierda, botones a la derecha—
+     y apiladas una sobre otra. La forma nueva es la de una carta de juego:
+     dibujo arriba, una línea de qué se hace, las dos salidas abajo con su
+     palabra, y una franja al pie. Lo que se gana es que los dos modos se ven
+     a la vez y se comparan sin scroll, que es la decisión que pide la pantalla.
+
+     Y LOS SIGNOS VUELVEN A TENER PALABRA. La quitaron porque al apilarse no
+     cabía --«Explícame» partía en dos renglones--; en columna y con la carta a
+     media pantalla sí cabe, y debajo del signo en vez de al lado. El signo
+     sigue haciendo el trabajo de reconocerse a distancia y la palabra quita la
+     duda de qué pasa al tocarlo, que en el teléfono no se puede resolver
+     pasando el cursor por encima. */
   function cartaModo(clave) {
+    var m = cfg.modos[clave] || {};
     return '<div class="carta-modo carta-modo--' + clave + '">' +
         '<div class="carta-modo__alto">' +
           rotuloModo(clave, 'carta-modo__rotulo') +
         '</div>' +
+        (m.gancho ? '<p class="carta-modo__gancho">' + esc(m.gancho) + '</p>' : '') +
         /* DOS BOTONES REDONDOS CON SU SIGNO, sin palabra. Llevaban texto y al
            apilarse se estrecharon tanto que «Explícame» partía en dos
            renglones; se acortó a «Info» y seguía siendo una palabra metida a
@@ -786,12 +801,17 @@
            sigue pesando más sin necesidad de rellenarlo aparte. */
         '<div class="carta-modo__salidas">' +
           '<button class="carta-modo__signo carta-modo__explica" data-explicar="' + clave + '" ' +
-            'aria-label="Cómo se juega" title="Cómo se juega">' +
-            window.ATWI.iconoDeModo('ayuda', clave, 44) + '</button>' +
+            'aria-label="Cómo funciona ' + esc(modoLlano(clave)) + '">' +
+            window.ATWI.iconoDeModo('ayuda', clave, 44) +
+            '<span class="carta-modo__palabra">Cómo<br>funciona</span></button>' +
           '<button class="carta-modo__signo carta-modo__jugar" data-crear="' + clave + '" ' +
-            'aria-label="Jugar" title="Jugar">' +
-            window.ATWI.iconoDeModo('play', clave, 44) + '</button>' +
+            'aria-label="Jugar a ' + esc(modoLlano(clave)) + '">' +
+            window.ATWI.iconoDeModo('play', clave, 60) +
+            '<span class="carta-modo__palabra">Jugar</span></button>' +
         '</div>' +
+        /* LA FRANJA VA A SANGRE hasta los bordes de la carta: es el pie de la
+           carta y no una pastilla puesta encima. */
+        (m.chip ? '<p class="carta-modo__chip">' + esc(m.chip) + '</p>' : '') +
       '</div>';
   }
 

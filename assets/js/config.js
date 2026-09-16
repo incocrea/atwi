@@ -23,6 +23,13 @@ window.ATWI.config = {
     debate: {
       nombre: 'Controversia',
       partido: ['Controvers', 'IA', ''],
+      /* EL GANCHO DE LA CARTA, y no es un resumen de `que`: son dos trabajos
+         distintos. `que` explica el modo a quien abrió «Cómo funciona» y puede
+         ocupar lo que necesite; esto cabe en dos renglones bajo el dibujo y lo
+         único que tiene que hacer es decir a qué se juega. Redacción del
+         titular (2026-09-16). */
+      gancho: 'Defiende tu postura de forma divertida',
+      chip: '🔥 Más popular',
       que: 'Un tema en común, ambos pueden estar a favor o en contra. Un juez IA escucha ' +
            'sus argumentos, consulta qué dicen los expertos al respecto y evalúa quién ' +
            'argumenta mejor su posición frente al tema. 100% neutral: lo que cuenta para ' +
@@ -33,6 +40,8 @@ window.ATWI.config = {
     negociacion: {
       nombre: 'Negociación',
       partido: ['Negoc', 'IA', 'ción'],
+      gancho: 'Dialoga, encuentra acuerdos y avanza',
+      chip: '⭐ Recomendado',
       que: 'Un tema en el que cueste ponerse de acuerdo. Ambos presentan sus argumentos ' +
            'e ideas, y un mediador IA que escucha las dos posiciones consulta qué dicen ' +
            'los expertos sobre el tema y, según eso, propone 3 posibles acuerdos.',
@@ -64,7 +73,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '75459e5',
+  version: '9d3bf6e',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
