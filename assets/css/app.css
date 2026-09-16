@@ -2034,9 +2034,13 @@ body.app {
 
 /* EL MODO VA FUERA Y ENCIMA de la tarjeta, y es lo más grande de la pantalla
    después del sorteo. Dentro competía con el enunciado por el mismo sitio y se
-   leía como una etiqueta; fuera, manda, que es lo que tiene que hacer. */
+   leía como una etiqueta; fuera, manda, que es lo que tiene que hacer.
+   Y CRECE DE 52 A 78 px (titular, 2026-09-16), que es el sitio que deja el
+   título de la cabecera al quitarse: en esta pantalla el rótulo es lo primero
+   que dice a qué se va a jugar, así que se lleva el espacio que ocupaba una
+   palabra que decía menos. */
 .sala__rotulo {
-  height: 52px; width: auto; max-width: 100%;
+  height: 78px; width: auto; max-width: 100%;
   display: block; margin: 0 auto var(--e-3);
 }
 .sala__tema {

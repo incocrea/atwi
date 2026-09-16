@@ -1260,6 +1260,16 @@ window.ATWI = window.ATWI || {};
      ========================================================================== */
   function pintarAviso() {
     marcarTurno(null);
+    /* SIN «LA SALA» EN LA CABECERA, y solo en esta pantalla (titular,
+       2026-09-16). Aquí el rótulo del modo es lo que hay que mirar —es lo
+       primero que dice a qué se va a jugar— y tenerlo debajo de un título
+       escrito era decir dos cosas en el mismo sitio, con la de arriba diciendo
+       menos. En las pantallas de turno el título vuelve: allí el rótulo ya no
+       está y la cabecera es lo único que sitúa.
+       Se repone en `pintarTurno()`, que es la siguiente pantalla que se pinta
+       pase lo que pase. */
+    var rotulo = $('#t-partida');
+    if (rotulo) rotulo.textContent = '';
     caja().innerHTML =
       '<div class="sala sala--sorteo">' +
         /* EL MODO MANDA Y VA FUERA DE LA TARJETA. Dentro competía con el
@@ -1568,6 +1578,9 @@ window.ATWI = window.ATWI || {};
   }
 
   function pintarTurno() {
+    /* El título vuelve: lo quita el sorteo, que es la pantalla de antes. */
+    var cab = $('#t-partida');
+    if (cab) cab.textContent = 'La sala';
     var t = turnoActual();
     P.estado = 'turno';
     tirarBorrador();
