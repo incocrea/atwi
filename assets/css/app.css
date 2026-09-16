@@ -3743,9 +3743,31 @@ body.app {
 .publico:active { transform: scale(.96); }
 @media (prefers-reduced-motion: reduce) { .publico:active { transform: none; } }
 
-.publico--pareja   { background: linear-gradient(175deg, #FFE4EC, #FFF6F9 72%); }
-.publico--amigos   { background: linear-gradient(175deg, #EDE6FF, #F8F5FF 72%); }
-.publico--familia  { background: linear-gradient(175deg, #DDEEFF, #F4FAFF 72%); }
+/* EL COLOR DE CADA MESA, EN UN SOLO SITIO (titular, 2026-09-16). Los dos
+   selectores de cada línea nunca coinciden en el mismo elemento —uno es la
+   carta de la pantalla de elegir, el otro la vista ya dentro de esa mesa— así
+   que agrupándolos el color se escribe UNA vez y lo heredan las dos.
+
+   Y ES LA MESA LA QUE TIÑE, NO EL MODO. Dentro del catálogo hay dos colores
+   compitiendo: el del modo —coral o menta, que lleva el fondo y la cinta— y el
+   de con quién juegas. Las tarjetas de tema pertenecen a la lista, y la lista
+   es de la mesa: son los temas de la pareja, o los de los amigos. El modo ya
+   está dicho arriba en la cinta y no necesita repetirse en cada tarjeta. */
+.publico--pareja,  #v-catalogo[data-paso="pareja"]  { --mesa: #FFE4EC; --mesa-claro: #FFF6F9; }
+.publico--amigos,  #v-catalogo[data-paso="amigos"]  { --mesa: #EDE6FF; --mesa-claro: #F8F5FF; }
+.publico--familia, #v-catalogo[data-paso="familia"] { --mesa: #DDEEFF; --mesa-claro: #F4FAFF; }
+.publico { background: linear-gradient(175deg, var(--mesa), var(--mesa-claro) 72%); }
+
+/* Las tarjetas de tema y la de «Mis propios temas» toman el tinte de su mesa.
+   El de respaldo es el blanco de siempre: fuera del catálogo —y en la pantalla
+   de elegir mesa, donde todavía no hay ninguna— `--mesa-claro` no existe y la
+   tarjeta se queda como estaba. */
+#v-catalogo .tema-caja { background: var(--mesa-claro, var(--superficie)); }
+#v-catalogo .categoria--propia {
+  background: linear-gradient(175deg, var(--mesa, var(--lavanda-tinte)),
+                                      var(--mesa-claro, var(--lavanda-tinte)) 80%);
+  border-color: color-mix(in srgb, var(--mesa, var(--lavanda-claro)) 70%, var(--tinta) 8%);
+}
 
 .publico__alto { display: block; }
 .publico__alto .ico { width: 100%; height: auto; max-width: 96px; margin: 0 auto; }
