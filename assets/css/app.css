@@ -180,10 +180,19 @@ body.app {
    quedaria en blanco. Se le deja el del home, que es donde se elige. */
 .marco:has(#v-catalogo[data-activa]) { --fondo: url(../img/fondos/home.webp); }
 
+/* EL DIBUJO TERMINA DONDE EMPIEZA LA BARRA (titular, 2026-09-16). Iba a `inset:
+   0`, o sea que se extendía por debajo de la barra inferior y ésta —que es
+   opaca— le comía la franja de abajo. No era solo desperdicio: con `cover` el
+   encuadre se calcula sobre la caja entera, así que la parte del dibujo que se
+   estaba recortando era justo la que nunca se iba a ver.
+
+   Acotándolo, el mismo dibujo se reparte en el alto que de verdad se ve y llega
+   entero hasta el borde de la barra. Detrás de ella no queda hueco: la barra
+   lleva su propio color y el marco su `--ctx-fondo` debajo. */
 .marco::before {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: 0 0 calc(var(--barra-alto) + env(safe-area-inset-bottom, 0px)) 0;
   background: var(--fondo) center top / cover no-repeat;
   pointer-events: none;
   /* Detras de la cabecera, las vistas y la barra, que son hijos posicionados
