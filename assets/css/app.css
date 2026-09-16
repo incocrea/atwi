@@ -1440,9 +1440,19 @@ body.app {
    `<i>` por dentro y no en la celda: rotar la celda moveria tambien su caja y
    descuadraria la rejilla. El `<i>` sale del flujo con `position: absolute`,
    asi que la columna sigue midiendo lo que mide el numero de debajo. */
-/* 52 px porque «Ejemplos» a -45 grados proyecta unos 45: con 34 se cortaba
-   contra el borde de arriba de la tarjeta. */
-.tabla--ancha .tabla__fila--cabeza { position: relative; height: 52px; padding-bottom: 0; }
+/* EL AIRE VA ARRIBA, NO ABAJO (corrección del titular, 2026-09-16). Medido: el
+   rótulo rotado sobresalía 13 px POR ENCIMA de la cabecera —metiéndose en el
+   párrafo de la justificación— y dejaba 27 px de hueco hasta la línea de la
+   tabla. Exactamente al revés de lo que pide la lectura: el título tiene que
+   estar pegado a lo que titula y separado de lo de antes.
+
+   Pasa porque `bottom: 0` coloca el texto SIN rotar y el giro lo hace crecer
+   hacia arriba: la caja de «Ejemplos» mide 12 px en horizontal y 38 a -45°. Se
+   compensa bajándolo, y la cabecera se queda con la altura justa de esa caja
+   más un dedo de aire. El hueco con el texto de arriba lo pone el margen de la
+   tabla, que es donde corresponde. */
+.tabla--ancha .tabla__fila--cabeza { position: relative; height: 44px; padding-bottom: 0; }
+.tabla--ancha { margin-top: var(--e-4); }
 .tabla--ancha .tabla__fila--cabeza .tabla__n { position: relative; }
 /* EL ROTULO SE CENTRA SOBRE SU COLUMNA, no se cuelga del borde derecho
    (correccion del titular, 2026-09-16). Estaba anclado a `right: 2px`, asi que
@@ -1453,7 +1463,7 @@ body.app {
    columna, y el giro va con origen en su punto medio inferior para que la
    inclinacion no lo desplace. */
 .tabla--ancha .tabla__eti i {
-  position: absolute; left: 50%; bottom: 0;
+  position: absolute; left: 50%; bottom: -18px;
   transform: translateX(-50%) rotate(-45deg);
   transform-origin: 50% 100%;
   font-style: normal; white-space: nowrap;
