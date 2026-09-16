@@ -855,75 +855,175 @@
      no se pueden leer desde aquí sin meter sus claves en el navegador, que es
      justo lo que no se hace nunca. Así que esto es lo que SE SABE, con su
      fuente, y dice claramente qué hay que ir a mirar a mano. */
-  function verLimites() {
-    pedir('costos?select=proveedor,usd,creado').then(function (c) {
-      var gastado = {};
-      c.forEach(function (f) {
-        gastado[f.proveedor] = (gastado[f.proveedor] || 0) + Number(f.usd || 0);
-      });
+  /* --- Los topes: verlos venir con meses de margen --------------------------
+     Petición del titular (2026-09-15). La pestaña enseñaba lo gastado por
+     proveedor y un párrafo con los límites escritos a mano —que además eran los
+     del plan gratuito y estaban mal—. Eso contesta «cuánto llevamos» y no
+     contesta la única pregunta que importa aquí: **¿cuánto falta para que algo
+     se rompa, y qué hago cuando falte poco?**
 
-      var CUENTAS = [
-        { p: 'deepgram', nombre: 'Deepgram', credito: 200,
-          fuente: 'Crédito inicial de 200 USD (docs/01 §8.2, verificado sep-2026).',
-          donde: 'https://console.deepgram.com/usage', etiqueta: 'console.deepgram.com · Usage' },
-        { p: 'anthropic', nombre: 'Anthropic', credito: null,
-          fuente: 'De prepago. El saldo no se puede leer desde aquí sin poner la clave en el navegador.',
-          donde: 'https://console.anthropic.com/settings/billing', etiqueta: 'console.anthropic.com · Billing' },
-        { p: 'azure', nombre: 'Azure Speech', credito: null,
-          fuente: 'El nivel gratuito da 0,5 M de caracteres al mes de voz neuronal; el de pago cobra por carácter. SIN VERIFICAR.',
-          donde: 'https://portal.azure.com/#view/Microsoft_Azure_Billing/BillingMenuBlade/~/Overview',
-          etiqueta: 'portal.azure.com · Costos' },
-        /* PLAN PRO, confirmado por el titular el 2026-09-15 y verificado contra
-           supabase.com/pricing. Aquí decía los topes del plan GRATUITO —500 MB
-           de base, 1 GB de almacén— que son entre ocho y cien veces menores, y
-           con ellos cualquier cuenta de servilleta sobre cuántas partidas caben
-           daba un número alarmante y falso. */
-        { p: 'supabase', nombre: 'Supabase (Pro, 25 USD/mes)', credito: null,
-          fuente: 'Incluye 8 GB de base ($0,125/GB extra), 100 GB de almacén ($0,0213), ' +
-                  '250 GB de egress al mes ($0,09), 2 M de invocaciones ($2/M) y 100.000 ' +
-                  'usuarios activos. A 282 KB permanentes por partida, el almacén da para ' +
-                  '~372.000 partidas. OJO: el tope de gasto viene ACTIVADO de fábrica, así ' +
-                  'que al pasarse no se cobra de más — se BLOQUEA.',
-          donde: 'https://supabase.com/dashboard/project/vauarfofsfgwnuyjfpni/settings/billing/usage',
-          etiqueta: 'supabase.com · Usage' }
-      ];
+     EN EL PLAN PRO EL TOPE DE GASTO VIENE ACTIVADO DE FÁBRICA: al pasarse no se
+     cobra de más, se BLOQUEA. Una base que deja de aceptar escrituras con la
+     partida de alguien a medias es peor que una factura sorpresa, y llega sin
+     avisar. De ahí que cada barra traiga su plan de acción escrito ANTES de
+     hacer falta: el día que haga falta, nadie está para investigar. */
+  var PANEL_USO = 'https://supabase.com/dashboard/project/vauarfofsfgwnuyjfpni/settings/billing/usage';
+  var COMO_SE_ARREGLA = {
+    almacen: {
+      cuando: 'Cuando pase del 70 % (70 GB ≈ 260.000 partidas)',
+      pasos: [
+        'Mirar primero si son audios que <b>ya deberían haberse borrado</b>: ' +
+          '<code>select count(*) from turnos where audio_caduca &lt; now()</code>. ' +
+          'Si son muchos, correr el borrado de caducados y volver a medir.',
+        'Si el almacén es de verdad, mover los audios a <b>Cloudflare R2</b>: cuesta ' +
+          '$0,015/GB y <b>el egress es gratis</b>, que es lo que de verdad crece en una ' +
+          'app donde el contenido se reproduce.',
+        'Migrar toca tres sitios: la subida en <code>turno</code>, el borrado en ' +
+          '<code>olvidar</code> y las URLs firmadas de la reproducción.'
+      ],
+      enlaces: [['Precios de R2', 'https://developers.cloudflare.com/r2/pricing/']]
+    },
+    base: {
+      cuando: 'Cuando pase del 70 % (5,6 GB)',
+      pasos: [
+        'Casi todo es <code>llamadas</code>, los JSON de auditoría. Bajar la retención: ' +
+          '<code>select public.limpiar_llamadas(3)</code> y cambiar el cron.',
+        'Comprobar qué tabla pesa de verdad: <code>select relname, pg_size_pretty(' +
+          'pg_total_relation_size(relid)) from pg_statio_user_tables order by ' +
+          'pg_total_relation_size(relid) desc limit 10</code>.',
+        'Si no es <code>llamadas</code>, subir el disco desde el panel antes de llegar al ' +
+          'tope: $0,125 por GB extra.'
+      ],
+      enlaces: [['Panel de uso', 'PANEL']]
+    },
+    azure: {
+      cuando: 'Cuando pase del 70 % (350.000 caracteres en el mes)',
+      pasos: [
+        '<b>Verificar primero el cupo y la tarifa</b>, que están sin comprobar desde el ' +
+          'primer día: si el recurso está en nivel S0 y no F0, no hay cupo gratuito y se ' +
+          'cobra desde el primer carácter.',
+        'Si el cupo es real y se agota: subir a S0 y pagar por carácter, o dejar de ' +
+          'locutar al abogado hasta el mes siguiente.'
+      ],
+      enlaces: [['Precios de Azure Speech', 'https://azure.microsoft.com/pricing/details/cognitive-services/speech-services/']]
+    },
+    invocaciones: {
+      cuando: 'Cuando pase del 70 % (1,4 M en el mes)',
+      pasos: [
+        'Mirar cuánto se lleva el latido: 3 invocaciones por ronda y hasta ~26 rondas al ' +
+          'día, o sea unas 2.300 al mes. Si es una parte grande del total, subir ' +
+          '<code>ajustes.latido_minutos</code> o apagarlo.',
+        'Este número es <b>estimado por lo bajo</b>: no cuenta las invocaciones que ' +
+          'fallaron antes de anotar nada. El real está en el panel.'
+      ],
+      enlaces: [['Panel de uso', 'PANEL']]
+    },
+    deepgram: {
+      cuando: 'Cuando pase del 70 % (140 de los 200 USD)',
+      pasos: [
+        'Este crédito <b>no se renueva</b>. Al agotarse, sin tarjeta las transcripciones ' +
+          'fallan y <b>no se puede cerrar ningún turno</b>.',
+        'Poner método de pago antes de llegar, y comprobar el precio por minuto entonces: ' +
+          'el que usamos se verificó en septiembre de 2026.'
+      ],
+      enlaces: [['Consola de Deepgram', 'https://console.deepgram.com/usage']]
+    },
+    anthropic: {
+      cuando: 'Siempre: es prepago y no hay cupo que avise',
+      pasos: [
+        'Sin saldo las llamadas fallan y <b>el juego deja de dar veredictos</b>. La ronda ' +
+          'no se pierde —se queda en deliberando y ofrece reintentar— pero nadie recibe ' +
+          'resultado hasta recargar.',
+        'Activar el aviso de saldo bajo en la consola: es lo único que avisa.',
+        'A ~$0,13 la partida de Controversia, 20 USD dan para unas 150 partidas.'
+      ],
+      enlaces: [['Facturación de Anthropic', 'https://console.anthropic.com/settings/billing']]
+    },
+    egress: {
+      cuando: 'No se puede medir desde aquí: hay que mirarlo en el panel',
+      pasos: [
+        'Cada reproducción de una partida entera son ~282 KB. Con 250 GB al mes caben ' +
+          '~931.000 reproducciones.',
+        'Si se acerca, la solución es la del almacén: <b>R2, con egress gratis</b>. Es el ' +
+          'motivo principal para migrar, más que el precio del disco.'
+      ],
+      enlaces: [['Panel de uso', 'PANEL']]
+    }
+  };
+
+  function pesa(n) {
+    n = Number(n || 0);
+    var u = ['B', 'kB', 'MB', 'GB', 'TB'], i = 0;
+    while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
+    return n.toFixed(n < 10 && i > 0 ? 1 : 0) + ' ' + u[i];
+  }
+  function cantidad(v, unidad) {
+    if (unidad === 'bytes') return pesa(v);
+    if (unidad === 'USD') return usd(v);
+    return Number(v || 0).toLocaleString('es');
+  }
+
+  function verLimites() {
+    pedir('topes?select=*').then(function (filas) {
+      /* El orden lo decide lo cerca que está cada uno, no el alfabeto: lo que
+         está a punto de romperse sale arriba sin buscarlo. */
+      filas.forEach(function (f) {
+        f.pct = Number(f.tope) > 0 ? Number(f.usado) / Number(f.tope) * 100 : null;
+      });
+      filas.sort(function (a, b) {
+        return (b.pct == null ? -1 : b.pct) - (a.pct == null ? -1 : a.pct);
+      });
+      var alertas = filas.filter(function (f) { return f.pct != null && f.pct >= 70; });
 
       $('#lienzo').innerHTML =
-        '<div class="aviso">Lo gastado que se ve aquí es <b>lo que esta app anotó</b>, no lo ' +
-        'que factura el proveedor. Sirve para ver la tendencia y repartir el gasto; el saldo ' +
-        'real hay que mirarlo en cada panel. Leerlo desde aquí obligaría a meter las claves ' +
-        'de cada servicio en una página del navegador, y eso no se hace.</div>' +
+        (alertas.length
+          ? '<div class="aviso"><b>' + alertas.length + ' tope(s) por encima del 70 %.</b> ' +
+            'En el plan Pro el límite de gasto viene activado de fábrica: al pasarse no se ' +
+            'cobra de más, <b>se bloquea</b>. Abajo está qué hacer en cada caso.</div>'
+          : '<div class="aviso">Ningún tope por encima del 70 %. El <b>egress</b> y el ' +
+            '<b>saldo de Anthropic</b> no se pueden leer desde aquí: esos hay que mirarlos ' +
+            'en su panel, y por eso salen sin barra.</div>') +
 
-        '<h2>Cuentas y hasta dónde llegan</h2>' +
-        tabla(['Servicio', 'Anotado por ATWI', 'Lo que se sabe del límite', 'Dónde se mira de verdad'],
-          CUENTAS.map(function (x) {
-            var g = gastado[x.p] || 0;
-            return ['<b>' + esc(x.nombre) + '</b>',
-                    usd(g) + (x.credito
-                      ? '<br><span class="chico">' + (g / x.credito * 100).toFixed(2) +
-                        '% de ' + x.credito + ' USD</span>' : ''),
-                    '<span class="chico">' + esc(x.fuente) + '</span>',
-                    /* Enlace de verdad y no un texto que hay que teclear: se
-                       entra aquí justo cuando se quiere comprobar una cifra, y
-                       copiar una ruta a mano es la mitad de las veces que no se
-                       comprueba. `noopener` porque abre fuera. */
-                    '<a class="chico" href="' + esc(x.donde) + '" target="_blank" ' +
-                      'rel="noopener noreferrer">' + esc(x.etiqueta) + ' ↗</a>'];
-          }), [false, true, false, false]) +
+        filas.map(function (f) {
+          var pct = f.pct;
+          var estado = pct == null ? 'nd' : pct >= 90 ? 'mal' : pct >= 70 ? 'ojo' : 'bien';
+          var g = COMO_SE_ARREGLA[f.clave] || { cuando: '', pasos: [], enlaces: [] };
+          return '<div class="tope tope--' + estado + '">' +
+            '<div class="tope__cab">' +
+              '<b>' + esc(f.titulo) + '</b> ' +
+              '<span class="pastilla">' + esc(f.fiabilidad) + '</span>' +
+              '<span class="tope__cifra">' +
+                (pct == null
+                  ? '<span class="chico">no medible aquí</span>'
+                  : cantidad(f.usado, f.unidad) + ' de ' + cantidad(f.tope, f.unidad) +
+                    ' · <b>' + (pct < 0.01 ? '&lt;0,01' : pct.toFixed(2)) + ' %</b>') +
+              '</span>' +
+            '</div>' +
+            (pct == null ? ''
+              : '<div class="barra"><i style="width:' +
+                Math.max(0.4, Math.min(100, pct)) + '%"></i></div>') +
+            '<div class="chico">' + f.nota + '</div>' +
+            /* El plan de acción se despliega solo cuando hace falta, pero está
+               escrito siempre: se puede leer con calma un día tranquilo, que es
+               cuando hay que leerlo. */
+            '<details class="tope__que"' + (estado === 'mal' || estado === 'ojo' ? ' open' : '') + '>' +
+              '<summary>Qué hacer · ' + esc(g.cuando) + '</summary>' +
+              '<ol>' + g.pasos.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol>' +
+              (g.enlaces || []).map(function (e) {
+                var url = e[1] === 'PANEL' ? PANEL_USO : e[1];
+                return '<a class="chico" href="' + esc(url) + '" target="_blank" ' +
+                       'rel="noopener noreferrer">' + esc(e[0]) + ' ↗</a> ';
+              }).join('') +
+            '</details>' +
+          '</div>';
+        }).join('') +
 
-        '<h2>Cuánto cuesta jugar</h2>' +
-        '<p class="chico" style="margin-bottom:12px">Con los precios de la tabla de tarifas y ' +
-        'una partida de 3 turnos por persona a 60 s cada uno.</p>' +
-        '<div class="tarjetas">' +
-          tarjeta('Por partida', usd(estimarPartida(c)), '6 intervenciones') +
-          tarjeta('Por pareja al mes', usd(estimarPartida(c) * 4), '4 partidas, el caso base') +
-          tarjeta('Mil parejas al mes', '$' + (estimarPartida(c) * 4 * 1000).toFixed(0), 'a este precio') +
-        '</div>';
+        '<p class="chico">Topes del <b>plan Pro</b> (25 USD/mes), verificados contra ' +
+        'supabase.com/pricing el 2026-09-15. Si el plan cambia se cambian en la vista ' +
+        '<code>topes</code> y en ningún sitio más.</p>';
     }).catch(fallo);
   }
 
-  /** El costo real por partida, sacado de lo anotado. Si todavía no hay datos
-      suficientes no se inventa un número: se dice que no los hay. */
   function estimarPartida(c) {
     var debates = {};
     c.forEach(function (f) { if (f.debate) debates[f.debate] = 1; });

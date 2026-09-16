@@ -220,41 +220,47 @@
   /* ======================================================================
      Vista: Jugar
      ====================================================================== */
-  /* LA TARJETA DE «TIENES UN RESULTADO SIN VER» en la portada.
-     NO PIDE EL HISTORIAL, solo mira el que ya haya en memoria. La portada es la
-     primera pantalla y tiene que pintarse ya; disparar aquí una petición para
-     una tarjeta que casi siempre no sale sería pagar una espera en cada arranque
-     por el caso raro. Cuando el historial se pide --al entrar en su pestaña, o
-     al terminar una partida-- la portada se repinta y la tarjeta aparece.
-     UNA SOLA, LA MÁS RECIENTE. Si hay dos sin ver, la segunda espera en el
-     historial: la portada avisa, no hace de bandeja de entrada. */
-  function tarjetaVeredictoPendiente() {
-    /* EL ORDEN ES EL DE LA PRISA, no el de la fecha. Un resultado sin ver es
-       algo que ya está y que nadie ha recogido; una partida a medias es algo
-       que hay que ir a hacer. Lo primero se enseña antes porque se resuelve en
-       diez segundos y lo segundo puede esperar a que haya rato. */
+  /* --- Lo que espera a quien entra ------------------------------------------
+     ESTO ESTABA EN LA PORTADA Y SE FUE AL BUZÓN (decisión del titular,
+     2026-09-15). Era una tarjeta grande encima del selector de modo que decía
+     «Tu resultado está listo», y tenía dos problemas: se comía el sitio de lo
+     que la pantalla viene a ofrecer —elegir modo y jugar— y duplicaba en la
+     portada algo que ya tiene su sitio, que es la campana.
+
+     Ahora la campana late cuando hay algo, y al abrirla está esto arriba.
+     **No se borró el aviso: se mudó.** Quitarlo sin más habría dejado un
+     resultado sin ver sin ninguna forma de enterarse, porque estos tres estados
+     NO están en la tabla `avisos` —los calcula el cliente mirando el historial—
+     y el buzón solo leía esa tabla. */
+  var LO_QUE_ESPERA = {
+    'sin-ver':         ['Tu resultado está listo', 'premio', 'Tocá para verlo'],
+    'falta-veredicto': ['Falta el resultado', 'curso', 'Tocá para pedirlo otra vez'],
+    'en-curso':        ['Partida sin terminar', 'curso', '']
+  };
+
+  /** Las partidas que piden algo, en orden de prisa. */
+  function partidasQueEsperan() {
     var lista = historial || [];
-    var d = lista.filter(function (x) { return estadoDe(x) === 'sin-ver'; })[0] ||
-            lista.filter(function (x) { return estadoDe(x) === 'falta-veredicto'; })[0] ||
-            lista.filter(function (x) { return estadoDe(x) === 'en-curso'; })[0];
-    if (!d) return '';
+    var fuera = [];
+    ['sin-ver', 'falta-veredicto', 'en-curso'].forEach(function (e) {
+      lista.forEach(function (d) { if (estadoDe(d) === e) fuera.push(d); });
+    });
+    return fuera;
+  }
+
+  function filaQueEspera(d) {
     var e = estadoDe(d);
-    var texto = e === 'sin-ver'
-      ? ['Tu resultado está listo', 'Tocá para verlo']
-      : e === 'falta-veredicto'
-        ? ['Falta el resultado', 'Tocá para pedirlo otra vez']
-        : ['Tienen una partida sin terminar',
-           (d.turnos_grabados || []).length + ' de ' + ((d.turnos || 3) * 2) +
-           ' intervenciones · tocá para seguir'];
-    return '<button class="tarjeta aviso-veredicto" data-tono="' +
-        (e === 'sin-ver' ? 'premio' : 'curso') + '" data-partida="' + esc(d.id) + '">' +
-        '<span class="aviso-veredicto__eti">' + esc(texto[0]) + '</span>' +
+    var q = LO_QUE_ESPERA[e] || ['', 'curso', ''];
+    var pie = e === 'en-curso'
+      ? (d.turnos_grabados || []).length + ' de ' + ((d.turnos || 3) * 2) +
+        ' intervenciones · tocá para seguir'
+      : q[2];
+    return '<button class="tarjeta aviso-veredicto" data-tono="' + q[1] + '" ' +
+        'data-partida="' + esc(d.id) + '">' +
+        '<span class="aviso-veredicto__eti">' + esc(q[0]) + '</span>' +
         '<span class="aviso-veredicto__tema">' + esc(d.enunciado || 'Sin tema') + '</span>' +
-        /* DE QUÉ PARTIDA SE TRATA, con las dos caras (petición del titular,
-           2026-09-15). El aviso decía «tu resultado está listo» y el tema, y con
-           dos partidas del mismo tema no había forma de saber cuál era. */
         quienesJugaron(d) +
-        '<span class="chico suave">' + esc(texto[1]) + '</span>' +
+        '<span class="chico suave">' + esc(pie) + '</span>' +
       '</button>';
   }
 
@@ -282,7 +288,6 @@
          MIENTRAS NO HAYA AVISO QUE LLEGUE DE FUERA, ÉSTA ES LA NOTIFICACIÓN.
          El titular eligió empezar solo por dentro de la app (2026-09-15), así
          que este es el único sitio donde eso se anuncia. */
-      tarjetaVeredictoPendiente() +
 
       /* EL MODO SE ELIGE AQUÍ, AL PRINCIPIO. Antes se elegía al final, justo
          antes de grabar, después de haber buscado el tema: para entonces ya
@@ -1914,13 +1919,32 @@
     return d === 1 ? 'ayer' : 'hace ' + d + ' días';
   }
 
+  /* LA CAMPANA CUENTA LAS DOS COSAS: los avisos del buzón y las partidas que
+     esperan algo. Contaba solo los primeros, así que un resultado sin ver dejaba
+     la campana apagada —y desde que la tarjeta de la portada se fue, eso sería
+     no avisar de nada—.
+
+     Y LATE, no solo lleva un punto: la marca de «hay algo» tiene que verse sin
+     mirar el número, porque el número es de 12 px en una esquina. La animación
+     va en la campana entera y se para sola a las seis repeticiones: un adorno
+     que se mueve para siempre deja de leerse como un aviso y pasa a ser parte
+     del mueble. */
   function refrescarPunto() {
     datos.avisos().then(function (lista) {
-      var sinLeer = lista.filter(function (a) { return !a.leido; }).length;
+      var sinLeer = lista.filter(function (a) { return !a.leido; }).length +
+                    partidasQueEsperan().length;
       var p = $('#buzon-punto');
+      var b = $('.buzon-boton');
       if (!p) return;
       p.hidden = sinLeer === 0;
       p.textContent = sinLeer > 9 ? '9+' : String(sinLeer);
+      if (b) {
+        /* Se reinicia la animación quitando y poniendo la clase: si ya estaba
+           puesta, el navegador no la vuelve a lanzar y un aviso nuevo pasaría
+           sin que la campana se moviera. */
+        b.classList.remove('buzon-boton--late');
+        if (sinLeer) { void b.offsetWidth; b.classList.add('buzon-boton--late'); }
+      }
     });
   }
 
@@ -1930,12 +1954,24 @@
     abrirModal('m-buzon');
 
     datos.avisos().then(function (lista) {
-      if (!lista.length) {
+      /* LO QUE ESPERA VA ARRIBA, antes que el buzón. Estas son las partidas que
+         piden algo —un resultado sin recoger, una ronda a medias— y son la razón
+         por la que la campana late. Van primero porque se resuelven tocándolas:
+         lo de abajo es correo, esto es una tarea.
+         No salen de la tabla `avisos`: se calculan del historial, y por eso
+         antes vivían en una tarjeta de la portada. */
+      var esperan = partidasQueEsperan();
+      if (!lista.length && !esperan.length) {
         caja.innerHTML = estadoVacio('📭', 'Buzón vacío',
           'Aquí llegan las invitaciones a debatir, los avisos de que te toca grabar y los resultados.');
         return;
       }
-      caja.innerHTML = '<div class="apilado">' + lista.map(function (a) {
+      caja.innerHTML =
+        (esperan.length
+          ? '<div class="apilado" style="margin-bottom:var(--e-4)">' +
+            esperan.map(filaQueEspera).join('') + '</div>'
+          : '') +
+        (lista.length ? '<div class="apilado">' + lista.map(function (a) {
         return '<button class="aviso' + (a.leido ? '' : ' aviso--nuevo') + '" ' +
             'data-tipo="' + esc(a.tipo) + '" ' +
             (a.debate ? 'data-ir-debate="' + esc(a.debate) + '"' : '') + '>' +
@@ -1946,9 +1982,12 @@
               '<span class="aviso__cuando">' + haceCuanto(a.creado) + '</span>' +
             '</span>' +
           '</button>';
-      }).join('') + '</div>';
+        }).join('') + '</div>' : '');
 
-      /* Abrir el buzón es leerlo. Se marca todo lo que hay dentro. */
+      /* Abrir el buzón es leerlo. Se marca todo lo que hay dentro.
+         LAS PARTIDAS QUE ESPERAN NO SE MARCAN: no son correo, son tareas. Un
+         resultado sin ver sigue sin verse aunque hayas abierto el buzón, y la
+         campana tiene que seguir latiendo hasta que lo abras de verdad. */
       var nuevos = lista.filter(function (a) { return !a.leido; }).map(function (a) { return a.id; });
       if (nuevos.length) datos.marcarLeidos(nuevos).then(refrescarPunto);
     });

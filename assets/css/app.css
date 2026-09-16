@@ -1622,6 +1622,48 @@ body.app {
 }
 .buzon-boton:active { transform: scale(.94); }
 
+/* LA CAMPANA LATE CUANDO HAY ALGO (petición del titular, 2026-09-16).
+   Antes el único indicio era el punto de 18 px en la esquina, y la portada
+   llevaba además una tarjeta grande avisando de lo mismo. La tarjeta se fue
+   —se comía el sitio del selector de modo, que es a lo que se viene— y lo que
+   la sustituye es esto.
+
+   SEIS REPETICIONES Y PARA. Un adorno que se mueve para siempre deja de leerse
+   como un aviso y pasa a ser parte del mueble; además, algo parpadeando en
+   bucle en una esquina cansa a los dos minutos. Se relanza sola cada vez que
+   aparece algo nuevo, porque el JS quita y repone la clase.
+
+   Y SE RESPETA QUIEN PIDIÓ QUIETUD. `prefers-reduced-motion` no es una
+   preferencia estética: hay gente a la que el movimiento en pantalla le produce
+   mareo. Ahí el aviso se queda en el resplandor, sin sacudida. */
+.buzon-boton--late { animation: campana-late 1.1s ease-in-out 6; }
+.buzon-boton--late .ico,
+.buzon-boton--late svg { transform-origin: 50% 15%; }
+
+@keyframes campana-late {
+  0%, 62%, 100% { transform: none; box-shadow: var(--sombra-1); }
+  8%            { transform: rotate(-13deg); }
+  18%           { transform: rotate(11deg); }
+  28%           { transform: rotate(-8deg); }
+  38%           { transform: rotate(6deg); }
+  48%           { transform: rotate(-3deg); }
+  /* El resplandor va con el mismo coral del punto: el aviso es uno solo y se
+     lee como uno solo. */
+  20%, 40%      { box-shadow: 0 0 0 4px color-mix(in srgb, var(--debate) 26%, transparent),
+                              var(--sombra-1); }
+  58%           { box-shadow: 0 0 0 9px color-mix(in srgb, var(--debate) 0%, transparent),
+                              var(--sombra-1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buzon-boton--late { animation: campana-brilla 1.6s ease-in-out 4; }
+  @keyframes campana-brilla {
+    0%, 100% { box-shadow: var(--sombra-1); }
+    50%      { box-shadow: 0 0 0 4px color-mix(in srgb, var(--debate) 26%, transparent),
+                           var(--sombra-1); }
+  }
+}
+
 /* El punto del buzón va en coral: avisa, no premia */
 .buzon-punto {
   position: absolute; top: -3px; right: -3px;
