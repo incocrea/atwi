@@ -1137,6 +1137,9 @@
               '<span class="partida__estado' +
                   (rot ? '' : ' partida__estado--hecha') + '">' +
                 esc(rot ? rot[0] : 'Terminada') +
+                (!rot && comoAcabo(d)
+                  ? '<span class="partida__final">' + esc(comoAcabo(d)) + '</span>'
+                  : '') +
                 '<span class="partida__avance">' + esc(avance) + '</span>' +
               '</span>' +
               '<span class="partida__senas">' +
@@ -1452,6 +1455,30 @@
     'falta-veredicto': ['Falta el resultado', 'curso'],
     'sin-ver': ['Tu resultado está listo', 'premio']
   };
+
+  /* CÓMO ACABÓ, en dos palabras (petición del titular, 2026-09-16). La fila de
+     una partida terminada decía «Terminada» y nada más, así que para saber en
+     qué quedó había que abrirla. En una lista de veinte, eso es abrirlas todas.
+
+     Va junto al estado y no en su propia línea: es la MISMA pregunta —«¿qué
+     pasó con esta?»— y partirla en dos renglones haría la tarjeta más alta sin
+     decir nada más. */
+  function comoAcabo(d) {
+    var r = d.resultado;
+    if (!r || !r.tipo_resultado) return '';
+    if (r.tipo_resultado === 'empate_tecnico') return 'Empate';
+    if (r.tipo_resultado === 'sin_resultado_blando') return 'Sin veredicto';
+    if (r.tipo_resultado === 'sin_resultado_duro') return 'Partida detenida';
+    if (r.tipo_resultado === 'ganador') {
+      /* El nombre, no el lado. «Ganó propone» no se lo dice a nadie. */
+      var lado = r.ganador_lado === 'invitado' ? 'invitado' : 'propone';
+      var quien = lado === 'invitado'
+        ? (d.invitado_nombre || 'la otra parte')
+        : (d.propone_nombre || 'vos');
+      return 'Ganó ' + quien;
+    }
+    return '';
+  }
 
   /* DE DÓNDE SE ABRIÓ LA PARTIDA, para poder devolver ahí (corrección del
      titular, 2026-09-15). A una partida se entra por dos puertas --la tarjeta de

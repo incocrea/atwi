@@ -1415,6 +1415,38 @@ body.app {
   font-size: var(--t-mini); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .tabla__n { text-align: right; font-family: var(--display); font-weight: 800; color: var(--tinta); }
+
+/* --- LA MINITABLA, AHORA EN HORIZONTAL (petición del titular, 2026-09-16) ---
+   Era una fila por criterio: cabecera + cinco + total = SIETE filas. Con la
+   justificación encima, la tarjeta del veredicto crecía hasta tapar al juez que
+   la está presentando, que es medio dibujo de la pantalla.
+
+   Transpuesta son TRES: los criterios arriba en corto y una fila por persona.
+   Dice exactamente lo mismo en menos de la mitad de alto.
+
+   `minmax(0, …)` en la primera columna y no `auto`: un nombre largo ensancharía
+   la columna y empujaría los números fuera de los 430 px, que es la regla de
+   «nada scrollea de lado» de CLAUDE.md. */
+.tabla--ancha .tabla__fila {
+  grid-template-columns: minmax(0, 1.5fr) repeat(5, minmax(0, 1fr)) minmax(0, 1.2fr);
+  gap: 2px;
+}
+.tabla--ancha .tabla__fila--cabeza .tabla__n {
+  color: var(--tinta-tenue); font-family: var(--cuerpo); font-weight: 700;
+  font-size: 10px; text-transform: uppercase; letter-spacing: .03em;
+}
+.tabla--ancha .tabla__quien {
+  text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tabla--ancha .tabla__n--total {
+  font-size: .95rem;
+  /* El total se separa del resto con una línea, que es lo que antes hacía la
+     fila de «Total». */
+  border-left: 1px solid var(--crema-hondo); padding-left: 6px;
+}
+.tabla--ancha .tabla__fila--cabeza .tabla__n--total {
+  font-size: 10px; color: var(--tinta-suave);
+}
 .tabla__nota {
   margin: var(--e-2) 0 0; font-size: var(--t-mini); line-height: 1.45; color: var(--tinta-suave);
 }
@@ -3522,3 +3554,12 @@ body.app {
 }
 
 
+
+/* Cómo acabó la partida, al lado del estado. En el verde de «hecho» porque eso
+   es lo que dice: que esta ya está. */
+.partida__final {
+  margin-left: var(--e-2);
+  color: var(--tinta-suave);
+  font-weight: 700;
+}
+.partida__final::before { content: '· '; color: var(--linea); font-weight: 400; }

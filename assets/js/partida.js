@@ -235,9 +235,23 @@ window.ATWI = window.ATWI || {};
   function mesaDelDebate(d, t) {
     var abreP = d.abre_lado !== 'invitado';
     function fichaDeLado(lado, i) {
-      /* Qué paridad de `orden` le toca a este lado: si abre quien propone, sus
-         turnos son los pares; si abre el invitado, los impares. */
-      var par = ((lado === 'propone') === abreP) ? 0 : 1;
+      /* Qué paridad de `orden` le toca a este lado. `orden` EMPIEZA EN 1, así
+         que quien abre tiene los IMPARES (1, 3, 5) y el otro los pares.
+
+         ⚠️ AQUÍ ESTABA AL REVÉS, y lo encontró el ejercicio 1 del banco de
+         pruebas (2026-09-16). El comentario decía «si abre quien propone, sus
+         turnos son los pares» —falso— y el código lo obedecía: la ficha de
+         `propone` se rellenaba con los turnos del invitado y viceversa.
+
+         SE VEÍA POCO Y PODÍA COSTAR CARO. En pantalla solo se notaba en el
+         repaso, con las dos caras cambiadas de sitio. Pero `delArbitro()` da
+         por hecho que `jugadores[0]` es el lado `propone`, así que un veredicto
+         abierto desde el historial habría coronado a la otra persona. En el
+         ejercicio 1 salió empate y no se vio; con un ganador sí. `CLAUDE.md`
+         ya avisaba de esta clase de fallo: «un veredicto con el nombre cambiado
+         es de los peores fallos que esta app puede tener». */
+      var abreEste = (lado === 'propone') === abreP;
+      var par = abreEste ? 1 : 0;
       var x = t.filter(function (q) { return (q.orden || 0) % 2 === par; })[0];
       if (x) {
         return { nombre: x.nombre || (i ? 'La otra parte' : 'Vos'),
@@ -309,7 +323,19 @@ window.ATWI = window.ATWI || {};
          elige antes de empezar y vale para toda la partida-- y el repaso nunca
          lo había necesitado porque no enseñaba resultado. */
       juez: d.juez || null,
-      veredicto: op.estrenar ? (d.resultado || null) : null,
+      /* EL RESULTADO VA SIEMPRE, se estrene o no.
+         ⚠️ Aquí decía `op.estrenar ? (d.resultado || null) : null`, y eso hacía
+         que **un veredicto solo se pudiera ver una vez**: al volver a abrirlo
+         desde el repaso, `P.veredicto` llegaba en nulo, `delArbitro()` no corría
+         y la revelación salía vacía —el listón, los dos avatares y un botón de
+         «Salir»—, sin desglose, sin justificación y sin el botón de «Qué dijo el
+         juez», que aparece solo si hay algo que enseñar.
+         Lo encontró el titular al reabrir el ejercicio 1 del banco (2026-09-16).
+
+         `estrenar` decide LA CEREMONIA —el redoble, las serpentinas, sellar
+         `visto`—, no si hay datos. Confundir las dos cosas convirtió «ver el
+         resultado otra vez» en una pantalla que no dice nada. */
+      veredicto: d.resultado || null,
       debate: d.id
     };
     if (op.estrenar) {

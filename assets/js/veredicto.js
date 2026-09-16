@@ -1023,40 +1023,39 @@ window.ATWI = window.ATWI || {};
     var criterios = (v.criterios || []).filter(function (c) {
       return !(d.criterios === 4 && c[0] === 'escucha');
     });
-    /* CADA COLUMNA EN EL COLOR DE SU DUEÑO, que es el mismo con el que se le ve
-       en la sala y en el duelo. Sin eso son dos columnas de números y hay que
-       volver a la cabecera para saber cuál es de quién en cada fila. */
+    /* CADA PERSONA EN SU COLOR, el mismo con el que se le ve en la sala y en el
+       duelo. Sin eso son dos filas de números y hay que volver a la cabecera
+       para saber cuál es de quién. */
     var tono = function (p) {
       return p.color ? window.ATWI.colorPersonaje(p.color) : 'var(--tinta)';
     };
-    var celda = function (p, x) {
-      return '<span class="tabla__n" style="color:' + tono(p) + '">' +
-             esc(String(x)) + '</span>';
-    };
-    return '<div class="tabla">' +
+    return '<div class="tabla tabla--ancha">' +
+      /* Cabecera: los criterios, cortos. */
       '<div class="tabla__fila tabla__fila--cabeza">' +
-        '<span class="tabla__criterio">' + esc(v.encabezadoTabla || '') + '</span>' +
-        d.personas.map(function (p) {
-          return '<span class="tabla__quien" style="color:' + tono(p) + '">' +
-                 esc(p.nombre) + '</span>';
+        '<span class="tabla__quien"></span>' +
+        criterios.map(function (c) {
+          return '<span class="tabla__n" title="' + esc(c[1]) + '">' +
+                 esc(c[2] || c[1]) + '</span>';
         }).join('') +
+        '<span class="tabla__n tabla__n--total">Total</span>' +
       '</div>' +
-      criterios.map(function (c) {
+      /* Una fila por persona. */
+      d.personas.map(function (p) {
         return '<div class="tabla__fila">' +
-          '<span class="tabla__criterio">' + esc(c[1]) + '</span>' +
-          d.personas.map(function (p) {
-            return celda(p, Math.round(Number((p.rubrica || {})[c[0]]) || 0));
+          '<span class="tabla__quien" style="color:' + tono(p) + '">' +
+            esc(p.nombre) + '</span>' +
+          criterios.map(function (c) {
+            return '<span class="tabla__n">' +
+                   esc(String(Math.round(Number((p.rubrica || {})[c[0]]) || 0))) +
+                   '</span>';
           }).join('') +
+          '<span class="tabla__n tabla__n--total" style="color:' + tono(p) + '">' +
+            esc(String((p.rubrica || {}).total != null ? (p.rubrica || {}).total : '—')) +
+          '</span>' +
         '</div>';
       }).join('') +
-      '<div class="tabla__fila tabla__fila--total">' +
-        '<span class="tabla__criterio">Total</span>' +
-        d.personas.map(function (p) {
-          var t = (p.rubrica || {}).total;
-          return celda(p, t != null ? t : '—');
-        }).join('') +
-      '</div>' +
       (d.criterios === 4 ? '<p class="tabla__nota">' + esc(v.conUnTurno || '') + '</p>' : '') +
     '</div>';
   }
+
 })();
