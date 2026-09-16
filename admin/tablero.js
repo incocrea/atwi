@@ -28,7 +28,30 @@
     });
   }
   function usd(n) { return '$' + Number(n || 0).toFixed(4); }
-  function fecha(s) { return s ? String(s).slice(0, 16).replace('T', ' ') : '—'; }
+  /* LA HORA SE ENSEÑA EN LA DEL NAVEGADOR, y antes no.
+     Esto cortaba el texto que devuelve PostgREST —`2026-09-16T03:02:44+00:00`—
+     y pintaba «2026-09-16 03:02», que es UTC. El titular está en UTC-5, así que
+     el tablero decía las 03:02 de una llamada que él hizo a las 22:02, y al
+     compararlo con el registro de Anthropic —que sí usa la hora del navegador—
+     no cuadraba nada por cinco horas exactas.
+
+     Una hora que hay que traducir mentalmente para comparar es una hora que se
+     compara mal. */
+  function fecha(s) {
+    if (!s) return '—';
+    var d = new Date(s);
+    if (isNaN(d)) return String(s).slice(0, 16).replace('T', ' ');
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+           ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+
+  /** Qué zona se está enseñando, para decirlo en pantalla y que no haya dudas. */
+  function laZona() {
+    var m = -new Date().getTimezoneOffset() / 60;
+    return (Intl.DateTimeFormat().resolvedOptions().timeZone || 'local') +
+           ' (UTC' + (m >= 0 ? '+' : '') + m + ')';
+  }
 
   /* --- Hablar con la base ----------------------------------------------------
      Con el token de la persona, NUNCA con la clave de servicio: la de servicio
@@ -270,7 +293,9 @@
         '<h2>Las últimas 150 llamadas</h2>' +
         '<p class="chico" style="margin-bottom:12px">Los tokens son los que devolvió ' +
         'la API en su <code>usage</code>, no una estimación. <b>Real</b> es lo que se ' +
-        'procesó en total; el costo aplica la tarifa de cada tramo.</p>' +
+        'procesó en total; el costo aplica la tarifa de cada tramo.<br>' +
+        'Las horas van en <b>' + esc(laZona()) + '</b>, la misma de este navegador, ' +
+        'para poder comparar con el registro de Anthropic sin restar nada.</p>' +
         tabla(['Cuándo', 'Operación', 'Modelo', 'Entrada', 'Salida',
                'Caché escr.', 'Caché lect.', 'Real', 'USD', 'ms', ''],
           filas.map(function (f) {
