@@ -2868,7 +2868,11 @@ window.ATWI = window.ATWI || {};
       juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
       tema: op.tema || TEMA_DE_ENSAYO,
       modo: op.modo === 'negociacion' ? 'negociacion' : 'debate',
-      turnos: 3,
+      /* De la config y no un 3 escrito aquí: el ensayo pinta el chip de «N
+         turnos cada uno» en la misma tarjeta que la partida de verdad, así que
+         con el número a mano se quedaba enseñando el de antes en cuanto alguien
+         moviera el de serie. Pasó el 2026-09-16, que bajó de 3 a 2. */
+      turnos: cfg.reglas.turnosPorDefecto,
       publico: op.publico || 'pareja',
       jugadores: op.quien.map(ficha),
       orden: [0, 1],

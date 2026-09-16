@@ -238,7 +238,14 @@ window.ATWI = window.ATWI || {};
     var natural = (MIRA[pose] || {})[quien];
     var voltea = op.mira && natural && op.mira !== natural;
     return '<span class="retrato ' + (op.clase || '') + (voltea ? ' retrato--volteado' : '') +
-        '" data-quien="' + quien + '" data-pose="' + pose + '">' +
+        /* `data-color` ES DEL DIBUJO, NO DEL ARO. Hace falta porque las cuatro
+           variantes de color de un personaje NO son el mismo dibujo recoloreado
+           —eso ya estaba medido: tras alinearlas el residuo sigue en 31-44 sobre
+           255— y por eso la figura no ocupa lo mismo dentro del lienzo en las
+           cuatro. El encuentro se ancla a esto para dejar a los dos a la misma
+           distancia del VS; ver `--acerca` en `app.css`. */
+        '" data-quien="' + quien + '" data-pose="' + pose +
+        '" data-color="' + color + '">' +
         fondo +
         /* `loading="eager"` a propósito. Estas figuras NACEN FUERA DEL LIENZO
            —entran desde el borde— y con carga diferida el navegador puede no

@@ -73,7 +73,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'b116158',
+  version: '21b79fa',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -187,7 +187,14 @@ window.ATWI.config = {
        criterios --hay apertura, respuesta y cierre-- y es donde la partida
        todavía se termina de una sentada. */
     turnosMax: 3,
-    turnosPorDefecto: 3,
+    /* Y DOS DE SERIE, no tres (titular, 2026-09-16). El tope sigue en tres: lo
+       que cambia es dónde arranca el selector, que es lo que de verdad elige
+       casi todo el mundo. Dos por persona son cuatro intervenciones y unos
+       cinco minutos, y ahí la ronda todavía tiene forma —hay apertura y
+       respuesta—; el tercer turno es el cierre, y quien lo quiera lo añade con
+       un toque. Vale para los dos modos: el número de turnos no es una
+       propiedad del modo sino de cuánto rato quieren estar. */
+    turnosPorDefecto: 2,
     /* SE QUEDA VACÍO, y con ello desaparece la única pared de pago que había:
        4 y 5 turnos estaban fuera del nivel gratuito. Al no existir esas
        opciones no hay nada que cobrar aquí, así que el cobro tendrá que

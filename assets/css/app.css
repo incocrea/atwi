@@ -3091,6 +3091,63 @@ body.app {
 .encuentro__fig { --alto-fig: 116%; --factor-fig: 1.16; --cintura: 64.6%; --linea-cintura: 77%; }
 .encuentro__fig[data-pose="plante"] { --acerca: 12%; }
 .encuentro__fig[data-pose="puno"]   { --acerca: 15%; }
+/* === BALANCE DEL ENCUENTRO (lo escribe tools/balance_versus.py, no se edita a mano) ===
+   Cada pieza deja el brazo a distinta distancia del borde de su lienzo, y la caja
+   se ancla al LIENZO, así que uno de los dos queda siempre más cerca del signo.
+   Se mide en la banda de altura que ocupa el signo, que es donde el hueco se ve:
+   por el dibujo entero la dispersión no aparece. Cada pieza se corre lo suyo hasta
+   dejarlas todas iguales, y el objetivo es la MEDIANA para que nadie se mueva
+   mucho. Si el brazo acaba LEJOS del borde, la figura se acerca más: sube
+   `--acerca`. */
+/* plante · banda 398-592 · de 84 a 149 px (65 de diferencia, 37 en pantalla) · objetivo 118 · base 12% */
+.encuentro__fig[data-pose="plante"][data-quien="dante"][data-color="amarillo"] { --acerca: 14.10%; }   /* +13 px */
+.encuentro__fig[data-pose="plante"][data-quien="dante"][data-color="azul"] { --acerca: 14.42%; }   /* +15 px */
+.encuentro__fig[data-pose="plante"][data-quien="dante"][data-color="morado"] { --acerca: 16.19%; }   /* +26 px */
+.encuentro__fig[data-pose="plante"][data-quien="dante"][data-color="verde"] { --acerca: 14.90%; }   /* +18 px */
+.encuentro__fig[data-pose="plante"][data-quien="kai"][data-color="amarillo"] { --acerca: 12.16%; }   /* +1 px */
+.encuentro__fig[data-pose="plante"][data-quien="kai"][data-color="azul"] { --acerca: 13.94%; }   /* +12 px */
+.encuentro__fig[data-pose="plante"][data-quien="kai"][data-color="morado"] { --acerca: 11.52%; }   /* -3 px */
+.encuentro__fig[data-pose="plante"][data-quien="luna"][data-color="amarillo"] { --acerca: 6.52%; }   /* -34 px */
+.encuentro__fig[data-pose="plante"][data-quien="luna"][data-color="azul"] { --acerca: 7.65%; }   /* -27 px */
+.encuentro__fig[data-pose="plante"][data-quien="luna"][data-color="morado"] { --acerca: 8.29%; }   /* -23 px */
+.encuentro__fig[data-pose="plante"][data-quien="luna"][data-color="verde"] { --acerca: 9.10%; }   /* -18 px */
+.encuentro__fig[data-pose="plante"][data-quien="maya"][data-color="amarillo"] { --acerca: 9.42%; }   /* -16 px */
+.encuentro__fig[data-pose="plante"][data-quien="maya"][data-color="azul"] { --acerca: 10.06%; }   /* -12 px */
+.encuentro__fig[data-pose="plante"][data-quien="maya"][data-color="morado"] { --acerca: 11.03%; }   /* -6 px */
+.encuentro__fig[data-pose="plante"][data-quien="maya"][data-color="verde"] { --acerca: 8.94%; }   /* -19 px */
+.encuentro__fig[data-pose="plante"][data-quien="nico"][data-color="amarillo"] { --acerca: 15.87%; }   /* +24 px */
+.encuentro__fig[data-pose="plante"][data-quien="nico"][data-color="azul"] { --acerca: 17.00%; }   /* +31 px */
+.encuentro__fig[data-pose="plante"][data-quien="nico"][data-color="morado"] { --acerca: 15.39%; }   /* +21 px */
+.encuentro__fig[data-pose="plante"][data-quien="nico"][data-color="verde"] { --acerca: 17.00%; }   /* +31 px */
+.encuentro__fig[data-pose="plante"][data-quien="nina"][data-color="amarillo"] { --acerca: 10.87%; }   /* -7 px */
+.encuentro__fig[data-pose="plante"][data-quien="nina"][data-color="azul"] { --acerca: 11.19%; }   /* -5 px */
+.encuentro__fig[data-pose="plante"][data-quien="nina"][data-color="morado"] { --acerca: 11.52%; }   /* -3 px */
+.encuentro__fig[data-pose="plante"][data-quien="nina"][data-color="verde"] { --acerca: 12.32%; }   /* +2 px */
+/* puno · banda 351-519 · de 50 a 121 px (71 de diferencia, 40 en pantalla) · objetivo 103 · base 15% */
+.encuentro__fig[data-pose="puno"][data-quien="dante"][data-color="amarillo"] { --acerca: 6.61%; }   /* -52 px */
+.encuentro__fig[data-pose="puno"][data-quien="dante"][data-color="azul"] { --acerca: 7.58%; }   /* -46 px */
+.encuentro__fig[data-pose="puno"][data-quien="dante"][data-color="morado"] { --acerca: 7.42%; }   /* -47 px */
+.encuentro__fig[data-pose="puno"][data-quien="dante"][data-color="verde"] { --acerca: 6.45%; }   /* -53 px */
+.encuentro__fig[data-pose="puno"][data-quien="kai"][data-color="amarillo"] { --acerca: 17.10%; }   /* +13 px */
+.encuentro__fig[data-pose="puno"][data-quien="kai"][data-color="azul"] { --acerca: 12.58%; }   /* -15 px */
+.encuentro__fig[data-pose="puno"][data-quien="kai"][data-color="morado"] { --acerca: 17.74%; }   /* +17 px */
+.encuentro__fig[data-pose="puno"][data-quien="kai"][data-color="verde"] { --acerca: 16.29%; }   /* +8 px */
+.encuentro__fig[data-pose="puno"][data-quien="luna"][data-color="azul"] { --acerca: 15.16%; }   /* +1 px */
+.encuentro__fig[data-pose="puno"][data-quien="luna"][data-color="morado"] { --acerca: 16.13%; }   /* +7 px */
+.encuentro__fig[data-pose="puno"][data-quien="luna"][data-color="verde"] { --acerca: 12.74%; }   /* -14 px */
+.encuentro__fig[data-pose="puno"][data-quien="maya"][data-color="amarillo"] { --acerca: 11.77%; }   /* -20 px */
+.encuentro__fig[data-pose="puno"][data-quien="maya"][data-color="azul"] { --acerca: 15.48%; }   /* +3 px */
+.encuentro__fig[data-pose="puno"][data-quien="maya"][data-color="morado"] { --acerca: 13.06%; }   /* -12 px */
+.encuentro__fig[data-pose="puno"][data-quien="maya"][data-color="verde"] { --acerca: 12.74%; }   /* -14 px */
+.encuentro__fig[data-pose="puno"][data-quien="nico"][data-color="amarillo"] { --acerca: 17.58%; }   /* +16 px */
+.encuentro__fig[data-pose="puno"][data-quien="nico"][data-color="azul"] { --acerca: 17.10%; }   /* +13 px */
+.encuentro__fig[data-pose="puno"][data-quien="nico"][data-color="morado"] { --acerca: 17.90%; }   /* +18 px */
+.encuentro__fig[data-pose="puno"][data-quien="nico"][data-color="verde"] { --acerca: 17.58%; }   /* +16 px */
+.encuentro__fig[data-pose="puno"][data-quien="nina"][data-color="amarillo"] { --acerca: 14.84%; }   /* -1 px */
+.encuentro__fig[data-pose="puno"][data-quien="nina"][data-color="morado"] { --acerca: 15.48%; }   /* +3 px */
+.encuentro__fig[data-pose="puno"][data-quien="nina"][data-color="verde"] { --acerca: 14.52%; }   /* -3 px */
+/* === fin del balance del encuentro === */
+
 .encuentro__fig .retrato__fig {
   position: absolute; bottom: auto;
   top: calc(var(--linea-cintura, 77%) - var(--cintura, 64.6%) * var(--factor-fig));
