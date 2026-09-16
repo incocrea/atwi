@@ -1473,9 +1473,10 @@ body.app {
 /* Y los numeros, centrados tambien: con `right` quedaban pegados al borde y el
    titulo apuntaba a otro sitio. */
 .tabla--ancha .tabla__fila .tabla__n { text-align: center; }
-.tabla--ancha .tabla__fila--cabeza .tabla__n--total {
-  display: grid; place-items: end; font-size: 10px; color: var(--tinta-suave);
-}
+/* En la cabecera, «Total» se comporta como cualquier otro rotulo: la regla de
+   `.tabla__eti i` ya lo inclina y lo centra. Aqui solo queda la raya que lo
+   separa, que es lo unico que de verdad lo distingue de los cinco criterios. */
+.tabla--ancha .tabla__fila--cabeza .tabla__n--total { position: relative; }
 .tabla--ancha .tabla__quien {
   text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }

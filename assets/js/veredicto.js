@@ -1041,7 +1041,10 @@ window.ATWI = window.ATWI || {};
              puesto ahi un rato y la cabecera decia «30 25 20 15 10».) */
           return '<span class="tabla__n tabla__eti"><i>' + esc(c[1]) + '</i></span>';
         }).join('') +
-        '<span class="tabla__n tabla__n--total">Total</span>' +
+        /* «Total» va igual que los demas rotulos: inclinado y centrado sobre
+           su columna. Estaba recto y alineado abajo, y era la unica cabecera
+           distinta de las seis sin que nada lo justificara. */
+        '<span class="tabla__n tabla__n--total tabla__eti"><i>Total</i></span>' +
       '</div>' +
       /* Una fila por persona. */
       d.personas.map(function (p) {
