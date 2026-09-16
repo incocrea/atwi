@@ -873,8 +873,17 @@
           fuente: 'El nivel gratuito da 0,5 M de caracteres al mes de voz neuronal; el de pago cobra por carácter. SIN VERIFICAR.',
           donde: 'https://portal.azure.com/#view/Microsoft_Azure_Billing/BillingMenuBlade/~/Overview',
           etiqueta: 'portal.azure.com · Costos' },
-        { p: 'supabase', nombre: 'Supabase', credito: null,
-          fuente: 'Gratis: 500 MB de base, 1 GB de almacén, 5 GB de egress, 500.000 invocaciones de función (docs/01 §8.4).',
+        /* PLAN PRO, confirmado por el titular el 2026-09-15 y verificado contra
+           supabase.com/pricing. Aquí decía los topes del plan GRATUITO —500 MB
+           de base, 1 GB de almacén— que son entre ocho y cien veces menores, y
+           con ellos cualquier cuenta de servilleta sobre cuántas partidas caben
+           daba un número alarmante y falso. */
+        { p: 'supabase', nombre: 'Supabase (Pro, 25 USD/mes)', credito: null,
+          fuente: 'Incluye 8 GB de base ($0,125/GB extra), 100 GB de almacén ($0,0213), ' +
+                  '250 GB de egress al mes ($0,09), 2 M de invocaciones ($2/M) y 100.000 ' +
+                  'usuarios activos. A 282 KB permanentes por partida, el almacén da para ' +
+                  '~372.000 partidas. OJO: el tope de gasto viene ACTIVADO de fábrica, así ' +
+                  'que al pasarse no se cobra de más — se BLOQUEA.',
           donde: 'https://supabase.com/dashboard/project/vauarfofsfgwnuyjfpni/settings/billing/usage',
           etiqueta: 'supabase.com · Usage' }
       ];
