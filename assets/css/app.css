@@ -457,9 +457,15 @@ body.app {
    saldría de su columna. */
 .carta-modo__rotulo { width: 100%; height: auto; display: block; }
 
+/* CENTRADO EN LOS DOS SENTIDOS (titular, 2026-09-16): centrado DENTRO del
+   hueco que dejan el rótulo y la bombilla, y con el texto centrado por dentro.
+   Es lo único que queda entre dos piezas dibujadas, así que pegado a la
+   izquierda dejaba un vacío grande contra la bombilla y la fila se leía
+   descuadrada. */
 .carta-modo__gancho {
   min-width: 0;
-  font-family: var(--display); font-weight: 800;
+  display: grid; place-items: center;
+  font-family: var(--display); font-weight: 800; text-align: center;
   font-size: var(--t-chico); line-height: 1.3; color: var(--tinta-suave);
 }
 
@@ -485,11 +491,24 @@ body.app {
 }
 .carta-modo__explica .ico { width: 46px; height: 46px; }
 
-/* ⚠️ LAS CINCO PEANAS `base-*` SE QUEDARON SIN USO con este rediseño —las dos
-   cartas que las pintaban pasaron a fila— y siguen en `site/assets/img/iconos/`
-   y en la ola `nucleo` del manifiesto, o sea que cada teléfono se baja 528 KB
-   que no se pintan. NO SE BORRAN todavía a propósito: son arte que el titular
-   encargó y el rediseño es de hoy. Si a la vuelta siguen sin usarse, salen. */
+/* LAS PEANAS VUELVEN (titular, 2026-09-16), y van ENTERAS.
+   ⚠️ El primer intento las recortó con `object-fit: cover` para que cupieran en
+   la fila, y salió lo contrario de lo que son: cortando por arriba se queda
+   solo la parte maciza y el zócalo se ve como **una barra de color plana**.
+   Lo que hace decorativo a este dibujo es justo lo que sobresale —los globos
+   de Juicio, los brotes de Pacto, las estrellas de QuiénGane—, así que se
+   pinta completo y lo que se ajusta es el sitio que se le deja.
+   Va DETRÁS del contenido (`z-index` 0 contra 1) y a sangre por los tres
+   lados: con margen se leería como un dibujo puesto encima y no como el suelo
+   de la carta. El `padding-bottom` de la carta es lo que evita que el texto
+   caiga sobre él. */
+.carta-modo__base, .publico__base {
+  position: absolute; right: -14px; bottom: -26px; z-index: 0;
+  width: 46%; height: auto; display: block; pointer-events: none;
+  opacity: .45;
+}
+.carta-modo__rotulo, .carta-modo__gancho,
+.publico__alto, .publico__texto { position: relative; z-index: 1; }
 
 /* Lo que de verdad hay que entender de cada modo: en Controversia, que no se
    juzga quién tiene razón; en Negociación, que no estar de acuerdo también es
@@ -3922,9 +3941,13 @@ body.app {
    de con quién juegas. Las tarjetas de tema pertenecen a la lista, y la lista
    es de la mesa: son los temas de la pareja, o los de los amigos. El modo ya
    está dicho arriba en la cinta y no necesita repetirse en cada tarjeta. */
-.publico--pareja,  #v-catalogo[data-paso="pareja"]  { --mesa: #FFE4EC; --mesa-claro: #FFF6F9; }
-.publico--amigos,  #v-catalogo[data-paso="amigos"]  { --mesa: #EDE6FF; --mesa-claro: #F8F5FF; }
-.publico--familia, #v-catalogo[data-paso="familia"] { --mesa: #DDEEFF; --mesa-claro: #F4FAFF; }
+/* Tres tonos por mesa y cada uno tiene su trabajo: `--mesa` tiñe el fondo de
+   la carta, `--mesa-claro` el de las tarjetas de tema dentro de esa lista, y
+   `--mesa-fuerte` es el sólido de los chips, donde hace falta contraste contra
+   texto blanco. Los tres salen de la misma familia de color. */
+.publico--pareja,  #v-catalogo[data-paso="pareja"]  { --mesa: #FFE4EC; --mesa-claro: #FFF6F9; --mesa-fuerte: #E4658F; }
+.publico--amigos,  #v-catalogo[data-paso="amigos"]  { --mesa: #EDE6FF; --mesa-claro: #F8F5FF; --mesa-fuerte: #9B58C6; }
+.publico--familia, #v-catalogo[data-paso="familia"] { --mesa: #DDEEFF; --mesa-claro: #F4FAFF; --mesa-fuerte: #3D86DC; }
 .publico { background: linear-gradient(175deg, var(--mesa), var(--mesa-claro) 72%); }
 
 /* Las tarjetas de tema y la de «Mis propios temas» toman el tinte de su mesa.
@@ -3941,7 +3964,11 @@ body.app {
 .publico__alto { display: block; }
 .publico__alto .ico { width: 100%; height: auto; display: block; }
 
-.publico__texto { display: grid; gap: 3px; min-width: 0; }
+/* EL TEXTO VA A LA DERECHA (titular, 2026-09-16). El dibujo manda a la
+   izquierda y el texto cierra la fila contra el borde: así las tres cartas
+   comparten un mismo canto derecho y la columna se lee como una lista, no como
+   tres bloques sueltos. */
+.publico__texto { display: grid; gap: 3px; min-width: 0; text-align: right; }
 .publico__nombre {
   font-family: var(--display); font-weight: 800; font-size: var(--t-h3);
   line-height: 1.12;
@@ -3955,15 +3982,22 @@ body.app {
    mismo color no se despegaría, y uno de color plano taparía la carta.
    `flex-wrap` porque en una pantalla estrecha la tercera se va a otra línea
    antes que ensanchar la fila, que es lo que haría scrollear de lado. */
-.publico__marcas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+/* LOS CHIPS VAN EN COLOR SÓLIDO Y TEXTO BLANCO (titular, 2026-09-16), como los
+   chips de filtro del historial cuando están puestos. Antes eran blancos
+   translúcidos sobre el tinte y se leían como una etiqueta apagada; con el
+   color de su mesa detrás dicen de un vistazo a qué familia pertenecen, que es
+   para lo que están.
+   `flex-end` porque el texto de la carta va a la derecha: alineados a la
+   izquierda romperían el canto que comparten los tres renglones. */
+.publico__marcas {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px;
+  justify-content: flex-end;
+}
 .publico__marca {
-  padding: 3px 10px; border-radius: var(--radio-pastilla);
-  background: rgba(255, 255, 255, .72);
+  padding: 4px 11px; border-radius: var(--radio-pastilla);
+  background: var(--mesa-fuerte);
   font-size: var(--t-mini); font-weight: 800; line-height: 1.2;
-  color: color-mix(in srgb, var(--mesa) 35%, var(--tinta));
+  color: var(--blanco);
 }
 
-/* ⚠️ AQUÍ VIVÍA `.publico__base`, la peana de la carta de mesa, y se fue con el
-   rediseño en fila: el zócalo dibujado hacía carta a una pieza vertical y una
-   fila de 100 px no necesita suelo. Los PNG siguen en `site/`; ver el aviso en
-   el bloque de `.carta-modo`. */
+/* La peana de la mesa comparte regla con la del modo: ver `.carta-modo__base`. */

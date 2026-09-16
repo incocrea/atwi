@@ -847,6 +847,11 @@
              decir dos veces lo mismo en la misma fila. Queda la línea de qué se
              juega, que es lo único que el dibujo no puede decir. */
           (m.gancho ? '<span class="carta-modo__gancho">' + esc(m.gancho) + '</span>' : '') +
+          /* El zócalo dibujado del pie: globos de diálogo en Juicio, brotes en
+             Pacto, estrellas en QuiénGane. Va fuera del flujo y por detrás; el
+             hueco se lo hace el `padding-bottom` de la carta. */
+          '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.png" ' +
+            'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
         '</button>' +
         /* EL SIGNO SE QUEDA, y sin palabra: una interrogación no hay que
            traducirla. El nombre va en `aria-label` —que es lo que anuncia un
@@ -980,6 +985,8 @@
   function cartaPublico(p) {
     return '<button class="publico publico--' + p[0] + '" data-publico="' + p[0] + '">' +
         '<span class="publico__alto">' + icono(p[0], 76) + '</span>' +
+        '<img class="publico__base" src="../assets/img/iconos/base-' + p[0] + '.png" ' +
+          'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
         '<span class="publico__texto">' +
           '<span class="publico__nombre">' + p[1].replace(/<br>/g, ' ') + '</span>' +
           '<span class="publico__que">' + esc(p[2]) + '</span>' +
