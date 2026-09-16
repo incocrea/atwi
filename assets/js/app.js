@@ -818,9 +818,9 @@
       '</div>';
   }
 
-  /* El modal de la explicación hace juego con su carta: mismo color de fondo,
-     mismo disco blanco con el icono, mismo nombre. Termina en «Jugar», porque
-     quien acaba de entender un modo suele querer probarlo ahí mismo. */
+  /* El modal de la explicación hace juego con su carta: mismo color de fondo y
+     el mismo rótulo dibujado. Termina en «Jugar», porque quien acaba de
+     entender un modo suele querer probarlo ahí mismo. */
   var explicando = null;
 
   function abrirExplicar(clave) {

@@ -81,16 +81,22 @@ window.ATWI = window.ATWI || {};
      —`debate`, `negociacion` y `micro`— siguen siendo los de la primera lámina:
      los dos modos porque su plancha no venía, y el micrófono porque tampoco.
 
-     `ayuda` y `play` LLEVAN EL COLOR DEL MODO en el nombre, y no es decoración:
-     son los dos botones de la carta de modo, y ahí el color es lo que dice de
-     cuál de los dos modos estás hablando. Existen además en amarillo y en
-     morado; ésos no están aquí ni en `site/` a propósito —ver
-     `tools/cortar_iconos_pegatina.py`—. */
+     `ayuda` LLEVA EL COLOR DEL MODO en el nombre, y no es decoración: es el
+     signo de la carta de modo, y ahí el color es lo que dice de cuál de los
+     dos modos estás hablando. Existe además en amarillo y en morado; ésos no
+     están aquí ni en `site/` a propósito —ver
+     `tools/cortar_iconos_pegatina.py`—.
+
+     Y `play-coral`/`play-menta` SE FUERON (2026-09-16). Estaban aquí desde que
+     la carta de modo tenía dos botones; al pasar a ser ella misma el botón, el
+     play dejó de pintarse en ningún sitio y lo que quedaba eran dos PNG que el
+     manifiesto seguía bajando a cada teléfono para nada. Están en
+     `arte/iconos/sin-usar/` por si el modo que falta los pide. */
   var ILUSTRADOS = ['jugar', 'catalogo', 'historial', 'perfil',
                     'debate', 'negociacion', 'micro', 'mas',
                     'energia', 'buzon',
                     'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
-                    'ayuda-coral', 'ayuda-menta', 'play-coral', 'play-menta',
+                    'ayuda-coral', 'ayuda-menta',
                     /* La tercera tanda (2026-09-16): los ocho que pedía la
                        auditoría. `parar`, `pausa` y `play` salen del cortador
                        nivelados entre sí porque son tres estados del MISMO
@@ -100,13 +106,14 @@ window.ATWI = window.ATWI || {};
                     /* Los dos publicos del catalogo, que eran emojis. */
                     'pareja', 'amigos', 'familia'];
 
-  /* Qué tinte le toca a `ayuda` y a `play` en cada modo. Vive aquí y no en
-     `app.js` porque es una propiedad del juego de iconos: el día que haya un
-     modo más, se añade su fila y no hay que ir a buscar dónde se concatenaba
-     el nombre del archivo. */
+  /* Qué tinte le toca a cada modo. Vive aquí y no en `app.js` porque es una
+     propiedad del juego de iconos: el día que haya un modo más, se añade su
+     fila y no hay que ir a buscar dónde se concatenaba el nombre del archivo.
+     Hoy lo usa solo `ayuda`; se deja sin atar a un icono porque el morado ya
+     está cortado esperando a su modo. */
   var TINTE_DE_MODO = { debate: 'coral', negociacion: 'menta' };
 
-  /** `ATWI.iconoDeModo('play', 'debate')` -> el `play-coral`. */
+  /** `ATWI.iconoDeModo('ayuda', 'debate')` -> el `ayuda-coral`. */
   window.ATWI.iconoDeModo = function (nombre, modo, tam) {
     return window.ATWI.icono(nombre + '-' + (TINTE_DE_MODO[modo] || 'coral'), tam);
   };
