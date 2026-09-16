@@ -777,54 +777,44 @@
      sigue haciendo el trabajo de reconocerse a distancia y la palabra quita la
      duda de qué pasa al tocarlo, que en el teléfono no se puede resolver
      pasando el cursor por encima. */
+  /* LA CARTA ENTERA ES EL BOTÓN DE JUGAR (titular, 2026-09-16), y el signo de
+     ayuda es lo único que se toca aparte. El play se va: eran dos dianas
+     compitiendo en una carta de 166 px, y la de verdad —«quiero este modo»— es
+     la carta, que es lo que la mano va a tocar de todas formas.
+
+     DOS BOTONES HERMANOS Y NO UNO DENTRO DE OTRO. Un `<button>` dentro de otro
+     `<button>` no es HTML válido y el navegador lo desarma; con `role="button"`
+     sobre un div habría que escribir a mano el Enter y el Espacio. Así que la
+     carta es un botón de verdad y el de ayuda va a su lado, colocado encima con
+     posición absoluta: los dos se tabulan, los dos se pulsan con teclado y no
+     hay nada que emular.
+
+     Y EL ORDEN DE LOS MANEJADORES YA RESOLVÍA EL SOLAPE: `data-explicar` se
+     mira antes que `data-crear` y corta con `return`, así que tocar la ayuda no
+     dispara además la carta. */
   function cartaModo(clave) {
     var m = cfg.modos[clave] || {};
-    return '<div class="carta-modo carta-modo--' + clave + '">' +
-        '<div class="carta-modo__alto">' +
-          rotuloModo(clave, 'carta-modo__rotulo') +
-        '</div>' +
-        (m.gancho ? '<p class="carta-modo__gancho">' + esc(m.gancho) + '</p>' : '') +
-        /* DOS BOTONES REDONDOS CON SU SIGNO, sin palabra. Llevaban texto y al
-           apilarse se estrecharon tanto que «Explícame» partía en dos
-           renglones; se acortó a «Info» y seguía siendo una palabra metida a
-           presión. El signo se lee antes que la palabra y no depende del largo
-           del idioma: una interrogación y un play no hay que traducirlos.
-
-           EL NOMBRE NO SE PIERDE: va en `aria-label` --que es lo que anuncia un
-           lector de pantalla-- y en `title`, que en escritorio sale al pasar por
-           encima. En el teléfono no hay «pasar por encima» y por eso el signo
-           tiene que bastar solo, que es justo por qué se eligieron estos dos. */
-        /* LOS DOS SIGNOS SON EL BOTÓN ENTERO, no un icono dentro de un disco
-           (2026-09-16). Antes eran dos círculos dibujados en CSS —uno hueco y
-           uno relleno— con un trazo dentro; ahora la pegatina ya trae su
-           propia forma, su color y su perfil blanco, así que meterla dentro de
-           otro disco dejaba una figura dentro de un botón que dice lo mismo.
-
-           Y LA JERARQUÍA NO SE PIERDE, que era lo que el disco resolvía: el
-           arte la trae dibujada. `ayuda` es un bocadillo en tono pastel y
-           `play` un disco en el color saturado del modo, así que el de jugar
-           sigue pesando más sin necesidad de rellenarlo aparte. */
-        /* SIN PALABRA DEBAJO (titular, 2026-09-16). Llegaron a tenerla en esta
-           forma de carta, y se van otra vez: los dos signos son universales
-           —una interrogación y un play no hay que traducirlos— y con ellos
-           dentro la carta se leía como un formulario con dos botones en vez de
-           como una carta de juego. El nombre no se pierde: va en `aria-label`,
-           que es lo que anuncia un lector de pantalla, y en `title` para el
-           escritorio. */
-        '<div class="carta-modo__salidas">' +
-          '<button class="carta-modo__signo carta-modo__explica" data-explicar="' + clave + '" ' +
-            'aria-label="Cómo funciona ' + esc(modoLlano(clave)) + '" title="Cómo funciona">' +
-            window.ATWI.iconoDeModo('ayuda', clave, 44) + '</button>' +
-          '<button class="carta-modo__signo carta-modo__jugar" data-crear="' + clave + '" ' +
-            'aria-label="Jugar a ' + esc(modoLlano(clave)) + '" title="Jugar">' +
-            window.ATWI.iconoDeModo('play', clave, 60) + '</button>' +
-        '</div>' +
-        /* La peana del pie, igual que en las cartas de «¿con quién juegas?»:
-           un PNG con forma —aquí globos de diálogo en Juicio y brotes en Pacto—
-           y no un degradado, porque es el zócalo dibujado lo que las hace
-           cartas. Va fuera del flujo, así que el hueco se lo hace el padding. */
-        '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.png" ' +
-          'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
+    return '<div class="carta-modo-caja">' +
+        '<button class="carta-modo carta-modo--' + clave + '" data-crear="' + clave + '" ' +
+                'aria-label="Jugar a ' + esc(modoLlano(clave)) + '">' +
+          '<span class="carta-modo__alto">' +
+            rotuloModo(clave, 'carta-modo__rotulo') +
+          '</span>' +
+          (m.gancho ? '<span class="carta-modo__gancho">' + esc(m.gancho) + '</span>' : '') +
+          /* La peana del pie, igual que en las cartas de «¿con quién juegas?»:
+             un PNG con forma —globos de diálogo en Juicio, brotes en Pacto— y
+             no un degradado, porque es el zócalo dibujado lo que las hace
+             cartas. Va fuera del flujo; el hueco se lo hace el padding. */
+          '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.png" ' +
+            'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
+        '</button>' +
+        /* EL SIGNO SE QUEDA, y sin palabra: una interrogación no hay que
+           traducirla. El nombre va en `aria-label` —que es lo que anuncia un
+           lector de pantalla— y en `title` para el escritorio. */
+        '<button class="carta-modo__explica" data-explicar="' + clave + '" ' +
+          'aria-label="Cómo funciona ' + esc(modoLlano(clave)) + '" title="Cómo funciona">' +
+          window.ATWI.iconoDeModo('ayuda', clave, 64) +
+        '</button>' +
       '</div>';
   }
 
