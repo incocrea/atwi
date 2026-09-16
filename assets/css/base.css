@@ -79,9 +79,15 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
   background: linear-gradient(180deg, var(--cara-clara) 0%, var(--cara) 54%, var(--cara-honda) 100%);
   color: var(--blanco);
   text-shadow: 0 2px 0 color-mix(in srgb, var(--cara-canto) 70%, transparent);
+  /* LA SOMBRA PROYECTADA SALE APARTE porque hay un sitio que necesita quitarla
+     SIN quitar el relieve: el «Empezar» del sorteo va encima de las piernas de
+     las dos figuras, y allí una mancha difusa se lee como suciedad del dibujo.
+     Apagar la `box-shadow` entera —que es lo que se hacía— se lleva también el
+     canto y el brillo. */
+  --sombra-suelo: 0 calc(var(--canto) + 4px) 14px rgba(46, 42, 63, .22);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, .45),
               0 var(--canto) 0 var(--cara-canto),
-              0 calc(var(--canto) + 4px) 14px rgba(46, 42, 63, .22);
+              var(--sombra-suelo);
   margin-bottom: var(--canto);
   transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave), filter var(--dur-corta) var(--suave);
 }

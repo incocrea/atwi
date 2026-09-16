@@ -2944,9 +2944,14 @@ body.app {
 /* El botón queda POR ENCIMA del dibujo, y sin fondo: el suelo se lo da su
    propio perfil blanco, no una barra que taparía las piernas. */
 .modal--inmersivo .modal__pie { position: relative; z-index: 2; }
-#m-partida:has(.sala--sorteo) .modal__pie .boton {
-  border: 3px solid var(--superficie); box-shadow: none;
-}
+/* AQUÍ SE LE BORRABA EL CANTO AL «EMPEZAR» (lo vio el titular, 2026-09-16).
+   La regla apagaba la `box-shadow` entera para quitarle la sombra difusa, que
+   sobre las piernas de las figuras se veía como una mancha; con el relieve
+   puesto, apagarla se lleva también el grueso y el brillo, y ese botón es el
+   único de la pantalla. Ahora se queda con su canto y lo que se recorta es
+   solo la sombra proyectada: `--sombra-suelo` a cero. El borde vuelve a 4 px,
+   que es el de todos los demás. */
+#m-partida:has(.sala--sorteo) .modal__pie .boton { --sombra-suelo: 0 0 0 transparent; }
 
 .encuentro__lado { position: absolute; top: 0; bottom: 0; width: 62%; }
 /* Cada uno se ancla AL CENTRO y no a su borde: el hombro —o el puño— está en el
@@ -3038,7 +3043,18 @@ body.app {
   to { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
 }
 
-.encuentro__fig { position: absolute; inset: 0; display: block; }
+/* LA CAJA DEL RETRATO NO RECORTA AQUÍ, y esto era un fallo de verdad: le comía
+   el puño a las dos figuras (lo vio el titular, 2026-09-16, en Dante).
+   `.retrato` lleva `overflow: hidden` porque en la SALA hace falta —quien habla
+   se ve de la cintura para arriba y la imagen mide un 134 % de su caja, así que
+   el recorte es la mitad del encuadre—. En el encuentro no hace falta y encima
+   estorba: la figura se acerca al centro con `--acerca` (un 15 % en la pose de
+   puño), o sea que el dibujo se sale de su caja justo por el lado interior, que
+   es donde está el puño. Medido: la caja del lado derecho va de 192 a 425 y la
+   imagen de 139 a 492, así que **se perdían 53 px, y eran el puño entero**.
+   No hay nada que recortar en su lugar: la banda `.encuentro` ya tiene su
+   propio `overflow: hidden` y es la que corta arriba y abajo. */
+.encuentro__fig { position: absolute; inset: 0; display: block; overflow: visible; }
 /* SIN sombra. Se le puso una y lo que hacía era delatar el contenedor: la
    figura llega justo al borde de arriba, así que el desenfoque se cortaba en
    seco y dejaba una raya gris cruzando a las dos. Y tampoco hace falta: el
@@ -3131,13 +3147,57 @@ body.app {
   transform: translate(-50%, -50%) scale(0); opacity: 0;
   height: auto;
 }
-.encuentro__golpe--vs     { top: 58%; width: 118px; }
+.encuentro__golpe--vs     { top: 62%; width: 118px; }
 .encuentro__golpe--choque { top: 55%; width: 104px; }
-.encuentro--chocado .encuentro__golpe { animation: encuentro-golpe 460ms var(--rebote) both; }
-@keyframes encuentro-golpe {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(2.2) rotate(-12deg); }
-  55% { opacity: 1; transform: translate(-50%, -50%) scale(.88) rotate(3deg); }
+
+/* CADA UNO ENTRA COMO LO QUE ES (titular, 2026-09-16), y por eso son dos
+   animaciones y ya no una. Antes las dos caían de un `scale(2.2)` a su sitio:
+   un aterrizaje desde delante, que es lo que se hace cuando la pieza no tiene
+   nada que ver con lo que pasa debajo. Ahora cada una sale de su gesto.
+
+   EL CHOQUE NACE DEL PUNTO DE CONTACTO. Empieza en cero —en el centro exacto,
+   que es donde los dos nudillos se aprietan—, se pasa de tamaño y asienta: la
+   energía sale de ahí y se expande, como un golpe de verdad. El instante ya
+   estaba bien y no se toca: `encuentro--chocado` entra en el 78 % del viaje,
+   que es el fotograma en que los dos están MÁS CERCA; después se apartan un
+   poco, así que el estallido nace justo antes de que se separen.
+
+   EL VS LLEGA DESDE FUERA. Sube desde debajo de la pantalla, se pasa de largo
+   y cae con dos rebotes cada vez más cortos. En Controversia no hay contacto
+   —los dos se plantan separados— así que no hay nada de lo que pueda nacer el
+   signo: tiene que venir de algún sitio, y viene de abajo, como un cartel que
+   se planta en medio.
+   El `translateY` va DESPUÉS del centrado y no dentro: `translate(-50%,-50%)`
+   coloca la pieza por su centro y el desplazamiento se compone encima, así que
+   se puede animar solo el viaje sin recalcular el centrado en cada fotograma.
+   Y no hace falta fundido: la pieza se ve entrar, que es mejor que aparecer.
+   Cada tramo lleva su curva —sube frenando, cae acelerando— porque con una
+   sola para todo los rebotes se leen como un temblor y no como peso. */
+.encuentro--chocado .encuentro__golpe--choque {
+  animation: golpe-choque 440ms cubic-bezier(.2, .9, .32, 1) both;
+}
+.encuentro--chocado .encuentro__golpe--vs {
+  animation: golpe-vs 760ms both;
+}
+@keyframes golpe-choque {
+  0%   { opacity: 1; transform: translate(-50%, -50%) scale(0); }
+  58%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3) rotate(4deg); }
   100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+@keyframes golpe-vs {
+  0%   { opacity: 1; transform: translate(-50%, -50%) translateY(64vh);
+         animation-timing-function: cubic-bezier(.18, .64, .3, 1); }
+  42%  { transform: translate(-50%, -50%) translateY(-52px);
+         animation-timing-function: cubic-bezier(.5, 0, .86, .5); }
+  60%  { transform: translate(-50%, -50%) translateY(0);
+         animation-timing-function: cubic-bezier(.16, .5, .5, 1); }
+  74%  { transform: translate(-50%, -50%) translateY(-21px);
+         animation-timing-function: cubic-bezier(.5, 0, .86, .5); }
+  87%  { transform: translate(-50%, -50%) translateY(0);
+         animation-timing-function: cubic-bezier(.16, .5, .5, 1); }
+  94%  { transform: translate(-50%, -50%) translateY(-7px);
+         animation-timing-function: cubic-bezier(.5, 0, .86, .5); }
+  100% { opacity: 1; transform: translate(-50%, -50%) translateY(0); }
 }
 
 /* En Negociación no se plantan: siguen hasta juntarse y chocan el puño. Misma
