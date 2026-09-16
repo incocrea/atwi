@@ -1704,13 +1704,13 @@ window.ATWI = window.ATWI || {};
             '<div class="confirmar__opciones">' +
               '<button class="boton boton--suave" data-accion="p-borrar-no">Seguir con esto</button>' +
               '<button class="boton boton--suave boton--borrar" data-accion="p-borrar-si">' +
-                iconoSVG('papelera', 18) + 'Sí, borrar</button>' +
+                icono('papelera', 20) + 'Sí, borrar</button>' +
             '</div>' +
           '</div>'
         : '<div class="revision__otras">' +
             (puedeAgregar ? botonDeGrabar('agregar') : '') +
             '<button class="boton boton--suave boton--borrar" data-accion="p-borrar">' +
-              iconoSVG('papelera', 18) + 'Borrar</button>' +
+              icono('papelera', 20) + 'Borrar</button>' +
           '</div>')
     });
   }

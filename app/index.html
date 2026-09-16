@@ -11,11 +11,11 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo como adulto, Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=4cfd10f">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=4cfd10f">
-<link rel="stylesheet" href="../assets/css/base.css?v=4cfd10f">
-<link rel="stylesheet" href="../assets/css/app.css?v=4cfd10f">
-<link rel="stylesheet" href="../assets/css/modal.css?v=4cfd10f">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=bca7487">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=bca7487">
+<link rel="stylesheet" href="../assets/css/base.css?v=bca7487">
+<link rel="stylesheet" href="../assets/css/app.css?v=bca7487">
+<link rel="stylesheet" href="../assets/css/modal.css?v=bca7487">
 </head>
 
 <body class="app">
@@ -28,9 +28,15 @@
       <div class="cabecera__sub">¡Resuélvelo como adulto, <b>Jugando!</b></div>
     </div>
     <div class="monedero">
-      <span class="monedero__dato" title="Puntos de razón">⚡ <span id="dato-puntos">0</span></span>
+      <!-- El rayo era el EMOJI ⚡ y ahora es el icono de la casa (2026-09-16).
+           Un emoji lo dibuja el sistema: en Android salía plano y amarillo, en
+           iOS con degradado, y en Windows azul. El único símbolo de la cabecera
+           era la única pieza del juego cuyo aspecto no controlábamos. -->
+      <span class="monedero__dato" title="Puntos de razón">
+        <span data-icono="energia" data-tam="20"></span>
+        <span id="dato-puntos">0</span></span>
       <button class="buzon-boton" data-accion="buzon" aria-label="Buzón">
-        <span data-icono="buzon" data-tam="24"></span>
+        <span data-icono="buzon" data-tam="28"></span>
         <span class="buzon-punto" id="buzon-punto" hidden></span>
       </button>
       <!-- Atajo al perfil. Se esconde en la propia vista de Perfil, donde no
@@ -253,18 +259,18 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=4cfd10f"></script>
-<script src="../assets/js/precarga.js?v=4cfd10f"></script>
-<script src="../assets/js/iconos.js?v=4cfd10f"></script>
-<script src="../assets/js/personajes.js?v=4cfd10f"></script>
-<script src="../assets/js/datos.js?v=4cfd10f"></script>
-<script src="../assets/js/sonido.js?v=4cfd10f"></script>
-<script src="../assets/js/veredicto.js?v=4cfd10f"></script>
-<script src="../assets/js/grabadora.js?v=4cfd10f"></script>
-<script src="../assets/js/partida.js?v=4cfd10f"></script>
-<script src="../assets/js/auth.js?v=4cfd10f"></script>
-<script src="../assets/js/entrada.js?v=4cfd10f"></script>
-<script src="../assets/js/nube.js?v=4cfd10f"></script>
-<script src="../assets/js/app.js?v=4cfd10f"></script>
+<script src="../assets/js/config.js?v=bca7487"></script>
+<script src="../assets/js/precarga.js?v=bca7487"></script>
+<script src="../assets/js/iconos.js?v=bca7487"></script>
+<script src="../assets/js/personajes.js?v=bca7487"></script>
+<script src="../assets/js/datos.js?v=bca7487"></script>
+<script src="../assets/js/sonido.js?v=bca7487"></script>
+<script src="../assets/js/veredicto.js?v=bca7487"></script>
+<script src="../assets/js/grabadora.js?v=bca7487"></script>
+<script src="../assets/js/partida.js?v=bca7487"></script>
+<script src="../assets/js/auth.js?v=bca7487"></script>
+<script src="../assets/js/entrada.js?v=bca7487"></script>
+<script src="../assets/js/nube.js?v=bca7487"></script>
+<script src="../assets/js/app.js?v=bca7487"></script>
 </body>
 </html>

@@ -1,10 +1,21 @@
 /* ==========================================================================
    ATWI · iconos.js
-   Iconografía propia, en línea. Estilo Finch: trazo grueso, extremos y uniones
-   redondeados, formas simples y llenas de aire. Nada de librerías externas:
-   son ocho iconos y pesan menos que una petición.
+   Iconografía propia. Dos juegos, y cuál se usa NO es indiferente:
 
-   Uso:  ATWI.icono('negociacion', 28)  ->  cadena de SVG
+   - Los ILUSTRADOS son PNG de pegatina, cortados de una lámina. Van donde el
+     icono es la pieza: la barra, los indicadores de la cabecera y las acciones
+     con nombre propio (borrar, editar, volver, crear).
+   - Los de LÍNEA se dibujan aquí en SVG, heredan `currentColor` y pesan menos
+     que una petición. Van donde el icono tiene que tomar el color de lo que lo
+     rodea: dentro de un botón de color sólido, en un metadato gris, o donde
+     alterna con otro estado (play/pausa) que no está ilustrado.
+
+   La regla práctica: si el icono va SOLO o sobre fondo claro, ilustrado; si va
+   dentro de algo que ya manda el color, de línea.
+
+   Uso:  ATWI.icono('negociacion', 28)          -> el que toque
+         ATWI.iconoSVG('pausa', 24)             -> a la fuerza el de línea
+         ATWI.iconoDeModo('play', 'debate', 44) -> el del color del modo
    ========================================================================== */
 window.ATWI = window.ATWI || {};
 
@@ -57,12 +68,39 @@ window.ATWI = window.ATWI || {};
   };
 
   /* Iconos ILUSTRADOS. Son PNG de pegatina generados con la API de imagen y
-     recortados de una lámina, para que salgan todos de la misma mano. Los SVG
-     de línea de abajo se quedan solo para lo que todavía no está ilustrado:
-     flechas, cerrar y aviso, que son cromo de interfaz y no iconografía.
-     La ruta es relativa a /app/, que es la única pantalla que los usa. */
+     recortados de una lámina, para que salgan todos de la misma mano.
+     La ruta es relativa a /app/, que es la única pantalla que los usa.
+
+     OJO AL TAMAÑO AL AÑADIR USOS: estas piezas llevan salpicaduras alrededor,
+     así que el dibujo útil ocupa como dos tercios del cuadro. Medido sobre el
+     lápiz: por debajo de 20 px es una mancha de color y no se reconoce. Donde
+     el trazo se leía a 15, el ilustrado necesita 22. */
+  /* La segunda tanda (2026-09-16) trajo la barra entera repintada, los dos
+     indicadores de la cabecera y las acciones. Los tres que NO se repintaron
+     —`debate`, `negociacion` y `micro`— siguen siendo los de la primera lámina:
+     los dos modos porque su plancha no venía, y el micrófono porque tampoco.
+
+     `ayuda` y `play` LLEVAN EL COLOR DEL MODO en el nombre, y no es decoración:
+     son los dos botones de la carta de modo, y ahí el color es lo que dice de
+     cuál de los dos modos estás hablando. Existen además en amarillo y en
+     morado; ésos no están aquí ni en `site/` a propósito —ver
+     `tools/cortar_iconos_pegatina.py`—. */
   var ILUSTRADOS = ['jugar', 'catalogo', 'historial', 'perfil',
-                    'debate', 'negociacion', 'micro', 'mas'];
+                    'debate', 'negociacion', 'micro', 'mas',
+                    'energia', 'buzon',
+                    'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
+                    'ayuda-coral', 'ayuda-menta', 'play-coral', 'play-menta'];
+
+  /* Qué tinte le toca a `ayuda` y a `play` en cada modo. Vive aquí y no en
+     `app.js` porque es una propiedad del juego de iconos: el día que haya un
+     modo más, se añade su fila y no hay que ir a buscar dónde se concatenaba
+     el nombre del archivo. */
+  var TINTE_DE_MODO = { debate: 'coral', negociacion: 'menta' };
+
+  /** `ATWI.iconoDeModo('play', 'debate')` -> el `play-coral`. */
+  window.ATWI.iconoDeModo = function (nombre, modo, tam) {
+    return window.ATWI.icono(nombre + '-' + (TINTE_DE_MODO[modo] || 'coral'), tam);
+  };
 
   /** Devuelve el icono ilustrado si existe, y si no el SVG de línea. */
   window.ATWI.icono = function (nombre, tam) {
@@ -74,37 +112,13 @@ window.ATWI = window.ATWI || {};
     return window.ATWI.iconoSVG(nombre, tam);
   };
 
-  /* ==========================================================================
-     PEGATINAS
-     Iconos con el aspecto de los ilustrados —color plano y perfil blanco— pero
-     dibujados en SVG en vez de generados como PNG. Sirven para las piezas que
-     no están en la lámina y que no justifican gastar una tanda de la API de
-     imagen: se ven de la misma familia, escalan sin pesar y se pueden recolorear.
-
-     El perfil blanco sale de `paint-order: stroke`, que pinta el trazo DETRÁS
-     del relleno; sin eso el trazo se comería la mitad del dibujo.
-     ========================================================================== */
-  var PEGATINAS = {
-    /* Lápiz: goma rosa arriba, cuerpo ámbar, madera y mina abajo. */
-    lapiz:
-      '<g transform="rotate(45 12 12)">' +
-        '<rect x="9.1" y="2.6" width="5.8" height="13.4" rx="1.4" fill="#F0B429"/>' +
-        '<path d="M10.5 2.6h3a1.4 1.4 0 0 1 1.4 1.4v2.1H9.1V4a1.4 1.4 0 0 1 1.4-1.4Z" fill="#EE7FA8"/>' +
-        '<path d="M9.1 16h5.8L12 21.2Z" fill="#E7D9C3"/>' +
-        '<path d="M10.75 19h2.5L12 21.2Z" fill="#2E2A3F"/>' +
-      '</g>'
-  };
-
-  /** Un icono con aspecto de pegatina: color plano y perfil blanco. */
-  window.ATWI.pegatina = function (nombre, tam) {
-    var d = PEGATINAS[nombre];
-    if (!d) return window.ATWI.iconoSVG(nombre, tam);
-    var t = tam || 24;
-    return '<svg viewBox="0 0 24 24" width="' + t + '" height="' + t + '" ' +
-      'style="paint-order:stroke" stroke="#FFFFFF" stroke-width="2.1" ' +
-      'stroke-linejoin="round" stroke-linecap="round" ' +
-      'aria-hidden="true" focusable="false">' + d + '</svg>';
-  };
+  /* AQUÍ VIVÍA `ATWI.pegatina`, y se fue con la segunda lámina (2026-09-16).
+     Era UNA pieza —el lápiz— dibujada en SVG imitando el aspecto de pegatina,
+     con perfil blanco por `paint-order: stroke`, porque el lápiz no estaba en
+     la primera lámina y no valía la pena gastar una tanda de la API de imagen
+     solo por él. Ahora el lápiz viene ilustrado como los demás, así que lo que
+     quedaba era un mecanismo entero para imitar algo que ya existe de verdad.
+     Si vuelve a hacer falta una pieza suelta, está en el historial. */
 
   /** El juego de líneas, para lo que aún no tiene ilustración. */
   window.ATWI.iconoSVG = function (nombre, tam) {

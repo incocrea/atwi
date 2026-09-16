@@ -774,13 +774,23 @@
            lector de pantalla-- y en `title`, que en escritorio sale al pasar por
            encima. En el teléfono no hay «pasar por encima» y por eso el signo
            tiene que bastar solo, que es justo por qué se eligieron estos dos. */
+        /* LOS DOS SIGNOS SON EL BOTÓN ENTERO, no un icono dentro de un disco
+           (2026-09-16). Antes eran dos círculos dibujados en CSS —uno hueco y
+           uno relleno— con un trazo dentro; ahora la pegatina ya trae su
+           propia forma, su color y su perfil blanco, así que meterla dentro de
+           otro disco dejaba una figura dentro de un botón que dice lo mismo.
+
+           Y LA JERARQUÍA NO SE PIERDE, que era lo que el disco resolvía: el
+           arte la trae dibujada. `ayuda` es un bocadillo en tono pastel y
+           `play` un disco en el color saturado del modo, así que el de jugar
+           sigue pesando más sin necesidad de rellenarlo aparte. */
         '<div class="carta-modo__salidas">' +
           '<button class="carta-modo__signo carta-modo__explica" data-explicar="' + clave + '" ' +
             'aria-label="Cómo se juega" title="Cómo se juega">' +
-            window.ATWI.iconoSVG('ayuda', 22) + '</button>' +
+            window.ATWI.iconoDeModo('ayuda', clave, 44) + '</button>' +
           '<button class="carta-modo__signo carta-modo__jugar" data-crear="' + clave + '" ' +
             'aria-label="Jugar" title="Jugar">' +
-            window.ATWI.iconoSVG('play', 22) + '</button>' +
+            window.ATWI.iconoDeModo('play', clave, 44) + '</button>' +
         '</div>' +
       '</div>';
   }
@@ -832,7 +842,7 @@
           /* Directo al editor, sin pasar por el detalle: quien ve un tema que
              no encaja con su discusión quiere arreglarlo ahí mismo. */
           '<button class="chip chip--editar" data-editar-tema="' + esc(t.id) + '">' +
-            window.ATWI.pegatina('lapiz', 15) +
+            icono('lapiz', 22) +
             (tocado ? 'Editar' : 'Personalizar') + '</button>' +
         '</div>' +
       '</div>';
@@ -874,7 +884,7 @@
            obligaba a leer dos veces para separar en qué modo estás de a cuál
            irías; el botón es un interruptor y se comporta como uno. */
         '<span class="cinta-modo__cambiar">' +
-          window.ATWI.iconoSVG('volver', 14) + 'Cambiar modo' +
+          icono('cambiar', 24) + 'Cambiar modo' +
         '</span>' +
       '</button>';
   }
@@ -1155,7 +1165,7 @@
              se decide sobre una tarjeta, y arriba competia con el modo. */
           '<button class="partida__borrar" data-borrar="' + esc(d.id) + '"' +
             ' aria-label="Borrar esta partida">' +
-            window.ATWI.iconoSVG('papelera', 20) + '</button>' +
+            icono('papelera', 22) + '</button>' +
         '</div>';
       }).join('');
   }
@@ -1686,7 +1696,7 @@
         avatarHTML(p, 'ficha__avatar') +
         '<span class="ficha__nombre">' +
           (p.nombre ? esc(p.nombre) : 'Ponte un nombre') +
-          window.ATWI.iconoSVG('lapiz', 18) +
+          icono('lapiz', 22) +
         '</span>' +
         '<span class="chico suave">Nivel ' + p.nivel + '</span>' +
       '</button>' +
@@ -2090,7 +2100,7 @@
               'style="margin-bottom:var(--e-3)">' +
         '<span class="retocable__texto" style="font-family:var(--display);font-weight:800;' +
           'font-size:var(--t-h3);line-height:1.25">' + esc(t.enunciado) + '</span>' +
-        '<span class="retocable__lapiz">' + window.ATWI.pegatina('lapiz', 18) + '</span>' +
+        '<span class="retocable__lapiz">' + icono('lapiz', 22) + '</span>' +
       '</button>' +
 
       /* Aquí iban «las dos posturas», una debajo de otra, y se fueron con el
@@ -2230,7 +2240,7 @@
 
       (reescrito
         ? '<button class="boton boton--fantasma boton--bloque" data-accion="devolver-tema" ' +
-          'style="margin-top:var(--e-5)">' + window.ATWI.iconoSVG('volver', 18) +
+          'style="margin-top:var(--e-5)">' + icono('cambiar', 22) +
           'Volver al tema del catálogo</button>'
         : '') +
       (propio

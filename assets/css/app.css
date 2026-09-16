@@ -451,28 +451,26 @@ body.app {
    y «Jugar» es LA acción de esta pantalla. */
 .carta-modo__signo {
   aspect-ratio: 1; height: 100%; min-width: 44px; min-height: 44px;
-  border-radius: 50%; border: 2px solid transparent;
   display: grid; place-items: center; padding: 0;
+  border: 0; background: none; box-shadow: none;
   font: inherit; cursor: pointer;
-  box-shadow: var(--sombra-1);
   transition: transform var(--dur-corta) var(--suave);
 }
 .carta-modo__signo:active { transform: scale(.92); }
 @media (prefers-reduced-motion: reduce) { .carta-modo__signo:active { transform: none; } }
 
-/* El de ayuda va en hueco --blanco con el borde y el signo del modo-- y el de
-   jugar relleno. Rellenar los dos dejaría dos discos iguales y ninguno
-   mandaría; es la misma regla que tenían cuando llevaban texto. */
-.carta-modo__explica { background: var(--superficie); }
-.carta-modo--debate .carta-modo__jugar { background: var(--debate); color: #fff; }
-.carta-modo--negociacion .carta-modo__jugar { background: var(--negociacion); color: #fff; }
+/* LA PEGATINA ES EL BOTÓN (2026-09-16). Aquí había dos discos dibujados en
+   CSS —uno blanco con el borde del modo y otro relleno del color del modo—
+   con un trazo de línea dentro. Los iconos nuevos ya son eso: traen su forma,
+   su color y su perfil blanco, así que el disco de CSS quedaba como un aro
+   alrededor de otra figura redonda.
 
-/* La letra va un punto más honda que el color del modo: a --debate-oscuro y
-   --negociacion-oscuro daba 4,22 y 4,41 sobre blanco, por debajo del 4,5 que
-   pide un cuerpo de 13 px. El borde sí lleva el color del modo a plena fuerza,
-   que ahí no se lee nada. */
-.carta-modo--debate .carta-modo__explica { color: #A8431F; border-color: var(--debate); }
-.carta-modo--negociacion .carta-modo__explica { color: #176450; border-color: var(--negociacion); }
+   La jerarquía que el relleno resolvía —«rellenar los dos dejaría dos discos
+   iguales y ninguno mandaría»— ahora viene dibujada: el de ayuda es un
+   bocadillo en pastel y el de jugar un disco en el color saturado del modo.
+   Y el color del modo sigue estando, porque cada carta pide su propio archivo:
+   `ayuda-coral` y `play-coral` en Juicio, `-menta` en Pacto. */
+.carta-modo__signo .ico { width: 100%; height: 100%; }
 
 /* Lo que de verdad hay que entender de cada modo: en Controversia, que no se
    juzga quién tiene razón; en Negociación, que no estar de acuerdo también es
@@ -1642,6 +1640,26 @@ body.app {
 /* En botones y tarjetas van a todo color desde el principio */
 .boton .ico { width: 22px; height: 22px; }
 .modo__icono .ico { width: 38px; height: 38px; }
+
+/* El rayo de los puntos, en la cabecera. Va un punto por encima del número:
+   la pastilla es chica y con los dos al mismo alto el rayo se leía como una
+   letra más del contador. */
+.monedero__dato .ico { width: 20px; height: 20px; margin-right: -1px; }
+
+/* LA PAPELERA DEL HISTORIAL NO PUEDE ESTAR ROJA EN REPOSO, y el icono nuevo lo
+   es. La regla de la casa para el borrado es «tono aparte, nunca un bloque de
+   rojo de alarma»: una tarjeta de partida con una papelera roja encendida pide
+   a gritos que la borres, y eso es exactamente lo que no se quiere pedir.
+   Se apaga igual que las pestañas inactivas de la barra —el mismo mecanismo,
+   porque el problema es el mismo: un PNG a color no se recolorea— y recupera
+   el rojo entero al pulsarla, que es cuando el aviso sí corresponde. */
+.partida__borrar .ico {
+  width: 22px; height: 22px;
+  filter: grayscale(.72) opacity(.6);
+  transition: filter var(--dur-corta) var(--suave);
+}
+.partida__borrar:active .ico,
+.partida__borrar:hover .ico { filter: none; }
 
 /* La categoría enseña dónde pasa la cosa, no solo cómo se llama */
 .categoria { align-items: start; }
