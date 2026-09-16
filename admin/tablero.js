@@ -207,8 +207,143 @@
     $('#lienzo').innerHTML = '<p class="chico">Cargando…</p>';
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
        material: verMaterial, bitacora: verBitacora, navegadores: verNavegadores,
-       modelos: verModelos, limites: verLimites })[pestana]();
+       llamadas: verLlamadas, modelos: verModelos, limites: verLimites })[pestana]();
   }
+
+  /* --- Las llamadas: lo que se pidió, lo que costó y lo que contestó ---------
+     Petición del titular (2026-09-15). La pestaña de costos suma; ésta detalla,
+     y son dos preguntas distintas: «cuánto llevamos» contra «qué pasó en ESTA
+     llamada».
+
+     LOS NÚMEROS SON LOS QUE DEVUELVE LA API, no una estimación nuestra. Vienen
+     del `usage` de cada respuesta y se guardan en `consumos` tal cual llegan.
+     Por eso las cuatro columnas están separadas: entrada, salida, caché escrita
+     y caché leída se facturan a precios distintos —1x, 5x, 1,25x y 0,1x— y
+     sumarlas en un solo número escondería justo lo que hay que vigilar. */
+  function tokens(n) {
+    return n == null ? '<span class="chico">—</span>'
+                     : Number(n).toLocaleString('es');
+  }
+
+  function verLlamadas() {
+    Promise.all([
+      pedir('consumos?select=id,creado,proveedor,operacion,modelo,tokens_entrada,' +
+            'tokens_salida,tokens_cache_escritura,tokens_cache_lectura,ms,ok,error,debate' +
+            '&order=creado.desc&limit=150'),
+      pedir('llamadas?select=id,consumo'),
+      pedir('tarifas?select=modelo,unidad,usd_por_unidad'),
+      pedir('latidos?select=*')
+    ]).then(function (r) {
+      var filas = r[0], hay = {}, precio = {}, latidos = r[3];
+      r[1].forEach(function (l) { hay[l.consumo] = l.id; });
+      r[2].forEach(function (t) { (precio[t.modelo] = precio[t.modelo] || {})[t.unidad] = Number(t.usd_por_unidad); });
+
+      function cuesta(f) {
+        var p = precio[f.modelo];
+        if (!p) return null;
+        return (f.tokens_entrada || 0) * (p.token_entrada || 0)
+             + (f.tokens_salida || 0) * (p.token_salida || 0)
+             + (f.tokens_cache_escritura || 0) * (p.token_cache_escritura || 0)
+             + (f.tokens_cache_lectura || 0) * (p.token_cache_lectura || 0);
+      }
+
+      /* EL LATIDO ARRIBA Y NO ABAJO. Es lo único de esta pantalla que hay que
+         mirar sin buscarlo: si el latido murió, la próxima llamada de verdad
+         paga la escritura entera y nadie se entera hasta ver la factura. */
+      var cabeza = latidos.length
+        ? '<div class="tarjetas">' + latidos.map(function (l) {
+            return tarjeta(
+              (l.vivo ? '● ' : '○ ') + 'Latido · ' + esc(l.modelo || '—'),
+              l.vivo ? 'vivo' : 'MUERTO',
+              'último hace ' + esc(String(l.hace || '').slice(0, 8)) +
+              ' · ' + (l.en_24h || 0) + ' en 24 h · ' +
+              tokens(l.leidos_24h) + ' leídos / ' + tokens(l.escritos_24h) + ' escritos');
+          }).join('') + '</div>' +
+          (latidos.some(function (l) { return (l.escritos_24h || 0) > 0; })
+            ? '<div class="aviso">Algún latido <b>escribió</b> caché en vez de leerla: ' +
+              'llegó tarde y la entrada ya había expirado. Si se repite, hay que acortar ' +
+              'el intervalo.</div>' : '')
+        : '<div class="aviso">Todavía no hay latidos. Sin ellos, la caché del prompt ' +
+          'muere a la hora y cada veredicto vuelve a pagar la escritura entera.</div>';
+
+      $('#lienzo').innerHTML = cabeza +
+        '<h2>Las últimas 150 llamadas</h2>' +
+        '<p class="chico" style="margin-bottom:12px">Los tokens son los que devolvió ' +
+        'la API en su <code>usage</code>, no una estimación. <b>Real</b> es lo que se ' +
+        'procesó en total; el costo aplica la tarifa de cada tramo.</p>' +
+        tabla(['Cuándo', 'Operación', 'Modelo', 'Entrada', 'Salida',
+               'Caché escr.', 'Caché lect.', 'Real', 'USD', 'ms', ''],
+          filas.map(function (f) {
+            var real = (f.tokens_entrada || 0) + (f.tokens_salida || 0) +
+                       (f.tokens_cache_escritura || 0) + (f.tokens_cache_lectura || 0);
+            var c = cuesta(f);
+            return [
+              fecha(f.creado),
+              '<span class="' + (f.ok ? '' : 'mal') + '">' + esc(f.operacion) + '</span>' +
+                (f.error ? '<br><span class="chico mal">' + esc(String(f.error).slice(0, 80)) + '</span>' : ''),
+              '<span class="chico">' + esc(f.modelo || f.proveedor) + '</span>',
+              tokens(f.tokens_entrada), tokens(f.tokens_salida),
+              /* La escritura en rojo: es la que cuesta 12,5 veces la lectura y
+                 la que no debería estar ahí si la caché va bien. */
+              (f.tokens_cache_escritura ? '<span class="ojo">' + tokens(f.tokens_cache_escritura) + '</span>'
+                                        : tokens(f.tokens_cache_escritura)),
+              (f.tokens_cache_lectura ? '<span class="bien">' + tokens(f.tokens_cache_lectura) + '</span>'
+                                      : tokens(f.tokens_cache_lectura)),
+              '<b>' + tokens(real) + '</b>',
+              c == null ? '<span class="chico">—</span>' : usd(c),
+              String(f.ms == null ? '—' : f.ms),
+              hay[f.id]
+                ? '<button class="boton boton--chico" data-detalle="' + hay[f.id] + '">Detalle</button>'
+                : '<span class="chico">—</span>'
+            ];
+          }), [false, false, false, true, true, true, true, true, true, true, false]);
+    }).catch(fallo);
+  }
+
+  /* --- El detalle, en dos caras ---------------------------------------------- */
+  var loQueSeVe = { peticion: null, respuesta: null };
+
+  /* Colorea sin librería. Se escapa ANTES de meter las etiquetas: si no, un
+     JSON con un `<` dentro de una cadena rompe la página, y aquí dentro va
+     texto que escribió otra persona. */
+  function pintarJson(v) {
+    var t = JSON.stringify(v, null, 2) || '';
+    return esc(t).replace(
+      /("(\\.|[^"\\])*")(\s*:)?|(\b-?\d+(\.\d+)?([eE][+-]?\d+)?\b)|\b(true|false|null)\b/g,
+      function (m, cad, _a, dosp, num) {
+        if (cad) return '<span class="' + (dosp ? 'j-clave' : 'j-texto') + '">' + cad + '</span>' + (dosp || '');
+        if (num) return '<span class="j-num">' + num + '</span>';
+        return '<span class="j-bool">' + m + '</span>';
+      });
+  }
+
+  function pintarCara(cual) {
+    document.querySelectorAll('#detalle .pestanas button').forEach(function (b) {
+      if (b.dataset.cara === cual) b.setAttribute('aria-current', 'page');
+      else b.removeAttribute('aria-current');
+    });
+    var v = loQueSeVe[cual];
+    $('#d-cuerpo').innerHTML = v == null
+      ? '<span class="chico">No se guardó nada en esta cara.</span>'
+      : pintarJson(v);
+  }
+
+  function abrirDetalle(id) {
+    $('#d-titulo').textContent = 'Cargando…';
+    $('#d-cuerpo').textContent = '';
+    $('#detalle').setAttribute('data-abierto', '');
+    pedir('llamadas?id=eq.' + encodeURIComponent(id) + '&select=id,creado,peticion,respuesta')
+      .then(function (f) {
+        var l = f[0];
+        if (!l) { $('#d-titulo').textContent = 'No está'; return; }
+        loQueSeVe = { peticion: l.peticion, respuesta: l.respuesta };
+        $('#d-titulo').textContent = 'Llamada ' + l.id + ' · ' + fecha(l.creado);
+        pintarCara('peticion');
+      })
+      .catch(function (e) { $('#d-cuerpo').textContent = 'No se pudo leer: ' + e.message; });
+  }
+
+  function cerrarDetalle() { $('#detalle').removeAttribute('data-abierto'); }
 
   /* --- Qué modelo juzga y qué modelo limpia ----------------------------------
      Petición del titular (2026-09-15), para poder comparar Opus contra Sonnet
@@ -763,6 +898,22 @@
     if (!b) return;
     pestana = b.dataset.pest;
     pintar();
+  });
+
+  /* El detalle: abrir, cambiar de cara y cerrar. Todo por delegación desde el
+     documento, porque los botones de «Detalle» se repintan con la tabla y
+     atarlos uno a uno obligaría a volver a atarlos en cada recarga. */
+  document.addEventListener('click', function (e) {
+    var d = e.target.closest('[data-detalle]');
+    if (d) return abrirDetalle(d.dataset.detalle);
+    var c = e.target.closest('#detalle .pestanas button');
+    if (c) return pintarCara(c.dataset.cara);
+    /* Cerrar con la × o tocando fuera de la caja: el velo es el propio
+       `#detalle`, así que un clic que llega hasta él es un clic fuera. */
+    if (e.target.closest('[data-cerrar]') || e.target.id === 'detalle') cerrarDetalle();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') cerrarDetalle();
   });
 
   montarCaptcha();

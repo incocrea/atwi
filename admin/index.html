@@ -77,6 +77,35 @@
   .modelo .chico { margin-left: 22px; }
   .boton { font: inherit; font-weight: 700; padding: 9px 20px; cursor: pointer;
            background: var(--marca); color: #fff; border: 0; border-radius: 8px; }
+  .boton--chico { font-size: 12px; padding: 4px 10px; border-radius: 6px; }
+  /* --- El detalle de una llamada ---
+     A pantalla casi completa y no en una ventanita: lo que se viene a mirar
+     aquí es un JSON de cientos de líneas, y leerlo por una rendija es no
+     leerlo. */
+  #detalle { position: fixed; inset: 0; background: rgba(28,24,20,.55);
+             display: none; z-index: 50; }
+  #detalle[data-abierto] { display: block; }
+  #detalle .caja { position: absolute; inset: 3vh 4vw; background: var(--papel);
+                   border-radius: 12px; display: flex; flex-direction: column;
+                   box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; }
+  #detalle header { display: flex; align-items: center; gap: 14px;
+                    padding: 14px 18px; border-bottom: 1px solid var(--linea); }
+  #detalle header h3 { margin: 0; font-size: 14px; }
+  #detalle .pestanas { display: flex; gap: 4px; margin-left: auto; }
+  #detalle .pestanas button { font: inherit; font-size: 12px; font-weight: 700;
+    padding: 6px 14px; border: 1px solid var(--linea); background: #fbfaf9;
+    border-radius: 7px; cursor: pointer; color: var(--suave); }
+  #detalle .pestanas button[aria-current] { background: var(--marca); color: #fff;
+                                            border-color: var(--marca); }
+  #detalle .cuerpo { flex: 1; overflow: auto; margin: 0; padding: 16px 18px;
+                     font: 12px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+                     white-space: pre-wrap; word-break: break-word; }
+  #detalle .cerrar { font: inherit; border: 0; background: none; cursor: pointer;
+                     color: var(--suave); font-size: 20px; line-height: 1; padding: 0 4px; }
+  /* El coloreado: sin librería, cuatro reglas. Un JSON de 300 líneas todo del
+     mismo color se lee igual de mal en un tablero que en cualquier sitio. */
+  .j-clave { color: #7a5cc4; } .j-texto { color: #2f6f4f; }
+  .j-num { color: #b5651d; } .j-bool { color: #a33; }
   /* --- La puerta --- */
   #puerta { max-width: 340px; margin: 12vh auto; background: var(--papel);
             border: 1px solid var(--linea); border-radius: 12px; padding: 26px; }
@@ -123,13 +152,29 @@
     <button data-pest="material">Material</button>
     <button data-pest="bitacora">Bitácora</button>
     <button data-pest="navegadores">Navegadores</button>
+    <button data-pest="llamadas">Llamadas</button>
     <button data-pest="modelos">Modelos</button>
     <button data-pest="limites">Límites</button>
   </nav>
   <main id="lienzo"></main>
+
+  <!-- El detalle de una llamada: lo que se mandó y lo que vino. -->
+  <div id="detalle" role="dialog" aria-modal="true" aria-labelledby="d-titulo">
+    <div class="caja">
+      <header>
+        <h3 id="d-titulo"></h3>
+        <div class="pestanas">
+          <button data-cara="peticion" aria-current="page">Lo que se mandó</button>
+          <button data-cara="respuesta">Lo que vino</button>
+        </div>
+        <button class="cerrar" data-cerrar aria-label="Cerrar">×</button>
+      </header>
+      <pre class="cuerpo" id="d-cuerpo"></pre>
+    </div>
+  </div>
 </div>
 
-<script src="../assets/js/config.js?v=633e27a"></script>
-<script src="tablero.js?v=633e27a"></script>
+<script src="../assets/js/config.js?v=9078a2b"></script>
+<script src="tablero.js?v=9078a2b"></script>
 </body>
 </html>
