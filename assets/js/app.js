@@ -1964,7 +1964,7 @@
               '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
               '<span class="con-ficha" style="margin-top:6px">' +
                 muestraFicha() +
-                '<input class="campo" id="f-nombre" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
                   'autocomplete="given-name" placeholder="Tu nombre" value="' + esc(p.nombre) + '">' +
               '</span>' +
               /* Se dice ANTES de escribir, no al rechazar: la razón del límite
@@ -2586,7 +2586,7 @@
          `row-reverse`: así el tabulador pasa por el nombre antes que por el
          dibujo, que es el orden en que se rellena. */
       '<div class="con-ficha" style="margin-top:6px">' +
-        '<input class="campo" id="p-otro" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+        '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
           'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
         '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
           'aria-label="Elegir el aro de su ficha">' +
@@ -3329,26 +3329,19 @@
     var pbn = e.target.dataset && e.target.dataset.pbNombre;
     if (pbn) { estadoProbador()[pbn].nombre = e.target.value; guardarProbador(); return; }
 
-    if (e.target.id === 'p-otro') {
-      /* LA REGLA SE APLICA EN EL CAMPO, no al enviar. Un campo que sencillamente
-         no admite un espacio ni una letra de más se explica solo, y por eso el
-         párrafo que decía «una sola palabra» se pudo quitar.
+    /* LA REGLA SE APLICA EN EL CAMPO, no al enviar. Un campo que sencillamente
+       no admite un espacio ni una letra de más se explica solo, y por eso el
+       párrafo que decía «una sola palabra» se pudo quitar. Desde 2026-09-16
+       además capitaliza: mayúscula inicial y el resto en minúscula.
 
-         Se reescribe SOLO si el filtro quitó algo, y se repone el cursor: tocar
-         `value` en cada tecla manda el cursor al final, así que corregir una
-         letra en medio de un nombre ya escrito se volvía imposible. El cursor
-         retrocede tantas posiciones como caracteres se hayan comido antes de
-         él, que es donde estaría si nunca hubieran entrado. */
-      var crudo = e.target.value;
-      var limpio = datos.filtrarNombre(crudo);
-      if (limpio !== crudo) {
-        var cursor = e.target.selectionStart || 0;
-        var comidos = crudo.slice(0, cursor).length -
-                      datos.filtrarNombre(crudo.slice(0, cursor)).length;
-        e.target.value = limpio;
-        try { e.target.setSelectionRange(cursor - comidos, cursor - comidos); }
-        catch (x) {}
-      }
+       LA MARCA `data-nombre` Y NO EL `id`: son cuatro campos en tres pantallas
+       y dos archivos, y con el id había que acordarse de añadir cada uno aquí.
+       El trabajo lo hace `datos`, que es donde vive la regla del nombre. */
+    if (e.target.dataset && 'nombre' in e.target.dataset) {
+      datos.pulirCampoDeNombre(e.target);
+    }
+
+    if (e.target.id === 'p-otro') {
       /* Se guarda según se escribe: un repintado —al retocar un texto desde
          aquí— dejaba el campo vacío porque solo se leía al sortear. */
       propuesta.otro = e.target.value.trim();

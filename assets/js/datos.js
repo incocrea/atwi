@@ -53,12 +53,29 @@ window.ATWI = window.ATWI || {};
     return String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
   }
 
-  /** El nombre RECORTADO a la fuerza: primera palabra y 16 letras. Es lo que se
-      le aplica a lo que ya estaba guardado —un perfil o un invitado de antes de
-      esta regla traen el nombre entero— y por eso no puede rechazar nada: nadie
-      lo está escribiendo, así que no hay a quién pedirle que lo corrija. */
+  /* MAYÚSCULA INICIAL Y EL RESTO EN MINÚSCULA (regla del titular, 2026-09-16).
+     El nombre se pinta en el rótulo que flota sobre cada figura en la sala, en
+     el buzón y en el veredicto, y ahí «JUAN» grita y «juan» parece un error.
+     Normalizarlo en vez de pedirlo bien tiene una ventaja que se nota: nadie
+     tiene que corregir nada ni leer un aviso.
+
+     La regla es literal y por eso predecible: la primera letra sube, todo lo
+     demás baja. Un apóstrofo o un guion NO abren palabra nueva —«o'brien» queda
+     «O'brien»—, y es deliberado: el campo admite una sola palabra de dieciséis
+     letras, así que el caso es raro y una regla con excepciones es una regla que
+     hay que explicar. */
+  function capitalizar(s) {
+    if (!s) return s;
+    return s.charAt(0).toLocaleUpperCase('es') + s.slice(1).toLocaleLowerCase('es');
+  }
+
+  /** El nombre RECORTADO a la fuerza: primera palabra, 16 letras y capitalizado.
+      Es lo que se le aplica a lo que ya estaba guardado —un perfil o un invitado
+      de antes de esta regla traen el nombre entero— y por eso no puede rechazar
+      nada: nadie lo está escribiendo, así que no hay a quién pedirle que lo
+      corrija. */
   function recortarNombre(s) {
-    return limpiarNombre(s).split(' ')[0].slice(0, NOMBRE_MAX);
+    return capitalizar(limpiarNombre(s).split(' ')[0].slice(0, NOMBRE_MAX));
   }
 
   /* LO QUE EL CAMPO NO DEJA ESCRIBIR, decisión del titular (2026-09-14). La
@@ -84,7 +101,29 @@ window.ATWI = window.ATWI || {};
 
   /** El nombre tal como puede quedarse en el campo mientras se escribe. */
   function filtrarNombre(s) {
-    return String(s == null ? '' : s).replace(PASAN, '').slice(0, NOMBRE_MAX);
+    return capitalizar(String(s == null ? '' : s).replace(PASAN, '').slice(0, NOMBRE_MAX));
+  }
+
+  /* DEJA EL CAMPO YA NORMALIZADO, SIN PERDER EL CURSOR. Vive aquí, con el resto
+     de la regla del nombre, y no repetida en cada formulario: se pide el nombre
+     en CUATRO sitios —el registro, el paso de la contraseña, la ficha del perfil
+     y la preparación de la partida local— y cuatro copias de esto son tres que
+     se quedan viejas.
+
+     Tocar `value` manda el cursor al final, así que corregir una letra en medio
+     de un nombre ya escrito se volvería imposible. El cursor retrocede tantas
+     posiciones como caracteres se hayan comido ANTES de él, que es donde estaría
+     si nunca hubieran entrado. Capitalizar no come nada, así que esa cuenta
+     sigue valiendo igual. */
+  function pulirCampoDeNombre(campo) {
+    if (!campo) return;
+    var crudo = campo.value;
+    var limpio = filtrarNombre(crudo);
+    if (limpio === crudo) return;
+    var cursor = campo.selectionStart == null ? crudo.length : campo.selectionStart;
+    var comidos = cursor - filtrarNombre(crudo.slice(0, cursor)).length;
+    campo.value = limpio;
+    try { campo.setSelectionRange(cursor - comidos, cursor - comidos); } catch (e) {}
   }
 
   /** El motivo por el que este nombre no vale, o '' si vale. El texto se enseña
@@ -295,6 +334,8 @@ window.ATWI = window.ATWI || {};
     limpiarNombre: limpiarNombre,
     recortarNombre: recortarNombre,
     filtrarNombre: filtrarNombre,
+    pulirCampoDeNombre: pulirCampoDeNombre,
+    capitalizar: capitalizar,
     errorDeNombre: errorDeNombre,
 
     perfil: cargar,

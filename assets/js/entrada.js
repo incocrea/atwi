@@ -227,7 +227,7 @@ window.ATWI = window.ATWI || {};
              lado del otro: con nombre y apellido se salen de la pantalla. La
              regla y el porqué están en datos.js. */
           campo('c-nombre', '¿Cómo te llamamos?',
-                'type="text" autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'type="text" data-nombre autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
                 'placeholder="Tu nombre" value="' + esc(estado.nombre) + '"',
                 'Tu primer nombre o un apodo: una sola palabra.') +
           campo('c-correo', 'Tu correo',
@@ -262,7 +262,7 @@ window.ATWI = window.ATWI || {};
                'Elige una contraseña para la próxima vez. El navegador te la va a guardar.') +
         '<div class="apilado-5">' +
           campo('c-nombre2', 'Tu nombre',
-                'type="text" autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'type="text" data-nombre autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
                 'placeholder="Tu nombre" value="' + esc(estado.nombre) + '"',
                 'Tu primer nombre o un apodo: una sola palabra.') +
           campo('c-clave', 'Contraseña',
