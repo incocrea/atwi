@@ -819,6 +819,12 @@
             'aria-label="Jugar a ' + esc(modoLlano(clave)) + '" title="Jugar">' +
             window.ATWI.iconoDeModo('play', clave, 60) + '</button>' +
         '</div>' +
+        /* La peana del pie, igual que en las cartas de «¿con quién juegas?»:
+           un PNG con forma —aquí globos de diálogo en Juicio y brotes en Pacto—
+           y no un degradado, porque es el zócalo dibujado lo que las hace
+           cartas. Va fuera del flujo, así que el hueco se lo hace el padding. */
+        '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.png" ' +
+          'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
       '</div>';
   }
 

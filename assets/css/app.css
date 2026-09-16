@@ -433,8 +433,12 @@ body.app {
    ARCHIVO dividiendo por ese 0,59. Los márgenes negativos no son un truco:
    descuentan el aire que ya viene pintado. */
 .carta-modo {
+  /* Sin esto la peana se posiciona contra el marco y se va a todo el ancho de
+     la pantalla: lo que la ancla a SU carta es este `relative`. */
+  position: relative;
   display: flex; flex-direction: column; align-items: center;
-  width: 100%; padding: 10px 8px 12px;
+  /* El hueco de abajo es el sitio de la peana, que va fuera del flujo. */
+  width: 100%; padding: 10px 8px 34px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: center; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
@@ -501,6 +505,13 @@ body.app {
    `ayuda-coral` y `play-coral` en Juicio, `-menta` en Pacto. */
 .carta-modo__explica .ico { width: 64px; height: 64px; }
 .carta-modo__jugar .ico { width: var(--signo-alto); height: var(--signo-alto); }
+
+/* A SANGRE Y PEGADA AL FONDO, igual que la de las cartas de mesa: con margen se
+   leería como un dibujo puesto encima en vez de como el suelo de la carta. */
+.carta-modo__base {
+  position: absolute; left: -2px; right: -2px; bottom: -4px;
+  width: calc(100% + 4px); height: auto; display: block; pointer-events: none;
+}
 
 
 
