@@ -1444,13 +1444,25 @@ body.app {
    contra el borde de arriba de la tarjeta. */
 .tabla--ancha .tabla__fila--cabeza { position: relative; height: 52px; padding-bottom: 0; }
 .tabla--ancha .tabla__fila--cabeza .tabla__n { position: relative; }
+/* EL ROTULO SE CENTRA SOBRE SU COLUMNA, no se cuelga del borde derecho
+   (correccion del titular, 2026-09-16). Estaba anclado a `right: 2px`, asi que
+   la etiqueta apuntaba al borde de la columna y no a los numeros: con cinco
+   columnas seguidas costaba saber de cual era cada titulo.
+
+   `left: 50%` + `translateX(-50%)` pone el centro del texto en el centro de la
+   columna, y el giro va con origen en su punto medio inferior para que la
+   inclinacion no lo desplace. */
 .tabla--ancha .tabla__eti i {
-  position: absolute; right: 2px; bottom: 0;
-  transform: rotate(-45deg); transform-origin: 100% 100%;
+  position: absolute; left: 50%; bottom: 0;
+  transform: translateX(-50%) rotate(-45deg);
+  transform-origin: 50% 100%;
   font-style: normal; white-space: nowrap;
   color: var(--tinta-suave); font-family: var(--cuerpo); font-weight: 700;
   font-size: 10px; letter-spacing: .02em;
 }
+/* Y los numeros, centrados tambien: con `right` quedaban pegados al borde y el
+   titulo apuntaba a otro sitio. */
+.tabla--ancha .tabla__fila .tabla__n { text-align: center; }
 .tabla--ancha .tabla__fila--cabeza .tabla__n--total {
   display: grid; place-items: end; font-size: 10px; color: var(--tinta-suave);
 }
@@ -1458,9 +1470,10 @@ body.app {
   text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .tabla--ancha .tabla__n--total {
-  font-size: .95rem;
-  /* El total se separa del resto con una línea, que es lo que antes hacía la
-     fila de «Total». */
+  /* MISMO TAMAÑO QUE LOS DEMAS (correccion del titular): estaba a .95rem y
+     hacia de titular de la fila, cuando lo que la tabla tiene que dejar ver es
+     la comparacion criterio a criterio. Lo que lo distingue es el COLOR de cada
+     quien --que llega en linea-- y la raya de la izquierda, no el tamaño. */
   border-left: 1px solid var(--crema-hondo); padding-left: 6px;
 }
 .tabla__nota {
