@@ -64,6 +64,19 @@
               background: #efecf8; color: var(--marca); font-size: 11px; font-weight: 700; }
   .aviso { background: #fff7e6; border: 1px solid #f0dcae; color: #6b5316;
            padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 13px; }
+  /* --- El selector de modelo --- */
+  .modelos { display: grid; gap: 8px; margin-bottom: 6px; }
+  .modelo { display: block; border: 1px solid var(--linea); border-radius: 8px;
+            padding: 10px 14px; cursor: pointer; background: var(--papel); }
+  .modelo:hover { border-color: var(--marca); }
+  /* El puesto se ve sin tener que leer el radio: son tres renglones parecidos y
+     a la pregunta «¿cuál está corriendo ahora?» hay que contestarla de un
+     vistazo, que es la razón de que exista esta pestaña. */
+  .modelo--puesto { border-color: var(--marca); background: #f7f5fd; }
+  .modelo input { margin-right: 8px; }
+  .modelo .chico { margin-left: 22px; }
+  .boton { font: inherit; font-weight: 700; padding: 9px 20px; cursor: pointer;
+           background: var(--marca); color: #fff; border: 0; border-radius: 8px; }
   /* --- La puerta --- */
   #puerta { max-width: 340px; margin: 12vh auto; background: var(--papel);
             border: 1px solid var(--linea); border-radius: 12px; padding: 26px; }
@@ -110,12 +123,13 @@
     <button data-pest="material">Material</button>
     <button data-pest="bitacora">Bitácora</button>
     <button data-pest="navegadores">Navegadores</button>
+    <button data-pest="modelos">Modelos</button>
     <button data-pest="limites">Límites</button>
   </nav>
   <main id="lienzo"></main>
 </div>
 
-<script src="../assets/js/config.js?v=aea50b8"></script>
-<script src="tablero.js?v=aea50b8"></script>
+<script src="../assets/js/config.js?v=633e27a"></script>
+<script src="tablero.js?v=633e27a"></script>
 </body>
 </html>

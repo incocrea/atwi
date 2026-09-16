@@ -47,6 +47,25 @@
     });
   }
 
+  /* El tablero es de LEER, y esta es la única excepción: el selector de modelo.
+     Va por el mismo sitio y con el mismo token, así que la política
+     `es_admin()` sigue mandando igual que en las lecturas. */
+  function guardar(camino, cuerpo) {
+    return fetch(cfg.supabaseUrl + '/rest/v1/' + camino, {
+      method: 'PATCH',
+      headers: {
+        apikey: cfg.supabaseAnon,
+        Authorization: 'Bearer ' + sesion.access_token,
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation'
+      },
+      body: JSON.stringify(cuerpo)
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); });
+      return r.json();
+    });
+  }
+
   /* --- El antirrobots --------------------------------------------------------
      Supabase Auth tiene el captcha obligatorio y lo exige TAMBIEN en la entrada
      por contraseña, no solo en el alta. Sin token devuelve `captcha_failed` y
@@ -188,7 +207,121 @@
     $('#lienzo').innerHTML = '<p class="chico">Cargando…</p>';
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
        material: verMaterial, bitacora: verBitacora, navegadores: verNavegadores,
-       limites: verLimites })[pestana]();
+       modelos: verModelos, limites: verLimites })[pestana]();
+  }
+
+  /* --- Qué modelo juzga y qué modelo limpia ----------------------------------
+     Petición del titular (2026-09-15), para poder comparar Opus contra Sonnet
+     sobre partidas reales sin redesplegar tres funciones cada vez.
+
+     DOS SELECTORES Y NO UNO, porque son dos decisiones distintas. El juez corre
+     UNA vez por partida sobre la ronda entera y razona: ahí se va el dinero. El
+     abogado corre SEIS veces sobre textos de sesenta palabras y lo que hace es
+     formato. Subir el abogado de modelo multiplica por cinco la parte que más
+     veces corre, a cambio de una limpieza que Haiku ya hace bien.
+
+     LO QUE SE ELIGE AQUÍ NO ES LO QUE SE CORRIÓ. Cada llamada anota su modelo
+     en `consumos.modelo`, y el veredicto guarda el suyo en el expediente. Este
+     selector dice qué se usará la próxima vez; la pestaña de costos dice qué se
+     usó de verdad. */
+  var MODELOS_JUEZ = [
+    { id: 'claude-opus-5', nombre: 'Opus 5', entrada: 5, salida: 25,
+      nota: 'El de fábrica. Medido: 0,19 USD por veredicto con la caché tibia, ~78 s.' },
+    { id: 'claude-sonnet-5', nombre: 'Sonnet 5', entrada: 2, salida: 10,
+      nota: '2,5 veces más barato que Opus en los dos sentidos. Sin medir todavía en este juego.' },
+    { id: 'claude-haiku-4-5', nombre: 'Haiku 4.5', entrada: 1, salida: 5,
+      nota: 'Está para poder probarlo, no para usarlo: la rúbrica son cinco criterios sobre seis intervenciones.' }
+  ];
+  var MODELOS_ABOGADO = [
+    { id: 'claude-haiku-4-5-20251001', nombre: 'Haiku 4.5', entrada: 1, salida: 5,
+      nota: 'El de fábrica. Quitar muletillas sin tocar la idea es trabajo de formato.' },
+    { id: 'claude-sonnet-5', nombre: 'Sonnet 5', entrada: 2, salida: 10,
+      nota: 'El doble de caro, y corre seis veces por partida.' },
+    { id: 'claude-opus-5', nombre: 'Opus 5', entrada: 5, salida: 25,
+      nota: 'Cinco veces el gasto de la parte que más veces corre.' }
+  ];
+
+  function verModelos() {
+    Promise.all([
+      pedir('ajustes?select=clave,valor,cambiado&order=clave'),
+      /* Lo que se usó DE VERDAD, que es lo único que contesta «¿con cuál salió
+         este veredicto?». Sin esto el selector diría qué está puesto hoy y nada
+         sobre las partidas de ayer. */
+      pedir('consumos?select=modelo,operacion,tokens_entrada,tokens_salida,creado' +
+            '&proveedor=eq.anthropic&order=creado.desc&limit=400')
+    ]).then(function (par) {
+      var puesto = {};
+      par[0].forEach(function (a) { puesto[a.clave] = a; });
+      var uso = {};
+      par[1].forEach(function (c) {
+        var fam = /^(arbitro|mediador)/.test(c.operacion || '') ? 'juez' : 'abogado';
+        var k = fam + '|' + c.modelo;
+        uso[k] = uso[k] || { llamadas: 0, entrada: 0, salida: 0, ultima: c.creado };
+        uso[k].llamadas++;
+        uso[k].entrada += Number(c.tokens_entrada || 0);
+        uso[k].salida += Number(c.tokens_salida || 0);
+      });
+
+      function selector(clave, lista, titulo, explica) {
+        var ahora = (puesto[clave] || {}).valor;
+        return '<h2>' + esc(titulo) + '</h2>' +
+          '<p class="chico">' + explica + '</p>' +
+          '<div class="modelos">' + lista.map(function (m) {
+            var u = uso[(clave === 'modelo_juez' ? 'juez' : 'abogado') + '|' + m.id];
+            return '<label class="modelo' + (m.id === ahora ? ' modelo--puesto' : '') + '">' +
+              '<input type="radio" name="' + esc(clave) + '" value="' + esc(m.id) + '"' +
+                (m.id === ahora ? ' checked' : '') + '>' +
+              '<b>' + esc(m.nombre) + '</b> ' +
+              '<span class="chico">' + m.entrada + ' / ' + m.salida + ' USD por millón</span>' +
+              '<div class="chico">' + esc(m.nota) + '</div>' +
+              (u ? '<div class="chico">Ya se usó: ' + u.llamadas + ' llamada' +
+                   (u.llamadas === 1 ? '' : 's') + ', ' +
+                   (u.entrada + u.salida).toLocaleString('es') + ' tokens.</div>' : '') +
+            '</label>';
+          }).join('') + '</div>' +
+          (puesto[clave] ? '<p class="chico">Puesto el ' + fecha(puesto[clave].cambiado) + '.</p>' : '');
+      }
+
+      $('#lienzo').innerHTML =
+        '<div class="aviso">Lo que se elija aquí vale <b>desde la próxima llamada</b>: las tres ' +
+        'funciones leen este ajuste al empezar cada petición, así que no hay que desplegar nada. ' +
+        'Una partida que ya se está jugando termina con el modelo que tenía.</div>' +
+
+        selector('modelo_juez', MODELOS_JUEZ, 'El juez',
+          'El árbitro de Controversia y el mediador de Negociación. Corre <b>una vez por ' +
+          'partida</b> sobre la ronda entera, con razonamiento. Es donde se va el dinero.') +
+
+        selector('modelo_abogado', MODELOS_ABOGADO, 'El abogado',
+          'La limpieza y el abogado de cada turno. Corre <b>seis veces por partida</b> sobre ' +
+          'textos de sesenta palabras, y lo que hace es formato: quitar muletillas sin tocar ' +
+          'la idea.') +
+
+        '<div class="aviso"><b>La caché es de cada modelo.</b> El prompt del árbitro son ~6.100 ' +
+        'tokens y va en caché; al cambiar de modelo esa caché no se hereda, así que la primera ' +
+        'llamada después de cambiar se paga en frío aunque el prompt sea idéntico. Probar un ' +
+        'modelo con una sola partida sale más caro por llamada que correr varias seguidas.</div>' +
+
+        '<p><button id="b-modelos" class="boton">Guardar</button> ' +
+        '<span id="r-modelos" class="chico"></span></p>';
+
+      $('#b-modelos').addEventListener('click', function () {
+        var juez = document.querySelector('input[name="modelo_juez"]:checked');
+        var abo = document.querySelector('input[name="modelo_abogado"]:checked');
+        var aviso = $('#r-modelos');
+        aviso.textContent = 'Guardando…';
+        Promise.all([
+          guardar('ajustes?clave=eq.modelo_juez',
+                  { valor: juez.value, cambiado: new Date().toISOString() }),
+          guardar('ajustes?clave=eq.modelo_abogado',
+                  { valor: abo.value, cambiado: new Date().toISOString() })
+        ]).then(function () {
+          aviso.textContent = 'Guardado. Vale desde la próxima llamada.';
+          setTimeout(verModelos, 900);
+        }).catch(function (e) {
+          aviso.textContent = 'No se pudo guardar: ' + e.message;
+        });
+      });
+    }).catch(fallo);
   }
 
   function fallo(e) {
