@@ -3693,3 +3693,56 @@ body.app {
   align-items: center;
 }
 .vista__titulo, .vista__bajada { text-align: center; }
+
+/* --- Las tres mesas: con quién juegas (mockup del titular, 2026-09-16) -------
+   Eran dos botones anchos con un icono a la izquierda y un párrafo al lado, y
+   se leían como una lista de opciones. Con tres mesas y una lista de temas
+   distinta detrás de cada una, esto es lo primero que decide qué juego se está
+   jugando: pide cartas, no filas.
+
+   LA PEANA ES UN PNG Y NO UN DEGRADADO DE CSS, y por eso viaja como imagen:
+   tiene forma —corazones, estrellas, nubes— y el zócalo dibujado es lo que
+   convierte tres rectángulos de color en tres cartas.
+
+   `minmax(0, 1fr)` en las tres columnas: con `1fr` el nombre más largo
+   ensancharía su columna y aquí no scrollea nada de lado. */
+.publicos {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e-2); align-items: stretch;
+}
+.publico {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  /* El hueco de abajo es el sitio de la peana, que va sobre el fondo. */
+  padding: var(--e-3) 6px 44px;
+  border: 0; border-radius: var(--radio-carta); overflow: hidden;
+  text-align: center; font: inherit; color: var(--tinta);
+  box-shadow: var(--sombra-2); cursor: pointer;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.publico:active { transform: scale(.96); }
+@media (prefers-reduced-motion: reduce) { .publico:active { transform: none; } }
+
+.publico--pareja   { background: linear-gradient(175deg, #FFE4EC, #FFF6F9 72%); }
+.publico--amigos   { background: linear-gradient(175deg, #EDE6FF, #F8F5FF 72%); }
+.publico--familia  { background: linear-gradient(175deg, #DDEEFF, #F4FAFF 72%); }
+
+.publico__alto { display: block; }
+.publico__alto .ico { width: 100%; height: auto; max-width: 96px; margin: 0 auto; }
+
+.publico__nombre {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h3);
+  line-height: 1.12; margin-top: 2px;
+}
+.publico__que {
+  font-size: var(--t-mini); line-height: 1.3; color: var(--tinta-suave);
+  margin-top: 4px;
+}
+
+/* A SANGRE Y PEGADA AL FONDO. La peana es el suelo de la carta: si dejara un
+   margen, se leería como un dibujo puesto encima en vez de como el zócalo
+   sobre el que se apoya todo lo demás. */
+.publico__base {
+  position: absolute; left: -2px; right: -2px; bottom: -6px;
+  width: calc(100% + 4px); height: auto; display: block;
+  pointer-events: none;
+}

@@ -895,6 +895,43 @@
      solos: piden su número la primera vez que se los ordena. */
   var azarDeTema = {};
 
+  /* LAS TRES MESAS (mockup del titular, 2026-09-16). `familia` es la nueva: la
+     que no se eligió y de la que no se puede uno ir —hermanos, primos, tíos—, y
+     por eso sus temas no son ni los de la pareja ni los de los amigos.
+
+     La frase de cada una dice DE QUÉ SE DISCUTE ahí, no quién es quién: al
+     abrirla lo que se ve es una lista de temas, y esto tiene que dejar claro
+     cuál de las tres listas va a salir. */
+  var PUBLICOS = [
+    ['pareja', 'Con mi<br>pareja', 'Convivencia, dinero del día a día, horarios y pantallas.'],
+    ['amigos', 'Con<br>amigos', 'La cuenta, los planes, el grupo y los viajes juntos.'],
+    ['familia', 'Con<br>familia', 'Hermanos, primos y tíos: comidas, fiestas y costumbres.']
+  ];
+
+  /* Una carta por mesa: el dibujo arriba, el nombre, de qué va, y la peana de
+     color al pie. La peana es un PNG y no un degradado de CSS porque tiene
+     forma —corazones, estrellas, nubes— y es lo que le da el aire de carta de
+     juego a una pantalla que si no sería una lista de tres botones. */
+  /* El nombre de la mesa para una cabecera de una sola línea. Sale de la misma
+     tabla que las cartas —un solo sitio— quitándole el corte de renglón, que
+     ahí sirve para que «Con mi pareja» quepa en una carta de 108 px. */
+  function nombrePublico(clave) {
+    for (var i = 0; i < PUBLICOS.length; i++) {
+      if (PUBLICOS[i][0] === clave) return PUBLICOS[i][1].replace('<br>', ' ');
+    }
+    return 'Con mi pareja';
+  }
+
+  function cartaPublico(p) {
+    return '<button class="publico publico--' + p[0] + '" data-publico="' + p[0] + '">' +
+        '<span class="publico__alto">' + icono(p[0], 96) + '</span>' +
+        '<span class="publico__nombre">' + p[1] + '</span>' +
+        '<span class="publico__que">' + esc(p[2]) + '</span>' +
+        '<img class="publico__base" src="../assets/img/iconos/base-' + p[0] + '.png" ' +
+          'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
+      '</button>';
+  }
+
   function barajar() { azarDeTema = {}; }
 
   function azarDe(id) {
@@ -957,32 +994,7 @@
         '<h1 class="vista__titulo" style="margin-bottom:var(--e-2)">¿Con quién juegas?</h1>' +
         '<p class="chico suave vista__bajada" style="margin-bottom:var(--e-4)">' +
           'Los temas cambian según con quién estés debatiendo.</p>' +
-        '<div class="modos">' +
-          '<button class="modo modo--negociacion" data-publico="pareja">' +
-            '<span class="modo__icono">' + icono('pareja', 38) + '</span>' +
-            '<span><span class="modo__nombre">Con mi pareja</span>' +
-            '<span class="modo__que">Convivencia, dinero del día a día, horarios, pantallas. ' +
-            'Los temas por los que discuten las parejas de verdad.</span></span>' +
-          '</button>' +
-          '<button class="modo modo--debate" data-publico="amigos">' +
-            '<span class="modo__icono">' + icono('amigos', 38) + '</span>' +
-            '<span><span class="modo__nombre">Con amigos</span>' +
-            '<span class="modo__que">Debates de los de sobremesa. Sin convivencia de por medio.</span></span>' +
-          '</button>' +
-        '</div>';
-      return;
-    }
-
-    if (modoPublico === 'amigos') {
-      caja.innerHTML = cinta +
-        '<div class="fila fila--cabecera" style="margin-bottom:var(--e-4)">' +
-          '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
-          '<h1 class="vista__titulo" style="font-size:var(--t-h2)">Con amigos</h1>' +
-        '</div>' +
-        estadoVacio('🚧', 'Todavía no hay temas de amigos',
-          'El catálogo que existe son 105 temas de convivencia en pareja: tareas, dinero del día a día, ' +
-          'pantallas. Entre amigos no pegan. Los temas de amigos necesitan su propio catálogo y está por hacer.') +
-        '<button class="boton boton--suave boton--bloque" data-accion="cambiar-publico">Jugar con mi pareja</button>';
+        '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
       return;
     }
 
@@ -1058,7 +1070,8 @@
       caja.innerHTML = cinta +
         '<div class="fila fila--cabecera" style="margin-bottom:var(--e-3)">' +
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
-          '<h1 class="vista__titulo" style="font-size:var(--t-h2)">Con mi pareja</h1>' +
+          '<h1 class="vista__titulo" style="font-size:var(--t-h2)">' +
+            nombrePublico(modoPublico) + '</h1>' +
           botonBuscar() +
         '</div>' +
         /* AQUÍ IBA «105 temas, ordenados por dónde y cuándo suele salir la

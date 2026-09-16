@@ -98,7 +98,7 @@ window.ATWI = window.ATWI || {};
                     'aviso', 'cerrar', 'listo', 'lupa', 'parar', 'pausa',
                     'play', 'salir',
                     /* Los dos publicos del catalogo, que eran emojis. */
-                    'pareja', 'amigos'];
+                    'pareja', 'amigos', 'familia'];
 
   /* Qué tinte le toca a `ayuda` y a `play` en cada modo. Vive aquí y no en
      `app.js` porque es una propiedad del juego de iconos: el día que haya un

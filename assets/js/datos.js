@@ -208,8 +208,13 @@ window.ATWI = window.ATWI || {};
      es el único sitio desde el que se podían escribir. */
   var conQuien = null;          // 'pareja' | 'amigos' | null = no filtrar
 
+  /* VALE PARA LOS DEL CATÁLOGO TAMBIÉN, y esto se amplió al poblar amigos y
+     familia (2026-09-16): antes solo miraba los temas propios porque el
+     catálogo entero era de la pareja. Ahora cada tema dice de qué mesa es, y
+     los 105 de siempre no lo dicen porque no hacía falta: cuentan como pareja,
+     que es de donde salieron. */
   function esDeEstePublico(t) {
-    if (!conQuien || !t.propio) return true;
+    if (!conQuien) return true;
     return (t.publico || 'pareja') === conQuien;
   }
 

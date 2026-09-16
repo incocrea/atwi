@@ -1,91 +1,263 @@
 {
  "version": "v1-preguntas",
  "fecha": "2026-09-11",
- "total": 105,
+ "total": 305,
  "categorias": [
   {
    "nombre": "En mitad de la discusión",
    "corto": "En mitad de la discusión",
    "emoji": "💬",
    "descripcion": "El tono, las interrupciones, las disculpas: cuando ya están discutiendo",
-   "total": 13
+   "total": 13,
+   "publico": "pareja"
   },
   {
    "nombre": "En la cocina y la mesa",
    "corto": "En la cocina y la mesa",
    "emoji": "🍽️",
    "descripcion": "Los platos, la nevera, las sobras, la cena",
-   "total": 7
+   "total": 7,
+   "publico": "pareja"
   },
   {
    "nombre": "En la alcoba",
    "corto": "En la alcoba",
    "emoji": "🛏️",
    "descripcion": "La cama, el sueño, la alarma, la luz de la noche",
-   "total": 13
+   "total": 13,
+   "publico": "pareja"
   },
   {
    "nombre": "En el sofá",
    "corto": "En el sofá",
    "emoji": "🛋️",
    "descripcion": "La tele, las series, el mando, los dos teléfonos",
-   "total": 7
+   "total": 7,
+   "publico": "pareja"
   },
   {
    "nombre": "Las tareas y los arreglos",
    "corto": "Las tareas y los arreglos",
    "emoji": "🧺",
    "descripcion": "Quién hace qué, cuándo, y la bombilla que lleva meses",
-   "total": 10
+   "total": 10,
+   "publico": "pareja"
   },
   {
    "nombre": "Manías y orden",
    "corto": "Manías y orden",
    "emoji": "🧽",
    "descripcion": "Dónde va cada cosa y cómo se deja: el sitio de las cosas",
-   "total": 10
+   "total": 10,
+   "publico": "pareja"
   },
   {
    "nombre": "Al salir y al volver",
    "corto": "Al salir y al volver",
    "emoji": "🚪",
    "descripcion": "La puerta, la puntualidad, los zapatos, llegar a casa",
-   "total": 5
+   "total": 5,
+   "publico": "pareja"
   },
   {
    "nombre": "Cuando salen las cuentas",
    "corto": "Cuando salen las cuentas",
    "emoji": "🧾",
    "descripcion": "La cuenta, la propina, el súper, lo que cuesta cada cosa",
-   "total": 8
+   "total": 8,
+   "publico": "pareja"
   },
   {
    "nombre": "Las decisiones de dinero",
    "corto": "Las decisiones de dinero",
    "emoji": "💸",
    "descripcion": "Ahorrar, regalos, suscripciones, en qué se gasta",
-   "total": 7
+   "total": 7,
+   "publico": "pareja"
   },
   {
    "nombre": "Con gente delante",
    "corto": "Con gente delante",
    "emoji": "🥂",
    "descripcion": "Amigos, familia, visitas y lo que se cuenta por ahí",
-   "total": 7
+   "total": 7,
+   "publico": "pareja"
   },
   {
    "nombre": "En el calendario",
    "corto": "En el calendario",
    "emoji": "📅",
    "descripcion": "Los planes, las vacaciones, el tiempo que es de los dos",
-   "total": 10
+   "total": 10,
+   "publico": "pareja"
   },
   {
    "nombre": "Por el móvil",
    "corto": "Por el móvil",
    "emoji": "📱",
    "descripcion": "Mensajes, audios y la discusión que sigue por ahí",
-   "total": 8
+   "total": 8,
+   "publico": "pareja"
+  },
+  {
+   "nombre": "Cuando llega la cuenta",
+   "corto": "Cuando llega la cuenta",
+   "emoji": "🧾",
+   "descripcion": "Dividir, invitar, la propina y quien pidio mas",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "El grupo de chat",
+   "corto": "El grupo de chat",
+   "emoji": "📱",
+   "descripcion": "Audios, silencio, planes y los mensajes que nadie contesta",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Los planes y la hora",
+   "corto": "Los planes y la hora",
+   "emoji": "🕐",
+   "descripcion": "Quedar, llegar tarde, cancelar y el que nunca decide",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "El viaje de amigos",
+   "corto": "El viaje de amigos",
+   "emoji": "🧳",
+   "descripcion": "Presupuesto, horarios, habitaciones y el bote comun",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Los regalos y las fechas",
+   "corto": "Los regalos y las fechas",
+   "emoji": "🎁",
+   "descripcion": "Cumpleanos, bodas, amigo invisible y cuanto se gasta",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Lo que se presta",
+   "corto": "Lo que se presta",
+   "emoji": "🔁",
+   "descripcion": "Libros, coches, dinero y lo que vuelve tarde o no vuelve",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Quien entra al grupo",
+   "corto": "Quien entra al grupo",
+   "emoji": "👋",
+   "descripcion": "Parejas, gente nueva y los que ya no vienen",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "En la mesa y en el bar",
+   "corto": "En la mesa y en el bar",
+   "emoji": "🍻",
+   "descripcion": "Las rondas, el sitio, la musica y quien habla mas",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Lo que se cuenta",
+   "corto": "Lo que se cuenta",
+   "emoji": "🤐",
+   "descripcion": "Secretos, bromas, opiniones y lo que se dice por detras",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Series, deporte y pantallas",
+   "corto": "Series, deporte y pantallas",
+   "emoji": "🎬",
+   "descripcion": "Spoilers, equipos, maratones y lo que hay que ver",
+   "publico": "amigos",
+   "total": 10
+  },
+  {
+   "nombre": "Las comidas de los domingos",
+   "corto": "Las comidas de los domingos",
+   "emoji": "🍲",
+   "descripcion": "Quien cocina, quien recoge y a que hora se come",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Las fiestas y dónde se pasan",
+   "corto": "Las fiestas y dónde se pasan",
+   "emoji": "🎄",
+   "descripcion": "Nochebuena, cumpleanos y la rotacion de casas",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Los regalos en familia",
+   "corto": "Los regalos en familia",
+   "emoji": "🎁",
+   "descripcion": "Amigo invisible, topes y lo que se regala a los ninos",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "El grupo de la familia",
+   "corto": "El grupo de la familia",
+   "emoji": "📲",
+   "descripcion": "Cadenas, audios, fotos y los que nunca contestan",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Las visitas",
+   "corto": "Las visitas",
+   "emoji": "🚪",
+   "descripcion": "Avisar antes, quedarse a dormir y cuanto dura una visita",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Lo que opinan de tu vida",
+   "corto": "Lo que opinan de tu vida",
+   "emoji": "🗣️",
+   "descripcion": "El trabajo, los planes y las preguntas de siempre",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Primos, sobrinos y los peques",
+   "corto": "Primos, sobrinos y los peques",
+   "emoji": "🧒",
+   "descripcion": "Los ninos de la familia y lo que se les deja hacer",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Lo que se presta en familia",
+   "corto": "Lo que se presta en familia",
+   "emoji": "🔧",
+   "descripcion": "El coche, las herramientas y lo que no vuelve",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Las costumbres de siempre",
+   "corto": "Las costumbres de siempre",
+   "emoji": "🕰️",
+   "descripcion": "Lo que se hace porque siempre se hizo asi",
+   "publico": "familia",
+   "total": 10
+  },
+  {
+   "nombre": "Los viajes y el verano",
+   "corto": "Los viajes y el verano",
+   "emoji": "⛱️",
+   "descripcion": "Vacaciones juntos, el reparto de la casa y los horarios",
+   "publico": "familia",
+   "total": 10
   }
  ],
  "temas": [
@@ -100,7 +272,8 @@
    "intereses": [
     "Necesito ordenar una idea completa antes de que nadie la interrumpa; si me cortan a la mitad acabo diciéndolo peor de lo que lo pienso.",
     "Necesito que esto sea una conversación y no una sentencia; escuchar tres minutos sin poder decir nada me deja en el sitio del acusado."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T002",
@@ -113,7 +286,8 @@
    "intereses": [
     "Necesito poder fiarme de lo que leo; si cada mensaje admite dos lecturas, me paso el día reconstruyendo qué quiso decir y no me entero de nada.",
     "Necesito escribir rápido sin que cada palabra se mida con lupa; si todo mensaje corto es sospechoso, acabo no escribiendo por miedo a sonar mal."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T003",
@@ -127,7 +301,8 @@
    "intereses": [
     "Necesito una salida de la tensión antes de que se nos vaya de las manos; el humor es mi forma de decir que seguimos siendo un equipo.",
     "Necesito que lo que estoy diciendo se trate como serio al menos una vez, antes de que se convierta en anécdota."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T004",
@@ -140,7 +315,8 @@
    "intereses": [
     "Necesito bajar la solemnidad; cuando alguien para todo y me mira fijo, me pongo a la defensiva antes de que empiece la frase.",
     "Necesito señales de que se me está escuchando; hablando de espaldas nunca sé si me han oído o solo han asentido."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T005",
@@ -153,7 +329,8 @@
    "intereses": [
     "Necesito no sentirme brusco; si lo digo sin preparar parece que ataco, y no es lo que quiero transmitir.",
     "Necesito saber a qué atenerme cuanto antes; los segundos de suspense me ponen en alerta y luego escucho peor de lo que escucharía."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T006",
@@ -166,7 +343,8 @@
    "intereses": [
     "Necesito elegir cuándo entro en una conversación difícil; si respondo entre dos cosas, respondo peor y luego lo pago dos veces.",
     "Necesito saber que hay una respuesta en camino; el silencio largo lo leo como que esto no es importante para el otro."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T007",
@@ -179,7 +357,8 @@
    "intereses": [
     "Necesito que lo que se dé por hecho sea cierto; si dejo pasar el error, después parece que lo acepté.",
     "Necesito terminar una idea entera al menos una vez; si no, nunca se oye lo que quería decir, solo las correcciones."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T008",
@@ -192,7 +371,8 @@
    "intereses": [
     "Necesito que la casa se pueda usar sin protocolo; si contar algo pequeño exige desplazarse, dejo de contar cosas pequeñas.",
     "Necesito enterarme a la primera; si empezamos a subir el volumen por una tontería, cinco minutos después parece que discutimos aunque no sea así."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T009",
@@ -205,7 +385,8 @@
    "intereses": [
     "Necesito soltar lo que llevo aguantando; si lo aplazo se me acumula y luego sale peor de lo que era.",
     "Necesito un rato para aterrizar y llegar entero a la conversación; si entro directo, contesto en automático y a la defensiva."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T010",
@@ -218,7 +399,8 @@
    "intereses": [
     "Necesito acabar el día sin un tema suelto; si me acuesto con esto lo repaso en bucle y no descanso.",
     "Necesito llegar a la conversación con la cabeza despejada; cansado digo cosas que no siento y después hay que arreglar también eso."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T011",
@@ -231,7 +413,8 @@
    "intereses": [
     "Necesito que no todo se convierta en conversación larga; si cada detalle se debate, no queda energía para lo que sí importa.",
     "Necesito que lo que me molesta se trate como real aunque sea pequeño; si se descarta por tonto, la próxima vez me lo callo y eso sí es un problema."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T012",
@@ -244,7 +427,8 @@
    "intereses": [
     "Necesito no fingir; aguantar con la sonrisa puesta toda la noche me deja peor que hablarlo, y además se me nota en la cara.",
     "Necesito que nadie más tenga una opinión sobre lo nuestro; en cuanto hay público, los dos discutimos para el público y no entre nosotros."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T013",
@@ -257,7 +441,8 @@
    "intereses": [
     "Necesito que se entienda por qué esto me afecta tanto; contado suelto, cualquiera diría que estoy exagerando por una tontería.",
     "Necesito poder arreglar algo concreto y que se note; si se juzga todo junto, nada acaba nunca y no hay forma visible de mejorar."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T014",
@@ -270,7 +455,8 @@
    "intereses": [
     "Necesito que no se me conteste con la excepción; si nos ponemos a buscar el día que no pasó, no hablamos de todos los demás días.",
     "Necesito discutir sobre algo concreto que pueda reconocer o desmentir; contra una afirmación total no hay ninguna respuesta posible que no suene a excusa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T015",
@@ -283,7 +469,8 @@
    "intereses": [
     "Necesito que el otro conserve la opción de negarse; si pido de frente, cualquier «no» se convierte automáticamente en un conflicto.",
     "Necesito saber qué se espera de mí para poder hacerlo; adivinando fallo, y fallar sin haberme enterado de nada es lo que me desgasta."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T016",
@@ -296,7 +483,8 @@
    "intereses": [
     "Necesito que se acepte el gesto sin examen; si cada disculpa se corrige, dejo de pedir perdón para no volver a equivocarme al pedirlo.",
     "Necesito saber que hemos entendido lo mismo; sin eso vuelve a pasar igual y la disculpa no habrá significado nada para ninguno de los dos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T017",
@@ -309,7 +497,8 @@
    "intereses": [
     "Necesito recuperar el control de lo que digo; si sigo pasado cierto punto hablo desde el enfado y después hay que arreglar también eso.",
     "Necesito la garantía de que la conversación vuelve; sin ninguna referencia, el «luego» se me convierte en «nunca» y no puedo soltarlo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T018",
@@ -322,7 +511,8 @@
    "intereses": [
     "Necesito que valga más quedar de acuerdo de verdad que quedar de acuerdo rápido; si no, acabo diciendo que sí solo para salir del paso.",
     "Necesito algo estable de lo que fiarme; si todo puede volver, dejo de tomarme en serio lo que hablamos y me guardo la mitad."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T019",
@@ -335,7 +525,8 @@
    "intereses": [
     "Necesito sentir que se me habla con respeto para poder escuchar; en cuanto el tono me duele, lo demás ya no me entra aunque quiera.",
     "Necesito que lo que planteo no quede anulado por la forma; si la forma descalifica el fondo, hay temas que no podré sacar nunca."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T020",
@@ -349,7 +540,8 @@
    "intereses": [
     "Necesito no tener cosas a medias a la vista, porque si no me siguen ocupando la cabeza.",
     "Necesito un rato en el que no haya nada obligatorio encadenado a lo anterior."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T021",
@@ -362,7 +554,8 @@
    "intereses": [
     "Necesito que no se acumulen cosas encima, porque lo acumulado me pesa más de lo que parece.",
     "Necesito que lo de casa tenga un momento previsible y no me interrumpa a cualquier hora."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T022",
@@ -375,7 +568,8 @@
    "intereses": [
     "Necesito cuidar cosas que me importan y no perderlas por ir deprisa.",
     "Necesito que lo de casa funcione con pasos simples, porque si se complica acabo no haciéndolo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T023",
@@ -388,7 +582,8 @@
    "intereses": [
     "Necesito sentir que no se pierde lo que cuesta conseguir.",
     "Necesito abrir la nevera y entender qué hay sin tener que investigar."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T024",
@@ -401,7 +596,8 @@
    "intereses": [
     "Necesito no encontrarme por sorpresa con lo que dejó la vez anterior.",
     "Necesito que las tareas ocupen un rato acotado y no se cuelen en todos los momentos del día."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T025",
@@ -414,7 +610,8 @@
    "intereses": [
     "Necesito que la casa esté siempre en un estado aceptable, sin sobresaltos ni acumulaciones.",
     "Necesito tener días libres de verdad, sin tareas pequeñas sembradas por todos los días."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T026",
@@ -427,7 +624,8 @@
    "intereses": [
     "Necesito espacios comunes despejados para sentir que la casa también es mía.",
     "Necesito tener a mano lo que uso y no vivir como de visita en mi propia casa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T027",
@@ -440,7 +638,8 @@
    "intereses": [
     "Necesito sentir que la casa está terminada y que vivimos en ella, no de paso.",
     "Necesito proteger el poco tiempo de descanso que me queda."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T028",
@@ -453,7 +652,8 @@
    "intereses": [
     "Necesito previsibilidad para poder organizar mi día sin sorpresas de última hora.",
     "Necesito margen para adaptarme los días en que todo se me complica."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T029",
@@ -466,7 +666,8 @@
    "intereses": [
     "Necesito quitarme de encima lo repetitivo para que nos quede tiempo para lo demás.",
     "Necesito empezar y terminar sin preparativos, porque si hay preparativos lo voy dejando."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T030",
@@ -479,7 +680,8 @@
    "intereses": [
     "Necesito sentir que la casa habla bien de los dos y no pasar un mal rato mientras hay gente.",
     "Necesito que traer gente a casa sea fácil y no una fuente de tensión la tarde anterior."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T031",
@@ -492,7 +694,8 @@
    "intereses": [
     "Necesito que esto lo llevemos entre los dos, no solo que acabe hecho.",
     "Necesito manejar mis tiempos y no depender de la agenda del otro para algo pequeño."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T032",
@@ -506,7 +709,8 @@
    "intereses": [
     "Necesito no llevarme sorpresas y poder fiarme de que las cosas están donde deben.",
     "Necesito que la casa funcione con un sistema y no a base de urgencias sueltas."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T033",
@@ -519,7 +723,8 @@
    "intereses": [
     "Necesito poder soltar el tema y dejar de estar encima de nada.",
     "Necesito llevar mi propio ritmo sin sentir que hay alguien supervisando."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T034",
@@ -533,7 +738,8 @@
    "intereses": [
     "Necesito poder dar algo por supuesto en mi propia casa sin preguntarlo cada vez.",
     "Necesito seguir reconociéndome en cómo hago las cosas, no sentirme corregido en todo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T035",
@@ -546,7 +752,8 @@
    "intereses": [
     "Necesito poder fiarme de lo que acordamos para organizar mi día sin dejar huecos por si acaso.",
     "Necesito que un día normal no se lea como falta de respeto, porque casi nunca depende solo de mí."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T036",
@@ -559,7 +766,8 @@
    "intereses": [
     "Necesito que existan cosas que sean solo nuestras y que no dependan de a qué hora llego a casa.",
     "Necesito disfrutar de mi rato libre sin tener que pedir turno para todo lo que me gusta."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T037",
@@ -572,7 +780,8 @@
    "intereses": [
     "Necesito quitarme de encima el miedo a que algo salga mal para poder disfrutar del viaje desde el primer minuto.",
     "Necesito no pasarme el día esperando, porque el tiempo de mis vacaciones también cuenta antes de llegar."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T038",
@@ -585,7 +794,8 @@
    "intereses": [
     "Necesito saber que cuando acordamos algo se cumple, para no quedarme esperando sin saber cuánto falta.",
     "Necesito no sentir que me arrancan de una conversación y poder quedar bien con la gente que nos ha recibido."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T039",
@@ -599,7 +809,8 @@
    "intereses": [
     "Necesito que lo que hacemos juntos me interese a mí también, y no limitarme a estar presente.",
     "Necesito que el rato de descanso sea descanso y no una decisión más que tomar al final del día."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T040",
@@ -612,7 +823,8 @@
    "intereses": [
     "Necesito que lo que decidimos juntos siga en pie cuando llega el momento de cumplirlo.",
     "Necesito que un rato bueno no se corte por un horario que pusimos sin saber cómo iba a ir."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T041",
@@ -625,7 +837,8 @@
    "intereses": [
     "Necesito que no se nos apague la vida cuatro meses al año y seguir teniendo cosas que contar.",
     "Necesito que el descanso de invierno no tenga que justificarse ni parezca que me estoy dejando llevar por la pereza."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T042",
@@ -638,7 +851,8 @@
    "intereses": [
     "Necesito un día sin nada pendiente para llegar al lunes con algo de batería.",
     "Necesito que el fin de semana deje algún recuerdo y no se me pase mirando el techo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T043",
@@ -652,7 +866,8 @@
    "intereses": [
     "Necesito tener algo a lo que agarrarme durante la semana y no llegar al viernes con la sensación de que no hay nada.",
     "Necesito margen para no llegar obligado a un plan que acepté cuando estaba de otro humor."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T044",
@@ -665,7 +880,8 @@
    "intereses": [
     "Necesito poder consultar lo que hay sin depender de acordarme ni de volver a preguntar.",
     "Necesito que organizarnos no se convierta en una tarea administrativa más al final del día."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T045",
@@ -678,7 +894,8 @@
    "intereses": [
     "Necesito sentir que somos un equipo también delante de mi gente y no tener que explicar una ausencia cada vez.",
     "Necesito que mi tiempo libre no se llene de planes que no elegí y poder decir que no sin ser el malo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T046",
@@ -691,7 +908,8 @@
    "intereses": [
     "Necesito recuperarme de verdad, porque es el único tramo del año en el que puedo parar del todo.",
     "Necesito volver con algo que contar y sentir que el año no ha sido rutina de principio a fin."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T047",
@@ -704,7 +922,8 @@
    "intereses": [
     "Necesito que el descanso esté asegurado y no depender de que el sitio nuevo salga bien.",
     "Necesito que lo nuestro siga teniendo primeras veces y no se convierta en una repetición."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T048",
@@ -717,7 +936,8 @@
    "intereses": [
     "Necesito ver a la gente que quiero mientras se puede, porque el resto del año no coincidimos nunca.",
     "Necesito que queden días nuestros sin obligaciones para no terminar las fiestas más cansado que al empezar."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T049",
@@ -730,7 +950,8 @@
    "intereses": [
     "Necesito saber que hay un rato que es nuestro y que no depende de que sobre tiempo al final de la semana.",
     "Necesito que estar contigo no se sienta como una tarea que se cumple o se incumple."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T050",
@@ -743,7 +964,8 @@
    "intereses": [
     "Necesito conservar cosas que son mías y no llegar a fin de año sin haber hecho nada de lo mío.",
     "Necesito tener por delante un tramo largo contigo, porque el resto del año vamos con prisa los dos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T051",
@@ -756,7 +978,8 @@
    "intereses": [
     "Necesito conservar algo que es mío y que no depende de nadie, porque es de donde saco la energía.",
     "Necesito que lo nuestro no sea siempre lo que se encaja en los huecos que sobran."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T052",
@@ -769,7 +992,8 @@
    "intereses": [
     "Necesito que lo importante caiga cuando puedo dar lo mejor, y no llegar a todo arrastrando.",
     "Necesito que mis mejores horas también cuenten como horas buenas para los dos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T053",
@@ -783,7 +1007,8 @@
    "intereses": [
     "Necesito sentir que las cosas de casa se tratan con cuidado; cuando encuentro algo maltratado, se me va la cabeza a todo lo demás.",
     "Necesito conservar gestos que pueda hacer sin pensar. Si cada acción mínima tiene una forma correcta, acabo revisándome a mí mismo dentro de mi propia casa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T054",
@@ -796,7 +1021,8 @@
    "intereses": [
     "Necesito sentir que estoy preparado; tener a mano lo que puede hacer falta me ahorra el agobio de resolver las cosas a última hora.",
     "Necesito ver hueco libre. Cuando los armarios están llenos de cosas en reserva, la casa me parece más pequeña y más pesada de lo que es."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T055",
@@ -809,7 +1035,8 @@
    "intereses": [
     "Necesito empezar el día con algo terminado; ver la cama hecha me quita ruido de la cabeza durante el resto de la jornada.",
     "Necesito que las mañanas no arranquen con un trámite obligatorio; voy justo de tiempo y quiero elegir yo en qué lo gasto."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T056",
@@ -822,7 +1049,8 @@
    "intereses": [
     "Necesito que las cosas queden terminadas: mientras veo algo a medio cerrar, mi cabeza sigue enganchada a esa tarea y no descansa.",
     "Necesito concentrarme en lo que estoy haciendo sin ir cerrando detrás de mí cada paso intermedio del proceso."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T057",
@@ -835,7 +1063,8 @@
    "intereses": [
     "Necesito no vivir la casa como una cadena de tareas inmediatas; si todo se hace al instante, no existe ningún momento de descanso.",
     "Necesito ver la cocina despejada para sentir que el día está bajo control; los pendientes pequeños acumulados me dejan una tensión que no se va sola."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T058",
@@ -848,7 +1077,8 @@
    "intereses": [
     "Necesito sentir que la casa no se me va de las manos; cuando todo está en marcha y no hay nadie dentro, me queda una sensación de descontrol que no sé explicar.",
     "Necesito moverme por mi propia casa sin hacer un control de salida en cada puerta por la que paso."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T059",
@@ -861,7 +1091,8 @@
    "intereses": [
     "Necesito que la casa esté limpia de verdad y no solo en apariencia; es el único sitio donde puedo bajar la guardia del todo.",
     "Necesito que entrar en casa sea fácil y no un protocolo, y me incomoda poner condiciones a quien viene a vernos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T060",
@@ -874,7 +1105,8 @@
    "intereses": [
     "Necesito enterarme sin esfuerzo; forzar el oído me cansa y me saca de lo que estoy viendo, que era justo mi rato del día.",
     "Necesito que en casa haya un nivel de ruido en el que quepa algo más que la tele, incluido no hacer nada."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T061",
@@ -887,7 +1119,8 @@
    "intereses": [
     "Necesito que el dormitorio esté despejado para poder descansar en él; el montón me recuerda algo pendiente cada vez que entro.",
     "Necesito una zona intermedia donde las cosas puedan estar sin decidir; si todo tiene que estar guardado o lavado, acabo tomando decisiones absurdas por no tener dónde dejarlo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T062",
@@ -900,7 +1133,8 @@
    "intereses": [
     "Necesito no empezar el día buscando; cada búsqueda me pone en tensión y me hace salir de casa con la sensación de ir ya tarde.",
     "Necesito que mi forma de organizarme siga valiendo en mi propia casa y no tener que aprenderme un mapa de sitios que no he elegido yo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T063",
@@ -913,7 +1147,8 @@
    "intereses": [
     "Necesito saber qué tenemos sin vaciarla entera; cuando no lo sé, compro repetido y luego acabo tirando comida, que es lo que peor llevo.",
     "Necesito que guardar la compra no se convierta en una tarea larga justo después de haber ido a comprar y haberla subido a casa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T064",
@@ -927,7 +1162,8 @@
    "intereses": [
     "Necesito que los sitios donde me tumbo estén limpios; encontrarme restos ahí me quita directamente las ganas de usar ese espacio.",
     "Necesito que la casa sea cómoda de verdad y no tenga zonas prohibidas; comer relajado delante de algo es mi forma de desconectar del día."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T065",
@@ -940,7 +1176,8 @@
    "intereses": [
     "Necesito un sitio donde no rendir cuentas. Si absolutamente todo se negocia, acabo sintiéndome un poco invitado en mi propia casa.",
     "Necesito que el espacio que compartimos también me descanse a mí; no consigo desconectar en una habitación que siempre está a medio recoger."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T066",
@@ -953,7 +1190,8 @@
    "intereses": [
     "Necesito poder avanzar cuando me pongo a ordenar; si cada objeto abre una conversación, ordenar deja de ser algo que se pueda terminar.",
     "Necesito saber dónde está lo mío y que se cuente conmigo antes de moverlo; si no, tengo la sensación de ir siempre por detrás en mi propia casa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T067",
@@ -966,7 +1204,8 @@
    "intereses": [
     "Necesito que se me acepte como soy en lo pequeño; si mis costumbres son un problema permanente, empiezo a sentir que estorbo en mi propia casa.",
     "Necesito poder decir lo que me molesta sin que parezca un ataque; si hay temas cerrados de antemano, acabo guardándomelo todo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T068",
@@ -979,7 +1218,8 @@
    "intereses": [
     "Necesito no perder el rastro de lo que he vivido; deshacerme de esas cosas se me parece demasiado a borrarlo.",
     "Necesito sitio para lo de ahora. Vivir rodeado de etapas antiguas me deja la sensación de que estamos parados en algún punto del pasado."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T069",
@@ -992,7 +1232,8 @@
    "intereses": [
     "Necesito que entre nosotros no se acumule una contabilidad invisible en la que alguien acabe sintiéndose en deuda.",
     "Necesito poder regalarle el rato de vez en cuando y que salir siga pareciendo un plan y no un reparto."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T070",
@@ -1005,7 +1246,8 @@
    "intereses": [
     "Necesito que mis pocas horas libres no se llenen de recados; cuando pago por eso siento que compro descanso, no lujo.",
     "Necesito notar que las cosas pequeñas cuentan y que no pagamos de más por inercia; el goteo que no se ve me inquieta."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T071",
@@ -1018,7 +1260,8 @@
    "intereses": [
     "Necesito conservar un placer diario que es solo mío y no tener que justificarlo cada mañana.",
     "Necesito sentir que sabemos por dónde se nos va el dinero; lo que se escapa sin decidirlo me deja intranquilo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T072",
@@ -1031,7 +1274,8 @@
    "intereses": [
     "Necesito sentir que cuido lo nuestro y que no nos cobran de más por lo mismo; que se me escape un sobreprecio me deja sensación de descuido.",
     "Necesito que las cosas de casa me gusten de verdad; usar a diario algo que no me convence me estropea un momento del día."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T073",
@@ -1044,7 +1288,8 @@
    "intereses": [
     "Necesito la pequeña victoria de haber pagado menos que el precio de la etiqueta; me hace sentir que gestiono bien lo nuestro.",
     "Necesito que la casa no se llene de cosas que nadie decidió tener; comprar por el descuento y no por la falta me deja una sensación fea."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T074",
@@ -1057,7 +1302,8 @@
    "intereses": [
     "Necesito que el dinero no se vaya en algo que nadie aprovecha; el derroche automático me pone nervioso.",
     "Necesito estar cómodo en el único sitio donde puedo estarlo; si en casa lo paso mal, el día entero se resiente."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T075",
@@ -1071,7 +1317,8 @@
    "intereses": [
     "Necesito no salir de un sitio sintiéndome tacaño con alguien que ha hecho bien su trabajo; me importa cómo trato a la gente.",
     "Necesito que el gasto de la noche sea el que habíamos pensado y no un extra variable que aparece al final."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T076",
@@ -1084,7 +1331,8 @@
    "intereses": [
     "Necesito quitarme de encima una tarea repetida y saber que la casa está abastecida; improvisar cada día me carga la cabeza.",
     "Necesito no llenar la casa de cosas por si acaso; comprar de más y acabar tirándolo me deja la sensación de haber hecho mal las cuentas."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T077",
@@ -1097,7 +1345,8 @@
    "intereses": [
     "Necesito que no haya cobros en piloto automático que nadie ha decidido este mes; lo que se cobra solo me genera desconfianza.",
     "Necesito no perder de golpe cosas que sí disfruto por una limpieza hecha de un tirón; deshacer y arrepentirse me da rabia."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T078",
@@ -1110,7 +1359,8 @@
    "intereses": [
     "Necesito no sentir que tiramos dinero ni cosas útiles; el derroche me pesa más que la incomodidad.",
     "Necesito que lo de casa funcione sin sobresaltos; vivir pendiente de si aguanta un mes más me cansa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T079",
@@ -1123,7 +1373,8 @@
    "intereses": [
     "Necesito que nuestra vida tenga momentos que contar; me da miedo que todo se convierta en rutina y mantenimiento.",
     "Necesito que el sitio donde vivimos me dé calma; lo cotidiano me sostiene más que un día suelto."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T080",
@@ -1136,7 +1387,8 @@
    "intereses": [
     "Necesito sentir que soy una prioridad y que alguien ha hecho un esfuerzo por mí, no solo cumplido un trámite.",
     "Necesito que el cariño no se mida en dinero; recibir algo caro me deja la sensación de que ahora debo algo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T081",
@@ -1149,7 +1401,8 @@
    "intereses": [
     "Necesito que el dinero se note en el plan y no en un seguro que casi nunca se usa.",
     "Necesito poder cambiar de idea sin que salga caro; comprometerme sin salida me tiene en tensión desde que reservo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T082",
@@ -1162,7 +1415,8 @@
    "intereses": [
     "Necesito que nuestro dinero cunda y me gusta la sensación de haber hecho un buen negocio.",
     "Necesito no cargar con el riesgo ni con la gestión; si sale mal, el ahorro se convierte en un problema que acabo resolviendo yo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T083",
@@ -1175,7 +1429,8 @@
    "intereses": [
     "Necesito sentir que si viene un imprevisto no nos hundimos; la incertidumbre me quita el sueño de verdad.",
     "Necesito que nuestra vida tenga cosas buenas mientras las podemos disfrutar; vivir siempre en modo espera me apaga."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T084",
@@ -1188,7 +1443,8 @@
    "intereses": [
     "Necesito que la gente que quiero se sienta cuidada y no quedar como el que nunca aporta; me importa lo que representamos juntos fuera de casa.",
     "Necesito que nuestras decisiones sean nuestras y no una respuesta a lo que se espera; gastar por presión me deja una sensación fea que dura días."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T085",
@@ -1201,7 +1457,8 @@
    "intereses": [
     "Necesito poder nombrar lo que me parece desproporcionado sin que se lea como un ataque; si no puedo decirlo, acabo callándome todo.",
     "Necesito que lo que a mí me importa no quede descalificado con un número; cuando se decide por mí lo que vale, me siento poco tomado en serio."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T086",
@@ -1214,7 +1471,8 @@
    "intereses": [
     "Necesito anticiparme para estar tranquilo; enterarme de las cosas cuando ya no hay margen me pone en alerta.",
     "Necesito que lo nuestro no gire alrededor del dinero; hablar de números sin motivo me deja con una preocupación que no tenía."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T087",
@@ -1227,7 +1485,8 @@
    "intereses": [
     "Necesito que en mi propia casa no se conviertan en norma cosas que hago sin pensar, porque si todo se regula dejo de estar cómodo en ella.",
     "Necesito que quede en el día un rato con atención completa, porque la cena es de los pocos momentos en que estamos los dos parados a la vez."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T088",
@@ -1240,7 +1499,8 @@
    "intereses": [
     "Necesito que lo que ofrezco se reciba como lo que es, un gesto y no una molestia, porque si se recibe mal acabo dejando de ofrecerlo.",
     "Necesito poder terminar lo que tengo entre manos sin que me corten, y que decir «ahora no» no se lea como un rechazo a la persona."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T089",
@@ -1253,7 +1513,8 @@
    "intereses": [
     "Necesito cerrar lo que queda abierto, porque un dato sin comprobar se me queda dando vueltas y ya no atiendo a nada más de lo que se está diciendo.",
     "Necesito que lo que estamos contando no se pare para dirimir quién acierta, porque entonces la conversación deja de ir de lo que iba."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T090",
@@ -1266,7 +1527,8 @@
    "intereses": [
     "Necesito conservar los gestos pequeños que hacen que la cama sea de los dos y no dos camas pegadas.",
     "Necesito dormir de un tirón, porque cada vez que me despierto de madrugada tardo muchísimo en volver a dormirme y al día siguiente lo noto entero."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T091",
@@ -1279,7 +1541,8 @@
    "intereses": [
     "Necesito notar que la habitación no está cargada, porque si me agobio no me duermo por mucho que lo intente.",
     "Necesito que nada de fuera me despierte, porque cuando me despierto de madrugada ya no vuelvo a dormirme y el día siguiente lo pago entero."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T092",
@@ -1293,7 +1556,8 @@
    "intereses": [
     "Necesito no tener que elegir entre mi pareja y un animal que también es de los dos, y que su sitio no se decida sin contar conmigo.",
     "Necesito una cama en la que quepa y descanse, y que quede al final del día un espacio que sea solo de los dos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T093",
@@ -1307,7 +1571,8 @@
    "intereses": [
     "Necesito un rato de transición para arrancar, porque pasar de dormido a de pie de golpe me deja el día entero raro.",
     "Necesito que la hora a la que me despierto la marque mi alarma y no la de otra persona, porque esos minutos son justo los que me faltan."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T094",
@@ -1320,7 +1585,8 @@
    "intereses": [
     "Necesito llegar a la cama sin nada abierto en la cabeza, porque lo que dejo pendiente me quita más sueño que contestarlo.",
     "Necesito que haya una hora a partir de la cual estamos aquí y no en el trabajo, porque si no, no queda ningún rato del día que sea de los dos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T095",
@@ -1333,7 +1599,8 @@
    "intereses": [
     "Necesito que lo que me hace feliz aparezca también en la parte de mi vida que se ve, porque si no está ahí parece que no existe.",
     "Necesito que lo que vivimos no dependa de cómo se ve desde fuera, porque en cuanto hay público empiezo a estar pendiente del público y ya no estoy en el plan."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T096",
@@ -1347,7 +1614,8 @@
    "intereses": [
     "Necesito un rato al final del día en el que nadie me pida nada, porque es el único momento en que no estoy pendiente de nadie.",
     "Necesito que quede un momento en que nos contamos lo del día, porque acostarse es el único rato en que estamos los dos quietos y sin prisa."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T097",
@@ -1360,7 +1628,8 @@
    "intereses": [
     "Necesito saber qué me espera antes de empezar, porque si no lo miro arranco con la sensación de ir por detrás desde el primer minuto.",
     "Necesito que el primer contacto del día sea con una persona y no con una pantalla, porque eso decide con qué ánimo empiezo yo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T098",
@@ -1373,7 +1642,8 @@
    "intereses": [
     "Necesito poder estar en casa sin preparativos para algo que dura un minuto, porque si cada cosa cuesta, acabo no haciéndola y la casa deja de ser cómoda.",
     "Necesito poder elegir a qué presto atención, porque el sonido no se puede dejar de oír y me quita el único sitio donde estoy tranquilo."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T099",
@@ -1386,7 +1656,8 @@
    "intereses": [
     "Necesito poder dormir sin tener que irme de mi propia cama ni montar un operativo cada noche antes de acostarme.",
     "Necesito que el sueño que ya tengo no se rompa, porque cuando me despiertan del todo tardo horas en volver y el día siguiente lo pago entero."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T100",
@@ -1399,7 +1670,8 @@
    "intereses": [
     "Necesito dormirme justo cuando me entra el sueño, porque si se me pasa esa ventana ya no caigo hasta muy tarde.",
     "Necesito un rato al final del día que no le deba a nadie, porque la jornada entera va para fuera y no queda nada más."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T101",
@@ -1412,7 +1684,8 @@
    "intereses": [
     "Necesito guardar lo que vivimos, porque lo que no queda registrado se me borra y luego siento que lo he perdido de verdad.",
     "Necesito estar donde estoy sin posar ni esperar, porque si no, después no me acuerdo del sitio: me acuerdo de las fotos."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T102",
@@ -1425,7 +1698,8 @@
    "intereses": [
     "Necesito que no se lea cada gesto mío como una señal de lo que siento, porque si todo significa algo ya no puedo estar tranquilo en mi casa.",
     "Necesito alguna señal de que lo que cuento le llega a alguien, porque si no la hay dejo de contarlo, y eso sí que separa de verdad."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T103",
@@ -1438,7 +1712,8 @@
    "intereses": [
     "Necesito llegar al día siguiente habiendo dormido, porque cuando no duermo todo lo demás me sale peor, incluido cómo estoy en casa.",
     "Necesito mantener las costumbres que nos hacen pareja, porque se pierden de una en una y no se nota hasta que un día ya no queda ninguna."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T104",
@@ -1451,7 +1726,8 @@
    "intereses": [
     "Necesito respetar el horario con el que funciona mi cuerpo, porque forzarlo me pasa factura al día siguiente y además no engaño a nadie fingiendo sueño.",
     "Necesito que haya un momento fijo del día en el que sé que vamos a coincidir, porque si depende de que surja, no surge."
-   ]
+   ],
+   "publico": "pareja"
   },
   {
    "id": "T105",
@@ -1464,9 +1740,2415 @@
    "intereses": [
     "Necesito poder estar en casa sin tener que rendir socialmente, porque ese silencio tranquilo es justo lo bueno de vivir con alguien.",
     "Necesito que quede algún rato del día en el que nos hagamos caso, porque si no, la convivencia se va pareciendo cada vez más a compartir casa con cualquiera."
+   ],
+   "publico": "pareja"
+  },
+  {
+   "id": "A001",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "A escote o cada uno lo suyo",
+   "enunciado": "Cuando la cuenta llega a la mesa, ¿se divide entre todos por igual o cada quien paga lo que pidió?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que sentarme a comer con amigos no se convierta en una hoja de cálculo: sacar la calculadora en la mesa me corta la noche.",
+    "Necesito no pagar de más cuando pedí una ensalada y en la mesa hubo tres botellas de vino que no probé."
+   ]
+  },
+  {
+   "id": "A002",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "El que no bebe",
+   "enunciado": "Si alguien no bebe alcohol, ¿paga lo mismo que el resto o se le descuenta?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el reparto sea simple: contar quién tomó qué acaba señalando a alguien toda la noche.",
+    "Necesito no financiar una cuenta que no consumí, y que no me cueste dinero la decisión de no beber."
+   ]
+  },
+  {
+   "id": "A003",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "La propina cuando el servicio fue malo",
+   "enunciado": "Si la atención fue mala, ¿igual se deja propina o ahí se nota que no?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que quien nos atendió cobre lo que cobra siempre: su sueldo no debería depender de mi noche.",
+    "Necesito que la propina siga significando algo; si se deja pase lo que pase, deja de ser un gesto."
+   ]
+  },
+  {
+   "id": "A004",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "Quien invita, manda el sitio",
+   "enunciado": "Cuando alguien dice «hoy invito yo», ¿elige también el sitio o lo eligen entre todos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que invitar sea un gesto y no una imposición: pagar no debería comprar la decisión.",
+    "Necesito poder invitar sin acabar pagando un sitio que no habría elegido nunca."
+   ]
+  },
+  {
+   "id": "A005",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "Pedir para compartir sin preguntar",
+   "enunciado": "En una mesa de amigos, ¿se pide para compartir por defecto o cada quien pide lo suyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito probar de todo: compartir es la mitad de la gracia de salir a comer juntos.",
+    "Necesito comerme lo que pedí; cuando todo es de todos siempre acabo con lo que sobró."
+   ]
+  },
+  {
+   "id": "A006",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "El que se va antes de pagar",
+   "enunciado": "Si alguien se va a mitad de la cena, ¿deja su parte calculada o ya se arregla después?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder irme cuando tengo que irme sin montar una escena de cuentas en la puerta.",
+    "Necesito no quedarme haciendo de cajero de la mesa cada vez que alguien madruga."
+   ]
+  },
+  {
+   "id": "A007",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "Cobrar los dos euros",
+   "enunciado": "Cuando falta poco dinero para cuadrar la cuenta, ¿se reclama o se deja pasar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que lo pequeño no se convierta en tema: reclamar dos euros cuesta más de lo que vale.",
+    "Necesito que «es poco» no sea siempre a mi costa; poco muchas veces acaba siendo bastante."
+   ]
+  },
+  {
+   "id": "A008",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "Avisar del precio antes de proponer",
+   "enunciado": "Al proponer un plan caro, ¿hay que decir el precio de entrada o ya se pregunta quien quiera?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder proponer algo bonito sin convertirlo en un presupuesto antes de que nadie diga sí.",
+    "Necesito saber cuánto cuesta antes de apuntarme, para no tener que retirarme delante de todos."
+   ]
+  },
+  {
+   "id": "A009",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "Pagar con el móvil y cobrar después",
+   "enunciado": "Si uno paga todo y luego cobra, ¿se pasa la cuenta ese mismo día o se deja para cuando salga?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito cerrar el tema el mismo día: una deuda abierta entre amigos se pone rara sola.",
+    "Necesito que no me llegue una petición de dinero a los diez minutos de despedirnos."
+   ]
+  },
+  {
+   "id": "A010",
+   "publico": "amigos",
+   "categoria": "Cuando llega la cuenta",
+   "titulo": "El cumpleaños del que invita",
+   "enunciado": "Cuando es el cumpleaños de alguien, ¿esa persona no paga nada o paga como todos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que el día de alguien se note: no pagar es la manera más fácil de decir «hoy eres tú».",
+    "Necesito que cumplir años no obligue a los demás a un gasto que quizá ese mes no tienen."
+   ]
+  },
+  {
+   "id": "A011",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "El audio de cinco minutos",
+   "enunciado": "En un grupo de amigos, ¿vale mandar audios largos o eso se escribe?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito contar las cosas como se cuentan hablando; escribirlo todo me lleva el triple y sale frío.",
+    "Necesito poder enterarme sin tener que buscar auriculares: un audio largo obliga a parar lo que estoy haciendo."
+   ]
+  },
+  {
+   "id": "A012",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Silenciar el grupo",
+   "enunciado": "Tener el grupo silenciado, ¿es algo normal o es desconectarse un poco del resto?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que mi teléfono no vibre cada diez minutos; silenciar es lo único que me deja seguir ahí.",
+    "Necesito que lo que se dice llegue: si todos silencian, el grupo se convierte en un tablón que nadie lee."
+   ]
+  },
+  {
+   "id": "A013",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Contestar a los tres días",
+   "enunciado": "Cuando alguien tarda días en contestar en el grupo, ¿es normal o merece un comentario?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito contestar cuando tengo la cabeza para hacerlo, no cuando llega el mensaje.",
+    "Necesito saber si esto sigue vivo: hablarle a un grupo que no responde se siente raro."
+   ]
+  },
+  {
+   "id": "A014",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Sacar un tema serio por el grupo",
+   "enunciado": "Lo importante de verdad, ¿se cuenta en el grupo o se dice en persona?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito contarlo una sola vez y que se entere todo el mundo a la vez, sin repetirlo cinco veces.",
+    "Necesito que lo que importa no se lea entre memes: hay cosas que en un chat pierden el cuerpo."
+   ]
+  },
+  {
+   "id": "A015",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "El grupo paralelo",
+   "enunciado": "Tener un grupo aparte con parte de la gente del grupo grande, ¿es normal o está feo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder hablar de lo mío con quien tengo más confianza sin que sea una traición.",
+    "Necesito que no haya conversaciones a las que unos entran y otros no, porque eso se acaba notando."
+   ]
+  },
+  {
+   "id": "A016",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Los memes a las tres de la mañana",
+   "enunciado": "¿Hay una hora a partir de la cual no se escribe al grupo o eso lo arregla el modo silencio?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito mandarlo cuando me da la risa; guardarlo para mañana es matar la gracia.",
+    "Necesito dormir sin que el teléfono se ilumine, y no todo el mundo sabe dejarlo en silencio."
+   ]
+  },
+  {
+   "id": "A017",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Leer y no contestar",
+   "enunciado": "Dejar en visto un mensaje del grupo, ¿es normal o pide al menos un emoji?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no tener que reaccionar a todo: leer algo y seguir con mi día no es ignorar a nadie.",
+    "Necesito alguna señal de que lo que escribí llegó a alguien; el silencio total se lee como desinterés."
+   ]
+  },
+  {
+   "id": "A018",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Organizar por encuesta",
+   "enunciado": "Para decidir un plan, ¿se hace una encuesta o alguien propone y ya está?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que todos puedan opinar; decidir entre dos deja fuera a los que no estaban mirando el móvil.",
+    "Necesito que algo se decida: una encuesta de cinco opciones acaba en que nadie elige nada."
+   ]
+  },
+  {
+   "id": "A019",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "Sacar capturas de otra conversación",
+   "enunciado": "Reenviar al grupo una captura de un chat privado, ¿se puede o hay que preguntar antes?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder compartir lo que me pasó, y a veces la gracia está justo en cómo lo dijo.",
+    "Necesito saber que lo que hablo contigo se queda contigo, o dejo de hablar en confianza."
+   ]
+  },
+  {
+   "id": "A020",
+   "publico": "amigos",
+   "categoria": "El grupo de chat",
+   "titulo": "El que solo escribe para pedir",
+   "enunciado": "Cuando alguien solo aparece en el grupo para pedir un favor, ¿se le dice o se deja pasar?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder pedir ayuda sin tener que haber estado presente todas las semanas para ganármelo.",
+    "Necesito que esto sea de ida y vuelta; si solo suena cuando hace falta algo, se nota."
+   ]
+  },
+  {
+   "id": "A021",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "El que siempre llega tarde",
+   "enunciado": "Con quien llega tarde siempre, ¿se le empieza a citar antes o se le dice de frente?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que no me traten como un problema a gestionar: si hay algo que decirme, que me lo digan.",
+    "Necesito que el plan empiece a la hora, y esperar media hora cada vez cansa más que la tardanza."
+   ]
+  },
+  {
+   "id": "A022",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Cancelar el mismo día",
+   "enunciado": "Cancelar un plan unas horas antes, ¿es algo que pasa o hay que sostenerlo igual?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir que no cuando el día me superó, en vez de aparecer de mal humor.",
+    "Necesito poder contar con lo que quedamos: si se cae a última hora ya no monto otra cosa."
+   ]
+  },
+  {
+   "id": "A023",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Confirmar el día antes",
+   "enunciado": "Un plan cerrado hace semanas, ¿hay que confirmarlo el día antes o se da por hecho?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito saber que sigue en pie antes de cruzar la ciudad; los planes viejos se caen solos.",
+    "Necesito que lo dicho valga: si hay que confirmar todo, nada queda cerrado nunca."
+   ]
+  },
+  {
+   "id": "A024",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "El que nunca elige",
+   "enunciado": "Quien siempre dice «me da igual», ¿está siendo flexible o está dejando el trabajo a otros?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que no me obliguen a tener una opinión sobre dónde cenar: de verdad me da igual.",
+    "Necesito que alguien más decida alguna vez; elegir siempre yo acaba siendo cargar con la culpa si sale mal."
+   ]
+  },
+  {
+   "id": "A025",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Apuntarse tarde al plan",
+   "enunciado": "Alguien que se apunta cuando ya está todo reservado, ¿entra igual o ya se pasó el momento?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder sumarme cuando se me despeja la agenda, sin quedarme fuera por no haber contestado a tiempo.",
+    "Necesito que reservar para diez no se convierta en trece, porque el que reserva queda como el irresponsable."
+   ]
+  },
+  {
+   "id": "A026",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Quedar sin hora cerrada",
+   "enunciado": "«Por la tarde nos vemos», ¿es un plan o hay que poner una hora?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito margen: poner una hora exacta convierte una tarde tranquila en una cita con reloj.",
+    "Necesito saber cuándo salir de casa; sin hora acabo esperando en la calle o llegando el último."
+   ]
+  },
+  {
+   "id": "A027",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Irse pronto de la cena",
+   "enunciado": "Irse a las once de una cena de amigos, ¿es perfectamente normal o rompe la noche?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder irme cuando estoy cansado sin que se lea como que no lo estaba pasando bien.",
+    "Necesito que la noche aguante: cuando el primero se levanta, detrás se van tres y se acaba."
+   ]
+  },
+  {
+   "id": "A028",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "El plan de siempre",
+   "enunciado": "Repetir siempre el mismo sitio, ¿es lo cómodo o hay que ir cambiando?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no gastar energía decidiendo: el sitio de siempre funciona y por eso es el de siempre.",
+    "Necesito que salir siga siendo salir; cuando todo es igual cada vez, deja de apetecer."
+   ]
+  },
+  {
+   "id": "A029",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Quedar con antelación",
+   "enunciado": "Los planes, ¿se cierran con semanas o se montan sobre la marcha?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito verlo en el calendario para poder organizar el resto de mi vida alrededor.",
+    "Necesito que salir no sea un trámite: cuando todo se agenda a un mes, se pierde lo de improvisar."
+   ]
+  },
+  {
+   "id": "A030",
+   "publico": "amigos",
+   "categoria": "Los planes y la hora",
+   "titulo": "Avisar de que llegas tarde",
+   "enunciado": "Si vas a llegar veinte minutos tarde, ¿hay que avisar siempre o eso ya se asume?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no estar escribiendo mientras corro; llegar cuanto antes me parece más útil que avisar.",
+    "Necesito saberlo para bajar diez minutos más tarde en vez de esperar de pie sin información."
+   ]
+  },
+  {
+   "id": "A031",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "El presupuesto del viaje",
+   "enunciado": "Al organizar un viaje, ¿se ajusta al presupuesto más bajo del grupo o cada quien decide su nivel?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el viaje sea para todos: si el precio deja a alguien fuera, deja de ser un viaje de amigos.",
+    "Necesito poder gastar en lo que ahorré todo el año sin que se lea como que estoy marcando diferencias."
+   ]
+  },
+  {
+   "id": "A032",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "El bote común",
+   "enunciado": "En un viaje, ¿se hace un bote común desde el principio o se va pagando y cuadrando al final?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no estar pensando en dinero cada vez que entramos a un bar: el bote lo resuelve de una vez.",
+    "Necesito saber en qué se va mi dinero; un bote acaba pagando cosas que yo no habría pedido."
+   ]
+  },
+  {
+   "id": "A033",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Horarios en el viaje",
+   "enunciado": "En un viaje, ¿se va todos juntos a todo o cada uno hace lo suyo y se reúnen a comer?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el viaje sea juntos: separarse es acabar contándonos lo que hicimos en vez de vivirlo.",
+    "Necesito mi rato: obligarme a un horario común me deja agotado y de peor humor para el resto."
+   ]
+  },
+  {
+   "id": "A034",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Quien madruga y quien no",
+   "enunciado": "Si unos se levantan a las ocho y otros a la una, ¿se espera al grupo o el que quiera sale?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito aprovechar el sitio al que vine; esperar hasta mediodía me come el viaje.",
+    "Necesito descansar en vacaciones, y llegar al desayuno a la fuerza es empezar el día debiendo horas."
+   ]
+  },
+  {
+   "id": "A035",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Las habitaciones",
+   "enunciado": "Al repartir habitaciones, ¿se sortea o se habla y se acuerda?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que sea limpio: sortear evita que alguien quede señalado por no querer compartir con otro.",
+    "Necesito poder decir con quién duermo mejor sin que un sorteo decida por mí una semana entera."
+   ]
+  },
+  {
+   "id": "A036",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Lo que se reserva antes",
+   "enunciado": "Antes del viaje, ¿se cierra todo o se dejan días libres sin plan?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito llegar con las cosas resueltas: improvisar acaba en dos horas decidiendo dónde comer.",
+    "Necesito espacio para lo que aparezca; un viaje con todo reservado es una lista de tareas."
+   ]
+  },
+  {
+   "id": "A037",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "El que no participa de los gastos",
+   "enunciado": "Si alguien no viene a una actividad pagada, ¿se le descuenta o entra en el reparto igual?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no pagar por algo a lo que no fui; si no participo, no debería aparecer en mi parte.",
+    "Necesito que el viaje no se convierta en una contabilidad por actividad, porque entonces no para nunca."
+   ]
+  },
+  {
+   "id": "A038",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Las fotos del viaje",
+   "enunciado": "Las fotos del viaje, ¿se suben cuando cada uno quiera o se pregunta antes de publicar a otros?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder contar mi viaje: pedir permiso por cada foto convierte el álbum en un trámite.",
+    "Necesito decidir dónde aparece mi cara; una foto mía en la playa no es mía si la sube otro."
+   ]
+  },
+  {
+   "id": "A039",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Volver antes",
+   "enunciado": "Si alguien quiere volver antes del viaje, ¿se va sin más o eso se habla con el grupo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder irme si el viaje dejó de funcionar para mí, sin tener que justificarlo ante cinco personas.",
+    "Necesito que lo que empezamos juntos se acabe juntos; que alguien se vaya deja al resto raro."
+   ]
+  },
+  {
+   "id": "A040",
+   "publico": "amigos",
+   "categoria": "El viaje de amigos",
+   "titulo": "Quien organiza, decide",
+   "enunciado": "Quien se encargó de organizar el viaje, ¿tiene la última palabra o sigue siendo un voto más?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el trabajo se reconozca: organizar son horas, y que luego todo se discuta es empezar de cero.",
+    "Necesito que sea mi viaje también; haber reservado no da derecho a decidir por los demás."
+   ]
+  },
+  {
+   "id": "A041",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Regalo conjunto o cada uno el suyo",
+   "enunciado": "Para un cumpleaños del grupo, ¿se hace un regalo entre todos o cada quien regala lo suyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que el regalo se note: entre todos se puede regalar algo que de verdad quería.",
+    "Necesito que mi regalo diga algo mío; poner dinero en un bote común no es regalar, es cotizar."
+   ]
+  },
+  {
+   "id": "A042",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Poner un tope al regalo",
+   "enunciado": "¿Se fija cuánto se gasta cada uno en los regalos o eso lo decide cada quien?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito un tope: sin él, quien pueda menos acaba quedando mal sin haber hecho nada.",
+    "Necesito poder gastar lo que quiera en alguien que me importa, sin que un acuerdo me lo limite."
+   ]
+  },
+  {
+   "id": "A043",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Regalar dinero",
+   "enunciado": "Regalar dinero en un cumpleaños, ¿es lo práctico o es no haber pensado nada?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito acertar, y el dinero acierta siempre: que se compre lo que de verdad le hace falta.",
+    "Necesito que un regalo se note pensado; el dinero es cómodo pero no dice nada de quien lo da."
+   ]
+  },
+  {
+   "id": "A044",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "El amigo invisible",
+   "enunciado": "En un grupo grande, ¿amigo invisible o cada uno a cada uno?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que no se convierta en una ruina: comprar diez regalos es un mes de sueldo.",
+    "Necesito poder regalar a quien quiero; el sorteo me toca justo con quien menos hablo."
+   ]
+  },
+  {
+   "id": "A045",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Ir al cumpleaños sin regalo",
+   "enunciado": "Aparecer a un cumpleaños sin regalo, ¿es perfectamente válido o hay que llevar algo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que lo que importe sea estar; obligar a un regalo pone precio a la entrada.",
+    "Necesito que se note que me acordé; aparecer con las manos vacías es venir a lo que hay."
+   ]
+  },
+  {
+   "id": "A046",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "El regalo que no gustó",
+   "enunciado": "Si un regalo no gustó, ¿se dice o se agradece y ya está?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder decirlo para que la próxima vez acierte: fingir es condenarme a otro igual.",
+    "Necesito que el gesto valga más que el objeto; decir que no gustó borra el trabajo que costó."
+   ]
+  },
+  {
+   "id": "A047",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Felicitar por el grupo",
+   "enunciado": "Felicitar el cumpleaños por el grupo de chat, ¿cuenta o hay que escribir aparte?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se vea: felicitar en el grupo es también decirle al resto que hoy es su día.",
+    "Necesito un mensaje que sea para mí; en el grupo mi cumpleaños es un renglón más del día."
+   ]
+  },
+  {
+   "id": "A048",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "La boda y el sobre",
+   "enunciado": "En una boda, ¿el sobre debería cubrir lo que cuesta tu cubierto o se pone lo que cada uno pueda?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que invitar no arruine a nadie: si el sobre tiene que cubrir el plato, es una factura.",
+    "Necesito que la fiesta salga; cuando muchos ponen menos de lo que cuestan, la paga quien invita."
+   ]
+  },
+  {
+   "id": "A049",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Avisar de que no vas",
+   "enunciado": "A una fiesta a la que dijiste que sí, ¿hay que avisar si al final no vas o se entiende?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder cambiar de idea sin dar explicaciones cada vez que el cuerpo no acompaña.",
+    "Necesito saber cuántos somos: una silla vacía en una mesa reservada la pagué yo."
+   ]
+  },
+  {
+   "id": "A050",
+   "publico": "amigos",
+   "categoria": "Los regalos y las fechas",
+   "titulo": "Celebrar el cumpleaños propio",
+   "enunciado": "El propio cumpleaños, ¿lo organiza uno mismo o se espera a que lo monten los demás?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito verlos ese día, y si no lo monto yo no lo monta nadie: todos están ocupados.",
+    "Necesito que salga de ellos; convocar mi propia fiesta se parece demasiado a pedir que me celebren."
+   ]
+  },
+  {
+   "id": "A051",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Recordar lo prestado",
+   "enunciado": "Cuando algo prestado no vuelve, ¿se reclama o se espera a que se acuerden?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que me lo recuerden: se me pasa de verdad, y el silencio me deja quedando mal sin saberlo.",
+    "Necesito no ser el que persigue sus propias cosas; reclamar convierte un favor en una deuda."
+   ]
+  },
+  {
+   "id": "A052",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Prestar el coche",
+   "enunciado": "A un amigo, ¿se le presta el coche sin más o eso ya es otra cosa?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder echar una mano de verdad; un coche parado mientras alguien lo necesita no tiene sentido.",
+    "Necesito no meter en la amistad algo que si sale mal cuesta mucho dinero y no se arregla hablando."
+   ]
+  },
+  {
+   "id": "A053",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Devolver como estaba",
+   "enunciado": "Lo prestado, ¿se devuelve exactamente como estaba o se entiende que se usa?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que usar algo no sea un examen: si presto, asumo que va a tener uso.",
+    "Necesito recuperarlo en el estado en que salió; devolverlo peor sin decir nada es lo que molesta."
+   ]
+  },
+  {
+   "id": "A054",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Prestar ropa",
+   "enunciado": "Prestar ropa entre amigos, ¿es normal o cada uno con lo suyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que compartir sea fácil: una chaqueta para una noche no es nada.",
+    "Necesito mis cosas como las dejé; la ropa vuelve con olor a otra casa y a veces no vuelve."
+   ]
+  },
+  {
+   "id": "A055",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "El libro que no volvió",
+   "enunciado": "Un libro prestado hace años, ¿se reclama o ya se da por regalado?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito recuperarlo: que lleve años fuera no lo convierte en suyo.",
+    "Necesito no montar un tema por un libro; a estas alturas reclamarlo es más incómodo que perderlo."
+   ]
+  },
+  {
+   "id": "A056",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Pedir prestado sin avisar",
+   "enunciado": "Coger algo de casa de un amigo y avisar después, ¿se puede o se pregunta siempre?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que haya confianza de verdad: preguntar por un cargador es no tenerla.",
+    "Necesito que no toquen mis cosas sin decírmelo, por pequeña que sea la cosa."
+   ]
+  },
+  {
+   "id": "A057",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Prestar dinero con fecha",
+   "enunciado": "Al prestar dinero a un amigo, ¿se pone fecha de devolución o eso ya es desconfiar?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que quede claro cuándo vuelve: sin fecha, lo que era un favor se queda flotando meses.",
+    "Necesito que ayudarme no venga con un contrato; poner plazo es tratarme como a un banco."
+   ]
+  },
+  {
+   "id": "A058",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Lo que se rompe",
+   "enunciado": "Si se rompe algo prestado, ¿se repone sin preguntar o se habla primero?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito arreglarlo yo y que el tema se cierre; preguntar deja al otro en la incomodidad de pedir.",
+    "Necesito decidir yo qué hago con mis cosas: a veces no quiero una igual, quiero la mía."
+   ]
+  },
+  {
+   "id": "A059",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Prestar la casa",
+   "enunciado": "Dejar tu casa a amigos unos días, ¿es normal o es demasiado?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder ofrecerlo: tener la casa vacía mientras alguien paga un hotel no tiene sentido.",
+    "Necesito mi espacio como lo dejé; volver a una casa que otros usaron nunca es volver del todo."
+   ]
+  },
+  {
+   "id": "A060",
+   "publico": "amigos",
+   "categoria": "Lo que se presta",
+   "titulo": "Cobrarse un favor",
+   "enunciado": "Los favores entre amigos, ¿se llevan más o menos a la par o no se cuentan?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que no se lleve la cuenta: en cuanto se cuentan, dejan de ser favores.",
+    "Necesito que no vaya siempre en la misma dirección; ayudar sin que nunca vuelva acaba pesando."
+   ]
+  },
+  {
+   "id": "A061",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "Llevar pareja al plan de amigos",
+   "enunciado": "A una quedada del grupo de siempre, ¿se puede llevar pareja o eso es solo del grupo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no tener que elegir entre mis amigos y la persona con la que vivo.",
+    "Necesito que el grupo siga siendo el grupo; con gente de fuera la conversación cambia entera."
+   ]
+  },
+  {
+   "id": "A062",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "Presentar a alguien nuevo",
+   "enunciado": "Traer a alguien nuevo al grupo, ¿se avisa antes o se presenta y ya está?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder sumar a gente que me cae bien sin pedir permiso como en un club.",
+    "Necesito saber con quién voy a cenar: aparecer y encontrarme a un desconocido cambia la noche."
+   ]
+  },
+  {
+   "id": "A063",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "El amigo del amigo",
+   "enunciado": "Si alguien viene siempre acompañado de la misma persona, ¿ya es del grupo o sigue siendo su invitado?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que la gente pueda entrar: los grupos que no admiten a nadie se acaban apagando.",
+    "Necesito poder hablar como hablo con los míos, y eso solo pasa cuando somos los de siempre."
+   ]
+  },
+  {
+   "id": "A064",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "El que ya no viene",
+   "enunciado": "Con quien lleva un año sin aparecer, ¿se le sigue invitando igual o ya se entiende?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que me sigan invitando aunque no pueda ir: dejar de recibir el mensaje es quedar fuera.",
+    "Necesito no invitar al vacío; escribir cada vez para no recibir respuesta también cansa."
+   ]
+  },
+  {
+   "id": "A065",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "Quedar sin avisar a uno",
+   "enunciado": "Montar un plan sin avisar a alguien del grupo, ¿se puede o hay que invitar a todos siempre?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder tomar algo con dos personas sin convocar a quince: no todo es del grupo entero.",
+    "Necesito no enterarme por una foto; que un plan exista y yo no lo supiera es lo que duele."
+   ]
+  },
+  {
+   "id": "A066",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "La expareja en el grupo",
+   "enunciado": "Cuando alguien deja de ser pareja de otro del grupo, ¿sigue viniendo o se retira?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito conservar a la gente con la que hice amistad; salir con alguien no me hizo prestado.",
+    "Necesito que mi sitio de siempre no sea donde tengo que verle; el grupo era mío antes."
+   ]
+  },
+  {
+   "id": "A067",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "Invitar por compromiso",
+   "enunciado": "Invitar a alguien porque quedaría mal no hacerlo, ¿tiene sentido o es peor?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no dejar a nadie fuera a propósito: el daño de no invitar es mayor que el de una noche rara.",
+    "Necesito que estar ahí signifique algo; una invitación por compromiso se nota y es peor que nada."
+   ]
+  },
+  {
+   "id": "A068",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "El que solo viene a lo grande",
+   "enunciado": "Quien solo aparece en las fiestas y nunca en lo pequeño, ¿está en el grupo o solo pasa?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder venir a lo que puedo; mi tiempo no da para todos los cafés de un martes.",
+    "Necesito que el grupo sea también lo aburrido; solo estar en lo divertido es estar de visita."
+   ]
+  },
+  {
+   "id": "A069",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "Presentar el grupo a la pareja",
+   "enunciado": "A una pareja nueva, ¿se la presenta al grupo enseguida o se espera a que vaya en serio?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que conozca mi vida entera: esconder a mis amigos es dejarla a medias.",
+    "Necesito no estar conociendo gente nueva cada pocos meses ni cogerle cariño para nada."
+   ]
+  },
+  {
+   "id": "A070",
+   "publico": "amigos",
+   "categoria": "Quien entra al grupo",
+   "titulo": "Los grupos que se separan",
+   "enunciado": "Cuando un grupo se parte en dos, ¿se elige o se puede estar en los dos?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito no tener que elegir: no me peleé con nadie y no quiero perder media vida por eso.",
+    "Necesito saber con quién cuento; estar en los dos lados acaba siendo no estar en ninguno."
+   ]
+  },
+  {
+   "id": "A071",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Las rondas",
+   "enunciado": "En el bar, ¿se paga por rondas o cada quien lo suyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que sea fluido: parar a pagar en cada consumición corta la conversación siempre.",
+    "Necesito no acabar pagando tres rondas de gente que se fue antes de que llegara la mía."
+   ]
+  },
+  {
+   "id": "A072",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "El sitio con música alta",
+   "enunciado": "Para tomar algo, ¿mejor sitio con música y ambiente o uno donde se pueda hablar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito el ambiente: un bar en silencio es una sala de espera con cerveza.",
+    "Necesito poder oír lo que me cuentan; gritar dos horas me deja sin voz y sin conversación."
+   ]
+  },
+  {
+   "id": "A073",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Compartir el postre",
+   "enunciado": "El postre, ¿se pide uno y se comparte o cada quien el suyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito probar sin comerme uno entero: compartir es la manera de que quepa.",
+    "Necesito el mío: cuando se comparte siempre me toca la mitad de lo que menos quería."
+   ]
+  },
+  {
+   "id": "A074",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "El que monopoliza la conversación",
+   "enunciado": "Cuando alguien habla todo el rato, ¿se le corta o se deja correr?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder contar lo mío sin sentir que estoy midiendo el tiempo que ocupo.",
+    "Necesito que la mesa sea de todos: cuando uno habla dos horas, los demás vinimos a escuchar."
+   ]
+  },
+  {
+   "id": "A075",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Los móviles en la mesa",
+   "enunciado": "Durante la cena, ¿los móviles en la mesa o guardados?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito mi teléfono a mano; hay cosas que no puedo dejar de mirar en tres horas.",
+    "Necesito que quien está enfrente esté enfrente; una pantalla en la mesa se lleva la mitad de la atención."
+   ]
+  },
+  {
+   "id": "A076",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Hacer fotos de todo",
+   "enunciado": "Documentar la noche con fotos, ¿es parte de la noche o se la come?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito las fotos: en un año eso es lo único que va a quedar de hoy.",
+    "Necesito estar aquí; parar cada diez minutos para posar convierte la cena en una sesión."
+   ]
+  },
+  {
+   "id": "A077",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Pedir por los demás",
+   "enunciado": "Cuando llega el camarero, ¿alguien pide por todos o cada quien pide lo suyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que esto avance: quince personas pidiendo una a una son veinte minutos.",
+    "Necesito pedir lo mío como lo quiero; cuando pide otro siempre llega algo que no era."
+   ]
+  },
+  {
+   "id": "A078",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Cambiar de sitio a mitad",
+   "enunciado": "A mitad de la noche, ¿se cambia de bar o se queda donde se está bien?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito moverme: quedarse en el mismo sitio toda la noche apaga el plan.",
+    "Necesito no pasar la noche de pie buscando mesa; cuando se está bien, se está bien."
+   ]
+  },
+  {
+   "id": "A079",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Volver a contar la misma historia",
+   "enunciado": "Las anécdotas de siempre, ¿se vuelven a contar o ya está?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito contarlas: son lo que nos hace grupo y por eso no cansan.",
+    "Necesito que pase algo nuevo; cuando la conversación es un repaso, es que no nos vemos de verdad."
+   ]
+  },
+  {
+   "id": "A080",
+   "publico": "amigos",
+   "categoria": "En la mesa y en el bar",
+   "titulo": "Quien elige la música",
+   "enunciado": "En una casa, ¿la música la pone quien invita o se va pasando?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que la noche tenga un hilo: cuando la pone cada uno, cambia de estilo cada tres canciones.",
+    "Necesito poder poner algo mío; que decida uno solo convierte la casa en su bar."
+   ]
+  },
+  {
+   "id": "A081",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Contar lo que te contaron",
+   "enunciado": "Algo que te contó un amigo sin pedir secreto, ¿se puede contar o se guarda igual?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder hablar de mi vida, y en mi vida están las cosas que me cuentan.",
+    "Necesito saber que lo que digo se queda donde lo dije, aunque no haya puesto la etiqueta de secreto."
+   ]
+  },
+  {
+   "id": "A082",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Decir lo que piensas de su pareja",
+   "enunciado": "Si la pareja de un amigo no te convence, ¿se dice o te lo callas?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder avisar: callarme y verlo de lejos no es ser amigo, es ser público.",
+    "Necesito elegir yo con quién estoy; una opinión no pedida se queda ahí aunque todo vaya bien."
+   ]
+  },
+  {
+   "id": "A083",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "La broma que ya no hace gracia",
+   "enunciado": "Una broma repetida que a alguien le molesta, ¿se retira o se le dice que no es para tanto?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir basta sin que me traten de exagerado por algo que llevo años aguantando.",
+    "Necesito que el grupo no se vuelva un sitio donde hay que medir cada frase antes de decirla."
+   ]
+  },
+  {
+   "id": "A084",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Opinar sin que te pregunten",
+   "enunciado": "Cuando alguien cuenta un problema, ¿se opina o solo se escucha?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito ayudar de verdad: escuchar sin decir nada cuando veo la salida se parece a no hacer nada.",
+    "Necesito contar algo sin recibir un plan de acción; a veces solo quiero decirlo en voz alta."
+   ]
+  },
+  {
+   "id": "A085",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Hablar de alguien que no está",
+   "enunciado": "Comentar cosas de alguien del grupo que no está, ¿es normal o ya es hablar por detrás?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder comentar lo que me preocupa de alguien sin que sea una traición.",
+    "Necesito que lo que se diga de mí se diga delante; enterarme después es peor que la crítica."
+   ]
+  },
+  {
+   "id": "A086",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "La mentira piadosa",
+   "enunciado": "Para no ir a un plan, ¿vale una excusa o hay que decir que no te apetece?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito una salida sin herir: «no me apetece» suena a que la compañía no vale la pena.",
+    "Necesito que me digan la verdad; una excusa que no se sostiene se nota y sienta peor."
+   ]
+  },
+  {
+   "id": "A087",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Dar la opinión sobre su trabajo",
+   "enunciado": "Si un amigo te enseña algo suyo, ¿se dice lo que piensas o se apoya y ya?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que me digan lo que falla: para elogios ya tengo a gente que no me conoce.",
+    "Necesito enseñar algo a medias sin que se convierta en una corrección; a veces solo lo comparto."
+   ]
+  },
+  {
+   "id": "A088",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Los apodos de siempre",
+   "enunciado": "Los motes de hace quince años, ¿siguen valiendo o se retiran cuando molestan?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que las cosas de siempre no haya que renegociarlas: el mote es parte de la historia.",
+    "Necesito no ser a los cuarenta el que fui a los quince cada vez que nos juntamos."
+   ]
+  },
+  {
+   "id": "A089",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Felicitar por lo que le fue bien",
+   "enunciado": "Cuando a alguien le va muy bien, ¿se celebra sin más o se puede decir que da un poco de envidia?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir lo que siento sin que se lea como que no me alegro, porque me alegro.",
+    "Necesito que mi buena noticia sea una buena noticia y no el inicio de una conversación sobre otro."
+   ]
+  },
+  {
+   "id": "A090",
+   "publico": "amigos",
+   "categoria": "Lo que se cuenta",
+   "titulo": "Preguntar por lo que salió mal",
+   "enunciado": "Cuando a alguien le fue mal en algo, ¿se pregunta o se espera a que lo saque?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito preguntar: no hacerlo es dejarle solo por miedo a incomodar.",
+    "Necesito poder no hablar de eso un rato; que sea lo primero que me preguntan lo hace más grande."
+   ]
+  },
+  {
+   "id": "A091",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "El spoiler",
+   "enunciado": "Contar el final de algo, ¿deja de ser spoiler a los pocos días o siempre hay que avisar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder hablar de lo que vi: esperar para siempre significa no comentarlo nunca.",
+    "Necesito llegar a eso yo; que me lo cuenten borra la única vez que se ve por primera vez."
+   ]
+  },
+  {
+   "id": "A092",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Ver el capítulo sin el otro",
+   "enunciado": "Si quedaron en ver una serie juntos, ¿se puede adelantar capítulos o se espera?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito verlo cuando tengo el rato; guardarlo una semana me deja fuera de toda conversación.",
+    "Necesito que lo que acordamos valga: verlo solo convierte nuestro plan en un resumen."
+   ]
+  },
+  {
+   "id": "A093",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Recomendar algo y que no lo vean",
+   "enunciado": "Cuando recomiendas algo y no lo ven, ¿se insiste o se deja?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito compartir lo que me gustó: insistir un poco es parte de recomendar.",
+    "Necesito que mi lista sea mía; que me pregunten cada semana convierte una serie en una tarea."
+   ]
+  },
+  {
+   "id": "A094",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Ver el partido en casa o en el bar",
+   "enunciado": "Un partido importante, ¿se ve en casa tranquilo o en el bar con gente?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito el ambiente: un partido sin nadie alrededor es medio partido.",
+    "Necesito oír lo que dicen y no perderme jugadas entre gritos y mesas llenas."
+   ]
+  },
+  {
+   "id": "A095",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Hablar de fútbol todo el rato",
+   "enunciado": "En una mesa donde no todos siguen el deporte, ¿se habla igual o se cambia de tema?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder hablar de lo que me gusta; cambiar de tema por si alguien se aburre deja mudo a medio grupo.",
+    "Necesito poder participar: media cena de alineaciones es media cena mirando el móvil."
+   ]
+  },
+  {
+   "id": "A096",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "El que va con el equipo que gana",
+   "enunciado": "Cambiar de equipo favorito, ¿se puede o eso no se hace?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito disfrutar de lo que veo; ser fiel a algo que me aburre no tiene ningún premio.",
+    "Necesito que signifique algo: si se cambia cuando conviene, deja de ser de nadie."
+   ]
+  },
+  {
+   "id": "A097",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Las notificaciones de resultados",
+   "enunciado": "Si alguien va a ver el partido más tarde, ¿el resto se calla el resultado o eso ya es su problema?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder comentar en directo; el mundo no puede pararse porque alguien lo vea luego.",
+    "Necesito llegar sin saberlo: ver un partido cuyo resultado conozco es ver un resumen largo."
+   ]
+  },
+  {
+   "id": "A098",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Maratón o un capítulo por semana",
+   "enunciado": "Una serie nueva, ¿de una sentada o un capítulo por semana?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito verla seguida: cortarla una semana me hace perder el hilo y las ganas.",
+    "Necesito que dure: verla en dos días es acabarla sin haberla disfrutado."
+   ]
+  },
+  {
+   "id": "A099",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "El grupo para comentar",
+   "enunciado": "Para comentar una serie, ¿se abre un grupo aparte o se comenta en el de siempre?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no llenar el grupo general con algo que a la mitad no le interesa.",
+    "Necesito no estar en quince grupos: al final no miro ninguno y me pierdo todo."
+   ]
+  },
+  {
+   "id": "A100",
+   "publico": "amigos",
+   "categoria": "Series, deporte y pantallas",
+   "titulo": "Volver a ver lo mismo",
+   "enunciado": "Volver a ver una película que ya viste, ¿tiene sentido o hay demasiado por ver?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito lo que sé que funciona; no todas las noches tengo energía para algo nuevo.",
+    "Necesito descubrir algo: repetir lo mismo es dejar pasar todo lo demás."
+   ]
+  },
+  {
+   "id": "F001",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Quien cocina no recoge",
+   "enunciado": "En una comida familiar, ¿quien cocinó se libra de recoger o eso no tiene nada que ver?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que cocinar para diez se reconozca: son tres horas antes de que nadie se siente.",
+    "Necesito que recoger no caiga siempre en los mismos; el trabajo de después también es trabajo."
+   ]
+  },
+  {
+   "id": "F002",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Llevar algo o llegar con las manos vacías",
+   "enunciado": "A una comida en casa de un familiar, ¿hay que llevar algo o se va y ya está?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que venir no cueste: obligar a traer algo convierte una comida en una cuota.",
+    "Necesito que no todo salga de mi cocina y mi bolsillo cada vez que toca en mi casa."
+   ]
+  },
+  {
+   "id": "F003",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "La hora de comer",
+   "enunciado": "En una comida familiar, ¿se come a la hora dicha o se espera a que lleguen todos?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que la comida salga en su punto; esperar cuarenta minutos me arruina lo que cociné.",
+    "Necesito no encontrarme el primer plato acabado por haber pillado tráfico."
+   ]
+  },
+  {
+   "id": "F004",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Repetir el mismo menú",
+   "enunciado": "En las comidas de siempre, ¿se repite el menú de siempre o hay que ir cambiando?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito lo de siempre: esa comida es media razón por la que vengo.",
+    "Necesito probar algo distinto; comer lo mismo veinte años seguidos es dejar de cocinar."
+   ]
+  },
+  {
+   "id": "F005",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Comer lo que no te gusta",
+   "enunciado": "Si hay un plato que no te gusta, ¿se come igual o se dice y se pasa?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder no comerlo sin que se lea como un desprecio a quien lo hizo.",
+    "Necesito que lo que cocino se coma; que alguien lo aparte delante de todos duele más de lo que parece."
+   ]
+  },
+  {
+   "id": "F006",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "La tele en la comida",
+   "enunciado": "Durante la comida familiar, ¿la tele encendida o apagada?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que haya algo de fondo: el silencio en una mesa de familia se hace muy largo.",
+    "Necesito poder hablar sin competir con el volumen; si venimos a vernos, vengamos a vernos."
+   ]
+  },
+  {
+   "id": "F007",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "La sobremesa que no acaba",
+   "enunciado": "La sobremesa, ¿se estira hasta que alguien se levanta o hay una hora razonable para cerrar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que no haya reloj: lo bueno de estas comidas pasa justo en la sobremesa.",
+    "Necesito recuperar mi domingo; a las siete de la tarde ya no queda nada del día."
+   ]
+  },
+  {
+   "id": "F008",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Dónde se sientan los niños",
+   "enunciado": "En una mesa familiar, ¿los niños en su mesa aparte o todos juntos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que los mayores podamos hablar; con niños en medio la conversación se corta cada dos frases.",
+    "Necesito que estén con nosotros: apartarlos es enseñarles que las comidas son de otros."
+   ]
+  },
+  {
+   "id": "F009",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Servirse o que te sirvan",
+   "enunciado": "En la mesa, ¿cada quien se sirve o hay alguien sirviendo a todos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que cada uno se ponga lo que va a comer; servir yo acaba con platos llenos que nadie termina.",
+    "Necesito que la mesa se atienda: dejar las fuentes y que se apañen se siente frío."
+   ]
+  },
+  {
+   "id": "F010",
+   "publico": "familia",
+   "categoria": "Las comidas de los domingos",
+   "titulo": "Cuántas veces al mes",
+   "enunciado": "La comida familiar, ¿cada domingo o una vez al mes basta?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito verlos seguido: si se espacia, al final nos vemos tres veces al año.",
+    "Necesito mis fines de semana; comprometer todos los domingos deja el resto de mi vida sin sitio."
+   ]
+  },
+  {
+   "id": "F011",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Dónde se pasa Nochebuena",
+   "enunciado": "La Nochebuena, ¿siempre en la misma casa o va rotando?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que haya un sitio fijo: la casa de siempre es media fiesta, y cambiarla la deshace.",
+    "Necesito que no recaiga siempre en los mismos; recibir a veinte personas es una semana de trabajo."
+   ]
+  },
+  {
+   "id": "F012",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Repartir las fiestas entre familias",
+   "enunciado": "Cuando hay dos familias, ¿se parte el día o se alterna un año cada una?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito estar en las dos: elegir una es decirle a la otra que ese año no cuenta.",
+    "Necesito una cena entera en un sitio; partir el día es pasarlo en el coche y llegar tarde a todo."
+   ]
+  },
+  {
+   "id": "F013",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Los que no vienen a las fiestas",
+   "enunciado": "Si alguien no viene a la comida de Navidad, ¿se le pregunta por qué o se respeta y ya?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito preguntar: no hacerlo es dejar que alguien se vaya alejando sin que nadie lo note.",
+    "Necesito poder faltar un año sin dar un parte; no venir no siempre significa algo."
+   ]
+  },
+  {
+   "id": "F014",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "El brindis y los discursos",
+   "enunciado": "En una comida grande, ¿alguien dice unas palabras o eso se deja pasar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito el momento: es lo único del año en que se dice en voz alta lo que sentimos.",
+    "Necesito que nadie me obligue a un discurso; el brindis pone a todos en una situación incómoda."
+   ]
+  },
+  {
+   "id": "F015",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Los villancicos y las canciones",
+   "enunciado": "En las fiestas, ¿se canta y se pone música o eso ya no se lleva?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que siga habiendo eso: sin el rato de cantar es una comida cualquiera con más platos.",
+    "Necesito que no me obliguen a participar; me pasa toda la noche mirando el reloj."
+   ]
+  },
+  {
+   "id": "F016",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "A qué hora se abre lo que sea",
+   "enunciado": "Los regalos, ¿se abren en la noche o a la mañana siguiente?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito hacerlo cuando estamos todos: a la mañana siguiente cada uno está en una casa.",
+    "Necesito que se disfrute con calma; a las dos de la madrugada se abre todo en diez minutos."
+   ]
+  },
+  {
+   "id": "F017",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Ir a la comida y a la cena",
+   "enunciado": "El mismo día, ¿se puede ir solo a una de las dos comidas o hay que estar en las dos?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder dosificar; doce horas de familia seguidas me dejan para el día siguiente.",
+    "Necesito que el día sea el día: aparecer al postre es haber cumplido, no haber estado."
+   ]
+  },
+  {
+   "id": "F018",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Las fotos de la fiesta",
+   "enunciado": "En una reunión familiar, ¿se para todo para la foto de grupo o se hace lo que salga?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito la foto: es lo que va a quedar dentro de diez años, y sin parar no sale nunca.",
+    "Necesito que no me organicen la noche; veinte minutos colocando gente es un cuarto de la cena."
+   ]
+  },
+  {
+   "id": "F019",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Los que llegan de lejos",
+   "enunciado": "Quien viene de lejos, ¿decide más sobre el plan o cuenta igual que el resto?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que se tenga en cuenta el viaje: si cruzo el país, poder estar en lo que vine a ver.",
+    "Necesito que no se reorganice todo cada vez; los que vivimos cerca también tenemos una vida."
+   ]
+  },
+  {
+   "id": "F020",
+   "publico": "familia",
+   "categoria": "Las fiestas y dónde se pasan",
+   "titulo": "Cumpleaños de adultos en familia",
+   "enunciado": "El cumpleaños de un adulto, ¿se celebra en familia o eso ya es cosa de amigos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se siga celebrando: dejar de hacerlo es decidir que ya no toca.",
+    "Necesito poder pasar mi cumpleaños como quiera sin una comida obligatoria de veinte."
+   ]
+  },
+  {
+   "id": "F021",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Amigo invisible en familia",
+   "enunciado": "En una familia grande, ¿amigo invisible o cada uno regala a cada uno?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que no sea una ruina: con quince personas, regalar a todos no lo sostiene nadie.",
+    "Necesito poder regalarle a quien quiero; el sorteo me deja regalando a quien apenas veo."
+   ]
+  },
+  {
+   "id": "F022",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Cuánto se gasta",
+   "enunciado": "¿Se pone un tope al regalo familiar o cada quien gasta lo suyo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito un tope para que nadie quede mal por no poder gastar lo mismo.",
+    "Necesito poder regalar lo que quiero a mi gente sin que un acuerdo me lo limite."
+   ]
+  },
+  {
+   "id": "F023",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Regalos a los sobrinos",
+   "enunciado": "A los sobrinos, ¿se les regala a todos por igual o según la edad?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que sea igual para todos: un niño se da cuenta enseguida de que al otro le llegó más.",
+    "Necesito acertar; el mismo regalo para uno de tres y uno de quince no le sirve a ninguno."
+   ]
+  },
+  {
+   "id": "F024",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Regalar experiencias o cosas",
+   "enunciado": "¿Es mejor regalar algo que se abre o una salida para hacer juntos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que haya algo que abrir: una entrada dentro de un sobre no es un regalo para un niño.",
+    "Necesito no llenar más casas de cosas; lo que hicimos juntos dura más que lo que se guarda."
+   ]
+  },
+  {
+   "id": "F025",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Pedir lo que quieres",
+   "enunciado": "Los regalos, ¿se piden y se acierta o se dejan a sorpresa?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito acertar: regalar a ciegas acaba en un cajón y en dinero tirado.",
+    "Necesito que me sorprendan; pedir una lista convierte el regalo en un encargo."
+   ]
+  },
+  {
+   "id": "F026",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "El regalo que se reutiliza",
+   "enunciado": "Volver a regalar algo que te regalaron, ¿se puede o no se hace?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que las cosas se usen: guardar algo que no me sirve mientras a otro le encanta es absurdo.",
+    "Necesito saber que lo que elegí para ti lo elegiste tú para otro solo si me lo dices."
+   ]
+  },
+  {
+   "id": "F027",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Los regalos de compromiso",
+   "enunciado": "Regalar a alguien de la familia con quien apenas hablas, ¿se hace igual o se deja?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que nadie se quede sin nada delante de los demás: eso se ve y se recuerda.",
+    "Necesito que un regalo signifique algo; cumplir por cumplir se nota más que no regalar."
+   ]
+  },
+  {
+   "id": "F028",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Abrirlos delante de todos",
+   "enunciado": "Los regalos, ¿se abren delante de quien los dio o en casa?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito ver la cara: la mitad de regalar es el momento en que se abre.",
+    "Necesito poder reaccionar sin público; si no me gusta, se me nota y quedo fatal."
+   ]
+  },
+  {
+   "id": "F029",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Dinero a los sobrinos",
+   "enunciado": "A los sobrinos mayores, ¿dinero o un regalo elegido?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se compren lo que quieren; a esa edad nada de lo que yo elija va a acertar.",
+    "Necesito que haya un gesto detrás: dar dinero es cumplir sin haber pensado en la persona."
+   ]
+  },
+  {
+   "id": "F030",
+   "publico": "familia",
+   "categoria": "Los regalos en familia",
+   "titulo": "Los regalos que ocupan",
+   "enunciado": "Un regalo grande para una casa pequeña, ¿se regala igual o se piensa antes?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder regalar algo que impresione; medir el salón del otro me deja sin opciones.",
+    "Necesito que lo que entra en mi casa quepa; un regalo enorme es un problema con lazo."
+   ]
+  },
+  {
+   "id": "F031",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Las cadenas y los reenvíos",
+   "enunciado": "En el grupo familiar, ¿vale reenviar cualquier cosa o hay que filtrar?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder compartir lo que me llega; un grupo donde hay que curar todo se queda vacío.",
+    "Necesito abrir el grupo y encontrar a mi familia, no veinte reenvíos que nadie escribió."
+   ]
+  },
+  {
+   "id": "F032",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Los audios largos",
+   "enunciado": "Los audios de varios minutos en el grupo familiar, ¿son normales o se escriben?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito hablar en vez de escribir; teclear me lleva media hora y encima con erratas.",
+    "Necesito poder leerlo cuando pueda; un audio me obliga a escuchar en ese momento y con sonido."
+   ]
+  },
+  {
+   "id": "F033",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Sacar temas de actualidad",
+   "enunciado": "En el grupo familiar, ¿se habla de lo que pasa en el mundo o eso se deja fuera?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que el grupo sea un sitio vivo: si solo se felicitan cumpleaños, no es una conversación.",
+    "Necesito que este sitio siga siendo tranquilo; ahí es donde empiezan las que no se arreglan."
+   ]
+  },
+  {
+   "id": "F034",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Fotos de los niños",
+   "enunciado": "Fotos de los sobrinos en el grupo familiar, ¿se mandan libremente o se pregunta a los padres?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito compartir con la familia lo que hacen los peques: para eso está el grupo.",
+    "Necesito decidir yo qué fotos de mis hijos circulan, aunque sea en un grupo de confianza."
+   ]
+  },
+  {
+   "id": "F035",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Felicitar en el grupo familiar",
+   "enunciado": "Un cumpleaños, ¿se felicita en el grupo de la familia o por privado?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se vea: felicitar en el grupo recuerda al resto que hoy es su día.",
+    "Necesito un mensaje que sea para mí; treinta felicitaciones seguidas son una lista, no un saludo."
+   ]
+  },
+  {
+   "id": "F036",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Los que nunca escriben",
+   "enunciado": "Con quien está en el grupo y nunca escribe, ¿se le pregunta o se deja tranquilo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito saber que sigue ahí; el silencio largo en familia se empieza a notar raro.",
+    "Necesito poder leer sin participar: estar en el grupo no me obliga a hablar cada semana."
+   ]
+  },
+  {
+   "id": "F037",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Un grupo para cada cosa",
+   "enunciado": "¿Un solo grupo familiar o uno para primos, otro para hermanos y otro para todos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito hablar con los míos sin que lo lean veinte: hay cosas que no son para todo el mundo.",
+    "Necesito enterarme de lo que pasa; cuando hay cuatro grupos siempre me falta uno."
+   ]
+  },
+  {
+   "id": "F038",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Organizar por el grupo",
+   "enunciado": "Las comidas familiares, ¿se organizan por el grupo o llamando?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que quede escrito: por teléfono siempre acaba entendiendo cada uno una hora distinta.",
+    "Necesito una llamada; en el grupo se decide sin mí porque no miro el móvil a todas horas."
+   ]
+  },
+  {
+   "id": "F039",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Salirse del grupo",
+   "enunciado": "Salirse del grupo familiar, ¿se puede o es una declaración?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder bajarme de algo que me está costando más de lo que me aporta.",
+    "Necesito que nadie se vaya así: salir de un grupo familiar se lee como un portazo aunque no lo sea."
+   ]
+  },
+  {
+   "id": "F040",
+   "publico": "familia",
+   "categoria": "El grupo de la familia",
+   "titulo": "Contestar a todo",
+   "enunciado": "En el grupo, ¿hay que contestar a todo lo que se pregunta o solo a lo tuyo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito no vivir pendiente: contestar a cada mensaje del grupo es un trabajo.",
+    "Necesito respuestas para poder organizar; preguntar y que nadie diga nada es decidir a ciegas."
+   ]
+  },
+  {
+   "id": "F041",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Avisar antes de ir",
+   "enunciado": "Para ir a casa de un familiar, ¿hay que avisar antes o se puede aparecer?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que mi casa siga siendo mía: abrir la puerta sin esperar visita me descoloca el día.",
+    "Necesito que entre familia no haga falta protocolo; avisar por todo convierte la casa en una oficina."
+   ]
+  },
+  {
+   "id": "F042",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Cuánto dura una visita",
+   "enunciado": "Una visita familiar sin plan, ¿tiene una duración razonable o se va cuando se va?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se acabe a una hora; una visita de cinco horas me come el día entero.",
+    "Necesito que no me midan el tiempo: mirar el reloj mientras hablamos es echarme con educación."
+   ]
+  },
+  {
+   "id": "F043",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Quedarse a dormir",
+   "enunciado": "Un familiar de paso, ¿se queda en casa o se le busca un hotel cerca?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito ofrecer mi casa: mandar a un familiar a un hotel teniendo un sofá se siente mal.",
+    "Necesito mi espacio; tener a alguien en casa cuatro días es no estar en mi propia casa."
+   ]
+  },
+  {
+   "id": "F044",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Entrar con llave",
+   "enunciado": "Que un familiar tenga llave de tu casa, ¿es normal o ya es demasiado?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que alguien pueda entrar si hace falta; para eso está la familia cerca.",
+    "Necesito saber que nadie va a entrar cuando no estoy, aunque sea con la mejor intención."
+   ]
+  },
+  {
+   "id": "F045",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Llevar a los niños a casa ajena",
+   "enunciado": "A una visita corta, ¿se llevan los niños o mejor se van los adultos solos?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que vean a la familia: dejarlos en casa es criarlos lejos de sus propios primos.",
+    "Necesito una conversación de adultos de vez en cuando sin tener que vigilar a nadie."
+   ]
+  },
+  {
+   "id": "F046",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Ofrecer de comer siempre",
+   "enunciado": "A quien viene de visita, ¿se le pone de comer sí o sí o se pregunta?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito atender a quien entra en mi casa; no ofrecer nada es recibir a medias.",
+    "Necesito poder decir que no tengo hambre sin que se tome como un desprecio."
+   ]
+  },
+  {
+   "id": "F047",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Quitarse los zapatos",
+   "enunciado": "Al entrar en casa ajena, ¿los zapatos se quitan o eso depende de la casa?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que mi casa se mantenga: la calle entra entera en la suela de unos zapatos.",
+    "Necesito no andar en calcetines por una casa que no es la mía; me deja incómodo toda la visita."
+   ]
+  },
+  {
+   "id": "F048",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Visitar al que vive lejos",
+   "enunciado": "Cuando alguien se muda lejos, ¿le toca a él venir o hay que ir a verlo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que vengan alguna vez: el que se fue no tiene por qué pagar todos los viajes.",
+    "Necesito que se entienda mi situación; moverme con la casa a cuestas no es lo mismo que venir solo."
+   ]
+  },
+  {
+   "id": "F049",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Avisar de que te vas",
+   "enunciado": "Al irte de una reunión familiar, ¿hay que despedirse de todos o se puede salir sin más?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito irme sin montar una ronda de veinte despedidas que me retiene otra media hora.",
+    "Necesito poder despedirme; enterarme de que te fuiste cuando ya no estás se siente feo."
+   ]
+  },
+  {
+   "id": "F050",
+   "publico": "familia",
+   "categoria": "Las visitas",
+   "titulo": "Las visitas sorpresa de fuera",
+   "enunciado": "Si un familiar aparece con otra persona no avisada, ¿se recibe igual o se dice algo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder traer a quien está conmigo sin dejarlo en el coche esperando.",
+    "Necesito contar los platos; un invitado más sin avisar es una silla y una comida que no había."
+   ]
+  },
+  {
+   "id": "F051",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "La pregunta de siempre",
+   "enunciado": "Preguntar en cada comida por el trabajo o los planes de alguien, ¿es interés o es incomodar?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito preguntar por su vida: no hacerlo sería no interesarme por alguien de mi familia.",
+    "Necesito que mi vida no sea el punto del día; contestar lo mismo cada mes cansa mucho."
+   ]
+  },
+  {
+   "id": "F052",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Dar consejo sin que lo pidan",
+   "enunciado": "Cuando alguien cuenta algo suyo, ¿se le aconseja o solo se escucha?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir lo que he aprendido; callarme viendo un error es no ayudar.",
+    "Necesito contar algo sin recibir instrucciones; a veces solo estoy poniéndolo en palabras."
+   ]
+  },
+  {
+   "id": "F053",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Comparar entre hermanos",
+   "enunciado": "Comparar lo que hace cada hermano, ¿es inevitable o hay que evitarlo?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder alegrarme en voz alta de lo que le va bien a uno sin medir cómo suena.",
+    "Necesito que mi vida se mire sola; puesta al lado de otra siempre queda como un balance."
+   ]
+  },
+  {
+   "id": "F054",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Contar lo tuyo a la familia",
+   "enunciado": "Lo que pasa en tu vida, ¿se cuenta a la familia o se cuenta cuando ya está resuelto?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito enterarme cuando pasa, no seis meses después por otro; eso me deja fuera.",
+    "Necesito manejar lo mío antes de convertirlo en tema de conversación de veinte personas."
+   ]
+  },
+  {
+   "id": "F055",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Opinar sobre cómo crían los demás",
+   "enunciado": "Sobre cómo cría otro a sus hijos, ¿se opina o se muerde uno la lengua?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir lo que veo cuando es sobre alguien a quien quiero.",
+    "Necesito criar sin auditoría; una opinión sobre mis hijos se queda dando vueltas días."
+   ]
+  },
+  {
+   "id": "F056",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Los recuerdos de la infancia",
+   "enunciado": "Cuando dos hermanos recuerdan lo mismo distinto, ¿se discute o cada uno con su versión?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se cuente como fue: dejar pasar una versión falsa es que se quede para siempre.",
+    "Necesito que mi recuerdo valga; discutir cómo fue acaba siendo discutir quién sufrió más."
+   ]
+  },
+  {
+   "id": "F057",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Las bromas de siempre",
+   "enunciado": "La broma que se repite sobre alguien en cada comida, ¿es cariño o ya toca dejarla?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir que ya no me hace gracia sin que me llamen susceptible.",
+    "Necesito que queden cosas nuestras; retirar todas las bromas deja las comidas muy formales."
+   ]
+  },
+  {
+   "id": "F058",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Hablar de política en la mesa",
+   "enunciado": "En una comida familiar, ¿se puede hablar de política o mejor no?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder hablar de lo que pasa con la gente que más me importa; evitarlo es fingir.",
+    "Necesito una comida al mes sin acabar de mal humor con alguien de mi propia familia."
+   ]
+  },
+  {
+   "id": "F059",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Decirle a alguien que se equivoca",
+   "enunciado": "Cuando un familiar va a hacer algo que te parece un error, ¿se le dice o se le deja?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito avisar: callarme y verlo desde la barrera no es respeto, es comodidad.",
+    "Necesito equivocarme yo; que me lo digan todos antes no me deja ni intentarlo."
+   ]
+  },
+  {
+   "id": "F060",
+   "publico": "familia",
+   "categoria": "Lo que opinan de tu vida",
+   "titulo": "Preguntar por el dinero",
+   "enunciado": "Preguntar cuánto costó algo o cuánto gana alguien, ¿es normal en familia o no se pregunta?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder hablar con naturalidad de dinero; el misterio es lo que lo hace incómodo.",
+    "Necesito que mis números sean míos, aunque la pregunta venga sin mala intención."
+   ]
+  },
+  {
+   "id": "F061",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Quién cuida a los niños en la comida",
+   "enunciado": "En una reunión, ¿los niños los vigilan sus padres o los vigila quien esté cerca?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder sentarme a comer una vez: si nadie más mira, no como caliente en todo el día.",
+    "Necesito que las normas las ponga quien los cría; hacerme cargo sin saber sus reglas acaba mal."
+   ]
+  },
+  {
+   "id": "F062",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Corregir al hijo de otro",
+   "enunciado": "Si un sobrino hace algo que no debe, ¿se le corrige o se avisa a sus padres?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder decir «eso no» en el momento; esperar a buscar al padre es llegar tarde.",
+    "Necesito ser yo quien corrija a mis hijos; que lo haga otro delante los deja sin saber a quién hacer caso."
+   ]
+  },
+  {
+   "id": "F063",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Las pantallas para los peques",
+   "enunciado": "En una comida familiar, ¿se les deja el móvil a los niños para que aguanten o no?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que la comida sea tranquila; dos horas es mucho para un niño de cinco años.",
+    "Necesito que estén con nosotros: si les damos una pantalla, dejan de aprender a estar en la mesa."
+   ]
+  },
+  {
+   "id": "F064",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Los dulces y la comida",
+   "enunciado": "Darle chuches a un sobrino sin preguntar a sus padres, ¿es cosa de tíos o hay que consultar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder consentirles: eso es exactamente lo que hacen los tíos y los abuelos.",
+    "Necesito que lo que decidimos en casa se sostenga; si cada domingo se rompe, no sirve de nada."
+   ]
+  },
+  {
+   "id": "F065",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Fotos de los niños en redes",
+   "enunciado": "Fotos de los sobrinos en redes sociales, ¿se suben o se pregunta antes?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito compartir a mi familia; pedir permiso por cada foto lo convierte en un trámite.",
+    "Necesito decidir yo dónde aparece la cara de mi hijo, porque eso se queda para siempre."
+   ]
+  },
+  {
+   "id": "F066",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Los primos que no se ven",
+   "enunciado": "Si los primos casi no se conocen, ¿hay que forzar los encuentros o dejar que pase?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que se conozcan: si no lo montamos nosotros, de mayores serán desconocidos.",
+    "Necesito no obligar a nadie a una amistad; juntarlos a la fuerza no crea nada."
+   ]
+  },
+  {
+   "id": "F067",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "La herencia de la ropa",
+   "enunciado": "La ropa que se les queda pequeña, ¿pasa al siguiente primo o eso ya no se hace?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que las cosas se aprovechen; tirar ropa en buen estado no tiene ningún sentido.",
+    "Necesito que mi hijo estrene algo alguna vez sin ser el tercero en ponérselo."
+   ]
+  },
+  {
+   "id": "F068",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Cuidar a los sobrinos",
+   "enunciado": "Pedirle a un hermano que cuide a tus hijos una tarde, ¿es normal o es pedir mucho?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder pedir ayuda a mi familia sin sentir que estoy cobrando un favor.",
+    "Necesito que no se dé por hecho: mi tarde libre también es mía aunque no tenga hijos."
+   ]
+  },
+  {
+   "id": "F069",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Los regalos que hacen ruido",
+   "enunciado": "Regalar a un sobrino algo ruidoso o enorme, ¿es la gracia de ser tío o es pasarse?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que mi regalo sea el que recuerde; para regalos sensatos ya están sus padres.",
+    "Necesito vivir en mi casa; un tambor es un regalo para el niño y un castigo para mí."
+   ]
+  },
+  {
+   "id": "F070",
+   "publico": "familia",
+   "categoria": "Primos, sobrinos y los peques",
+   "titulo": "Hablar de los niños todo el rato",
+   "enunciado": "En una mesa con padres y sin padres, ¿se habla de niños o se busca otro tema?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito hablar de lo que ocupa mi vida entera; fingir que no existe es hablar de nada.",
+    "Necesito una conversación que también me incluya; dos horas de colegios me deja fuera."
+   ]
+  },
+  {
+   "id": "F071",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Prestar el coche a un familiar",
+   "enunciado": "A un hermano o un primo, ¿se le presta el coche sin más o se piensa?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder ayudar de verdad; para eso es la familia, y decir que no por si acaso es feo.",
+    "Necesito no meter en una relación de por vida algo que si sale mal cuesta mucho dinero."
+   ]
+  },
+  {
+   "id": "F072",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Las herramientas que no vuelven",
+   "enunciado": "Lo prestado que lleva meses fuera, ¿se reclama o se espera?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que me lo recuerden: no es mala fe, es que se me olvidó de verdad.",
+    "Necesito no tener que perseguir mis cosas; pedirlas me deja a mí en el papel incómodo."
+   ]
+  },
+  {
+   "id": "F073",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Ayudar en la mudanza",
+   "enunciado": "Para una mudanza familiar, ¿se da por hecho que todos ayudan o se pregunta?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito contar con los míos un sábado; contratar a alguien para todo no siempre se puede.",
+    "Necesito que me pregunten en vez de darlo por supuesto; mis sábados no están en un fondo común."
+   ]
+  },
+  {
+   "id": "F074",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Pedir dinero en familia",
+   "enunciado": "Un préstamo entre familiares, ¿se trata como cualquier préstamo o es otra cosa?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que quede claro cuándo vuelve; si no, en cada comida va a estar ahí sin decirse.",
+    "Necesito que ayudarme no venga con condiciones; poner plazos en familia se siente como desconfiar."
+   ]
+  },
+  {
+   "id": "F075",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "El favor profesional",
+   "enunciado": "Si alguien de la familia trabaja de algo, ¿se le pide consejo gratis o se le paga?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito poder preguntar a quien sabe sin que se convierta en una factura.",
+    "Necesito que mi trabajo se respete; lo que hago por oficio no deja de valer por ser familia."
+   ]
+  },
+  {
+   "id": "F076",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Guardar cosas en casa de otro",
+   "enunciado": "Dejar cajas guardadas en casa de un familiar, ¿es normal o tiene fecha?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito un sitio mientras resuelvo; tirar cosas por no tener dónde ponerlas es peor.",
+    "Necesito mi trastero para lo mío; «unos meses» se convierte en años sin que nadie lo diga."
+   ]
+  },
+  {
+   "id": "F077",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "El coche de la familia",
+   "enunciado": "Un coche que usan varios, ¿lo mantiene quien más lo usa o se reparte entre todos?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que quien lo gasta lo cuide; pagar ruedas de kilómetros que no hice es injusto.",
+    "Necesito que no se lleve la cuenta de cada litro; entonces deja de ser un coche compartido."
+   ]
+  },
+  {
+   "id": "F078",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Devolverlo lleno",
+   "enunciado": "Un coche prestado, ¿se devuelve con el depósito como estaba o eso ya se sobreentiende?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se note el cuidado: devolverlo en vacío es dejarme el trabajo a mí.",
+    "Necesito que un favor no venga con letra pequeña; llenar el depósito por media hora es excesivo."
+   ]
+  },
+  {
+   "id": "F079",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Los electrodomésticos que sobran",
+   "enunciado": "Cuando alguien cambia de nevera o de tele, ¿la vieja se ofrece a la familia o se vende?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se quede en casa: regalarla a alguien de la familia es mejor que malvenderla.",
+    "Necesito poder sacarle algo; que se dé por hecho que lo mío pasa a otro me deja sin decidir."
+   ]
+  },
+  {
+   "id": "F080",
+   "publico": "familia",
+   "categoria": "Lo que se presta en familia",
+   "titulo": "Lo que se hereda de los abuelos",
+   "enunciado": "Los objetos con valor sentimental, ¿se quedan con quien los quiere o rotan?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que estén con quien de verdad los va a cuidar y a mirar todos los días.",
+    "Necesito que no se los quede siempre el mismo; esos recuerdos también son míos."
+   ]
+  },
+  {
+   "id": "F081",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Cambiar una tradición",
+   "enunciado": "Una costumbre familiar de treinta años, ¿se puede cambiar o se respeta?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que esto siga funcionando: las costumbres son lo que nos mantiene juntándonos.",
+    "Necesito que se pueda revisar; hacer algo solo porque siempre se hizo no es una razón."
+   ]
+  },
+  {
+   "id": "F082",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "El sitio de cada uno en la mesa",
+   "enunciado": "Los sitios en la mesa familiar, ¿son los de siempre o se sienta cada uno donde quiera?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito lo de siempre: saber dónde me siento es parte de estar en casa.",
+    "Necesito hablar con gente distinta; acabar siempre al lado del mismo es tener media comida."
+   ]
+  },
+  {
+   "id": "F083",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Quién hace el brindis",
+   "enunciado": "El brindis, ¿lo hace siempre el mismo o va rotando?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que lo haga quien sabe hacerlo; obligar a otro es un mal rato para todos.",
+    "Necesito que no sea siempre de uno: que hable otro cambia lo que se dice y cómo se dice."
+   ]
+  },
+  {
+   "id": "F084",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "La receta de la abuela",
+   "enunciado": "Una receta familiar, ¿se hace como se hizo siempre o se puede tocar?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que sepa como sabía: cambiarla es perder lo único que queda de esa cocina.",
+    "Necesito poder cocinar a mi manera; repetir una receta sin cambiar nada es transcribir, no cocinar."
+   ]
+  },
+  {
+   "id": "F085",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Hacer la foto de cada año",
+   "enunciado": "La foto anual de la familia, ¿se mantiene aunque falte gente o se deja?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito la serie completa: mirar veinte años seguidos es lo que le da sentido.",
+    "Necesito que no sea una obligación; una foto donde se nota que falta alguien pesa."
+   ]
+  },
+  {
+   "id": "F086",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Los motes de la infancia",
+   "enunciado": "El apodo que te pusieron de pequeño, ¿se mantiene para siempre o se retira?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se quede: ese nombre es de cuando éramos nosotros y nadie más lo usa.",
+    "Necesito que me llamen por mi nombre delante de mi gente; a los cuarenta ya no hace gracia."
+   ]
+  },
+  {
+   "id": "F087",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Ir al pueblo",
+   "enunciado": "La casa del pueblo o el sitio de siempre en verano, ¿se sigue yendo o cada uno hace su plan?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que sigamos yendo: es el único sitio donde coincidimos todos sin organizar nada.",
+    "Necesito mis vacaciones; ir siempre al mismo sitio es no haber elegido nunca dónde ir."
+   ]
+  },
+  {
+   "id": "F088",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Los rituales de los cumpleaños",
+   "enunciado": "La canción, las velas y todo lo demás, ¿se hace siempre o depende de la edad?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que se haga: sin eso un cumpleaños de adulto es una cena cualquiera.",
+    "Necesito que no me obliguen a un momento en el que treinta personas me miran cantando."
+   ]
+  },
+  {
+   "id": "F089",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Los turnos que nadie decidió",
+   "enunciado": "Las tareas familiares que siempre hace el mismo, ¿se replantean o se dejan?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que se revise: nadie eligió esto, se quedó así y ya lleva quince años.",
+    "Necesito que funcione; cada vez que se replantea, nadie lo hace durante dos meses."
+   ]
+  },
+  {
+   "id": "F090",
+   "publico": "familia",
+   "categoria": "Las costumbres de siempre",
+   "titulo": "Contar las mismas historias",
+   "enunciado": "Las historias familiares que se repiten cada año, ¿se escuchan otra vez o se corta?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito contarlas: los que vienen detrás no las han oído y así es como se pasan.",
+    "Necesito una conversación nueva; si todo es repaso, es que no tenemos nada que contarnos."
+   ]
+  },
+  {
+   "id": "F091",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Vacaciones toda la familia junta",
+   "enunciado": "Las vacaciones, ¿una semana todos juntos o cada núcleo por su lado?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito ese rato: es la única semana del año en que estamos de verdad y sin prisa.",
+    "Necesito descansar en vacaciones; una semana con toda la familia es organizar, no descansar."
+   ]
+  },
+  {
+   "id": "F092",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Quién paga qué en la casa compartida",
+   "enunciado": "En una casa alquilada entre varios, ¿se divide todo por igual o por número de personas?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que sea simple: contar por cabezas acaba en discusiones sobre si un niño cuenta medio.",
+    "Necesito no pagar lo mismo yendo solo que una familia de cinco; eso no es dividir, es subvencionar."
+   ]
+  },
+  {
+   "id": "F093",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Los horarios en la casa común",
+   "enunciado": "En una casa compartida en vacaciones, ¿se come todos juntos o cada uno a su hora?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito que haya al menos una comida juntos; si no, es un hotel con gente conocida.",
+    "Necesito mi ritmo: cuadrar catorce personas para cada comida es vivir pendiente del reloj."
+   ]
+  },
+  {
+   "id": "F094",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Las habitaciones buenas",
+   "enunciado": "La habitación con mejor vista, ¿le toca a alguien por turno o al que reservó?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito que rote: si siempre es del mismo, el resto pagamos igual por menos.",
+    "Necesito que quien organiza tenga algo; buscar y reservar la casa son horas de trabajo."
+   ]
+  },
+  {
+   "id": "F095",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Limpiar la casa compartida",
+   "enunciado": "La limpieza de la casa común, ¿por turnos escritos o cada uno lo que vea?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito turnos: sin ellos siempre limpiamos los mismos y nadie se da cuenta.",
+    "Necesito estar de vacaciones; un cuadrante de tareas convierte la casa en un campamento."
+   ]
+  },
+  {
+   "id": "F096",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "El coche y quién conduce",
+   "enunciado": "En un viaje familiar, ¿conduce siempre quien mejor conduce o se van turnando?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito llegar tranquilo; si conduce quien no está cómodo, lo pasamos mal todos.",
+    "Necesito no hacer seiscientos kilómetros solo mientras el resto duerme."
+   ]
+  },
+  {
+   "id": "F097",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Los planes del día",
+   "enunciado": "En vacaciones en familia, ¿se decide el plan cada mañana o se cierra la semana antes?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito improvisar: eso es justo lo que no puedo hacer el resto del año.",
+    "Necesito saber qué hacemos; decidir cada mañana entre doce personas es perder la mitad del día."
+   ]
+  },
+  {
+   "id": "F098",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Ir a ver a la familia en vacaciones",
+   "enunciado": "Las vacaciones, ¿se usan para visitar familia o eso ya es otro viaje?",
+   "intensidad": "media",
+   "intereses": [
+    "Necesito verlos, y los días libres son los únicos que tengo para cruzar el país.",
+    "Necesito descansar de verdad; si las vacaciones son visitas, vuelvo más cansado que me fui."
+   ]
+  },
+  {
+   "id": "F099",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Las fotos del verano",
+   "enunciado": "Las fotos de las vacaciones familiares, ¿se suben o se mandan solo al grupo?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito poder contar mi verano; pedir permiso por cada foto es no publicar ninguna.",
+    "Necesito que mi familia no aparezca en el perfil de nadie sin que se me pregunte."
+   ]
+  },
+  {
+   "id": "F100",
+   "publico": "familia",
+   "categoria": "Los viajes y el verano",
+   "titulo": "Volver el mismo día",
+   "enunciado": "La vuelta de un viaje familiar, ¿todos el mismo día o cada uno cuando quiera?",
+   "intensidad": "ligera",
+   "intereses": [
+    "Necesito organizar el viaje una vez: si cada uno vuelve cuando quiere, son cinco viajes.",
+    "Necesito ajustar la vuelta a mi trabajo; volver un día antes por el grupo me cuesta un día libre."
    ]
   }
  ],
  "eje": "situacional",
- "nota": "Cada tema es una PREGUNTA DE OPINION con dos salidas legitimas dentro. No hay posturas repartidas: quien juega fija la suya al hablar. `intereses` son las dos necesidades en tension del tema, sin dueno."
+ "nota": "Cada tema es una PREGUNTA DE OPINION con dos salidas legitimas dentro. No hay posturas repartidas: quien juega fija la suya al hablar. `intereses` son las dos necesidades en tension del tema, sin dueno.",
+ "publicos": [
+  "pareja",
+  "amigos",
+  "familia"
+ ]
 }
