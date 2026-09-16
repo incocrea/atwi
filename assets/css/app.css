@@ -437,8 +437,14 @@ body.app {
      la pantalla: lo que la ancla a SU carta es este `relative`. */
   position: relative;
   display: flex; flex-direction: column; align-items: center;
-  /* El hueco de abajo es el sitio de la peana, que va fuera del flujo. */
-  width: 100%; padding: 10px 8px 34px;
+  /* EL HUECO DE ABAJO ES EL SITIO DE LA PEANA, que va fuera del flujo, y tiene
+     que caber ENTERA: subió de 34 a 54 px (titular, 2026-09-16). Con 34 la
+     cuenta se hizo sobre el disco del play y salía bien —acababa 8 px antes del
+     borde de la peana— pero la peana no es un rectángulo: de ella salen globos,
+     estrellas y hojas que suben bastante por encima de ese borde, y eran ésos
+     los que llegaban a los botones. Lo que hay que reservar es el alto del
+     ARCHIVO, no el de la parte maciza que se ve como suelo. */
+  width: 100%; padding: 10px 8px 54px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: center; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
