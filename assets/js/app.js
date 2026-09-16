@@ -932,7 +932,23 @@
       '</button>';
   }
 
+  var ultimaMesa;               // para saber cuándo se cambió de mesa
+
   function barajar() { azarDeTema = {}; }
+
+  /* SE BARAJA CADA VEZ QUE SE ABRE UNA LISTA, y abrir una lista es dos cosas:
+     entrar a la vista Catálogo —eso lo ve `irA`— y elegir mesa, que no cambia
+     de vista y por eso hacía falta mirarlo aquí. Vale para las tres.
+
+     LO QUE NO CUENTA COMO ABRIR es repintar la misma lista: escribir en el
+     buscador o tocar un filtro. Ahí la lista se vuelve a pedir varias veces por
+     segundo, y rebarajarla dejaría los temas saltando bajo el dedo justo
+     mientras se intenta leer uno. */
+  function barajarSiEsOtraMesa() {
+    if (modoPublico === ultimaMesa) return;
+    ultimaMesa = modoPublico;
+    barajar();
+  }
 
   function azarDe(id) {
     if (!(id in azarDeTema)) azarDeTema[id] = Math.random();
@@ -992,6 +1008,7 @@
     /* CON QUIÉN SE JUEGA, A LA CAPA DE DATOS, y se fija AQUÍ —un solo sitio—
        en vez de en cada punto donde cambia `modoPublico`: así no hay manera de
        que la lista se pinte con el filtro de la otra mesa. */
+    barajarSiEsOtraMesa();
     datos.publicoDeJuego(modoPublico);
     caja.dataset.paso = modoPublico || 'modo';
     caja.dataset.modo = propuesta.modo || '';
