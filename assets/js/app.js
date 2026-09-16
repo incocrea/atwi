@@ -1276,7 +1276,8 @@
            solos y además se leen como lo que son: las dos señas de la partida
            --cuándo fue y a qué se jugó--. */
         return '<div class="tarjeta partida-fila" data-familia="' +
-            (FAMILIA[e] || 'hecha') + '">' +
+            (FAMILIA[e] || 'hecha') + '"' +
+            (meEspera(d) ? ' data-espera' : '') + '>' +
           '<button class="partida" ' +
             (rot ? 'data-tono="' + rot[1] + '" ' : '') +
             'data-partida="' + esc(d.id) + '">' +
@@ -1569,6 +1570,48 @@
      mezclar las dos en una sola lista sería mezclar dos maneras de jugar que
      esperan cosas distintas de vos. */
   function esEnLinea(d) { return Boolean(d && d.aceptado_por); }
+
+  /* ¿ESTA PARTIDA ME ESTÁ ESPERANDO A MÍ? (regla del titular, 2026-09-16).
+     Las que sí brillan en la lista; las demás, no.
+
+     LA MITAD DEL VALOR ESTÁ EN LAS QUE NO BRILLAN. Una lista donde todo llama
+     la atención no señala nada, y aquí la diferencia es concreta: entre «te
+     toca» y «le toca al otro» hay una acción tuya o ninguna. Por eso una
+     partida remota esperando al otro se queda apagada aunque esté a medias.
+
+     TRES CASOS, y los tres son lo mismo dicho de tres maneras —hay algo que
+     solo puedo hacer yo—:
+       · a medias y me toca grabar,
+       · terminada y sin veredicto, que hay que volver a pedirlo,
+       · con el veredicto listo y sin abrir.
+     `terminada` no entra: ahí no queda nada por hacer.
+
+     Y EN PARTIDA LOCAL ME TOCA SIEMPRE, sea de quien sea el turno: el teléfono
+     es uno solo y quien lo tiene en la mano soy yo. Es el único caso que hoy
+     se puede ver —la remota no existe— y por eso la rama de en línea está
+     escrita con el freno puesto: si no se puede saber de quién es el turno, no
+     brilla. Encender de más es peor que no encender, porque lo que se aprende
+     es a ignorar el brillo. */
+  function meEspera(d) {
+    var e = estadoDe(d);
+    if (e === 'sin-ver' || e === 'falta-veredicto') return true;
+    if (e !== 'en-curso' && e !== 'sin-empezar') return false;
+    if (!esEnLinea(d)) return true;
+
+    var yo = window.ATWI.auth && window.ATWI.auth.sesion();
+    yo = yo && yo.user && yo.user.id;
+    if (!yo) return false;
+    /* MI LADO, Y EL LADO QUE TOCA. `orden` empieza en 1 y quien abre tiene los
+       impares, así que la intervención que viene —la número `hechas + 1`— es de
+       quien abre cuando es impar. Es la misma cuenta de `quienesJugaron`, y ahí
+       ya estuvo al revés una vez, con las dos caras cambiadas de sitio. */
+    var mio = d.propone === yo ? 'propone' : d.aceptado_por === yo ? 'invitado' : null;
+    if (!mio) return false;
+    var abre = d.abre_lado === 'invitado' ? 'invitado' : 'propone';
+    var siguiente = ((d.turnos_grabados || []).length + 1) % 2 === 1
+      ? abre : (abre === 'propone' ? 'invitado' : 'propone');
+    return siguiente === mio;
+  }
 
   /* QUÉ SE ESTÁ MIRANDO EN EL HISTORIAL. Tres vistas de la misma pantalla y una
      sola a la vez: las partidas de este móvil, las de en línea, o las actas.
