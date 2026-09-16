@@ -2831,22 +2831,30 @@ window.ATWI = window.ATWI || {};
      abre, el modo y las propuestas-- y nada más: no abre partida en el
      servidor, no graba y no escribe. Al terminar cae en `revelar()`, o sea que
      también sirve para ver el empalme entero. */
-  function ensayarDesdeElFinal(op) {
-    P = {
+  /* EL TEMA DEL ENSAYO. La sala lo pinta entero en el sorteo, así que no puede
+     ir vacío: un enunciado en blanco deja la tarjeta con el chip de turnos
+     flotando y lo que se está mirando es justo cómo queda esa tarjeta. */
+  var TEMA_DE_ENSAYO = {
+    titulo: 'los platos',
+    enunciado: 'Al terminar de comer, ¿los platos se lavan en ese momento o pueden ' +
+               'esperar a más tarde?'
+  };
+
+  /* LA MESA DE MENTIRA, EN UN SOLO SITIO. La montaban las dos funciones de
+     ensayo con veinticinco líneas cada una, y son la misma partida mirada desde
+     dos momentos distintos: si a `P` le nace un campo, hay que acordarse de
+     ponerlo en los dos o el ensayo se rompe solo en uno. Lo que de verdad
+     cambia entre ellas son tres cosas y van por parámetro. */
+  function mesaDeEnsayo(op, extra) {
+    var base = {
       juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
-      tema: op.tema || { titulo: 'los platos', enunciado: '' },
+      tema: op.tema || TEMA_DE_ENSAYO,
       modo: op.modo === 'negociacion' ? 'negociacion' : 'debate',
       turnos: 3,
       publico: op.publico || 'pareja',
       jugadores: op.quien.map(ficha),
       orden: [0, 1],
-      /* SEIS INTERVENCIONES DE MENTIRA, y no por capricho: la pantalla de
-         deliberar dice cuántas hubo y cuántos segundos duraron. Con la lista
-         vacía saldría «0 intervenciones · 0 segundos», que es la única línea de
-         esa pantalla que no se estaría ensayando. */
-      intervenciones: [{ segundos: 41 }, { segundos: 38 },
-                       { segundos: 52 }, { segundos: 44 },
-                       { segundos: 36 }, { segundos: 49 }],
+      intervenciones: [],
       i: 0,
       borrador: null,
       estado: 'aviso',
@@ -2859,6 +2867,54 @@ window.ATWI = window.ATWI || {};
       paradaNegociacion: null,
       ensayo: true
     };
+    Object.keys(extra || {}).forEach(function (k) { base[k] = extra[k]; });
+    return base;
+  }
+
+  /* ENSAYAR EL SORTEO Y LA ENTRADA (petición del titular, 2026-09-16). El otro
+     ensayo empieza donde termina la ronda; éste empieza donde empieza, que era
+     lo único de la sala que seguía costando una partida entera para poder
+     mirarlo: cuatro segundos de sorteo y una cortinilla de dos, escondidos
+     detrás de elegir tema, invitado, turnos y fichas.
+
+     QUIÉN ABRE SE SORTEA DE VERDAD, sin forzarlo. Un sorteo con el resultado
+     puesto no se puede mirar: lo que hay que ver es que la ficha frene y caiga
+     donde sea, y si siempre cayera del mismo lado no se estaría ensayando eso.
+     Repetirlo cuesta un toque.
+
+     Y SIGUE HASTA LA SALA si se pulsa «Empezar», que es lo que hace la partida
+     de verdad: el empalme entre la cortinilla y el primer turno también es una
+     costura y también hay que poder verla. Para salir está el atrás, que en un
+     ensayo no pregunta nada y devuelve al probador. */
+  function ensayarLaEntrada(op) {
+    P = mesaDeEnsayo(op, { orden: Math.random() < 0.5 ? [0, 1] : [1, 0] });
+    separarFichas();
+    abrir();
+    /* Las poses del encuentro, igual que en la partida de verdad: sin esperarlas
+       la cortinilla arranca con las figuras a medio bajar, y es justo la
+       animación que se ha venido a mirar. */
+    P.poses = Promise.all([
+      window.ATWI.precargarPoses(
+        P.jugadores.map(function (j) { return j.avatar; }),
+        [P.modo === 'debate' ? 'plante' : 'puno'],
+        P.jugadores.map(function (j) { return j.color; })),
+      P.modo === 'debate'
+        ? window.ATWI.precarga.listas(['../assets/img/iconos/vs-sol.png'])
+        : null
+    ]);
+    pintarAviso();
+  }
+
+  function ensayarDesdeElFinal(op) {
+    P = mesaDeEnsayo(op, {
+      /* SEIS INTERVENCIONES DE MENTIRA, y no por capricho: la pantalla de
+         deliberar dice cuántas hubo y cuántos segundos duraron. Con la lista
+         vacía saldría «0 intervenciones · 0 segundos», que es la única línea de
+         esa pantalla que no se estaría ensayando. */
+      intervenciones: [{ segundos: 41 }, { segundos: 38 },
+                       { segundos: 52 }, { segundos: 44 },
+                       { segundos: 36 }, { segundos: 49 }]
+    });
     separarFichas();
     abrir();
 
@@ -2945,5 +3001,6 @@ window.ATWI = window.ATWI || {};
   }
 
   window.ATWI.partida = { empezar: empezar, repasar: repasar, reanudar: reanudar,
-                          cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal };
+                          cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal,
+                          ensayarLaEntrada: ensayarLaEntrada };
 })();

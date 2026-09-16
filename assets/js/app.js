@@ -605,12 +605,30 @@
       recogeDos: 'Vos dijiste que lo que te molesta es encontrarlos al día siguiente.' }
   ];
 
-  function ensayarDesdeElFinal() {
+  /* LO QUE LOS DOS ENSAYOS NECESITAN. Quién juega, en qué modo y con qué juez:
+     es lo único del probador que la sala mira, y lo miran los dos igual. */
+  function mesaDelProbador() {
     var e = estadoProbador();
     var ficha = function (q, porDefecto) {
       return { nombre: (q.nombre || '').trim() || porDefecto,
                avatar: q.avatar, color: q.color };
     };
+    return { quien: [ficha(e.uno, 'Tú'), ficha(e.dos, 'La otra parte')],
+             modo: e.modo, juez: e.juez, publico: e.publico };
+  }
+
+  /* EL SORTEO Y LA CORTINILLA, sin montar una partida (titular, 2026-09-16).
+     El modo manda también aquí: en Controversia los dos se plantan y cae el VS,
+     en Pacto siguen hasta chocar el puño. O sea que las dos escenas se miran
+     con el mismo selector de arriba, sin tocar nada más. */
+  function ensayarLaEntrada() {
+    cerrarModales(['m-probador']);
+    window.ATWI.partida.ensayarLaEntrada(mesaDelProbador());
+  }
+
+  function ensayarDesdeElFinal() {
+    var e = estadoProbador();
+    var mesa = mesaDelProbador();
     /* `cerrarModales` Y NO `cerrarModal`, que es lo que hace la partida de
        verdad al entrar en la sala. La diferencia no es de estilo: `cerrarModal`
        cierra PIDIENDO UN ATRÁS, y el atrás es asíncrono --pasa por `popstate`--
@@ -620,14 +638,9 @@
        Peor todavía, cuando el `popstate` llegaba, `retroceder()` ya veía la sala
        abierta y se iba por la rama de «¿seguro que salís de la partida?». */
     cerrarModales(['m-probador']);
-    window.ATWI.partida.ensayarDesdeElFinal({
-      quien: [ficha(e.uno, 'Tú'), ficha(e.dos, 'La otra parte')],
-      modo: e.modo,
-      juez: e.juez,
-      publico: e.publico,
-      contesta: e.contesta[e.modo],
-      propuestas: PROPUESTAS_DE_MENTIRA
-    });
+    mesa.contesta = e.contesta[e.modo];
+    mesa.propuestas = PROPUESTAS_DE_MENTIRA;
+    window.ATWI.partida.ensayarDesdeElFinal(mesa);
   }
 
   function abrirProbador() {
@@ -3242,6 +3255,7 @@
        ANTERIOR, la que decide cuál de las dos escenas sale. Termina cayendo en
        la revelación, así que de paso se ve el empalme entero. */
     else if (a === 'pb-votar') { ensayarDesdeElFinal(); }
+    else if (a === 'pb-entrada') { ensayarLaEntrada(); }
     /* AL CERRARLO SE BORRA LO BUSCADO, y es lo que hace que plegarlo sea
        seguro: un campo escondido que sigue filtrando deja una lista recortada
        sin nada en pantalla que explique por qué faltan temas. Los chips no se
