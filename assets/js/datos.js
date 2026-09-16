@@ -257,8 +257,29 @@ window.ATWI = window.ATWI || {};
     return (t.publico || 'pareja') === conQuien;
   }
 
+  /* DOS CLASES DE FICHA EN EL MISMO CATÁLOGO (2026-09-16, con QuiénGane). Los
+     305 de Controversia y Pacto son TEMAS: preguntas con dos salidas, escritas
+     para que los dos hablen. Los 150 de QuiénGane son PREMIOS: no preguntan
+     nada, dicen qué se lleva quien gane.
+
+     VAN JUNTOS Y NO EN DOS ARCHIVOS a propósito. Se eligen en la misma
+     pantalla, se buscan igual, se marcan igual como jugados y una partida
+     guardada los encuentra por el mismo `tema(id)`. Partirlos en dos habría
+     duplicado esa pantalla entera para cambiar una palabra. Lo que los separa
+     es un campo, y la lista se acota igual que se acota por mesa.
+
+     Y LOS DE ANTES NO LO DICEN porque no había otra clase que ser: `tema` es
+     el valor de respaldo en los dos lados —aquí y en el poblador—. */
+  var claseDeLista = 'tema';    // 'tema' | 'premio'
+
+  function esDeEstaClase(t) {
+    return (t.clase || 'tema') === claseDeLista;
+  }
+
   function propiosDeAhora() {
-    return cargarTemas().propios.filter(esDeEstePublico);
+    return cargarTemas().propios.filter(function (t) {
+      return esDeEstePublico(t) && esDeEstaClase(t);
+    });
   }
 
   function cargarTemas() {
@@ -425,13 +446,24 @@ window.ATWI = window.ATWI || {};
         /* DE QUÉ MESA SALIÓ. Se fija al CREARLO y no se toca al editarlo: un
            tema escrito para la pareja sigue siendo de la pareja aunque se
            corrija una coma estando en la otra lista. */
-        publico: conQuien || 'pareja'
+        publico: conQuien || 'pareja',
+        /* Y DE QUÉ CLASE, por lo mismo: un premio escrito en QuiénGane no puede
+           acabar en la lista de temas de Controversia porque se corrigiera
+           desde allí. Va junto al público —se fijan los dos al nacer y ninguno
+           se toca después— y no en el bloque de abajo, que es el que sí se
+           reescribe en cada edición. */
+        clase: claseDeLista
       }, {
         titulo: t.titulo,
         enunciado: t.enunciado,
         a: t.a,
         b: t.b,
-        intensidad: t.intensidad || 'media',
+        /* LA INTENSIDAD ES DE LOS TEMAS. Un premio no es ligero ni profundo, y
+           con el valor de serie puesto salía un chip que decía «media» sin que
+           eso significara nada. Los del catálogo traen ahí su familia
+           —elige, libra, recibe—; los propios se quedan sin chip, que es más
+           honesto que inventarles una. */
+        intensidad: claseDeLista === 'premio' ? '' : (t.intensidad || 'media'),
         propio: true,
         editadoPor: quien,
         editado: new Date().toISOString()
@@ -454,6 +486,12 @@ window.ATWI = window.ATWI || {};
     publicoDeJuego: function (x) {
       if (x !== undefined) conQuien = x || null;
       return conQuien;
+    },
+
+    /** Qué clase de ficha enseña la lista: los temas de debate o los premios. */
+    claseDeJuego: function (x) {
+      if (x !== undefined) claseDeLista = x === 'premio' ? 'premio' : 'tema';
+      return claseDeLista;
     },
 
     /* --- Invitados locales --------------------------------------------------
@@ -560,6 +598,7 @@ window.ATWI = window.ATWI || {};
            poder encontrarlo aunque ahora se este jugando con la otra mesa. Lo
            que se acota es la LISTA, no el archivo. */
         if (!esDeEstePublico(t)) return false;
+        if (!esDeEstaClase(t)) return false;
         if (estado === 'sin' && yo.yaDebatido(t.id)) return false;
         if (estado === 'con' && !yo.yaDebatido(t.id)) return false;
         if (!q) return true;

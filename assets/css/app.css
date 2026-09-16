@@ -404,9 +404,15 @@ body.app {
    lado de la otra se ven juntas, con su dibujo, su línea y su pie, y se decide
    de un vistazo. `minmax(0, 1fr)` y no `1fr`, que el mínimo del contenido
    ensancharía la columna y esto no scrollea de lado. */
+/* TRES MODOS EN TRES COLUMNAS (2026-09-16). Eran dos y entró QuiénGane. Se
+   prueba en tres columnas antes que en dos filas por lo mismo que las puso
+   lado a lado en su día: **elegir modo es la decisión de esta pantalla**, y
+   una carta que queda debajo de otra no se compara, se lee después.
+   `minmax(0, 1fr)` y no `1fr`: el mínimo del contenido ensancharía la columna
+   y el home no scrollea de lado. */
 .cartas-modo {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--e-2); align-items: stretch;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--e-1); align-items: stretch;
 }
 
 /* VUELVE EL FONDO DE COLOR, y revoca la decisión del 2026-09-14 de dejar la
@@ -454,6 +460,9 @@ body.app {
 }
 .carta-modo--negociacion {
   background: linear-gradient(170deg, var(--negociacion-tinte), #F4FCF9 78%);
+}
+.carta-modo--competencia {
+  background: linear-gradient(170deg, var(--competencia-tinte), #F4FAFE 78%);
 }
 
 /* El dibujo manda y por eso va a todo el ancho de la carta. Se le fija el ANCHO

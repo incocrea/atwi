@@ -1,7 +1,7 @@
 {
  "version": "v1-preguntas",
  "fecha": "2026-09-11",
- "total": 305,
+ "total": 455,
  "categorias": [
   {
    "nombre": "En mitad de la discusión",
@@ -273,7 +273,8 @@
     "Necesito ordenar una idea completa antes de que nadie la interrumpa; si me cortan a la mitad acabo diciéndolo peor de lo que lo pienso.",
     "Necesito que esto sea una conversación y no una sentencia; escuchar tres minutos sin poder decir nada me deja en el sitio del acusado."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T002",
@@ -287,7 +288,8 @@
     "Necesito poder fiarme de lo que leo; si cada mensaje admite dos lecturas, me paso el día reconstruyendo qué quiso decir y no me entero de nada.",
     "Necesito escribir rápido sin que cada palabra se mida con lupa; si todo mensaje corto es sospechoso, acabo no escribiendo por miedo a sonar mal."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T003",
@@ -302,7 +304,8 @@
     "Necesito una salida de la tensión antes de que se nos vaya de las manos; el humor es mi forma de decir que seguimos siendo un equipo.",
     "Necesito que lo que estoy diciendo se trate como serio al menos una vez, antes de que se convierta en anécdota."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T004",
@@ -316,7 +319,8 @@
     "Necesito bajar la solemnidad; cuando alguien para todo y me mira fijo, me pongo a la defensiva antes de que empiece la frase.",
     "Necesito señales de que se me está escuchando; hablando de espaldas nunca sé si me han oído o solo han asentido."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T005",
@@ -330,7 +334,8 @@
     "Necesito no sentirme brusco; si lo digo sin preparar parece que ataco, y no es lo que quiero transmitir.",
     "Necesito saber a qué atenerme cuanto antes; los segundos de suspense me ponen en alerta y luego escucho peor de lo que escucharía."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T006",
@@ -344,7 +349,8 @@
     "Necesito elegir cuándo entro en una conversación difícil; si respondo entre dos cosas, respondo peor y luego lo pago dos veces.",
     "Necesito saber que hay una respuesta en camino; el silencio largo lo leo como que esto no es importante para el otro."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T007",
@@ -358,7 +364,8 @@
     "Necesito que lo que se dé por hecho sea cierto; si dejo pasar el error, después parece que lo acepté.",
     "Necesito terminar una idea entera al menos una vez; si no, nunca se oye lo que quería decir, solo las correcciones."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T008",
@@ -372,7 +379,8 @@
     "Necesito que la casa se pueda usar sin protocolo; si contar algo pequeño exige desplazarse, dejo de contar cosas pequeñas.",
     "Necesito enterarme a la primera; si empezamos a subir el volumen por una tontería, cinco minutos después parece que discutimos aunque no sea así."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T009",
@@ -386,7 +394,8 @@
     "Necesito soltar lo que llevo aguantando; si lo aplazo se me acumula y luego sale peor de lo que era.",
     "Necesito un rato para aterrizar y llegar entero a la conversación; si entro directo, contesto en automático y a la defensiva."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T010",
@@ -400,7 +409,8 @@
     "Necesito acabar el día sin un tema suelto; si me acuesto con esto lo repaso en bucle y no descanso.",
     "Necesito llegar a la conversación con la cabeza despejada; cansado digo cosas que no siento y después hay que arreglar también eso."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T011",
@@ -414,7 +424,8 @@
     "Necesito que no todo se convierta en conversación larga; si cada detalle se debate, no queda energía para lo que sí importa.",
     "Necesito que lo que me molesta se trate como real aunque sea pequeño; si se descarta por tonto, la próxima vez me lo callo y eso sí es un problema."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T012",
@@ -428,7 +439,8 @@
     "Necesito no fingir; aguantar con la sonrisa puesta toda la noche me deja peor que hablarlo, y además se me nota en la cara.",
     "Necesito que nadie más tenga una opinión sobre lo nuestro; en cuanto hay público, los dos discutimos para el público y no entre nosotros."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T013",
@@ -442,7 +454,8 @@
     "Necesito que se entienda por qué esto me afecta tanto; contado suelto, cualquiera diría que estoy exagerando por una tontería.",
     "Necesito poder arreglar algo concreto y que se note; si se juzga todo junto, nada acaba nunca y no hay forma visible de mejorar."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T014",
@@ -456,7 +469,8 @@
     "Necesito que no se me conteste con la excepción; si nos ponemos a buscar el día que no pasó, no hablamos de todos los demás días.",
     "Necesito discutir sobre algo concreto que pueda reconocer o desmentir; contra una afirmación total no hay ninguna respuesta posible que no suene a excusa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T015",
@@ -470,7 +484,8 @@
     "Necesito que el otro conserve la opción de negarse; si pido de frente, cualquier «no» se convierte automáticamente en un conflicto.",
     "Necesito saber qué se espera de mí para poder hacerlo; adivinando fallo, y fallar sin haberme enterado de nada es lo que me desgasta."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T016",
@@ -484,7 +499,8 @@
     "Necesito que se acepte el gesto sin examen; si cada disculpa se corrige, dejo de pedir perdón para no volver a equivocarme al pedirlo.",
     "Necesito saber que hemos entendido lo mismo; sin eso vuelve a pasar igual y la disculpa no habrá significado nada para ninguno de los dos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T017",
@@ -498,7 +514,8 @@
     "Necesito recuperar el control de lo que digo; si sigo pasado cierto punto hablo desde el enfado y después hay que arreglar también eso.",
     "Necesito la garantía de que la conversación vuelve; sin ninguna referencia, el «luego» se me convierte en «nunca» y no puedo soltarlo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T018",
@@ -512,7 +529,8 @@
     "Necesito que valga más quedar de acuerdo de verdad que quedar de acuerdo rápido; si no, acabo diciendo que sí solo para salir del paso.",
     "Necesito algo estable de lo que fiarme; si todo puede volver, dejo de tomarme en serio lo que hablamos y me guardo la mitad."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T019",
@@ -526,7 +544,8 @@
     "Necesito sentir que se me habla con respeto para poder escuchar; en cuanto el tono me duele, lo demás ya no me entra aunque quiera.",
     "Necesito que lo que planteo no quede anulado por la forma; si la forma descalifica el fondo, hay temas que no podré sacar nunca."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T020",
@@ -541,7 +560,8 @@
     "Necesito no tener cosas a medias a la vista, porque si no me siguen ocupando la cabeza.",
     "Necesito un rato en el que no haya nada obligatorio encadenado a lo anterior."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T021",
@@ -555,7 +575,8 @@
     "Necesito que no se acumulen cosas encima, porque lo acumulado me pesa más de lo que parece.",
     "Necesito que lo de casa tenga un momento previsible y no me interrumpa a cualquier hora."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T022",
@@ -569,7 +590,8 @@
     "Necesito cuidar cosas que me importan y no perderlas por ir deprisa.",
     "Necesito que lo de casa funcione con pasos simples, porque si se complica acabo no haciéndolo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T023",
@@ -583,7 +605,8 @@
     "Necesito sentir que no se pierde lo que cuesta conseguir.",
     "Necesito abrir la nevera y entender qué hay sin tener que investigar."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T024",
@@ -597,7 +620,8 @@
     "Necesito no encontrarme por sorpresa con lo que dejó la vez anterior.",
     "Necesito que las tareas ocupen un rato acotado y no se cuelen en todos los momentos del día."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T025",
@@ -611,7 +635,8 @@
     "Necesito que la casa esté siempre en un estado aceptable, sin sobresaltos ni acumulaciones.",
     "Necesito tener días libres de verdad, sin tareas pequeñas sembradas por todos los días."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T026",
@@ -625,7 +650,8 @@
     "Necesito espacios comunes despejados para sentir que la casa también es mía.",
     "Necesito tener a mano lo que uso y no vivir como de visita en mi propia casa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T027",
@@ -639,7 +665,8 @@
     "Necesito sentir que la casa está terminada y que vivimos en ella, no de paso.",
     "Necesito proteger el poco tiempo de descanso que me queda."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T028",
@@ -653,7 +680,8 @@
     "Necesito previsibilidad para poder organizar mi día sin sorpresas de última hora.",
     "Necesito margen para adaptarme los días en que todo se me complica."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T029",
@@ -667,7 +695,8 @@
     "Necesito quitarme de encima lo repetitivo para que nos quede tiempo para lo demás.",
     "Necesito empezar y terminar sin preparativos, porque si hay preparativos lo voy dejando."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T030",
@@ -681,7 +710,8 @@
     "Necesito sentir que la casa habla bien de los dos y no pasar un mal rato mientras hay gente.",
     "Necesito que traer gente a casa sea fácil y no una fuente de tensión la tarde anterior."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T031",
@@ -695,7 +725,8 @@
     "Necesito que esto lo llevemos entre los dos, no solo que acabe hecho.",
     "Necesito manejar mis tiempos y no depender de la agenda del otro para algo pequeño."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T032",
@@ -710,7 +741,8 @@
     "Necesito no llevarme sorpresas y poder fiarme de que las cosas están donde deben.",
     "Necesito que la casa funcione con un sistema y no a base de urgencias sueltas."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T033",
@@ -724,7 +756,8 @@
     "Necesito poder soltar el tema y dejar de estar encima de nada.",
     "Necesito llevar mi propio ritmo sin sentir que hay alguien supervisando."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T034",
@@ -739,7 +772,8 @@
     "Necesito poder dar algo por supuesto en mi propia casa sin preguntarlo cada vez.",
     "Necesito seguir reconociéndome en cómo hago las cosas, no sentirme corregido en todo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T035",
@@ -753,7 +787,8 @@
     "Necesito poder fiarme de lo que acordamos para organizar mi día sin dejar huecos por si acaso.",
     "Necesito que un día normal no se lea como falta de respeto, porque casi nunca depende solo de mí."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T036",
@@ -767,7 +802,8 @@
     "Necesito que existan cosas que sean solo nuestras y que no dependan de a qué hora llego a casa.",
     "Necesito disfrutar de mi rato libre sin tener que pedir turno para todo lo que me gusta."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T037",
@@ -781,7 +817,8 @@
     "Necesito quitarme de encima el miedo a que algo salga mal para poder disfrutar del viaje desde el primer minuto.",
     "Necesito no pasarme el día esperando, porque el tiempo de mis vacaciones también cuenta antes de llegar."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T038",
@@ -795,7 +832,8 @@
     "Necesito saber que cuando acordamos algo se cumple, para no quedarme esperando sin saber cuánto falta.",
     "Necesito no sentir que me arrancan de una conversación y poder quedar bien con la gente que nos ha recibido."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T039",
@@ -810,7 +848,8 @@
     "Necesito que lo que hacemos juntos me interese a mí también, y no limitarme a estar presente.",
     "Necesito que el rato de descanso sea descanso y no una decisión más que tomar al final del día."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T040",
@@ -824,7 +863,8 @@
     "Necesito que lo que decidimos juntos siga en pie cuando llega el momento de cumplirlo.",
     "Necesito que un rato bueno no se corte por un horario que pusimos sin saber cómo iba a ir."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T041",
@@ -838,7 +878,8 @@
     "Necesito que no se nos apague la vida cuatro meses al año y seguir teniendo cosas que contar.",
     "Necesito que el descanso de invierno no tenga que justificarse ni parezca que me estoy dejando llevar por la pereza."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T042",
@@ -852,7 +893,8 @@
     "Necesito un día sin nada pendiente para llegar al lunes con algo de batería.",
     "Necesito que el fin de semana deje algún recuerdo y no se me pase mirando el techo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T043",
@@ -867,7 +909,8 @@
     "Necesito tener algo a lo que agarrarme durante la semana y no llegar al viernes con la sensación de que no hay nada.",
     "Necesito margen para no llegar obligado a un plan que acepté cuando estaba de otro humor."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T044",
@@ -881,7 +924,8 @@
     "Necesito poder consultar lo que hay sin depender de acordarme ni de volver a preguntar.",
     "Necesito que organizarnos no se convierta en una tarea administrativa más al final del día."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T045",
@@ -895,7 +939,8 @@
     "Necesito sentir que somos un equipo también delante de mi gente y no tener que explicar una ausencia cada vez.",
     "Necesito que mi tiempo libre no se llene de planes que no elegí y poder decir que no sin ser el malo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T046",
@@ -909,7 +954,8 @@
     "Necesito recuperarme de verdad, porque es el único tramo del año en el que puedo parar del todo.",
     "Necesito volver con algo que contar y sentir que el año no ha sido rutina de principio a fin."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T047",
@@ -923,7 +969,8 @@
     "Necesito que el descanso esté asegurado y no depender de que el sitio nuevo salga bien.",
     "Necesito que lo nuestro siga teniendo primeras veces y no se convierta en una repetición."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T048",
@@ -937,7 +984,8 @@
     "Necesito ver a la gente que quiero mientras se puede, porque el resto del año no coincidimos nunca.",
     "Necesito que queden días nuestros sin obligaciones para no terminar las fiestas más cansado que al empezar."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T049",
@@ -951,7 +999,8 @@
     "Necesito saber que hay un rato que es nuestro y que no depende de que sobre tiempo al final de la semana.",
     "Necesito que estar contigo no se sienta como una tarea que se cumple o se incumple."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T050",
@@ -965,7 +1014,8 @@
     "Necesito conservar cosas que son mías y no llegar a fin de año sin haber hecho nada de lo mío.",
     "Necesito tener por delante un tramo largo contigo, porque el resto del año vamos con prisa los dos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T051",
@@ -979,7 +1029,8 @@
     "Necesito conservar algo que es mío y que no depende de nadie, porque es de donde saco la energía.",
     "Necesito que lo nuestro no sea siempre lo que se encaja en los huecos que sobran."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T052",
@@ -993,7 +1044,8 @@
     "Necesito que lo importante caiga cuando puedo dar lo mejor, y no llegar a todo arrastrando.",
     "Necesito que mis mejores horas también cuenten como horas buenas para los dos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T053",
@@ -1008,7 +1060,8 @@
     "Necesito sentir que las cosas de casa se tratan con cuidado; cuando encuentro algo maltratado, se me va la cabeza a todo lo demás.",
     "Necesito conservar gestos que pueda hacer sin pensar. Si cada acción mínima tiene una forma correcta, acabo revisándome a mí mismo dentro de mi propia casa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T054",
@@ -1022,7 +1075,8 @@
     "Necesito sentir que estoy preparado; tener a mano lo que puede hacer falta me ahorra el agobio de resolver las cosas a última hora.",
     "Necesito ver hueco libre. Cuando los armarios están llenos de cosas en reserva, la casa me parece más pequeña y más pesada de lo que es."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T055",
@@ -1036,7 +1090,8 @@
     "Necesito empezar el día con algo terminado; ver la cama hecha me quita ruido de la cabeza durante el resto de la jornada.",
     "Necesito que las mañanas no arranquen con un trámite obligatorio; voy justo de tiempo y quiero elegir yo en qué lo gasto."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T056",
@@ -1050,7 +1105,8 @@
     "Necesito que las cosas queden terminadas: mientras veo algo a medio cerrar, mi cabeza sigue enganchada a esa tarea y no descansa.",
     "Necesito concentrarme en lo que estoy haciendo sin ir cerrando detrás de mí cada paso intermedio del proceso."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T057",
@@ -1064,7 +1120,8 @@
     "Necesito no vivir la casa como una cadena de tareas inmediatas; si todo se hace al instante, no existe ningún momento de descanso.",
     "Necesito ver la cocina despejada para sentir que el día está bajo control; los pendientes pequeños acumulados me dejan una tensión que no se va sola."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T058",
@@ -1078,7 +1135,8 @@
     "Necesito sentir que la casa no se me va de las manos; cuando todo está en marcha y no hay nadie dentro, me queda una sensación de descontrol que no sé explicar.",
     "Necesito moverme por mi propia casa sin hacer un control de salida en cada puerta por la que paso."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T059",
@@ -1092,7 +1150,8 @@
     "Necesito que la casa esté limpia de verdad y no solo en apariencia; es el único sitio donde puedo bajar la guardia del todo.",
     "Necesito que entrar en casa sea fácil y no un protocolo, y me incomoda poner condiciones a quien viene a vernos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T060",
@@ -1106,7 +1165,8 @@
     "Necesito enterarme sin esfuerzo; forzar el oído me cansa y me saca de lo que estoy viendo, que era justo mi rato del día.",
     "Necesito que en casa haya un nivel de ruido en el que quepa algo más que la tele, incluido no hacer nada."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T061",
@@ -1120,7 +1180,8 @@
     "Necesito que el dormitorio esté despejado para poder descansar en él; el montón me recuerda algo pendiente cada vez que entro.",
     "Necesito una zona intermedia donde las cosas puedan estar sin decidir; si todo tiene que estar guardado o lavado, acabo tomando decisiones absurdas por no tener dónde dejarlo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T062",
@@ -1134,7 +1195,8 @@
     "Necesito no empezar el día buscando; cada búsqueda me pone en tensión y me hace salir de casa con la sensación de ir ya tarde.",
     "Necesito que mi forma de organizarme siga valiendo en mi propia casa y no tener que aprenderme un mapa de sitios que no he elegido yo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T063",
@@ -1148,7 +1210,8 @@
     "Necesito saber qué tenemos sin vaciarla entera; cuando no lo sé, compro repetido y luego acabo tirando comida, que es lo que peor llevo.",
     "Necesito que guardar la compra no se convierta en una tarea larga justo después de haber ido a comprar y haberla subido a casa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T064",
@@ -1163,7 +1226,8 @@
     "Necesito que los sitios donde me tumbo estén limpios; encontrarme restos ahí me quita directamente las ganas de usar ese espacio.",
     "Necesito que la casa sea cómoda de verdad y no tenga zonas prohibidas; comer relajado delante de algo es mi forma de desconectar del día."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T065",
@@ -1177,7 +1241,8 @@
     "Necesito un sitio donde no rendir cuentas. Si absolutamente todo se negocia, acabo sintiéndome un poco invitado en mi propia casa.",
     "Necesito que el espacio que compartimos también me descanse a mí; no consigo desconectar en una habitación que siempre está a medio recoger."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T066",
@@ -1191,7 +1256,8 @@
     "Necesito poder avanzar cuando me pongo a ordenar; si cada objeto abre una conversación, ordenar deja de ser algo que se pueda terminar.",
     "Necesito saber dónde está lo mío y que se cuente conmigo antes de moverlo; si no, tengo la sensación de ir siempre por detrás en mi propia casa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T067",
@@ -1205,7 +1271,8 @@
     "Necesito que se me acepte como soy en lo pequeño; si mis costumbres son un problema permanente, empiezo a sentir que estorbo en mi propia casa.",
     "Necesito poder decir lo que me molesta sin que parezca un ataque; si hay temas cerrados de antemano, acabo guardándomelo todo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T068",
@@ -1219,7 +1286,8 @@
     "Necesito no perder el rastro de lo que he vivido; deshacerme de esas cosas se me parece demasiado a borrarlo.",
     "Necesito sitio para lo de ahora. Vivir rodeado de etapas antiguas me deja la sensación de que estamos parados en algún punto del pasado."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T069",
@@ -1233,7 +1301,8 @@
     "Necesito que entre nosotros no se acumule una contabilidad invisible en la que alguien acabe sintiéndose en deuda.",
     "Necesito poder regalarle el rato de vez en cuando y que salir siga pareciendo un plan y no un reparto."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T070",
@@ -1247,7 +1316,8 @@
     "Necesito que mis pocas horas libres no se llenen de recados; cuando pago por eso siento que compro descanso, no lujo.",
     "Necesito notar que las cosas pequeñas cuentan y que no pagamos de más por inercia; el goteo que no se ve me inquieta."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T071",
@@ -1261,7 +1331,8 @@
     "Necesito conservar un placer diario que es solo mío y no tener que justificarlo cada mañana.",
     "Necesito sentir que sabemos por dónde se nos va el dinero; lo que se escapa sin decidirlo me deja intranquilo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T072",
@@ -1275,7 +1346,8 @@
     "Necesito sentir que cuido lo nuestro y que no nos cobran de más por lo mismo; que se me escape un sobreprecio me deja sensación de descuido.",
     "Necesito que las cosas de casa me gusten de verdad; usar a diario algo que no me convence me estropea un momento del día."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T073",
@@ -1289,7 +1361,8 @@
     "Necesito la pequeña victoria de haber pagado menos que el precio de la etiqueta; me hace sentir que gestiono bien lo nuestro.",
     "Necesito que la casa no se llene de cosas que nadie decidió tener; comprar por el descuento y no por la falta me deja una sensación fea."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T074",
@@ -1303,7 +1376,8 @@
     "Necesito que el dinero no se vaya en algo que nadie aprovecha; el derroche automático me pone nervioso.",
     "Necesito estar cómodo en el único sitio donde puedo estarlo; si en casa lo paso mal, el día entero se resiente."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T075",
@@ -1318,7 +1392,8 @@
     "Necesito no salir de un sitio sintiéndome tacaño con alguien que ha hecho bien su trabajo; me importa cómo trato a la gente.",
     "Necesito que el gasto de la noche sea el que habíamos pensado y no un extra variable que aparece al final."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T076",
@@ -1332,7 +1407,8 @@
     "Necesito quitarme de encima una tarea repetida y saber que la casa está abastecida; improvisar cada día me carga la cabeza.",
     "Necesito no llenar la casa de cosas por si acaso; comprar de más y acabar tirándolo me deja la sensación de haber hecho mal las cuentas."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T077",
@@ -1346,7 +1422,8 @@
     "Necesito que no haya cobros en piloto automático que nadie ha decidido este mes; lo que se cobra solo me genera desconfianza.",
     "Necesito no perder de golpe cosas que sí disfruto por una limpieza hecha de un tirón; deshacer y arrepentirse me da rabia."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T078",
@@ -1360,7 +1437,8 @@
     "Necesito no sentir que tiramos dinero ni cosas útiles; el derroche me pesa más que la incomodidad.",
     "Necesito que lo de casa funcione sin sobresaltos; vivir pendiente de si aguanta un mes más me cansa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T079",
@@ -1374,7 +1452,8 @@
     "Necesito que nuestra vida tenga momentos que contar; me da miedo que todo se convierta en rutina y mantenimiento.",
     "Necesito que el sitio donde vivimos me dé calma; lo cotidiano me sostiene más que un día suelto."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T080",
@@ -1388,7 +1467,8 @@
     "Necesito sentir que soy una prioridad y que alguien ha hecho un esfuerzo por mí, no solo cumplido un trámite.",
     "Necesito que el cariño no se mida en dinero; recibir algo caro me deja la sensación de que ahora debo algo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T081",
@@ -1402,7 +1482,8 @@
     "Necesito que el dinero se note en el plan y no en un seguro que casi nunca se usa.",
     "Necesito poder cambiar de idea sin que salga caro; comprometerme sin salida me tiene en tensión desde que reservo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T082",
@@ -1416,7 +1497,8 @@
     "Necesito que nuestro dinero cunda y me gusta la sensación de haber hecho un buen negocio.",
     "Necesito no cargar con el riesgo ni con la gestión; si sale mal, el ahorro se convierte en un problema que acabo resolviendo yo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T083",
@@ -1430,7 +1512,8 @@
     "Necesito sentir que si viene un imprevisto no nos hundimos; la incertidumbre me quita el sueño de verdad.",
     "Necesito que nuestra vida tenga cosas buenas mientras las podemos disfrutar; vivir siempre en modo espera me apaga."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T084",
@@ -1444,7 +1527,8 @@
     "Necesito que la gente que quiero se sienta cuidada y no quedar como el que nunca aporta; me importa lo que representamos juntos fuera de casa.",
     "Necesito que nuestras decisiones sean nuestras y no una respuesta a lo que se espera; gastar por presión me deja una sensación fea que dura días."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T085",
@@ -1458,7 +1542,8 @@
     "Necesito poder nombrar lo que me parece desproporcionado sin que se lea como un ataque; si no puedo decirlo, acabo callándome todo.",
     "Necesito que lo que a mí me importa no quede descalificado con un número; cuando se decide por mí lo que vale, me siento poco tomado en serio."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T086",
@@ -1472,7 +1557,8 @@
     "Necesito anticiparme para estar tranquilo; enterarme de las cosas cuando ya no hay margen me pone en alerta.",
     "Necesito que lo nuestro no gire alrededor del dinero; hablar de números sin motivo me deja con una preocupación que no tenía."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T087",
@@ -1486,7 +1572,8 @@
     "Necesito que en mi propia casa no se conviertan en norma cosas que hago sin pensar, porque si todo se regula dejo de estar cómodo en ella.",
     "Necesito que quede en el día un rato con atención completa, porque la cena es de los pocos momentos en que estamos los dos parados a la vez."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T088",
@@ -1500,7 +1587,8 @@
     "Necesito que lo que ofrezco se reciba como lo que es, un gesto y no una molestia, porque si se recibe mal acabo dejando de ofrecerlo.",
     "Necesito poder terminar lo que tengo entre manos sin que me corten, y que decir «ahora no» no se lea como un rechazo a la persona."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T089",
@@ -1514,7 +1602,8 @@
     "Necesito cerrar lo que queda abierto, porque un dato sin comprobar se me queda dando vueltas y ya no atiendo a nada más de lo que se está diciendo.",
     "Necesito que lo que estamos contando no se pare para dirimir quién acierta, porque entonces la conversación deja de ir de lo que iba."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T090",
@@ -1528,7 +1617,8 @@
     "Necesito conservar los gestos pequeños que hacen que la cama sea de los dos y no dos camas pegadas.",
     "Necesito dormir de un tirón, porque cada vez que me despierto de madrugada tardo muchísimo en volver a dormirme y al día siguiente lo noto entero."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T091",
@@ -1542,7 +1632,8 @@
     "Necesito notar que la habitación no está cargada, porque si me agobio no me duermo por mucho que lo intente.",
     "Necesito que nada de fuera me despierte, porque cuando me despierto de madrugada ya no vuelvo a dormirme y el día siguiente lo pago entero."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T092",
@@ -1557,7 +1648,8 @@
     "Necesito no tener que elegir entre mi pareja y un animal que también es de los dos, y que su sitio no se decida sin contar conmigo.",
     "Necesito una cama en la que quepa y descanse, y que quede al final del día un espacio que sea solo de los dos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T093",
@@ -1572,7 +1664,8 @@
     "Necesito un rato de transición para arrancar, porque pasar de dormido a de pie de golpe me deja el día entero raro.",
     "Necesito que la hora a la que me despierto la marque mi alarma y no la de otra persona, porque esos minutos son justo los que me faltan."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T094",
@@ -1586,7 +1679,8 @@
     "Necesito llegar a la cama sin nada abierto en la cabeza, porque lo que dejo pendiente me quita más sueño que contestarlo.",
     "Necesito que haya una hora a partir de la cual estamos aquí y no en el trabajo, porque si no, no queda ningún rato del día que sea de los dos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T095",
@@ -1600,7 +1694,8 @@
     "Necesito que lo que me hace feliz aparezca también en la parte de mi vida que se ve, porque si no está ahí parece que no existe.",
     "Necesito que lo que vivimos no dependa de cómo se ve desde fuera, porque en cuanto hay público empiezo a estar pendiente del público y ya no estoy en el plan."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T096",
@@ -1615,7 +1710,8 @@
     "Necesito un rato al final del día en el que nadie me pida nada, porque es el único momento en que no estoy pendiente de nadie.",
     "Necesito que quede un momento en que nos contamos lo del día, porque acostarse es el único rato en que estamos los dos quietos y sin prisa."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T097",
@@ -1629,7 +1725,8 @@
     "Necesito saber qué me espera antes de empezar, porque si no lo miro arranco con la sensación de ir por detrás desde el primer minuto.",
     "Necesito que el primer contacto del día sea con una persona y no con una pantalla, porque eso decide con qué ánimo empiezo yo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T098",
@@ -1643,7 +1740,8 @@
     "Necesito poder estar en casa sin preparativos para algo que dura un minuto, porque si cada cosa cuesta, acabo no haciéndola y la casa deja de ser cómoda.",
     "Necesito poder elegir a qué presto atención, porque el sonido no se puede dejar de oír y me quita el único sitio donde estoy tranquilo."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T099",
@@ -1657,7 +1755,8 @@
     "Necesito poder dormir sin tener que irme de mi propia cama ni montar un operativo cada noche antes de acostarme.",
     "Necesito que el sueño que ya tengo no se rompa, porque cuando me despiertan del todo tardo horas en volver y el día siguiente lo pago entero."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T100",
@@ -1671,7 +1770,8 @@
     "Necesito dormirme justo cuando me entra el sueño, porque si se me pasa esa ventana ya no caigo hasta muy tarde.",
     "Necesito un rato al final del día que no le deba a nadie, porque la jornada entera va para fuera y no queda nada más."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T101",
@@ -1685,7 +1785,8 @@
     "Necesito guardar lo que vivimos, porque lo que no queda registrado se me borra y luego siento que lo he perdido de verdad.",
     "Necesito estar donde estoy sin posar ni esperar, porque si no, después no me acuerdo del sitio: me acuerdo de las fotos."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T102",
@@ -1699,7 +1800,8 @@
     "Necesito que no se lea cada gesto mío como una señal de lo que siento, porque si todo significa algo ya no puedo estar tranquilo en mi casa.",
     "Necesito alguna señal de que lo que cuento le llega a alguien, porque si no la hay dejo de contarlo, y eso sí que separa de verdad."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T103",
@@ -1713,7 +1815,8 @@
     "Necesito llegar al día siguiente habiendo dormido, porque cuando no duermo todo lo demás me sale peor, incluido cómo estoy en casa.",
     "Necesito mantener las costumbres que nos hacen pareja, porque se pierden de una en una y no se nota hasta que un día ya no queda ninguna."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T104",
@@ -1727,7 +1830,8 @@
     "Necesito respetar el horario con el que funciona mi cuerpo, porque forzarlo me pasa factura al día siguiente y además no engaño a nadie fingiendo sueño.",
     "Necesito que haya un momento fijo del día en el que sé que vamos a coincidir, porque si depende de que surja, no surge."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "T105",
@@ -1741,7 +1845,8 @@
     "Necesito poder estar en casa sin tener que rendir socialmente, porque ese silencio tranquilo es justo lo bueno de vivir con alguien.",
     "Necesito que quede algún rato del día en el que nos hagamos caso, porque si no, la convivencia se va pareciendo cada vez más a compartir casa con cualquiera."
    ],
-   "publico": "pareja"
+   "publico": "pareja",
+   "clase": "tema"
   },
   {
    "id": "A001",
@@ -4142,6 +4247,1206 @@
     "Necesito organizar el viaje una vez: si cada uno vuelve cuando quiere, son cinco viajes.",
     "Necesito ajustar la vuelta a mi trabajo; volver un día antes por el grupo me cuesta un día libre."
    ]
+  },
+  {
+   "id": "QP001",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "Las próximas películas",
+   "enunciado": "Quien gane elige las próximas tres películas que vean juntos."
+  },
+  {
+   "id": "QP002",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La serie que sigue",
+   "enunciado": "Quien gane decide con qué serie arrancan cuando terminen la de ahora."
+  },
+  {
+   "id": "QP003",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "El plan del sábado",
+   "enunciado": "Quien gane arma el plan del próximo sábado y el otro se deja llevar."
+  },
+  {
+   "id": "QP004",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "Dónde se come afuera",
+   "enunciado": "Quien gane elige el restaurante la próxima vez que salgan a comer."
+  },
+  {
+   "id": "QP005",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La música del carro",
+   "enunciado": "Quien gane manda en la música durante el próximo viaje largo."
+  },
+  {
+   "id": "QP006",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "Los platos de hoy",
+   "enunciado": "Quien gane se libra de lavar los platos durante tres días."
+  },
+  {
+   "id": "QP007",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "Tender la ropa",
+   "enunciado": "Quien gane no tiende la próxima lavada."
+  },
+  {
+   "id": "QP008",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "Sacar la basura",
+   "enunciado": "Quien gane se libra de bajar la basura por una semana."
+  },
+  {
+   "id": "QP009",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El desayuno en la cama",
+   "enunciado": "Quien gane recibe el desayuno en la cama el próximo domingo."
+  },
+  {
+   "id": "QP010",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "Masaje de diez minutos",
+   "enunciado": "Quien gane cobra un masaje de diez minutos cuando quiera esta semana."
+  },
+  {
+   "id": "QP011",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El lado bueno de la cama",
+   "enunciado": "Quien gane se queda con el lado que prefiera durante una semana."
+  },
+  {
+   "id": "QP012",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "El control remoto",
+   "enunciado": "Quien gane tiene el control remoto toda la noche, sin quejas."
+  },
+  {
+   "id": "QP013",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "La cena la cocina el otro",
+   "enunciado": "Quien gane pide la cena que quiera y el otro la cocina."
+  },
+  {
+   "id": "QP014",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "Quién maneja",
+   "enunciado": "Quien gane decide quién maneja la próxima salida."
+  },
+  {
+   "id": "QP015",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La cama se hace sola",
+   "enunciado": "Quien gane no hace la cama en toda la semana."
+  },
+  {
+   "id": "QP016",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El postre entero",
+   "enunciado": "Quien gane se queda con el último pedazo del próximo postre."
+  },
+  {
+   "id": "QP017",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La foto del perfil",
+   "enunciado": "Quien gane elige la próxima foto que suban juntos."
+  },
+  {
+   "id": "QP018",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "Una hora sin teléfono",
+   "enunciado": "Quien gane pide una hora de la otra persona sin teléfono en la mano."
+  },
+  {
+   "id": "QP019",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "El orden del clóset",
+   "enunciado": "Quien gane decide cómo se organiza el clóset y el otro no discute."
+  },
+  {
+   "id": "QP020",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La temperatura",
+   "enunciado": "Quien gane manda en el ventilador o el aire durante una semana."
+  },
+  {
+   "id": "QP021",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La compra del súper",
+   "enunciado": "Quien gane se libra de ir al súper la próxima vez."
+  },
+  {
+   "id": "QP022",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "Un capricho del súper",
+   "enunciado": "Quien gane mete al carrito un antojo sin que nadie lo cuestione."
+  },
+  {
+   "id": "QP023",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "La siesta protegida",
+   "enunciado": "Quien gane tiene derecho a una siesta sin que lo despierten."
+  },
+  {
+   "id": "QP024",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "El baño primero",
+   "enunciado": "Quien gane se baña primero toda la semana."
+  },
+  {
+   "id": "QP025",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "La almohada extra",
+   "enunciado": "Quien gane se queda con la almohada buena hasta la próxima partida."
+  },
+  {
+   "id": "QP026",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El café de la mañana",
+   "enunciado": "Quien gane recibe el café hecho por tres mañanas seguidas."
+  },
+  {
+   "id": "QP027",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La playlist de la cena",
+   "enunciado": "Quien gane pone la música de la próxima cena en casa."
+  },
+  {
+   "id": "QP028",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "Elegir el postre",
+   "enunciado": "Quien gane elige el postre la próxima vez que pidan algo dulce."
+  },
+  {
+   "id": "QP029",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El sofá entero",
+   "enunciado": "Quien gane se estira en el sofá y el otro se acomoda."
+  },
+  {
+   "id": "QP030",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La mascota la saca el otro",
+   "enunciado": "Quien gane se libra de sacar a la mascota tres días."
+  },
+  {
+   "id": "QP031",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La decisión aburrida",
+   "enunciado": "Quien gane le pasa al otro la próxima decisión aburrida que haya que tomar."
+  },
+  {
+   "id": "QP032",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El plan con sus amigos",
+   "enunciado": "Quien gane se lleva al otro a un plan con sus amigos, sin resoplar."
+  },
+  {
+   "id": "QP033",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "La ducha larga",
+   "enunciado": "Quien gane se da una ducha larga sin que nadie le toque la puerta."
+  },
+  {
+   "id": "QP034",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El domingo de nada",
+   "enunciado": "Quien gane se gana un domingo sin planes ni pendientes."
+  },
+  {
+   "id": "QP035",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La receta nueva",
+   "enunciado": "Quien gane elige la próxima receta que prueben en casa."
+  },
+  {
+   "id": "QP036",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "El envío pendiente",
+   "enunciado": "Quien gane se libra del próximo trámite o envío que haya que hacer."
+  },
+  {
+   "id": "QP037",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "La foto que se borra",
+   "enunciado": "Quien gane manda borrar una foto suya que no le gusta."
+  },
+  {
+   "id": "QP038",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "El regalo lo envuelve el otro",
+   "enunciado": "Quien gane se libra de envolver el próximo regalo."
+  },
+  {
+   "id": "QP039",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La mesa la levanta el otro",
+   "enunciado": "Quien gane se queda sentado después de la próxima comida."
+  },
+  {
+   "id": "QP040",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "El despertador",
+   "enunciado": "Quien gane decide a qué hora suena el despertador el próximo finde."
+  },
+  {
+   "id": "QP041",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La llamada incómoda",
+   "enunciado": "Quien gane le pasa al otro la próxima llamada que da pereza hacer."
+  },
+  {
+   "id": "QP042",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "Elegir el asiento",
+   "enunciado": "Quien gane elige asiento en el cine, en el carro y en la mesa por una semana."
+  },
+  {
+   "id": "QP043",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "La manta entera",
+   "enunciado": "Quien gane se queda con la manta esta noche."
+  },
+  {
+   "id": "QP044",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El primer sorbo",
+   "enunciado": "Quien gane prueba primero lo que se esté cocinando."
+  },
+  {
+   "id": "QP045",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "Dos horas de silencio",
+   "enunciado": "Quien gane pide dos horas de casa en silencio para lo suyo."
+  },
+  {
+   "id": "QP046",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "El pedido lo paga el otro",
+   "enunciado": "Quien gane no pone la parte del próximo pedido a domicilio."
+  },
+  {
+   "id": "QP047",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "La ropa se dobla sola",
+   "enunciado": "Quien gane se libra de doblar la próxima tanda de ropa."
+  },
+  {
+   "id": "QP048",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "libra",
+   "titulo": "El plan cancelado",
+   "enunciado": "Quien gane puede cancelar un plan sin dar explicaciones, una vez."
+  },
+  {
+   "id": "QP049",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "recibe",
+   "titulo": "La cita la arma el otro",
+   "enunciado": "Quien gane recibe una salida organizada de principio a fin."
+  },
+  {
+   "id": "QP050",
+   "clase": "premio",
+   "publico": "pareja",
+   "categoria": "elige",
+   "titulo": "El veredicto de la semana",
+   "enunciado": "Quien gane decide el próximo tema que jueguen en ATWI."
+  },
+  {
+   "id": "QA001",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El café lo paga el otro",
+   "enunciado": "Quien gane no paga la próxima vez que salgan por un café."
+  },
+  {
+   "id": "QA002",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El delivery de la noche",
+   "enunciado": "Quien gane se libra de poner su parte del próximo pedido."
+  },
+  {
+   "id": "QA003",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "Dónde se come",
+   "enunciado": "Quien gane elige el lugar la próxima vez que salgan a comer."
+  },
+  {
+   "id": "QA004",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La película del maratón",
+   "enunciado": "Quien gane elige la película de la próxima juntada."
+  },
+  {
+   "id": "QA005",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El conductor designado",
+   "enunciado": "Quien gane se libra de manejar la próxima salida de noche."
+  },
+  {
+   "id": "QA006",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La música de la previa",
+   "enunciado": "Quien gane pone la música toda la próxima previa."
+  },
+  {
+   "id": "QA007",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El hielo y la bebida",
+   "enunciado": "Quien gane no carga con el hielo ni con las bebidas la próxima vez."
+  },
+  {
+   "id": "QA008",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La cuenta la divide el otro",
+   "enunciado": "Quien gane se libra de hacer las cuentas de la próxima salida."
+  },
+  {
+   "id": "QA009",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El destino del próximo viaje",
+   "enunciado": "Quien gane elige a dónde van el próximo finde largo."
+  },
+  {
+   "id": "QA010",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La reserva la hace el otro",
+   "enunciado": "Quien gane se libra de llamar y reservar la próxima vez."
+  },
+  {
+   "id": "QA011",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El asado lo prende el otro",
+   "enunciado": "Quien gane no prende el fuego en la próxima juntada."
+  },
+  {
+   "id": "QA012",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La foto del grupo",
+   "enunciado": "Quien gane elige qué foto del grupo se sube y cuál no."
+  },
+  {
+   "id": "QA013",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El juego de mesa",
+   "enunciado": "Quien gane elige a qué juegan la próxima noche de juegos."
+  },
+  {
+   "id": "QA014",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El último pedazo",
+   "enunciado": "Quien gane se queda con el último pedazo de lo que haya."
+  },
+  {
+   "id": "QA015",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El asiento de adelante",
+   "enunciado": "Quien gane va adelante en el próximo viaje en carro."
+  },
+  {
+   "id": "QA016",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La limpieza de después",
+   "enunciado": "Quien gane se libra de limpiar cuando termine la juntada."
+  },
+  {
+   "id": "QA017",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El chiste que se retira",
+   "enunciado": "Quien gane manda jubilar un chiste repetido del grupo."
+  },
+  {
+   "id": "QA018",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El apodo",
+   "enunciado": "Quien gane le pone apodo al otro por una semana en el grupo."
+  },
+  {
+   "id": "QA019",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "La salida la arma el otro",
+   "enunciado": "Quien gane recibe el próximo plan armado y solo tiene que aparecer."
+  },
+  {
+   "id": "QA020",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El primero en elegir",
+   "enunciado": "Quien gane elige primero cuando pidan para compartir."
+  },
+  {
+   "id": "QA021",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "La cerveza la trae el otro",
+   "enunciado": "Quien gane no pone las bebidas la próxima vez."
+  },
+  {
+   "id": "QA022",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El que llega tarde paga",
+   "enunciado": "Quien gane queda perdonado la próxima vez que llegue tarde."
+  },
+  {
+   "id": "QA023",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La playlist del viaje",
+   "enunciado": "Quien gane arma la playlist del próximo viaje en carro."
+  },
+  {
+   "id": "QA024",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El favor sin preguntas",
+   "enunciado": "Quien gane cobra un favor razonable, sin explicaciones."
+  },
+  {
+   "id": "QA025",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La historia que no se cuenta",
+   "enunciado": "Quien gane veta una anécdota suya por un mes."
+  },
+  {
+   "id": "QA026",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El postre compartido",
+   "enunciado": "Quien gane elige el postre que piden para compartir."
+  },
+  {
+   "id": "QA027",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "La mudanza la ayuda el otro",
+   "enunciado": "Quien gane se gana una mano en su próxima mudanza o mueble armado."
+  },
+  {
+   "id": "QA028",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El sticker del grupo",
+   "enunciado": "Quien gane elige el próximo sticker que se usa en el grupo."
+  },
+  {
+   "id": "QA029",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El taxi lo pide el otro",
+   "enunciado": "Quien gane se libra de pedir y coordinar el transporte."
+  },
+  {
+   "id": "QA030",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La mesa la elige el otro",
+   "enunciado": "Quien gane se libra de decidir dónde sentarse."
+  },
+  {
+   "id": "QA031",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El plan que se repite",
+   "enunciado": "Quien gane elige qué plan del grupo se repite este mes."
+  },
+  {
+   "id": "QA032",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El café de la oficina",
+   "enunciado": "Quien gane recibe un café invitado esta semana."
+  },
+  {
+   "id": "QA033",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La foto de perfil del grupo",
+   "enunciado": "Quien gane elige la próxima foto del chat."
+  },
+  {
+   "id": "QA034",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El primer turno en la consola",
+   "enunciado": "Quien gane agarra el control primero la próxima vez."
+  },
+  {
+   "id": "QA035",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La discusión que se cierra",
+   "enunciado": "Quien gane cierra una discusión eterna del grupo por una semana."
+  },
+  {
+   "id": "QA036",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El que va por la comida",
+   "enunciado": "Quien gane no baja a buscar el pedido."
+  },
+  {
+   "id": "QA037",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El cumpleaños lo organiza el otro",
+   "enunciado": "Quien gane se libra de organizar la próxima celebración."
+  },
+  {
+   "id": "QA038",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La invitación de última hora",
+   "enunciado": "Quien gane puede sumar a alguien al próximo plan sin consultar."
+  },
+  {
+   "id": "QA039",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El audio largo perdonado",
+   "enunciado": "Quien gane manda un audio largo y nadie se queja."
+  },
+  {
+   "id": "QA040",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El spoiler perdonado",
+   "enunciado": "Quien gane queda libre del próximo spoiler que suelte sin querer."
+  },
+  {
+   "id": "QA041",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La propina",
+   "enunciado": "Quien gane se libra de poner la propina la próxima vez."
+  },
+  {
+   "id": "QA042",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El lugar del sofá",
+   "enunciado": "Quien gane se queda con el mejor lugar en la próxima juntada."
+  },
+  {
+   "id": "QA043",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La compra compartida",
+   "enunciado": "Quien gane no va al súper antes de la próxima juntada."
+  },
+  {
+   "id": "QA044",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El horario del plan",
+   "enunciado": "Quien gane decide a qué hora arranca la próxima salida."
+  },
+  {
+   "id": "QA045",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La revancha",
+   "enunciado": "Quien gane elige el próximo juego en el que se miden."
+  },
+  {
+   "id": "QA046",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "recibe",
+   "titulo": "El café de la mañana siguiente",
+   "enunciado": "Quien gane cobra el desayuno del día después."
+  },
+  {
+   "id": "QA047",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "La canción prohibida",
+   "enunciado": "Quien gane veta una canción del grupo por un mes."
+  },
+  {
+   "id": "QA048",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "El que manda el mensaje",
+   "enunciado": "Quien gane se libra de escribir al grupo para coordinar."
+  },
+  {
+   "id": "QA049",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "libra",
+   "titulo": "La entrada la compra el otro",
+   "enunciado": "Quien gane se libra de comprar las entradas del próximo plan."
+  },
+  {
+   "id": "QA050",
+   "clase": "premio",
+   "publico": "amigos",
+   "categoria": "elige",
+   "titulo": "El tema del próximo debate",
+   "enunciado": "Quien gane elige con qué juegan la próxima vez en ATWI."
+  },
+  {
+   "id": "QF001",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La limpieza general",
+   "enunciado": "Quien gane no ayuda en la próxima limpieza general de la casa."
+  },
+  {
+   "id": "QF002",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El menú del domingo",
+   "enunciado": "Quien gane elige qué se come en la próxima comida familiar."
+  },
+  {
+   "id": "QF003",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "Los platos de la comida",
+   "enunciado": "Quien gane se libra de lavar los platos el próximo domingo."
+  },
+  {
+   "id": "QF004",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "La película de la sobremesa",
+   "enunciado": "Quien gane elige qué se ve después de comer."
+  },
+  {
+   "id": "QF005",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El control remoto familiar",
+   "enunciado": "Quien gane manda en la tele durante la próxima reunión."
+  },
+  {
+   "id": "QF006",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El mandado",
+   "enunciado": "Quien gane se libra del próximo mandado que haya que hacer."
+  },
+  {
+   "id": "QF007",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La mesa se pone sola",
+   "enunciado": "Quien gane no pone ni levanta la mesa la próxima comida."
+  },
+  {
+   "id": "QF008",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El postre lo trae el otro",
+   "enunciado": "Quien gane se libra de llevar el postre a la próxima reunión."
+  },
+  {
+   "id": "QF009",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "El asiento de siempre",
+   "enunciado": "Quien gane se queda con el mejor asiento de la mesa."
+  },
+  {
+   "id": "QF010",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "La música de la reunión",
+   "enunciado": "Quien gane pone la música de la próxima juntada familiar."
+  },
+  {
+   "id": "QF011",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El que va por la abuela",
+   "enunciado": "Quien gane se libra de ir a buscar y llevar a alguien."
+  },
+  {
+   "id": "QF012",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "La foto familiar",
+   "enunciado": "Quien gane elige la foto de todos que se manda al grupo."
+  },
+  {
+   "id": "QF013",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El regalo del próximo cumpleaños",
+   "enunciado": "Quien gane elige el regalo y el otro lo compra."
+  },
+  {
+   "id": "QF014",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La pregunta incómoda",
+   "enunciado": "Quien gane queda libre de contestar una pregunta familiar por un año."
+  },
+  {
+   "id": "QF015",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El chiste de siempre",
+   "enunciado": "Quien gane manda retirar la anécdota que le sacan en cada comida."
+  },
+  {
+   "id": "QF016",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La cocina la limpia el otro",
+   "enunciado": "Quien gane no limpia la cocina después de cocinar."
+  },
+  {
+   "id": "QF017",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El horario de la comida",
+   "enunciado": "Quien gane decide a qué hora se come el próximo domingo."
+  },
+  {
+   "id": "QF018",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El sobrino lo cuida el otro",
+   "enunciado": "Quien gane se libra del próximo turno de cuidar a los chicos."
+  },
+  {
+   "id": "QF019",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "Las sobras",
+   "enunciado": "Quien gane se lleva las sobras que quiera de la próxima comida."
+  },
+  {
+   "id": "QF020",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "El café de después",
+   "enunciado": "Quien gane recibe el café servido sin levantarse."
+  },
+  {
+   "id": "QF021",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "La casa de la próxima reunión",
+   "enunciado": "Quien gane decide en casa de quién se junta la próxima vez."
+  },
+  {
+   "id": "QF022",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El llamado a organizar",
+   "enunciado": "Quien gane se libra de ser quien coordina a todos por el grupo."
+  },
+  {
+   "id": "QF023",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "La compra de la reunión",
+   "enunciado": "Quien gane no pone su parte de la próxima compra familiar."
+  },
+  {
+   "id": "QF024",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El primero en servirse",
+   "enunciado": "Quien gane se sirve primero en la próxima comida."
+  },
+  {
+   "id": "QF025",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La sobremesa corta",
+   "enunciado": "Quien gane puede irse temprano de la próxima reunión sin dar explicaciones."
+  },
+  {
+   "id": "QF026",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El perro de la casa",
+   "enunciado": "Quien gane se libra de sacar o dar de comer a la mascota una semana."
+  },
+  {
+   "id": "QF027",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "La receta de la abuela",
+   "enunciado": "Quien gane elige qué plato de la familia se cocina la próxima vez."
+  },
+  {
+   "id": "QF028",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El armado del arbolito",
+   "enunciado": "Quien gane se libra de armar o desarmar la decoración."
+  },
+  {
+   "id": "QF029",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El asado lo hace el otro",
+   "enunciado": "Quien gane no se para frente a la parrilla la próxima vez."
+  },
+  {
+   "id": "QF030",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "La tanda de fotos",
+   "enunciado": "Quien gane decide cuántas fotos se sacan y cuándo se termina."
+  },
+  {
+   "id": "QF031",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El que baja las sillas",
+   "enunciado": "Quien gane se libra de acomodar sillas y mesas."
+  },
+  {
+   "id": "QF032",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El tema que no se toca",
+   "enunciado": "Quien gane veta un tema de conversación durante la próxima comida."
+  },
+  {
+   "id": "QF033",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El primer turno del baño",
+   "enunciado": "Quien gane entra primero cuando se están arreglando todos."
+  },
+  {
+   "id": "QF034",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La llamada de los domingos",
+   "enunciado": "Quien gane se libra de la próxima llamada de rutina."
+  },
+  {
+   "id": "QF035",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La cargada perdonada",
+   "enunciado": "Quien gane queda libre de una cargada familiar por un mes."
+  },
+  {
+   "id": "QF036",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El envoltorio",
+   "enunciado": "Quien gane se libra de envolver los regalos de la próxima fecha."
+  },
+  {
+   "id": "QF037",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "El pan y la bebida",
+   "enunciado": "Quien gane no se encarga de traer lo que siempre falta."
+  },
+  {
+   "id": "QF038",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El lugar en el carro",
+   "enunciado": "Quien gane elige asiento en el próximo viaje familiar."
+  },
+  {
+   "id": "QF039",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El día de visita",
+   "enunciado": "Quien gane elige qué día se hace la próxima visita."
+  },
+  {
+   "id": "QF040",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La ayuda con la tecnología",
+   "enunciado": "Quien gane se libra de configurar el teléfono de alguien."
+  },
+  {
+   "id": "QF041",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El brindis",
+   "enunciado": "Quien gane decide quién hace el brindis en la próxima fecha."
+  },
+  {
+   "id": "QF042",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La ropa que se plancha",
+   "enunciado": "Quien gane se libra de la próxima tanda de planchado."
+  },
+  {
+   "id": "QF043",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El juego después de comer",
+   "enunciado": "Quien gane elige a qué se juega en la sobremesa."
+  },
+  {
+   "id": "QF044",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "La cuenta del restaurante",
+   "enunciado": "Quien gane no pone su parte la próxima vez que salgan todos."
+  },
+  {
+   "id": "QF045",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "La cama de visita",
+   "enunciado": "Quien gane se queda con la cama buena cuando alguien se queda a dormir."
+  },
+  {
+   "id": "QF046",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "recibe",
+   "titulo": "El silencio de la siesta",
+   "enunciado": "Quien gane pide una siesta sin que nadie haga ruido."
+  },
+  {
+   "id": "QF047",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El pedido de la panadería",
+   "enunciado": "Quien gane elige qué se compra para el desayuno."
+  },
+  {
+   "id": "QF048",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "libra",
+   "titulo": "La planta que se riega",
+   "enunciado": "Quien gane se libra de regar las plantas esta semana."
+  },
+  {
+   "id": "QF049",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El turno de contar la anécdota",
+   "enunciado": "Quien gane elige quién cuenta la historia de la reunión."
+  },
+  {
+   "id": "QF050",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El próximo premio",
+   "enunciado": "Quien gane elige el premio de la siguiente partida de QuiénGane."
   }
  ],
  "eje": "situacional",

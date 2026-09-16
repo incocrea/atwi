@@ -63,6 +63,13 @@
 .modal--debate .modal__pie { background: var(--debate-tinte); border-top-color: rgba(199, 91, 51, .16); }
 .modal--negociacion { background: var(--negociacion-tinte); }
 .modal--negociacion .modal__pie { background: var(--negociacion-tinte); border-top-color: rgba(33, 135, 111, .16); }
+/* Y el tercero (2026-09-16). Son tres bloques casi iguales y se deja así a
+   propósito por ahora: agrupar los tres en un selector obligaría a declarar el
+   tinte en una variable por modal, y eso toca las quince reglas que hoy
+   escriben `var(--debate-tinte)` a mano. Cuando entre el cuarto modo —si
+   entra— ése es el momento. */
+.modal--competencia { background: var(--competencia-tinte); }
+.modal--competencia .modal__pie { background: var(--competencia-tinte); border-top-color: rgba(30, 111, 172, .16); }
 .modal--debate .opcion[aria-pressed="true"] { border-color: var(--debate); background: var(--blanco); }
 .modal--debate .opcion[aria-pressed="true"] .opcion__marca { border-color: var(--debate); background: var(--debate); color: var(--blanco); }
 .modal--negociacion .opcion[aria-pressed="true"] { border-color: var(--negociacion); background: var(--blanco); }

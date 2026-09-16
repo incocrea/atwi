@@ -304,6 +304,7 @@
       '<div class="cartas-modo">' +
         cartaModo('debate') +
         cartaModo('negociacion') +
+        cartaModo('competencia') +
       '</div>' +
 
       /* EN EL HOME EL AVISO NO LLEVA TARJETA. Detrás hay un fondo dibujado, y
@@ -886,7 +887,15 @@
           '<span class="tema__enunciado">' + esc(t.enunciado) + '</span>' +
         '</button>' +
         '<div class="tema__pie">' +
-          '<span class="chip chip--' + esc(t.intensidad) + '">' + esc(t.intensidad) + '</span>' +
+          /* EL PRIMER CHIP DICE DE QUÉ VA LA FICHA, y no es el mismo dato en
+             las dos clases: un tema trae su `intensidad` —ligera, profunda— y
+             un premio trae su familia —elige, libra, recibe—. Con el nombre
+             del campo escrito a mano, los 150 premios pintaban un chip VACÍO.
+             Se toma el que haya; si no hay ninguno, no se pinta chip. */
+          (t.intensidad || t.categoria
+            ? '<span class="chip chip--' + esc(t.intensidad || t.categoria) + '">' +
+                esc(t.intensidad || t.categoria) + '</span>'
+            : '') +
           (hecho
             ? '<span class="chip chip--hecho">' + iconoSVG('listo', 13) + ' Ya debatido</span>'
             : '<span class="chip chip--nuevo">Sin estrenar</span>') +
@@ -987,6 +996,36 @@
      cambia es cómo se llama en pantalla. */
   var ETIQUETA_MIS = 'Mis propios temas';
 
+  /* LO QUE SE ELIGE NO SE LLAMA IGUAL EN LOS TRES MODOS. En Controversia y en
+     Pacto es un TEMA —algo de lo que hablar—; en QuiénGane es un PREMIO —algo
+     que llevarse—. Son cuatro frases y estaban escritas a mano en cuatro
+     sitios: puestas aquí, el día que entre un modo más se añade una columna y
+     no hay que ir a buscarlas.
+     Se decide por `propuesta.modo` y no por un parámetro, porque las cuatro
+     salen de la misma pantalla y esa pantalla ya sabe a qué se está jugando. */
+  function palabras() {
+    var premio = propuesta.modo === 'competencia';
+    return premio ? {
+      mis: 'Mis propios premios',
+      hay: 'Los premios que escribiste, para jugártelos.',
+      vacio: 'Lo que quieras poner en juego y no está en la lista, escríbelo aquí.',
+      cambian: 'Los premios cambian según con quién estés jugando.',
+      escribir: 'Escribir un premio',
+      primero: 'Escribir el primer premio',
+      ninguno: 'El catálogo trae los premios de siempre, pero los suyos son suyos. ' +
+               'Escribe qué se lleva quien gane y se juega igual que cualquier otro.'
+    } : {
+      mis: ETIQUETA_MIS,
+      hay: 'Los temas que escribiste, para debatir o negociar.',
+      vacio: 'Lo que discutes y no está en la lista, escríbelo aquí para debatir o negociar.',
+      cambian: 'Los temas cambian según con quién estés debatiendo.',
+      escribir: 'Escribir un tema',
+      primero: 'Escribir el primer tema',
+      ninguno: 'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
+               'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.'
+    };
+  }
+
   /** Deja el catálogo como recién abierto: en la pregunta de con quién juegas. */
   function reiniciarCatalogo() {
     modoPublico = null;
@@ -1034,6 +1073,11 @@
        que la lista se pinte con el filtro de la otra mesa. */
     barajarSiEsOtraMesa();
     datos.publicoDeJuego(modoPublico);
+    /* Y QUÉ CLASE DE FICHA TOCA. En QuiénGane no se elige un tema de qué hablar
+       sino un premio que llevarse, y los dos viven en el mismo catálogo. Va
+       aquí, junto a la mesa, porque las dos cosas acotan la misma lista y
+       separarlas sería tener dos sitios donde acordarse de lo mismo. */
+    datos.claseDeJuego(propuesta.modo === 'competencia' ? 'premio' : 'tema');
     caja.dataset.paso = modoPublico || 'modo';
     caja.dataset.modo = propuesta.modo || '';
 
@@ -1042,7 +1086,7 @@
       caja.innerHTML = cinta +
         '<h1 class="vista__titulo" style="margin-bottom:var(--e-2)">¿Con quién juegas?</h1>' +
         '<p class="chico suave vista__bajada" style="margin-bottom:var(--e-4)">' +
-          'Los temas cambian según con quién estés debatiendo.</p>' +
+          esc(palabras().cambian) + '</p>' +
         '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
       return;
     }
@@ -1067,12 +1111,12 @@
             /* SIN LA MANITO ✍️ delante del título (titular, 2026-09-16): era un
                emoji —lo dibujaba el sistema— y encima decía lo mismo que el
                botón de debajo, que sí lleva el icono de la casa. */
-            '<div class="vista__titulo"><h1 style="font-size:var(--t-h2)">' + ETIQUETA_MIS + '</h1>' +
+            '<div class="vista__titulo"><h1 style="font-size:var(--t-h2)">' + esc(palabras().mis) + '</h1>' +
             '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
           '</div>' +
 
           '<button class="boton boton--bloque" data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
-            icono('mas', 20) + 'Escribir un tema</button>' +
+            icono('mas', 20) + esc(palabras().escribir) + '</button>' +
 
           (temas.length
             ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
@@ -1080,9 +1124,7 @@
                una cosa que hacer, así que el sitio donde se mira es el sitio
                donde hay que poder tocar. */
             : estadoVacio(icono('mas', 76), 'Todavía no escribieron ninguno',
-                'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
-                'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.',
-                'tema-nuevo', 'Escribir el primer tema'));
+                palabras().ninguno, 'tema-nuevo', palabras().primero));
         devolverFoco();
         return;
       }
@@ -1149,11 +1191,9 @@
            entonces el dato manda sobre la invitación. */
         '<button class="categoria categoria--propia categoria--sin-emoji" ' +
                 'data-categoria="' + esc(datos.MIS_TEMAS) + '">' +
-          '<span><span class="categoria__nombre">' + ETIQUETA_MIS + '</span>' +
+          '<span><span class="categoria__nombre">' + esc(palabras().mis) + '</span>' +
           '<span class="categoria__que">' +
-            (propios
-              ? 'Los temas que escribiste, para debatir o negociar.'
-              : 'Lo que discutes y no está en la lista, escríbelo aquí para debatir o negociar.') +
+            esc(propios ? palabras().hay : palabras().vacio) +
           '</span></span>' +
           '<span class="categoria__n">' + (propios || icono('mas', 34)) + '</span>' +
         '</button>' +
@@ -2404,16 +2444,32 @@
     var reescrito = Boolean(t && !propio && datos.estaReescrito(id));
     escribiendo = { id: id || null, propio: propio || !id };
 
-    $('#m-escribir .modal__titulo').textContent =
-      !t ? 'Tu propio tema' : 'Editar tema';
+    /* EL FORMULARIO ES EL MISMO Y PIDE OTRA COSA. En QuiénGane no se escribe
+       una pregunta sino un premio, así que cambian el título, la ayuda, las
+       dos etiquetas, el ejemplo y el aviso de abajo —que en los temas explica
+       la prueba de las dos respuestas defendibles y aquí no viene a cuento—.
+       Lo que NO cambia es el mecanismo: mismo modal, mismo guardado, mismo
+       borrado. Duplicar la pantalla para cambiar seis frases habría dejado dos
+       sitios donde arreglar el mismo fallo. */
+    var esPremio = propuesta.modo === 'competencia';
+
+    $('#m-escribir .modal__titulo').textContent = !t
+      ? (esPremio ? 'Tu propio premio' : 'Tu propio tema')
+      : (esPremio ? 'Editar premio' : 'Editar tema');
 
     $('#m-escribir .modal__cuerpo').innerHTML =
       '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
         (t && !propio
-          ? 'Cambia la pregunta para que se parezca a la discusión de ustedes. ' +
-            'El tema original del catálogo no se toca: puedes volver a él cuando quieras.'
-          : 'Escríbelo como una pregunta de opinión, con las dos salidas dentro. ' +
-            'Nadie elige lado: cada quien dice lo suyo al hablar.') +
+          ? (esPremio
+              ? 'Cambia el premio para que se parezca a lo que ustedes se jugarían. ' +
+                'El original del catálogo no se toca: puedes volver a él cuando quieras.'
+              : 'Cambia la pregunta para que se parezca a la discusión de ustedes. ' +
+                'El tema original del catálogo no se toca: puedes volver a él cuando quieras.')
+          : (esPremio
+              ? 'Escribe qué se lleva quien gane. Que se pueda cumplir esta semana y que ' +
+                'perderlo no le duela a nadie.'
+              : 'Escríbelo como una pregunta de opinión, con las dos salidas dentro. ' +
+                'Nadie elige lado: cada quien dice lo suyo al hablar.')) +
       '</p>' +
 
       (reescrito
@@ -2426,10 +2482,16 @@
 
       '<div class="apilado-5">' +
         campoTexto('e-titulo', 'Título corto', t ? t.titulo : '', 'input',
-                   'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».', 60) +
-        campoTexto('e-enunciado', 'La pregunta', t ? t.enunciado : '', 'textarea',
-                   'Una pregunta de opinión. Por ejemplo: «¿Los platos se lavan al ' +
-                   'terminar de comer o pueden esperar a la mañana?».', 240) +
+                   esPremio
+                     ? 'Cómo lo van a ver en la lista. Por ejemplo: «El control remoto».'
+                     : 'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».', 60) +
+        campoTexto('e-enunciado', esPremio ? 'El premio' : 'La pregunta',
+                   t ? t.enunciado : '', 'textarea',
+                   esPremio
+                     ? 'Qué se lleva quien gane. Por ejemplo: «Quien gane elige las ' +
+                       'próximas tres películas».'
+                     : 'Una pregunta de opinión. Por ejemplo: «¿Los platos se lavan al ' +
+                       'terminar de comer o pueden esperar a la mañana?».', 240) +
 
         '<p class="chico" id="e-error" style="color:var(--peligro)"></p>' +
       '</div>' +
@@ -2440,9 +2502,16 @@
          solo admite una respuesta decente, no es un desacuerdo, es un acusado y
          un fiscal, y el árbitro no tendría nada que arbitrar. */
       '<div class="aviso-ia" style="margin-top:var(--e-4)">' + iconoSVG('aviso', 20) +
-        '<span>Escríbelo como <strong>pregunta</strong>, y que las dos respuestas se ' +
-        'puedan defender. Si solo hay una respuesta decente, eso no es un desacuerdo: ' +
-        'es una acusación, y el resultado no valdría nada.</span>' +
+        (esPremio
+          /* La misma idea que el aviso de los temas, por el otro lado: allí se
+             protege al que perdería un juicio injusto y aquí al que perdería
+             algo que no quería apostar. Lo dice también la línea `clave` del
+             modo, y es la regla que hace que este modo sea un juego. */
+          ? '<span>Que se pueda cumplir <strong>esta semana</strong> y que perderlo no le ' +
+            'duela a nadie. Si duele, no es un premio: es un castigo con otro nombre.</span>'
+          : '<span>Escríbelo como <strong>pregunta</strong>, y que las dos respuestas se ' +
+            'puedan defender. Si solo hay una respuesta decente, eso no es un desacuerdo: ' +
+            'es una acusación, y el resultado no valdría nada.</span>') +
       '</div>' +
 
       (reescrito
@@ -2452,8 +2521,12 @@
         : '') +
       (propio
         ? '<button class="boton boton--fantasma boton--bloque" data-accion="borrar-tema" ' +
-          'style="margin-top:var(--e-3);color:var(--peligro)">Borrar este tema</button>'
+          'style="margin-top:var(--e-3);color:var(--peligro)">Borrar este ' +
+          (esPremio ? 'premio' : 'tema') + '</button>'
         : '');
+
+    var guardar = $('#e-guardar');
+    if (guardar) guardar.textContent = esPremio ? 'Guardar el premio' : 'Guardar el tema';
 
     abrirModal('m-escribir');
     setTimeout(function () { var n = $('#e-titulo'); if (n && !t) n.focus(); }, 60);
@@ -2478,12 +2551,23 @@
   function guardarTema() {
     var v = function (id) { return ($('#' + id).value || '').trim(); };
     var titulo = v('e-titulo'), enunciado = v('e-enunciado');
-    var fallo =
-      titulo.length < 3 ? 'El título necesita al menos tres letras.' :
-      enunciado.length < 15 ? 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.' :
-      /* No se exige el signo de interrogación —hay preguntas sin él— pero sí que
-         ofrezca dos salidas, que es lo que hace que haya algo que discutir. */
-      !/\bo\b/i.test(enunciado) ? 'Falta la otra salida: la pregunta tiene que ofrecer dos.' : '';
+    /* CADA CLASE SE VALIDA CONTRA LO QUE ES. A un tema se le exige que ofrezca
+       dos salidas —sin eso no hay nada que discutir—; a un premio eso no se le
+       puede pedir, porque no es una disyuntiva sino una sola cosa que alguien
+       se lleva. Lo que sí se le pide es que se sepa DE QUIÉN es: sin eso, «las
+       próximas tres películas» no dice quién las elige. */
+    var esPremio = propuesta.modo === 'competencia';
+    var fallo = titulo.length < 3 ? 'El título necesita al menos tres letras.' : esPremio
+      ? (enunciado.length < 12
+          ? 'El premio se queda corto: di qué se lleva quien gane.'
+          : !/gana|gane|ganador/i.test(enunciado)
+            ? 'Falta de quién es: escríbelo como «Quien gane…».' : '')
+      : (enunciado.length < 15
+          ? 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.'
+          /* No se exige el signo de interrogación —hay preguntas sin él— pero sí
+             que ofrezca dos salidas, que es lo que hace que haya qué discutir. */
+          : !/\bo\b/i.test(enunciado)
+            ? 'Falta la otra salida: la pregunta tiene que ofrecer dos.' : '');
     if (fallo) { $('#e-error').textContent = fallo; return; }
 
     var t = datos.tema(escribiendo.id);

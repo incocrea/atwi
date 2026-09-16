@@ -15,13 +15,22 @@
   --lavanda-oscuro: #5A49B4;  /* estado pulsado y texto sobre tinte */
   --lavanda-tinte: #EFECFE;
 
-  /* --- Los dos modos (nunca se mezclan) ---------------------------------- */
+  /* --- Los TRES modos (nunca se mezclan) ---------------------------------- */
   --negociacion: #34B79B;           /* menta: modo Pacto, el mediador */
   --negociacion-oscuro: #21876F;
   --negociacion-tinte: #DDF4EE;
   --debate: #F07F55;          /* coral: modo Debate, el árbitro */
   --debate-oscuro: #C75B33;
   --debate-tinte: #FDEAE1;
+  /* AZUL, Y NO EL MORADO QUE ESTABA RESERVADO (2026-09-16). Este archivo y el
+     cortador de iconos daban por hecho que el tercer modo sería morado, porque
+     de esa tanda quedaron sin usar un `ayuda-morado` y un `play-morado`. Lo
+     desmiente su propio arte: la peana `base-competencia` que el titular
+     entregó es AZUL —medida, RGB(1,145,248)— y el logo de QuiénGane es azul con
+     la copa dorada. Manda la plancha, no la reserva. */
+  --competencia: #3FA3EE;     /* azul: modo QuiénGane, el premio */
+  --competencia-oscuro: #1E6FAC;
+  --competencia-tinte: #E2F0FD;
 
   /* --- Apoyo -------------------------------------------------------------
      El juego no puede ser todo lavanda: cada pantalla tiene su color y de ahí

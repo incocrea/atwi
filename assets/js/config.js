@@ -47,6 +47,26 @@ window.ATWI.config = {
            '2 posibles acuerdos para seleccionar o ajustar.',
       clave: 'Si ningún acuerdo satisface a las dos partes, se vale seguir en desacuerdo y ' +
              'reintentar la negociación más adelante.'
+    },
+    /* EL TERCER MODO (titular, 2026-09-16), y no es un tercer debate: aquí no
+       se argumenta ni se acuerda nada. Se apuesta algo —«quien gane elige las
+       próximas tres películas»— y se decide en un minijuego.
+       Por eso lo que se elige antes de jugar NO es un tema sino un PREMIO, y
+       por eso el catálogo tiene dos clases de ficha. Ver `clase` en
+       `catalogo.json`.
+       ⚠️ ESTÁ A MEDIAS A PROPÓSITO: llega hasta elegir premio. Lo que sigue
+       —el selector de minijuego, que sustituye al de «local o invitación»— lo
+       explicará el titular más adelante, así que aquí no hay nada de la sala. */
+    competencia: {
+      nombre: 'QuiénGane',
+      /* Sin partir: los otros dos separan su «IA» para pintarla aparte y este
+         nombre no la lleva dentro. El rótulo dibujado es el que manda. */
+      partido: ['QuiénGane', '', ''],
+      gancho: 'Apuesta algo y que lo decida el juego',
+      que: 'Eligen qué se lleva quien gane —una comida, un favor, la próxima ' +
+           'elección— y lo deciden jugando. Aquí no se discute: se compite.',
+      clave: 'Lo que se apuesta tiene que poder cumplirse sin que a nadie le pese; ' +
+             'si duele perderlo, no es un premio.'
     }
   },
 
@@ -73,7 +93,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'bac5b94',
+  version: 'd454f77',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

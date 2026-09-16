@@ -96,7 +96,7 @@ window.ATWI = window.ATWI || {};
                     'debate', 'negociacion', 'micro', 'mas',
                     'energia', 'buzon',
                     'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
-                    'ayuda-coral', 'ayuda-menta',
+                    'ayuda-coral', 'ayuda-menta', 'ayuda-sol',
                     /* La tercera tanda (2026-09-16): los ocho que pedía la
                        auditoría. `parar`, `pausa` y `play` salen del cortador
                        nivelados entre sí porque son tres estados del MISMO
@@ -111,7 +111,12 @@ window.ATWI = window.ATWI || {};
      fila y no hay que ir a buscar dónde se concatenaba el nombre del archivo.
      Hoy lo usa solo `ayuda`; se deja sin atar a un icono porque el morado ya
      está cortado esperando a su modo. */
-  var TINTE_DE_MODO = { debate: 'coral', negociacion: 'menta' };
+  /* QuiénGane lleva la bombilla DORADA y no una azul, que sería lo suyo: en las
+     planchas no hay azul, y de las cuatro que hay la dorada es la que hace
+     juego con su logo —la copa es dorada— y con lo que el modo promete, que es
+     ganar algo. El morado que quedaba reservado «para el modo que falta» no era
+     de éste: su peana y su logo son azules. */
+  var TINTE_DE_MODO = { debate: 'coral', negociacion: 'menta', competencia: 'sol' };
 
   /** `ATWI.iconoDeModo('ayuda', 'debate')` -> el `ayuda-coral`. */
   window.ATWI.iconoDeModo = function (nombre, modo, tam) {
