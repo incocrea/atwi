@@ -3114,7 +3114,7 @@ body.app {
 .encuentro__vs {
   position: absolute; z-index: 3; left: 50%; top: 58%;
   transform: translate(-50%, -50%) scale(0); opacity: 0;
-  width: 148px; height: auto;
+  width: 118px; height: auto;
 }
 /* El destello del choque de puños. Ocho rayos, de un `repeating-conic-gradient`
    y no de uno normal: con el normal hay que escribir los ocho tramos a mano y
