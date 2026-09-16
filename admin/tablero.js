@@ -248,6 +248,28 @@
                      : Number(n).toLocaleString('es');
   }
 
+  /* QUÉ REVIVE CADA LATIDO. Los once se llamaban `latido` a secas y la tabla no
+     decía cuál era cuál; ahora la operación trae la clave técnica
+     —`latido:abogado:kai`— y aquí se traduce a lo que uno buscaría leyendo.
+     Si aparece una etiqueta que este mapa no conoce, se enseña cruda: es
+     preferible una clave fea a una fila que miente. */
+  var QUE_REVIVE = {
+    'arbitro:normalizacion': 'Juez Controversia · normalización',
+    'arbitro:veredicto':     'Juez Controversia · veredicto',
+    'mediador:normalizacion': 'Juez Negociación · normalización',
+    'mediador:devolucion':    'Juez Negociación · propuestas',
+    'limpieza':               'Sin abogado · limpieza'
+  };
+  function queRevive(operacion) {
+    var resto = String(operacion).slice('latido:'.length);
+    if (QUE_REVIVE[resto]) return QUE_REVIVE[resto];
+    if (resto.indexOf('abogado:') === 0) {
+      var q = resto.slice(8);
+      return 'Abogado · ' + q.charAt(0).toUpperCase() + q.slice(1);
+    }
+    return resto;
+  }
+
   function verLlamadas() {
     Promise.all([
       pedir('consumos?select=id,creado,proveedor,operacion,modelo,tokens_entrada,' +
@@ -304,7 +326,10 @@
             var c = cuesta(f);
             return [
               fecha(f.creado),
-              '<span class="' + (f.ok ? '' : 'mal') + '">' + esc(f.operacion) + '</span>' +
+              (String(f.operacion).indexOf('latido:') === 0
+                ? '<span class="' + (f.ok ? '' : 'mal') + '">latido</span>' +
+                  '<br><span class="pastilla">' + esc(queRevive(f.operacion)) + '</span>'
+                : '<span class="' + (f.ok ? '' : 'mal') + '">' + esc(f.operacion) + '</span>') +
                 (f.error ? '<br><span class="chico mal">' + esc(String(f.error).slice(0, 80)) + '</span>' : '') +
                 /* EL NUMERO DE LA PETICION, que es la columna «ID» del registro
                    de Anthropic. Comparar los dos registros por hora y por
