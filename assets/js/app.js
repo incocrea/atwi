@@ -799,19 +799,21 @@
            arte la trae dibujada. `ayuda` es un bocadillo en tono pastel y
            `play` un disco en el color saturado del modo, así que el de jugar
            sigue pesando más sin necesidad de rellenarlo aparte. */
+        /* SIN PALABRA DEBAJO (titular, 2026-09-16). Llegaron a tenerla en esta
+           forma de carta, y se van otra vez: los dos signos son universales
+           —una interrogación y un play no hay que traducirlos— y con ellos
+           dentro la carta se leía como un formulario con dos botones en vez de
+           como una carta de juego. El nombre no se pierde: va en `aria-label`,
+           que es lo que anuncia un lector de pantalla, y en `title` para el
+           escritorio. */
         '<div class="carta-modo__salidas">' +
           '<button class="carta-modo__signo carta-modo__explica" data-explicar="' + clave + '" ' +
-            'aria-label="Cómo funciona ' + esc(modoLlano(clave)) + '">' +
-            window.ATWI.iconoDeModo('ayuda', clave, 44) +
-            '<span class="carta-modo__palabra">Cómo<br>funciona</span></button>' +
+            'aria-label="Cómo funciona ' + esc(modoLlano(clave)) + '" title="Cómo funciona">' +
+            window.ATWI.iconoDeModo('ayuda', clave, 44) + '</button>' +
           '<button class="carta-modo__signo carta-modo__jugar" data-crear="' + clave + '" ' +
-            'aria-label="Jugar a ' + esc(modoLlano(clave)) + '">' +
-            window.ATWI.iconoDeModo('play', clave, 60) +
-            '<span class="carta-modo__palabra">Jugar</span></button>' +
+            'aria-label="Jugar a ' + esc(modoLlano(clave)) + '" title="Jugar">' +
+            window.ATWI.iconoDeModo('play', clave, 60) + '</button>' +
         '</div>' +
-        /* LA FRANJA VA A SANGRE hasta los bordes de la carta: es el pie de la
-           carta y no una pastilla puesta encima. */
-        (m.chip ? '<p class="carta-modo__chip">' + esc(m.chip) + '</p>' : '') +
       '</div>';
   }
 
@@ -872,6 +874,7 @@
      Vista: Catálogo
      ====================================================================== */
   var categoriaAbierta = null;
+  var buscadorAbierto = false;   // el campo de texto del catálogo, plegado de serie
   var modoPublico = null;   // 'pareja' | 'amigos'; null = todavia no ha elegido
   var busqueda = '';        // texto del buscador
   var filtro = 'todos';     // 'todos' | 'sin' | 'con'
@@ -956,72 +959,72 @@
     datos.catalogo().then(function (cat) {
       var buscando = busqueda.trim() !== '' || filtro !== 'todos';
 
-      if (categoriaAbierta) {
-        var esMia = categoriaAbierta === datos.MIS_TEMAS;
-        var enCategoria = datos.temasDe(categoriaAbierta);
+      /* LA ÚNICA COLECCIÓN QUE SIGUE ABRIÉNDOSE APARTE SON LOS TEMAS PROPIOS, y
+         no es una categoría que se salvó: es de quien juega, se escribe desde
+         dentro y puede estar vacía, así que mezclada entre los 105 del catálogo
+         no tendría dónde poner su botón de escribir ni su estado vacío.
+         Aquí había además la rama de las doce categorías del catálogo; se fue
+         con ellas. */
+      if (categoriaAbierta === datos.MIS_TEMAS) {
+        var mios = datos.temasDe(datos.MIS_TEMAS);
         var visibles = datos.buscar(busqueda, filtro);
-        var temas = enCategoria.filter(function (x) { return visibles.indexOf(x) !== -1; });
-        var meta = esMia
-          ? { emoji: '✍️', total: enCategoria.length }
-          : (cat.categorias.filter(function (c) { return c.nombre === categoriaAbierta; })[0] || {});
+        var temas = mios.filter(function (x) { return visibles.indexOf(x) !== -1; });
 
         caja.innerHTML = cinta +
           '<div class="fila" style="margin-bottom:var(--e-3)">' +
-            '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver a las categorías">' + icono('atras', 22) + '</button>' +
-            '<div><h1 style="font-size:var(--t-h2)">' + esc(meta.emoji || '') + ' ' +
-              esc(esMia ? ETIQUETA_MIS : categoriaAbierta) + '</h1>' +
-            '<p class="chico suave">' + temas.length + ' de ' + (meta.total || 0) + '</p></div>' +
+            '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver al catálogo">' + icono('atras', 22) + '</button>' +
+            '<div><h1 style="font-size:var(--t-h2)">✍️ ' + ETIQUETA_MIS + '</h1>' +
+            '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
           '</div>' +
 
-          (esMia
-            ? '<button class="boton boton--bloque" data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
-                icono('mas', 20) + 'Escribir un tema</button>'
-            : barraBusqueda()) +
+          '<button class="boton boton--bloque" data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
+            icono('mas', 20) + 'Escribir un tema</button>' +
 
           (temas.length
             ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
-            : esMia
-              ? estadoVacio('✍️', 'Todavía no escribieron ninguno',
-                  'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
-                  'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.')
-              : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+            : estadoVacio('✍️', 'Todavía no escribieron ninguno',
+                'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
+                'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.'));
         devolverFoco();
         return;
       }
 
-      /* Con búsqueda o filtro activos se salta la lista de categorías y se
-         enseñan los temas directamente: quien busca quiere el tema, no la
-         carpeta donde vive. */
-      if (buscando) {
-        var hallados = datos.buscar(busqueda, filtro);
-        caja.innerHTML = cinta +
-          '<h1 style="margin-bottom:var(--e-3)">Catálogo</h1>' +
-          barraBusqueda() +
-          '<p class="chico suave" style="margin:var(--e-3) 0">' +
-            hallados.length + ' de ' + cat.total + ' temas</p>' +
-          (hallados.length
-            ? '<div class="apilado">' + hallados.map(tarjetaTema).join('') + '</div>'
-            : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
-        devolverFoco();
-        return;
-      }
+      /* LA LISTA VA DIRECTA, SIN CARPETAS (petición del titular, 2026-09-16).
+         Había un paso intermedio de doce categorías —«En la cocina y la mesa»,
+         «En la alcoba»— y para llegar a un tema había que acertar primero en
+         qué carpeta lo habían guardado. Ese acierto es trabajo de quien busca y
+         lo hace sobre un reparto que no eligió: un tema de horarios puede estar
+         en «rutinas» o en «pantallas» y las dos son defendibles.
 
+         Lo que las categorías daban —el orden de «por dónde suele salir la
+         discusión»— NO se pierde: `datos.todos()` mantiene ese orden, así que
+         la lista corrida sigue empezando por lo que sale antes. Lo que
+         desaparece es tener que abrir una carpeta para verlo. */
+      var temas = datos.buscar(busqueda, filtro);
       var propios = datos.cuantosPropios();
 
       caja.innerHTML = cinta +
-        '<div class="fila" style="margin-bottom:var(--e-2)">' +
+        '<div class="fila" style="margin-bottom:var(--e-3)">' +
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
           '<h1 style="font-size:var(--t-h2)">Con mi pareja</h1>' +
+          botonBuscar() +
         '</div>' +
-        '<p class="chico suave" style="margin-bottom:var(--e-3)">' +
-          cat.total + ' temas, ordenados por dónde y cuándo suele salir la discusión. ' +
-          'Llevas ' + datos.perfil().temasJugados.length + ' debatidos.' +
-        '</p>' +
+        /* AQUÍ IBA «105 temas, ordenados por dónde y cuándo suele salir la
+           discusión. Llevas 7 debatidos.» Lo quitó el titular: describía el
+           reparto por categorías, que ya no existe, y además dos renglones
+           fijos de letra chica en la primera pantalla son dos renglones que se
+           leen una vez y se saltan siempre. */
         barraBusqueda() +
+        /* La cuenta solo sale cuando se acotó algo. Fija era una descripción;
+           así es la respuesta a lo que acabas de pedir. */
+        (buscando
+          ? '<p class="chico suave" style="margin:var(--e-3) 0 0">' +
+              temas.length + ' de ' + cat.total + ' temas</p>'
+          : '') +
 
         /* El catálogo es una plantilla: lo que no está, se escribe. Va ARRIBA
-           y no al final de 12 categorías, porque escribir el tema propio es lo
-           que hace que la pareja vuelva cuando el catálogo se acaba. */
+           de la lista, porque escribir el tema propio es lo que hace que la
+           pareja vuelva cuando el catálogo se acaba. */
         '<button class="categoria categoria--propia" data-categoria="' + esc(datos.MIS_TEMAS) + '">' +
           '<span class="categoria__emoji">✍️</span>' +
           '<span><span class="categoria__nombre">' + ETIQUETA_MIS + '</span>' +
@@ -1033,17 +1036,10 @@
           '<span class="categoria__n">' + (propios || '+') + '</span>' +
         '</button>' +
 
-        '<div class="categorias">' +
-          cat.categorias.map(function (c) {
-            return '<button class="categoria" data-categoria="' + esc(c.nombre) + '">' +
-                '<span class="categoria__emoji">' + c.emoji + '</span>' +
-                '<span><span class="categoria__nombre">' + esc(c.nombre) + '</span>' +
-                (c.descripcion ? '<span class="categoria__que">' + esc(c.descripcion) + '</span>' : '') +
-                '</span>' +
-                '<span class="categoria__n">' + c.total + '</span>' +
-              '</button>';
-          }).join('') +
-        '</div>';
+        (temas.length
+          ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
+          : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+      devolverFoco();
     }).catch(function () {
       caja.innerHTML = estadoVacio('😕', 'No se pudo cargar el catálogo', 'Comprueba que estás sirviendo el sitio con tools/servir.ps1 y no abriendo el archivo directamente.');
     });
@@ -1659,11 +1655,18 @@
 
   /* Buscador y filtros. Van juntos porque responden a la misma pregunta:
      «¿qué me queda por debatir de esto?». */
+  /* EL CAMPO DE TEXTO SE PLIEGA Y LOS FILTROS NO (petición del titular,
+     2026-09-16). No es la misma clase de control: los tres chips son el estado
+     de la lista —se leen sin usarlos y dicen que se puede acotar—, mientras que
+     el campo de texto es una herramienta que solo sirve cuando ya sabes qué
+     palabra buscar, y ocupaba una fila entera de la primera pantalla para eso. */
   function barraBusqueda() {
     var f = [['todos', 'Todos'], ['sin', 'Sin estrenar'], ['con', 'Ya debatidos']];
     return '<div class="buscador">' +
-        '<input class="campo" id="q" type="search" inputmode="search" placeholder="Buscar un tema…" ' +
-          'value="' + esc(busqueda) + '" autocomplete="off">' +
+        (buscadorAbierto
+          ? '<input class="campo" id="q" type="search" inputmode="search" placeholder="Buscar un tema…" ' +
+            'value="' + esc(busqueda) + '" autocomplete="off">'
+          : '') +
         '<div class="filtros">' +
           f.map(function (x) {
             return '<button class="chip chip--filtro" data-filtro="' + x[0] + '"' +
@@ -1671,6 +1674,16 @@
           }).join('') +
         '</div>' +
       '</div>';
+  }
+
+  /* La lupa que lo abre y lo cierra. Cambia a una cruz cuando está abierto: el
+     mismo botón hace las dos cosas y tiene que decir cuál va a hacer ahora. */
+  function botonBuscar() {
+    return '<button class="boton-icono boton-icono--derecha" data-accion="buscar" ' +
+        'aria-expanded="' + (buscadorAbierto ? 'true' : 'false') + '" ' +
+        'aria-label="' + (buscadorAbierto ? 'Cerrar la búsqueda' : 'Buscar un tema') + '">' +
+        window.ATWI.iconoSVG(buscadorAbierto ? 'cerrar' : 'lupa', 22) +
+      '</button>';
   }
 
   function estadoVacio(emoji, titulo, texto) {
@@ -3126,6 +3139,16 @@
        ANTERIOR, la que decide cuál de las dos escenas sale. Termina cayendo en
        la revelación, así que de paso se ve el empalme entero. */
     else if (a === 'pb-votar') { ensayarDesdeElFinal(); }
+    /* AL CERRARLO SE BORRA LO BUSCADO, y es lo que hace que plegarlo sea
+       seguro: un campo escondido que sigue filtrando deja una lista recortada
+       sin nada en pantalla que explique por qué faltan temas. Los chips no se
+       tocan, que ésos se ven. */
+    else if (a === 'buscar') {
+      buscadorAbierto = !buscadorAbierto;
+      if (!buscadorAbierto) busqueda = '';
+      reponerFoco = buscadorAbierto;
+      pintarCatalogo();
+    }
     else if (a === 'catalogo-atras' || a === 'cambiar-publico') {
       /* Las flechas de dentro del catálogo hacen lo mismo que el atrás del
          teléfono, y por el mismo camino: si cambiaran el estado por su cuenta,

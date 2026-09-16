@@ -34,6 +34,7 @@ window.ATWI = window.ATWI || {};
     negociacion: '<path d="M12 19.5s-7-4.2-7-9A3.9 3.9 0 0 1 12 7.6 3.9 3.9 0 0 1 19 10.5c0 4.8-7 9-7 9Z"/>',
 
     /* Acciones */
+    lupa: '<circle cx="10.6" cy="10.6" r="6.4"/><path d="M15.3 15.3 20 20"/>',
     micro: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0"/><path d="M12 18v3"/>',
     mas: '<path d="M12 5.5v13M5.5 12h13"/>',
     atras: '<path d="M14.5 5.5 8 12l6.5 6.5"/>',
