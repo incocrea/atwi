@@ -126,7 +126,9 @@
   --sombra-1: 0 2px 8px rgba(46, 42, 63, .06);
   --sombra-2: 0 6px 20px rgba(46, 42, 63, .10);
   --sombra-3: 0 16px 40px rgba(46, 42, 63, .16);
-  --sombra-cta: 0 8px 20px rgba(122, 106, 216, .34);
+  /* AQUÍ VIVÍA `--sombra-cta`, la sombra lavanda del botón, y se fue con el
+     canto (2026-09-16): el relieve se calcula desde `--cara`, así que una
+     sombra con el color escrito a mano solo valía para el botón lavanda. */
   --sombra-marco: 0 30px 80px rgba(46, 42, 63, .28);
 
   /* --- Tipografía --------------------------------------------------------

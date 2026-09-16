@@ -39,6 +39,28 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 .js-nosel, button, .chip, .barra-item { -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
 
 /* --- Botones -------------------------------------------------------------- */
+/* EL BOTÓN ES UNA PIEZA CON CANTO, NO UN RECTÁNGULO PINTADO (mockup del
+   titular, 2026-09-16). Tres cosas lo hacen, y las tres son CSS:
+
+   1. EL CANTO. `0 5px 0` en la sombra dibuja el grueso del botón, como si
+      estuviera troquelado en algo. Es lo que más lo cambia y lo que hace que
+      al pulsarlo se pueda HUNDIR: en `:active` el botón baja los mismos 5 px
+      y el canto desaparece, así que el dedo empuja una pieza física en vez de
+      apagar un color.
+   2. EL DEGRADADO. De claro arriba a hondo abajo. Es la luz cayendo sobre una
+      superficie curva; sin él, el canto solo parece una raya debajo.
+   3. EL BRILLO DE ARRIBA. `inset 0 2px 0` blanco: el filo que devuelve la luz.
+
+   TODO SALE DE UN SOLO COLOR. Cada variante declara `--cara` y nada más; el
+   claro, el hondo y el canto se calculan con `color-mix`. Antes cada una
+   traía su fondo, su hover y su sombra escritos a mano —tres líneas por
+   color— y por eso `--suyo`, que es el color del personaje y se elige en
+   tiempo de ejecución, no podía tener ninguno. Ahora lo tiene gratis.
+
+   ⚠️ EL CANTO OCUPA SITIO Y HAY QUE RESERVÁRSELO. Un `box-shadow` no
+   desplaza nada, así que sin el `margin-bottom` el canto se pinta ENCIMA de
+   lo que venga debajo. Con la sombra difusa de antes no se notaba —una mancha
+   suave sobre otra cosa no se lee—, pero un canto sólido de 5 px sí. */
 .boton {
   display: inline-flex; align-items: center; justify-content: center; gap: var(--e-2);
   min-height: var(--diana); padding: 0 var(--e-5);
@@ -49,24 +71,63 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
      están a dos pasos. El aro blanco lo recorta, igual que el perfil de pegatina
      recorta a los personajes, y es el mismo recurso gráfico en los dos sitios. */
   border: 4px solid var(--blanco); border-radius: var(--radio-pastilla); cursor: pointer;
-  background: var(--lavanda); color: var(--blanco); box-shadow: var(--sombra-cta);
-  transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
+  --cara: var(--lavanda);
+  --canto: 5px;
+  --cara-clara: color-mix(in srgb, var(--cara) 66%, #fff);
+  --cara-honda: color-mix(in srgb, var(--cara) 84%, #000);
+  --cara-canto: color-mix(in srgb, var(--cara) 52%, #000);
+  background: linear-gradient(180deg, var(--cara-clara) 0%, var(--cara) 54%, var(--cara-honda) 100%);
+  color: var(--blanco);
+  text-shadow: 0 2px 0 color-mix(in srgb, var(--cara-canto) 70%, transparent);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .45),
+              0 var(--canto) 0 var(--cara-canto),
+              0 calc(var(--canto) + 4px) 14px rgba(46, 42, 63, .22);
+  margin-bottom: var(--canto);
+  transition: transform var(--dur-corta) var(--suave), box-shadow var(--dur-corta) var(--suave), filter var(--dur-corta) var(--suave);
 }
-.boton:hover { background: var(--lavanda-oscuro); }
-.boton:active { transform: translateY(2px) scale(.985); box-shadow: 0 3px 10px rgba(122,106,216,.3); }
+.boton:hover { filter: brightness(1.05); }
+/* SE HUNDE HASTA APOYARSE. Baja exactamente el alto del canto y el canto se
+   va: la pieza queda a ras. La sombra difusa se acorta en vez de apagarse,
+   porque un objeto apoyado sigue proyectando sombra, solo que más corta. */
+.boton:active {
+  transform: translateY(var(--canto));
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, .3),
+              0 0 0 var(--cara-canto),
+              0 2px 5px rgba(46, 42, 63, .2);
+}
 .boton--bloque { width: 100%; }
-.boton--grande { min-height: 60px; font-size: 1.1875rem; }
+.boton--grande { min-height: 60px; font-size: 1.1875rem; --canto: 6px; }
 /* El suave ya es blanco por dentro, así que un aro blanco no lo recortaría de
-   nada: se queda con su borde de línea, que es lo que le da forma. */
-.boton--suave { background: var(--superficie); color: var(--tinta); box-shadow: var(--sombra-1); border: 2px solid var(--linea); }
-.boton--suave:hover { background: var(--crema-hondo); }
-.boton--fantasma { background: transparent; color: var(--tinta-suave); box-shadow: none; font-weight: 700; border-color: transparent; }
-.boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); }
-.boton--debate { background: var(--debate); box-shadow: 0 8px 20px rgba(240,127,85,.34); }
-.boton--debate:hover { background: var(--debate-oscuro); }
-.boton--negociacion { background: var(--negociacion); box-shadow: 0 8px 20px rgba(52,183,155,.34); }
-.boton--negociacion:hover { background: var(--negociacion-oscuro); }
-.boton[disabled] { background: var(--linea-fuerte); color: var(--blanco); box-shadow: none; cursor: not-allowed; }
+   nada: se queda con su borde de línea, que es lo que le da forma. Y CONSERVA
+   EL CANTO, en gris: es la otra mitad de un par apilado —«mismo tamaño, y el
+   blanco va punteado»— y si uno tiene grueso y el otro es plano, dejan de
+   parecer dos puertas del mismo material. */
+.boton--suave {
+  --cara: var(--superficie);
+  --cara-canto: var(--linea-fuerte);
+  color: var(--tinta); text-shadow: none;
+  border: 2px solid var(--linea);
+  background: linear-gradient(180deg, #fff 0%, var(--superficie) 100%);
+}
+.boton--suave:hover { filter: brightness(.985); }
+/* El fantasma NO lleva canto, y es a propósito: no es un botón menor, es un
+   enlace con forma de botón —«ahora no», «ya tengo cuenta»—. Darle grueso lo
+   pondría a competir con el que sí hay que pulsar. */
+.boton--fantasma {
+  background: none; color: var(--tinta-suave); box-shadow: none; text-shadow: none;
+  font-weight: 700; border-color: transparent; margin-bottom: 0;
+}
+.boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); filter: none; }
+.boton--debate { --cara: var(--debate); }
+.boton--negociacion { --cara: var(--negociacion); }
+/* Apagado es apagado: sin canto y sin brillo, porque lo que dice un botón en
+   relieve es «púlsame» y éste no se puede pulsar. */
+.boton[disabled] {
+  --cara: var(--linea-fuerte);
+  color: var(--blanco); text-shadow: none; cursor: not-allowed;
+  box-shadow: none; margin-bottom: var(--canto); filter: none;
+}
+.boton[disabled]:active { transform: none; box-shadow: none; }
 
 /* Botón redondo de icono (cerrar, atrás) */
 .boton-icono {
