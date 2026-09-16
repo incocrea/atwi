@@ -2605,6 +2605,15 @@ window.ATWI = window.ATWI || {};
 
   function revelar() {
     var m = $('#m-partida');
+    /* LO QUE SONABA SE CALLA ANTES DE CAMBIAR DE PANTALLA. Esto no estaba y se
+       oía: bastaba poner una intervención —o «oír la partida entera»— y tocar
+       «ver el resultado» para que la voz del personaje siguiera de fondo sobre
+       la revelación, encima del redoble y de la voz del juez. Esconder el modal
+       con `hidden` no para un `<audio>`: el elemento sigue vivo y sonando.
+       `deliberar()` y `votar()` ya lo hacían; esta era la única salida de la
+       sala que no. Lo encontró el titular con el ejercicio 1 (2026-09-16). */
+    pararJuez();
+    cerrarReproductor();
     m.hidden = true;
     var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto) : null;
     veredicto.revelar(Object.assign({

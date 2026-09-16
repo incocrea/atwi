@@ -1431,9 +1431,26 @@ body.app {
   grid-template-columns: minmax(0, 1.5fr) repeat(5, minmax(0, 1fr)) minmax(0, 1.2fr);
   gap: 2px;
 }
-.tabla--ancha .tabla__fila--cabeza .tabla__n {
-  color: var(--tinta-tenue); font-family: var(--cuerpo); font-weight: 700;
-  font-size: 10px; text-transform: uppercase; letter-spacing: .03em;
+/* LOS ROTULOS DE LA CABECERA VAN EN DIAGONAL (peticion del titular,
+   2026-09-16). En horizontal no caben: cinco columnas en 430 px dan unos 45 px
+   cada una, y «Razón» o «Escucha» o se cortan o ensanchan la columna y empujan
+   los numeros fuera de pantalla --la regla de «nada scrollea de lado»--.
+
+   A -45 grados caben enteros y se leen de un vistazo. La rotacion va en un
+   `<i>` por dentro y no en la celda: rotar la celda moveria tambien su caja y
+   descuadraria la rejilla. El `<i>` sale del flujo con `position: absolute`,
+   asi que la columna sigue midiendo lo que mide el numero de debajo. */
+.tabla--ancha .tabla__fila--cabeza { position: relative; height: 34px; padding-bottom: 0; }
+.tabla--ancha .tabla__fila--cabeza .tabla__n { position: relative; }
+.tabla--ancha .tabla__eti i {
+  position: absolute; right: 2px; bottom: 0;
+  transform: rotate(-45deg); transform-origin: 100% 100%;
+  font-style: normal; white-space: nowrap;
+  color: var(--tinta-suave); font-family: var(--cuerpo); font-weight: 700;
+  font-size: 10px; letter-spacing: .02em;
+}
+.tabla--ancha .tabla__fila--cabeza .tabla__n--total {
+  display: grid; place-items: end; font-size: 10px; color: var(--tinta-suave);
 }
 .tabla--ancha .tabla__quien {
   text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -1443,9 +1460,6 @@ body.app {
   /* El total se separa del resto con una línea, que es lo que antes hacía la
      fila de «Total». */
   border-left: 1px solid var(--crema-hondo); padding-left: 6px;
-}
-.tabla--ancha .tabla__fila--cabeza .tabla__n--total {
-  font-size: 10px; color: var(--tinta-suave);
 }
 .tabla__nota {
   margin: var(--e-2) 0 0; font-size: var(--t-mini); line-height: 1.45; color: var(--tinta-suave);

@@ -1034,8 +1034,11 @@ window.ATWI = window.ATWI || {};
       '<div class="tabla__fila tabla__fila--cabeza">' +
         '<span class="tabla__quien"></span>' +
         criterios.map(function (c) {
-          return '<span class="tabla__n" title="' + esc(c[1]) + '">' +
-                 esc(c[2] || c[1]) + '</span>';
+          /* c[3] ES EL ROTULO CORTO; c[2] es el PESO del criterio. Estaba
+             puesto `c[2]` y la cabecera salia «30 25 20 15 10», que son los
+             pesos de la rubrica y no dicen nada ahi. */
+          return '<span class="tabla__n tabla__eti"><i>' + esc(c[3] || c[1]) +
+                 '</i></span>';
         }).join('') +
         '<span class="tabla__n tabla__n--total">Total</span>' +
       '</div>' +
