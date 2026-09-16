@@ -3098,12 +3098,16 @@ body.app {
 .encuentro__lado--der .retrato__fig { left: 0; }
 .retrato--volteado .retrato__fig { transform: scaleX(-1) translateX(var(--acerca, 0)); }
 
+/* EL VS ES UNA PIEZA DIBUJADA. Antes eran dos letras con `-webkit-text-stroke`
+   fingiendo el perfil de pegatina; ahora es el dibujo de verdad, con su
+   estallido. Mismo sitio y misma animación: lo único que cambia es qué se
+   pinta. El ancho está medido contra el hueco que dejan las dos figuras
+   plantadas —no puede taparles la cara— y la pieza trae su propio perfil
+   blanco, así que no necesita ni borde ni sombra. */
 .encuentro__vs {
   position: absolute; z-index: 3; left: 50%; top: 40%;
   transform: translate(-50%, -50%) scale(0); opacity: 0;
-  font-family: var(--display); font-weight: 800; font-size: 3.4rem; line-height: 1;
-  color: var(--ctx-banda, var(--tinta));
-  -webkit-text-stroke: 6px var(--ctx-fondo, var(--crema)); paint-order: stroke;
+  width: 148px; height: auto;
 }
 /* El destello del choque de puños. Ocho rayos, de un `repeating-conic-gradient`
    y no de uno normal: con el normal hay que escribir los ocho tramos a mano y

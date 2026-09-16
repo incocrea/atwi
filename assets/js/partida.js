@@ -166,12 +166,22 @@ window.ATWI = window.ATWI || {};
        verlas. Y se GUARDA LA PROMESA: el sorteo dura lo que dura y casi siempre
        llegan a tiempo, pero en un teléfono que abre la app por primera vez no, y
        sin esperarla la entrada arrancaba con las figuras a medio bajar. */
-    P.poses = window.ATWI.precargarPoses(
-      P.jugadores.map(function (j) { return j.avatar; }),
-      [P.modo === 'debate' ? 'plante' : 'puno'],
-      /* El color va en paralelo: cada lado tiene el suyo y la pieza que hay que
-         bajar es la de ESE color, no una cualquiera del personaje. */
-      P.jugadores.map(function (j) { return j.color; }));
+    P.poses = Promise.all([
+      window.ATWI.precargarPoses(
+        P.jugadores.map(function (j) { return j.avatar; }),
+        [P.modo === 'debate' ? 'plante' : 'puno'],
+        /* El color va en paralelo: cada lado tiene el suyo y la pieza que hay que
+           bajar es la de ESE color, no una cualquiera del personaje. */
+        P.jugadores.map(function (j) { return j.color; })),
+      /* Y EL VS ENTRA EN LA MISMA ESPERA. Desde que es un dibujo de 337 KB y no
+         dos letras, puede llegar tarde; y llega justo en el fotograma del
+         golpe, que es el peor sitio posible: sale de un `scale(2.2)` en 460 ms
+         y una animación que ya empezó no se puede volver a empezar. En Pacto no
+         se pide, que ahí no hay VS sino chispa, y la chispa es CSS. */
+      P.modo === 'debate'
+        ? window.ATWI.precarga.listas(['../assets/img/iconos/vs-sol.png'])
+        : null
+    ]);
     precargarElFinal();
     pintarAviso();
   }
@@ -1447,8 +1457,16 @@ window.ATWI = window.ATWI || {};
          figuras traían las suyas y al juntarse se montaban unas sobre otras y
          sobre el puño contrario; se regeneraron sin ellas. Este cae donde se
          tocan de verdad, que es lo único que el dibujo no puede saber. */
+      /* EL VS ES UN DIBUJO Y YA NO DOS LETRAS (plancha del titular,
+         2026-09-16). Era texto con `-webkit-text-stroke` imitando el perfil de
+         pegatina, que es lo que se hacía cuando no había pieza; ahora la hay,
+         con su estallido y sus salpicaduras. Va por nombre y no por
+         `iconoDeModo`: ese mapea el modo a su tinte —coral o menta— y este
+         dibujo es dorado, así que pedirle `vs-coral` sería pedir un archivo
+         que no existe. El azul y el rosa están cortados esperando un modo. */
       (pacto ? '<span class="encuentro__chispa"></span>'
-             : '<span class="encuentro__vs">VS</span>');
+             : '<img class="encuentro__vs" src="../assets/img/iconos/vs-sol.png" ' +
+               'alt="" aria-hidden="true" decoding="async">');
     m.appendChild(caja);
 
     /* DOS MOMENTOS, NO UNO. La clase que arranca la entrada, el sonido del golpe
