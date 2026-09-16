@@ -24,12 +24,21 @@
 }
 
 .modal__cabecera {
-  display: flex;
+  /* TRES COLUMNAS Y LAS DOS DE FUERA IGUALES, para que el título quede en el
+     centro del MODAL y no en el del hueco que deja la flecha de volver
+     (titular, 2026-09-16). La tercera casi siempre está vacía; en la sala lleva
+     el turno, y por eso se le reserva sitio a todas en vez de compensar con un
+     margen que habría que quitar justo ahí. */
+  display: grid;
+  grid-template-columns: var(--diana) minmax(0, 1fr) var(--diana);
   align-items: center;
   gap: var(--e-3);
   padding: calc(env(safe-area-inset-top, 0px) + var(--e-3)) var(--borde-pantalla) var(--e-3);
 }
-.modal__titulo { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); flex: 1; }
+.modal__titulo {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h3);
+  text-align: center;
+}
 
 .modal__cuerpo {
   min-height: 0;

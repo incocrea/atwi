@@ -195,6 +195,28 @@ window.ATWI = window.ATWI || {};
   var MIS_TEMAS = 'Mis temas';
   var listaTemas = null;
 
+  /* CON QUIÉN SE ESTÁ JUGANDO, y no es un detalle de pantalla (2026-09-16, lo
+     preguntó el titular). Un tema escrito jugando CON AMIGOS no tiene nada que
+     hacer en la lista de la pareja: «lo de la suegra» y «el mejor portero de la
+     historia» no se mezclan. Hasta hoy los propios se guardaban sin decir de
+     qué mesa salieron, así que habrían aparecido en las dos.
+
+     Hoy no se ve porque el catálogo de amigos está vacío y a «Mis propios
+     temas» solo se llega desde pareja; en cuanto amigos tenga temas, se mezclan.
+
+     LOS QUE YA ESTÁN GUARDADOS CUENTAN COMO DE PAREJA, y no es una suposición:
+     es el único sitio desde el que se podían escribir. */
+  var conQuien = null;          // 'pareja' | 'amigos' | null = no filtrar
+
+  function esDeEstePublico(t) {
+    if (!conQuien || !t.propio) return true;
+    return (t.publico || 'pareja') === conQuien;
+  }
+
+  function propiosDeAhora() {
+    return cargarTemas().propios.filter(esDeEstePublico);
+  }
+
   function cargarTemas() {
     if (listaTemas) return listaTemas;
     try {
@@ -291,7 +313,7 @@ window.ATWI = window.ATWI || {};
 
     /** Temas de una categoría, con los del recorrido inicial primero. */
     temasDe: function (nombreCategoria) {
-      if (nombreCategoria === MIS_TEMAS) return cargarTemas().propios.slice().reverse();
+      if (nombreCategoria === MIS_TEMAS) return propiosDeAhora().reverse();
       if (!catalogo) return [];
       return catalogo.temas
         .filter(function (t) { return t.categoria === nombreCategoria; })
@@ -353,7 +375,11 @@ window.ATWI = window.ATWI || {};
       var tema = Object.assign(existente || {
         id: 'propio-' + Date.now().toString(36),
         categoria: MIS_TEMAS,
-        emoji: '✍️'
+        emoji: '✍️',
+        /* DE QUÉ MESA SALIÓ. Se fija al CREARLO y no se toca al editarlo: un
+           tema escrito para la pareja sigue siendo de la pareja aunque se
+           corrija una coma estando en la otra lista. */
+        publico: conQuien || 'pareja'
       }, {
         titulo: t.titulo,
         enunciado: t.enunciado,
@@ -375,7 +401,14 @@ window.ATWI = window.ATWI || {};
       guardarTemas();
     },
 
-    cuantosPropios: function () { return cargarTemas().propios.length; },
+    cuantosPropios: function () { return propiosDeAhora().length; },
+
+    /* Con quién se está jugando. Lo fija la pantalla del catálogo; con `null`
+       no se filtra nada, que es lo que quiere el historial. */
+    publicoDeJuego: function (x) {
+      if (x !== undefined) conQuien = x || null;
+      return conQuien;
+    },
 
     /* --- Invitados locales --------------------------------------------------
        Fichas de quien juega enfrente en este teléfono sin tener cuenta. No son
@@ -476,6 +509,11 @@ window.ATWI = window.ATWI || {};
       var q = (texto || '').trim().toLowerCase();
       var yo = this;
       return this.todos().filter(function (t) {
+        /* SE FILTRA AQUI Y NO EN `todos()`, a proposito: `todos()` es de donde
+           sale `tema(id)`, y una partida guardada con un tema propio tiene que
+           poder encontrarlo aunque ahora se este jugando con la otra mesa. Lo
+           que se acota es la LISTA, no el archivo. */
+        if (!esDeEstePublico(t)) return false;
         if (estado === 'sin' && yo.yaDebatido(t.id)) return false;
         if (estado === 'con' && !yo.yaDebatido(t.id)) return false;
         if (!q) return true;

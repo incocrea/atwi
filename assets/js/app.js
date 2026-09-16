@@ -944,14 +944,18 @@
     /* EN QUE PASO VA, para que el CSS pueda poner el fondo que toca. Se marca
        aqui y no se deduce del contenido: el paso ya se decide en esta funcion y
        leerlo de la pantalla seria adivinar lo que ya se sabe. */
+    /* CON QUIÉN SE JUEGA, A LA CAPA DE DATOS, y se fija AQUÍ —un solo sitio—
+       en vez de en cada punto donde cambia `modoPublico`: así no hay manera de
+       que la lista se pinte con el filtro de la otra mesa. */
+    datos.publicoDeJuego(modoPublico);
     caja.dataset.paso = modoPublico || 'modo';
     caja.dataset.modo = propuesta.modo || '';
 
     // Paso 0: con quien se juega. De eso depende que temas tienen sentido.
     if (!modoPublico) {
       caja.innerHTML = cinta +
-        '<h1 style="margin-bottom:var(--e-2)">¿Con quién juegas?</h1>' +
-        '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
+        '<h1 class="vista__titulo" style="margin-bottom:var(--e-2)">¿Con quién juegas?</h1>' +
+        '<p class="chico suave vista__bajada" style="margin-bottom:var(--e-4)">' +
           'Los temas cambian según con quién estés debatiendo.</p>' +
         '<div class="modos">' +
           '<button class="modo modo--negociacion" data-publico="pareja">' +
@@ -971,9 +975,9 @@
 
     if (modoPublico === 'amigos') {
       caja.innerHTML = cinta +
-        '<div class="fila" style="margin-bottom:var(--e-4)">' +
+        '<div class="fila fila--cabecera" style="margin-bottom:var(--e-4)">' +
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
-          '<h1 style="font-size:var(--t-h2)">Con amigos</h1>' +
+          '<h1 class="vista__titulo" style="font-size:var(--t-h2)">Con amigos</h1>' +
         '</div>' +
         estadoVacio('🚧', 'Todavía no hay temas de amigos',
           'El catálogo que existe son 105 temas de convivencia en pareja: tareas, dinero del día a día, ' +
@@ -997,9 +1001,12 @@
         var temas = mios.filter(function (x) { return visibles.indexOf(x) !== -1; });
 
         caja.innerHTML = cinta +
-          '<div class="fila" style="margin-bottom:var(--e-3)">' +
+          '<div class="fila fila--cabecera" style="margin-bottom:var(--e-3)">' +
             '<button class="boton-icono" data-accion="catalogo-atras" aria-label="Volver al catálogo">' + icono('atras', 22) + '</button>' +
-            '<div><h1 style="font-size:var(--t-h2)">✍️ ' + ETIQUETA_MIS + '</h1>' +
+            /* SIN LA MANITO ✍️ delante del título (titular, 2026-09-16): era un
+               emoji —lo dibujaba el sistema— y encima decía lo mismo que el
+               botón de debajo, que sí lleva el icono de la casa. */
+            '<div class="vista__titulo"><h1 style="font-size:var(--t-h2)">' + ETIQUETA_MIS + '</h1>' +
             '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
           '</div>' +
 
@@ -1008,9 +1015,13 @@
 
           (temas.length
             ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
-            : estadoVacio('✍️', 'Todavía no escribieron ninguno',
+            /* Y EL DIBUJO DEL HUECO ES EL MISMO «MÁS», y se toca: aquí solo hay
+               una cosa que hacer, así que el sitio donde se mira es el sitio
+               donde hay que poder tocar. */
+            : estadoVacio(icono('mas', 76), 'Todavía no escribieron ninguno',
                 'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
-                'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.'));
+                'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.',
+                'tema-nuevo', 'Escribir el primer tema'));
         devolverFoco();
         return;
       }
@@ -1045,9 +1056,9 @@
       var propios = datos.cuantosPropios();
 
       caja.innerHTML = cinta +
-        '<div class="fila" style="margin-bottom:var(--e-3)">' +
+        '<div class="fila fila--cabecera" style="margin-bottom:var(--e-3)">' +
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
-          '<h1 style="font-size:var(--t-h2)">Con mi pareja</h1>' +
+          '<h1 class="vista__titulo" style="font-size:var(--t-h2)">Con mi pareja</h1>' +
           botonBuscar() +
         '</div>' +
         /* AQUÍ IBA «105 temas, ordenados por dónde y cuándo suele salir la
@@ -1107,7 +1118,7 @@
 
   function pintarHistorial() {
     var caja = $('#v-historial');
-    var titulo = '<h1 style="margin-bottom:var(--e-4)">Historial</h1>';
+    var titulo = '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">Historial</h1>';
 
     if (!window.ATWI.nube || !window.ATWI.nube.hay()) {
       caja.innerHTML = titulo + estadoVacio('📜', 'Entrá con tu cuenta',
@@ -1735,9 +1746,18 @@
       '</button>';
   }
 
-  function estadoVacio(emoji, titulo, texto) {
-    return '<div class="vacio">' +
-        '<div class="vacio__emoji">' + emoji + '</div>' +
+  /* EL DIBUJO DEL ESTADO VACÍO PUEDE SER LA SALIDA (titular, 2026-09-16). Donde
+     el hueco tiene UNA manera de llenarse, el dibujo que anuncia el hueco es el
+     sitio donde la mano va a ir a tocar; dejarlo inerte obliga a subir la vista
+     a buscar el botón. `accion` y `queHace` van juntos: sin la etiqueta, un
+     lector de pantalla anunciaría un botón sin nombre. */
+  function estadoVacio(emoji, titulo, texto, accion, queHace) {
+    var pieza = '<div class="vacio__emoji">' + emoji + '</div>';
+    if (accion) {
+      pieza = '<button class="vacio__boton" data-accion="' + accion + '" ' +
+              'aria-label="' + esc(queHace || titulo) + '">' + pieza + '</button>';
+    }
+    return '<div class="vacio">' + pieza +
         '<h2 style="margin-bottom:var(--e-2)">' + esc(titulo) + '</h2>' +
         '<p class="chico">' + esc(texto) + '</p>' +
       '</div>';

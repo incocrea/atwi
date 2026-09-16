@@ -815,6 +815,16 @@ body.app {
 /* --- Estados vacíos -------------------------------------------------------- */
 .vacio { text-align: center; padding: var(--e-7) var(--e-4); color: var(--tinta-suave); }
 .vacio__emoji { font-size: 3rem; margin-bottom: var(--e-3); }
+.vacio__emoji .ico { margin: 0 auto; }
+/* Cuando el dibujo del hueco es la salida. Sin caja ni borde: lo que invita a
+   tocarlo es el propio icono, que ya es un botón dibujado. */
+.vacio__boton {
+  border: 0; background: none; padding: 0; cursor: pointer; font: inherit;
+  display: block; margin: 0 auto;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.vacio__boton:active { transform: scale(.92); }
+@media (prefers-reduced-motion: reduce) { .vacio__boton:active { transform: none; } }
 
 /* --- Perfil ---------------------------------------------------------------- */
 .contadores { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--e-3); }
@@ -3664,3 +3674,22 @@ body.app {
   color: var(--tinta-suave); white-space: nowrap;
 }
 .jugaron__final::before { content: '→ '; color: var(--tinta-tenue); font-weight: 400; }
+
+/* --- Los títulos van centrados (titular, 2026-09-16) -------------------------
+   CENTRAR NO ES `text-align: center`, y ahí estaba el problema: estos títulos
+   comparten fila con la flecha de volver, así que centrarlos dentro del hueco
+   que queda los deja corridos media flecha a la derecha. Lo que centra de
+   verdad es una rejilla de TRES columnas con los lados del mismo ancho: el
+   control a la izquierda, el título en medio y una columna vacía a la derecha
+   que no se ve pero equilibra. Cuando esa tercera columna sí lleva algo —la
+   lupa del catálogo, el turno de la sala— sigue cuadrando, que es la ventaja
+   de reservarle el sitio a todas.
+
+   `minmax(0, 1fr)` y no `1fr`: un título largo ensancharía su columna, y el
+   juego no scrollea de lado. */
+.fila--cabecera {
+  display: grid;
+  grid-template-columns: var(--diana) minmax(0, 1fr) var(--diana);
+  align-items: center;
+}
+.vista__titulo, .vista__bajada { text-align: center; }
