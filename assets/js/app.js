@@ -821,28 +821,39 @@
      Y EL ORDEN DE LOS MANEJADORES YA RESOLVÍA EL SOLAPE: `data-explicar` se
      mira antes que `data-crear` y corta con `return`, así que tocar la ayuda no
      dispara además la carta. */
+  /* LA CARTA DE MODO ES UNA FILA (mockup del titular, 2026-09-16), y esto revoca
+     lo de ponerlas lado a lado que este archivo defendía hace unas horas.
+
+     POR QUÉ CAMBIA EL ARGUMENTO. Apiladas se decía que «no se comparan, se lee
+     una, se baja y se lee la otra», y eso valía con DOS cartas verticales de
+     media pantalla. Con TRES, en columnas de 110 px, lo que no cabe es el
+     nombre del modo: quedaba el rótulo dibujado y dos renglones apretados. En
+     fila cabe el nombre escrito AL LADO del rótulo, que es lo que de verdad
+     dice a qué se juega, y las tres se abarcan de una mirada igual: son tres
+     renglones, no tres pantallas.
+
+     TRES COLUMNAS DENTRO: el rótulo dibujado, el texto y el disco de ayuda.
+     El disco es un botón hermano y no va dentro —un `<button>` dentro de otro
+     no es HTML válido y el navegador lo desarma—, así que se coloca encima con
+     posición absoluta y la carta le reserva el sitio con su `padding-right`. */
   function cartaModo(clave) {
     var m = cfg.modos[clave] || {};
     return '<div class="carta-modo-caja">' +
         '<button class="carta-modo carta-modo--' + clave + '" data-crear="' + clave + '" ' +
                 'aria-label="Jugar a ' + esc(modoLlano(clave)) + '">' +
-          '<span class="carta-modo__alto">' +
-            rotuloModo(clave, 'carta-modo__rotulo') +
-          '</span>' +
+          rotuloModo(clave, 'carta-modo__rotulo') +
+          /* SIN EL NOMBRE ESCRITO (titular, 2026-09-16): el rótulo dibujado ya
+             dice «Controversia», y ponerlo otra vez al lado en letra normal era
+             decir dos veces lo mismo en la misma fila. Queda la línea de qué se
+             juega, que es lo único que el dibujo no puede decir. */
           (m.gancho ? '<span class="carta-modo__gancho">' + esc(m.gancho) + '</span>' : '') +
-          /* La peana del pie, igual que en las cartas de «¿con quién juegas?»:
-             un PNG con forma —globos de diálogo en Juicio, brotes en Pacto— y
-             no un degradado, porque es el zócalo dibujado lo que las hace
-             cartas. Va fuera del flujo; el hueco se lo hace el padding. */
-          '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.png" ' +
-            'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
         '</button>' +
         /* EL SIGNO SE QUEDA, y sin palabra: una interrogación no hay que
            traducirla. El nombre va en `aria-label` —que es lo que anuncia un
            lector de pantalla— y en `title` para el escritorio. */
         '<button class="carta-modo__explica" data-explicar="' + clave + '" ' +
           'aria-label="Cómo funciona ' + esc(modoLlano(clave)) + '" title="Cómo funciona">' +
-          window.ATWI.iconoDeModo('ayuda', clave, 64) +
+          window.ATWI.iconoDeModo('ayuda', clave, 46) +
         '</button>' +
       '</div>';
   }
@@ -936,9 +947,12 @@
      abrirla lo que se ve es una lista de temas, y esto tiene que dejar claro
      cuál de las tres listas va a salir. */
   var PUBLICOS = [
-    ['pareja', 'Con mi<br>pareja', 'Convivencia, dinero del día a día, horarios y pantallas.'],
-    ['amigos', 'Con<br>amigos', 'La cuenta, los planes, el grupo y los viajes juntos.'],
-    ['familia', 'Con<br>familia', 'Hermanos, primos y tíos: comidas, fiestas y costumbres.']
+    ['pareja', 'Con mi pareja', 'Convivencia, dinero del día a día, horarios y pantallas.',
+      ['Convivencia', 'Dinero', 'Horarios']],
+    ['amigos', 'Con amigos', 'La cuenta, los planes, el grupo y los viajes juntos.',
+      ['Planes', 'Viajes', 'La cuenta']],
+    ['familia', 'Con familia', 'Hermanos, primos y tíos: comidas, fiestas y costumbres.',
+      ['Comidas', 'Fiestas', 'Costumbres']]
   ];
 
   /* Una carta por mesa: el dibujo arriba, el nombre, de qué va, y la peana de
@@ -955,13 +969,24 @@
     return 'Con mi pareja';
   }
 
+  /* LA CARTA DE MESA, TAMBIÉN EN FILA (mismo mockup). El dibujo a la izquierda,
+     el nombre y de qué va, y debajo TRES PALABRAS de lo que se discute ahí.
+
+     LAS TRES PALABRAS NO SON DECORACIÓN: la frase de debajo ya dice de qué va
+     la mesa, pero se lee entera o no se lee; los chips se ven de refilón y son
+     lo que deja comparar las tres mesas sin leer los tres párrafos. Salen de la
+     misma tabla `PUBLICOS`, en la cuarta columna, para que nombre, frase y
+     chips no se puedan desincronizar. */
   function cartaPublico(p) {
     return '<button class="publico publico--' + p[0] + '" data-publico="' + p[0] + '">' +
-        '<span class="publico__alto">' + icono(p[0], 96) + '</span>' +
-        '<span class="publico__nombre">' + p[1] + '</span>' +
-        '<span class="publico__que">' + esc(p[2]) + '</span>' +
-        '<img class="publico__base" src="../assets/img/iconos/base-' + p[0] + '.png" ' +
-          'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
+        '<span class="publico__alto">' + icono(p[0], 76) + '</span>' +
+        '<span class="publico__texto">' +
+          '<span class="publico__nombre">' + p[1].replace(/<br>/g, ' ') + '</span>' +
+          '<span class="publico__que">' + esc(p[2]) + '</span>' +
+          (p[3] ? '<span class="publico__marcas">' + p[3].map(function (x) {
+            return '<span class="publico__marca">' + esc(x) + '</span>';
+          }).join('') + '</span>' : '') +
+        '</span>' +
       '</button>';
   }
 

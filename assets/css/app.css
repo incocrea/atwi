@@ -404,118 +404,92 @@ body.app {
    lado de la otra se ven juntas, con su dibujo, su línea y su pie, y se decide
    de un vistazo. `minmax(0, 1fr)` y no `1fr`, que el mínimo del contenido
    ensancharía la columna y esto no scrollea de lado. */
-/* TRES MODOS EN TRES COLUMNAS (2026-09-16). Eran dos y entró QuiénGane. Se
-   prueba en tres columnas antes que en dos filas por lo mismo que las puso
-   lado a lado en su día: **elegir modo es la decisión de esta pantalla**, y
-   una carta que queda debajo de otra no se compara, se lee después.
-   `minmax(0, 1fr)` y no `1fr`: el mínimo del contenido ensancharía la columna
-   y el home no scrollea de lado. */
-.cartas-modo {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--e-1); align-items: stretch;
-}
+/* LAS TRES CARTAS DE MODO SON TRES FILAS (mockup del titular, 2026-09-16), y
+   esto revoca las dos disposiciones anteriores del mismo día: primero dos
+   cartas verticales lado a lado, después tres columnas al entrar QuiénGane.
 
-/* VUELVE EL FONDO DE COLOR, y revoca la decisión del 2026-09-14 de dejar la
-   carta sin fondo ninguno. Aquélla se tomó cuando la carta era una banda
-   horizontal sobre el fondo dibujado, donde cualquier capa opaca lo partía en
-   bloques. Con dos cartas verticales y estrechas el problema se da la vuelta:
-   sin fondo no hay dos piezas, hay dos dibujos sueltos flotando, y la franja
-   del pie no tiene dónde apoyarse.
+   QUÉ CAMBIÓ EL ARGUMENTO. Lo de ponerlas al lado se defendía con que «una
+   carta debajo de otra no se compara, se lee después», y era cierto con DOS
+   cartas de media pantalla. Con TRES, en columnas de 110 px, lo que no cabe es
+   el NOMBRE del modo: quedaban el rótulo dibujado y dos renglones apretados.
+   En fila el nombre va escrito al lado del rótulo —que es lo que de verdad
+   dice a qué se juega— y las tres se siguen abarcando de una mirada: son tres
+   renglones, no tres pantallas.
 
-   Va en degradado del propio tinte del modo, no en gris: el color es lo que
-   dice cuál es cuál antes de leer nada. Y es suave a propósito --de `-tinte` a
-   casi blanco-- porque encima van el rótulo y los dos signos, que ya son
-   saturados; con la carta a plena fuerza competirían. */
-/* EL AIRE SE MIDE AL DIBUJO, NO AL ARCHIVO, y es lo que estaba mal en la
-   primera pasada (corregido 2026-09-16 con el mockup al lado). Estas pegatinas
-   traen salpicaduras alrededor: el dibujo ocupa el 59 % del cuadro y el 41 %
-   restante es transparente. Así que un icono declarado a 62 px pinta un disco
-   de 36, y todo lo que se le ponga de margen se suma a los 18 px de aire que el
-   PNG ya trae dentro. De ahí salían dos cosas a la vez: iconos que se veían
-   chicos y huecos que se veían grandes.
+   Y SE VAN LAS PEANAS. El zócalo dibujado hacía carta a una pieza vertical;
+   una fila de 88 px no necesita suelo, y la peana se comía el alto que ahora
+   ocupan el nombre y la línea de qué se juega. Los cinco PNG siguen en el
+   repositorio: ver el aviso al final de este bloque. */
+.cartas-modo { display: grid; gap: var(--e-2); }
 
-   Los números de aquí abajo están tomados del mockup —disco de play a un tercio
-   del ancho de la carta, carta de proporción 1,4— y traducidos a tamaño de
-   ARCHIVO dividiendo por ese 0,59. Los márgenes negativos no son un truco:
-   descuentan el aire que ya viene pintado. */
 .carta-modo {
-  /* Sin esto la peana se posiciona contra el marco y se va a todo el ancho de
-     la pantalla: lo que la ancla a SU carta es este `relative`. */
+  /* Lo que ancla el disco de ayuda a SU carta y no al marco. */
   position: relative;
-  display: flex; flex-direction: column; align-items: center;
-  /* EL HUECO DE ABAJO ES EL SITIO DE LA PEANA, que va fuera del flujo, y tiene
-     que caber ENTERA: subió de 34 a 54 px (titular, 2026-09-16). Con 34 la
-     cuenta se hizo sobre el disco del play y salía bien —acababa 8 px antes del
-     borde de la peana— pero la peana no es un rectángulo: de ella salen globos,
-     estrellas y hojas que suben bastante por encima de ese borde, y eran ésos
-     los que llegaban a los botones. Lo que hay que reservar es el alto del
-     ARCHIVO, no el de la parte maciza que se ve como suelo. */
-  width: 100%; padding: 10px 8px 122px;
+  /* TRES COLUMNAS: el rótulo, el texto y el hueco del disco. El `1fr` del
+     medio es `minmax(0, 1fr)` por lo de siempre —si no, el texto más largo
+     ensancha la fila y el home scrollea de lado—. */
+  display: grid; grid-template-columns: 104px minmax(0, 1fr);
+  gap: var(--e-3); align-items: center;
+  width: 100%; padding: 12px 74px 12px 12px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
-  text-align: center; font: inherit; color: var(--tinta);
+  text-align: left; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
+  cursor: pointer; transition: transform var(--dur-corta) var(--suave);
 }
+.carta-modo:active { transform: scale(.985); }
+@media (prefers-reduced-motion: reduce) { .carta-modo:active { transform: none; } }
+
+/* El fondo es el tinte del modo: el color dice cuál es cuál antes de leer
+   nada. En degradado suave y no plano porque encima va el rótulo dibujado, que
+   ya es saturado; a plena fuerza competirían. */
 .carta-modo--debate {
-  background: linear-gradient(170deg, var(--debate-tinte), #FFF8F4 78%);
+  background: linear-gradient(120deg, var(--debate-tinte), #FFF8F4 82%);
 }
 .carta-modo--negociacion {
-  background: linear-gradient(170deg, var(--negociacion-tinte), #F4FCF9 78%);
+  background: linear-gradient(120deg, var(--negociacion-tinte), #F4FCF9 82%);
 }
 .carta-modo--competencia {
-  background: linear-gradient(170deg, var(--competencia-tinte), #F4FAFE 78%);
+  background: linear-gradient(120deg, var(--competencia-tinte), #F4FAFE 82%);
 }
 
-/* El dibujo manda y por eso va a todo el ancho de la carta. Se le fija el ANCHO
-   y no el alto --al revés que cuando iban de lado--: en dos columnas lo que
-   escasea es el ancho, y las dos piezas tienen proporciones distintas, así que
-   fijando el alto una se saldría por el costado. */
-.carta-modo__alto { width: 100%; }
+/* El rótulo dibujado, a su ancho de columna. Se le fija el ANCHO y no el alto:
+   los tres tienen proporciones distintas y fijando el alto el más ancho se
+   saldría de su columna. */
 .carta-modo__rotulo { width: 100%; height: auto; display: block; }
 
-/* La línea de qué se juega. Dos renglones, y `min-height` para reservarle los
-   dos aunque una quepa en uno: sin eso, la carta más corta sube sus botones y
-   las dos filas de signos dejan de estar alineadas entre cartas. */
 .carta-modo__gancho {
-  margin: 2px 0 0;
-  font-size: var(--t-mini); line-height: 1.25; font-weight: 800;
-  color: var(--tinta-suave);
-  display: flex; align-items: center; justify-content: center;
+  min-width: 0;
+  font-family: var(--display); font-weight: 800;
+  font-size: var(--t-chico); line-height: 1.3; color: var(--tinta-suave);
 }
 
-/* LA CAJA ES QUIEN POSICIONA, porque dentro hay dos botones hermanos: la carta
-   —que ocupa todo— y el signo de ayuda, colocado encima. */
+/* LA CAJA ES QUIEN POSICIONA, porque dentro hay dos botones HERMANOS: la carta
+   —que ocupa todo y es el botón de jugar— y el disco de ayuda, encima. Un
+   `<button>` dentro de otro no es HTML válido y el navegador lo desarma. */
 .carta-modo-caja { position: relative; display: grid; }
 
-/* EL SIGNO DE AYUDA, CENTRADO Y A LA ALTURA QUE TENÍA EL PLAY (titular,
-   2026-09-16). Se mide desde abajo y no desde arriba: lo que tiene que quedar
-   fijo es su relación con la peana, que es lo que hay debajo. El aire
-   transparente que el PNG trae alrededor ya lo separa de la peana. */
+/* EL SIGNO DE AYUDA VA SUELTO, SIN DISCO (titular, 2026-09-16). El mockup lo
+   traía dentro de un círculo blanco y se quitó al verlo puesto: la bombilla es
+   una pegatina con su propio perfil blanco, así que ya viene recortada del
+   fondo, y el disco no hacía más que ponerle un segundo borde alrededor. */
 .carta-modo__explica {
-  position: absolute; left: 50%; bottom: 52px; transform: translateX(-50%);
-  width: 64px; height: 64px; padding: 0;
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  width: 52px; height: 52px; padding: 0;
   display: grid; place-items: center;
   border: 0; background: none; cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
 }
-.carta-modo__explica:active { transform: translateX(-50%) scale(.9); }
+.carta-modo__explica:active { transform: translateY(-50%) scale(.9); }
 @media (prefers-reduced-motion: reduce) {
-  .carta-modo__explica:active { transform: translateX(-50%); }
+  .carta-modo__explica:active { transform: translateY(-50%); }
 }
-.carta-modo__explica .ico { width: 100%; height: 100%; }
+.carta-modo__explica .ico { width: 46px; height: 46px; }
 
-/* La carta se hunde entera al pulsarla: ahora ES el botón de jugar. */
-.carta-modo { cursor: pointer; transition: transform var(--dur-corta) var(--suave); }
-.carta-modo:active { transform: scale(.97); }
-@media (prefers-reduced-motion: reduce) { .carta-modo:active { transform: none; } }
-
-/* A SANGRE Y PEGADA AL FONDO, igual que la de las cartas de mesa: con margen se
-   leería como un dibujo puesto encima en vez de como el suelo de la carta. */
-.carta-modo__base {
-  position: absolute; left: -2px; right: -2px; bottom: -4px;
-  width: calc(100% + 4px); height: auto; display: block; pointer-events: none;
-}
-
-
+/* ⚠️ LAS CINCO PEANAS `base-*` SE QUEDARON SIN USO con este rediseño —las dos
+   cartas que las pintaban pasaron a fila— y siguen en `site/assets/img/iconos/`
+   y en la ola `nucleo` del manifiesto, o sea que cada teléfono se baja 528 KB
+   que no se pintan. NO SE BORRAN todavía a propósito: son arte que el titular
+   encargó y el rediseño es de hoy. Si a la vuelta siguen sin usarse, salen. */
 
 /* Lo que de verdad hay que entender de cada modo: en Controversia, que no se
    juzga quién tiene razón; en Negociación, que no estar de acuerdo también es
@@ -3919,20 +3893,23 @@ body.app {
 
    `minmax(0, 1fr)` en las tres columnas: con `1fr` el nombre más largo
    ensancharía su columna y aquí no scrollea nada de lado. */
-.publicos {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--e-2); align-items: stretch;
-}
+/* LAS TRES MESAS TAMBIÉN SON FILAS (mockup del titular, 2026-09-16), por lo
+   mismo que las cartas de modo: en columnas de 110 px el nombre y la frase se
+   parten en cuatro renglones apretados, y aquí además hay tres palabras más
+   que enseñar. En fila cabe todo y las tres se comparan igual de bien. */
+.publicos { display: grid; gap: var(--e-2); }
+
 .publico {
-  position: relative; display: flex; flex-direction: column; align-items: center;
-  /* El hueco de abajo es el sitio de la peana, que va sobre el fondo. */
-  padding: var(--e-3) 6px 44px;
+  position: relative;
+  display: grid; grid-template-columns: 76px minmax(0, 1fr);
+  gap: var(--e-3); align-items: center;
+  padding: var(--e-3);
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
-  text-align: center; font: inherit; color: var(--tinta);
+  text-align: left; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2); cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
 }
-.publico:active { transform: scale(.96); }
+.publico:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .publico:active { transform: none; } }
 
 /* EL COLOR DE CADA MESA, EN UN SOLO SITIO (titular, 2026-09-16). Los dos
@@ -3962,22 +3939,31 @@ body.app {
 }
 
 .publico__alto { display: block; }
-.publico__alto .ico { width: 100%; height: auto; max-width: 96px; margin: 0 auto; }
+.publico__alto .ico { width: 100%; height: auto; display: block; }
 
+.publico__texto { display: grid; gap: 3px; min-width: 0; }
 .publico__nombre {
   font-family: var(--display); font-weight: 800; font-size: var(--t-h3);
-  line-height: 1.12; margin-top: 2px;
+  line-height: 1.12;
 }
 .publico__que {
-  font-size: var(--t-mini); line-height: 1.3; color: var(--tinta-suave);
-  margin-top: 4px;
+  font-size: var(--t-chico); line-height: 1.3; color: var(--tinta-suave);
 }
 
-/* A SANGRE Y PEGADA AL FONDO. La peana es el suelo de la carta: si dejara un
-   margen, se leería como un dibujo puesto encima en vez de como el zócalo
-   sobre el que se apoya todo lo demás. */
-.publico__base {
-  position: absolute; left: -2px; right: -2px; bottom: -6px;
-  width: calc(100% + 4px); height: auto; display: block;
-  pointer-events: none;
+/* LAS TRES PALABRAS DE CADA MESA. Van en blanco sobre el tinte y con el texto
+   del color de la mesa llevado a oscuro: sobre un fondo ya teñido, un chip del
+   mismo color no se despegaría, y uno de color plano taparía la carta.
+   `flex-wrap` porque en una pantalla estrecha la tercera se va a otra línea
+   antes que ensanchar la fila, que es lo que haría scrollear de lado. */
+.publico__marcas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.publico__marca {
+  padding: 3px 10px; border-radius: var(--radio-pastilla);
+  background: rgba(255, 255, 255, .72);
+  font-size: var(--t-mini); font-weight: 800; line-height: 1.2;
+  color: color-mix(in srgb, var(--mesa) 35%, var(--tinta));
 }
+
+/* ⚠️ AQUÍ VIVÍA `.publico__base`, la peana de la carta de mesa, y se fue con el
+   rediseño en fila: el zócalo dibujado hacía carta a una pieza vertical y una
+   fila de 100 px no necesita suelo. Los PNG siguen en `site/`; ver el aviso en
+   el bloque de `.carta-modo`. */
