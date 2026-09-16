@@ -3103,9 +3103,16 @@ body.app {
    estallido. Mismo sitio y misma animación: lo único que cambia es qué se
    pinta. El ancho está medido contra el hueco que dejan las dos figuras
    plantadas —no puede taparles la cara— y la pieza trae su propio perfil
-   blanco, así que no necesita ni borde ni sombra. */
+   blanco, así que no necesita ni borde ni sombra.
+
+   Y EL 58 % TAMBIÉN ESTÁ MEDIDO (titular, 2026-09-16): el VS va **frente a los
+   puños**, no frente a las caras. Estaba en el 40 %, que lo dejaba a la altura
+   de los ojos —ahí compite con lo único que hay que mirar de una figura— y los
+   dos puños quedaban debajo, sin nada en medio. Medidos contra la caja de la
+   cortinilla, los nudillos caen 89 px más abajo, que sobre sus 490 px son
+   18 puntos. */
 .encuentro__vs {
-  position: absolute; z-index: 3; left: 50%; top: 40%;
+  position: absolute; z-index: 3; left: 50%; top: 58%;
   transform: translate(-50%, -50%) scale(0); opacity: 0;
   width: 148px; height: auto;
 }
@@ -3113,7 +3120,9 @@ body.app {
    y no de uno normal: con el normal hay que escribir los ocho tramos a mano y
    basta equivocarse en un ángulo para que salga uno solo, que ya pasó. El hueco
    del centro lo abre la máscara, y es lo que lo hace leer como chispa y no como
-   sol. Cae a la altura de los nudillos, más abajo que el VS. */
+   sol. Cae a la altura de los nudillos —igual que el VS desde que bajó, aunque
+   tres puntos más arriba: aquí los puños están JUNTOS en el centro y allí
+   separados a los lados, y no es la misma altura. */
 .encuentro__chispa {
   position: absolute; z-index: 3; left: 50%; top: 55%;
   transform: translate(-50%, -50%) scale(0); opacity: 0;
