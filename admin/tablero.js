@@ -251,8 +251,8 @@
   function verLlamadas() {
     Promise.all([
       pedir('consumos?select=id,creado,proveedor,operacion,modelo,tokens_entrada,' +
-            'tokens_salida,tokens_cache_escritura,tokens_cache_lectura,ms,ok,error,debate' +
-            '&order=creado.desc&limit=150'),
+            'tokens_salida,tokens_cache_escritura,tokens_cache_lectura,ms,ok,error,debate,' +
+            'peticion_id&order=creado.desc&limit=150'),
       pedir('llamadas?select=id,consumo'),
       pedir('tarifas?select=modelo,unidad,usd_por_unidad'),
       pedir('latidos?select=*')
@@ -305,7 +305,18 @@
             return [
               fecha(f.creado),
               '<span class="' + (f.ok ? '' : 'mal') + '">' + esc(f.operacion) + '</span>' +
-                (f.error ? '<br><span class="chico mal">' + esc(String(f.error).slice(0, 80)) + '</span>' : ''),
+                (f.error ? '<br><span class="chico mal">' + esc(String(f.error).slice(0, 80)) + '</span>' : '') +
+                /* EL NUMERO DE LA PETICION, que es la columna «ID» del registro
+                   de Anthropic. Comparar los dos registros por hora y por
+                   tokens no funciona —la hora depende de la zona de cada
+                   pantalla y esa consola no cuenta la caché en «tokens de
+                   entrada»— y con esto la comparación es buscar una cadena.
+                   Se puede copiar de un clic. */
+                (f.peticion_id
+                  ? '<br><code class="chico copiable" data-copiar="' + esc(f.peticion_id) + '" ' +
+                    'title="Copiar para buscarlo en el registro de Anthropic">' +
+                    esc(f.peticion_id) + '</code>'
+                  : ''),
               '<span class="chico">' + esc(f.modelo || f.proveedor) + '</span>',
               tokens(f.tokens_entrada), tokens(f.tokens_salida),
               /* La escritura en rojo: es la que cuesta 12,5 veces la lectura y
@@ -929,6 +940,19 @@
      documento, porque los botones de «Detalle» se repintan con la tabla y
      atarlos uno a uno obligaría a volver a atarlos en cada recarga. */
   document.addEventListener('click', function (e) {
+    /* El numero de peticion se copia de un clic: es una cadena de treinta
+       caracteres que hay que pegar en otra pestaña, y seleccionarla a mano
+       dentro de una celda de tabla es la clase de friccion que hace que nadie
+       compruebe nada. */
+    var cp = e.target.closest('[data-copiar]');
+    if (cp) {
+      navigator.clipboard.writeText(cp.dataset.copiar).then(function () {
+        var antes = cp.textContent;
+        cp.textContent = 'copiado';
+        setTimeout(function () { cp.textContent = antes; }, 900);
+      }).catch(function () {});
+      return;
+    }
     var d = e.target.closest('[data-detalle]');
     if (d) return abrirDetalle(d.dataset.detalle);
     var c = e.target.closest('#detalle .pestanas button');
