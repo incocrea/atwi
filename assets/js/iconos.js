@@ -90,7 +90,15 @@ window.ATWI = window.ATWI || {};
                     'debate', 'negociacion', 'micro', 'mas',
                     'energia', 'buzon',
                     'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
-                    'ayuda-coral', 'ayuda-menta', 'play-coral', 'play-menta'];
+                    'ayuda-coral', 'ayuda-menta', 'play-coral', 'play-menta',
+                    /* La tercera tanda (2026-09-16): los ocho que pedía la
+                       auditoría. `parar`, `pausa` y `play` salen del cortador
+                       nivelados entre sí porque son tres estados del MISMO
+                       botón: si no miden igual, el botón salta al pulsarlo. */
+                    'aviso', 'cerrar', 'listo', 'lupa', 'parar', 'pausa',
+                    'play', 'salir',
+                    /* Los dos publicos del catalogo, que eran emojis. */
+                    'pareja', 'amigos'];
 
   /* Qué tinte le toca a `ayuda` y a `play` en cada modo. Vive aquí y no en
      `app.js` porque es una propiedad del juego de iconos: el día que haya un

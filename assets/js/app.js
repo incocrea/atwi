@@ -16,6 +16,7 @@
   var cfg = window.ATWI.config;
   var datos = window.ATWI.datos;
   var icono = window.ATWI.icono;
+  var iconoSVG = window.ATWI.iconoSVG;   // a la fuerza el de línea
   var $ = function (sel, raiz) { return (raiz || document).querySelector(sel); };
   var $$ = function (sel, raiz) { return Array.prototype.slice.call((raiz || document).querySelectorAll(sel)); };
 
@@ -55,6 +56,10 @@
 
   function irA(nombre) {
     if (VISTAS.indexOf(nombre) === -1) return;
+    /* AL ENTRAR AL CATÁLOGO SE BARAJA, y solo al entrar. Rebarajar en cada
+       pintada dejaría la lista saltando mientras se escribe en el buscador o se
+       toca un filtro, que es lo contrario de poder elegir. */
+    if (nombre === 'catalogo' && vistaActual !== 'catalogo') barajar();
     /* Salir de la portada cuesta una entrada de historial: así el atrás del
        teléfono devuelve a la portada en vez de cerrar la app. Saltar entre las
        otras pestañas no apila más, porque desde cualquiera de ellas el atrás
@@ -307,7 +312,7 @@
          suave, que es lo que lo despega sin poner una pared. En las otras
          pantallas el aviso sí lleva su caja: ahí el fondo es liso. */
       '<div class="aviso-ia aviso-ia--desnudo" style="margin-top:var(--e-5)">' +
-        icono('aviso', 20) +
+        iconoSVG('aviso', 20) +
         '<span>' + DESCARGO + '</span>' +
       '</div>' +
 
@@ -859,7 +864,7 @@
         '<div class="tema__pie">' +
           '<span class="chip chip--' + esc(t.intensidad) + '">' + esc(t.intensidad) + '</span>' +
           (hecho
-            ? '<span class="chip chip--hecho">' + icono('listo', 13) + ' Ya debatido</span>'
+            ? '<span class="chip chip--hecho">' + iconoSVG('listo', 13) + ' Ya debatido</span>'
             : '<span class="chip chip--nuevo">Sin estrenar</span>') +
           /* Directo al editor, sin pasar por el detalle: quien ve un tema que
              no encaja con su discusión quiere arreglarlo ahí mismo. */
@@ -875,6 +880,27 @@
      ====================================================================== */
   var categoriaAbierta = null;
   var buscadorAbierto = false;   // el campo de texto del catálogo, plegado de serie
+
+  /* EL CATÁLOGO SE BARAJA EN CADA ENTRADA (titular, 2026-09-16): 105 temas en un
+     orden fijo son la misma primera pantalla siempre, y a la tercera visita ya
+     no se lee —se reconoce y se salta—. Barajándolo, lo que hay arriba cambia y
+     vuelve a haber algo que mirar.
+
+     SE GUARDA UN NÚMERO POR TEMA Y NO SE BARAJA LA LISTA. La lista se vuelve a
+     pedir en cada pintada —al escribir, al filtrar—, así que barajarla ahí la
+     dejaría saltando bajo el dedo. Con un número fijo por tema, el orden es el
+     mismo hasta que alguien vuelva a entrar.
+
+     Y los temas que aparezcan después —uno propio recién escrito— se atienden
+     solos: piden su número la primera vez que se los ordena. */
+  var azarDeTema = {};
+
+  function barajar() { azarDeTema = {}; }
+
+  function azarDe(id) {
+    if (!(id in azarDeTema)) azarDeTema[id] = Math.random();
+    return azarDeTema[id];
+  }
   var modoPublico = null;   // 'pareja' | 'amigos'; null = todavia no ha elegido
   var busqueda = '';        // texto del buscador
   var filtro = 'todos';     // 'todos' | 'sin' | 'con'
@@ -929,13 +955,13 @@
           'Los temas cambian según con quién estés debatiendo.</p>' +
         '<div class="modos">' +
           '<button class="modo modo--negociacion" data-publico="pareja">' +
-            '<span class="modo__icono" style="font-size:1.6rem">💞</span>' +
+            '<span class="modo__icono">' + icono('pareja', 38) + '</span>' +
             '<span><span class="modo__nombre">Con mi pareja</span>' +
             '<span class="modo__que">Convivencia, dinero del día a día, horarios, pantallas. ' +
             'Los temas por los que discuten las parejas de verdad.</span></span>' +
           '</button>' +
           '<button class="modo modo--debate" data-publico="amigos">' +
-            '<span class="modo__icono" style="font-size:1.6rem">🎉</span>' +
+            '<span class="modo__icono">' + icono('amigos', 38) + '</span>' +
             '<span><span class="modo__nombre">Con amigos</span>' +
             '<span class="modo__que">Debates de los de sobremesa. Sin convivencia de por medio.</span></span>' +
           '</button>' +
@@ -1000,7 +1026,22 @@
          discusión»— NO se pierde: `datos.todos()` mantiene ese orden, así que
          la lista corrida sigue empezando por lo que sale antes. Lo que
          desaparece es tener que abrir una carpeta para verlo. */
-      var temas = datos.buscar(busqueda, filtro);
+      /* DOS REGLAS DE ORDEN, Y LA PRIMERA MANDA (titular, 2026-09-16):
+
+         1. LOS YA DEBATIDOS AL FINAL. Con 105 temas de corrido, los jugados
+            quedaban repartidos por la lista y empujaban hacia abajo a los que
+            todavía se pueden jugar, que son a los que se viene. No se ESCONDEN
+            —el chip «Ya debatidos» los trae de vuelta—: solo dejan pasar.
+         2. LOS PENDIENTES, AL AZAR. Ver `azarDeTema`.
+
+         Los ya debatidos NO se barajan: ahí no se busca novedad sino volver a
+         encontrar uno concreto, y para eso el orden estable ayuda. */
+      var temas = datos.buscar(busqueda, filtro).slice().sort(function (a, b) {
+        var da = datos.yaDebatido(a.id) ? 1 : 0;
+        var db = datos.yaDebatido(b.id) ? 1 : 0;
+        if (da !== db) return da - db;
+        return da ? 0 : azarDe(a.id) - azarDe(b.id);
+      });
       var propios = datos.cuantosPropios();
 
       caja.innerHTML = cinta +
@@ -1025,15 +1066,23 @@
         /* El catálogo es una plantilla: lo que no está, se escribe. Va ARRIBA
            de la lista, porque escribir el tema propio es lo que hace que la
            pareja vuelva cuando el catálogo se acaba. */
-        '<button class="categoria categoria--propia" data-categoria="' + esc(datos.MIS_TEMAS) + '">' +
-          '<span class="categoria__emoji">✍️</span>' +
+        /* SIN EMOJI A LA IZQUIERDA Y CON EL «MÁS» DIBUJADO A LA DERECHA
+           (titular, 2026-09-16). Llevaba la manito ✍️ —un emoji, o sea la única
+           pieza de esta tarjeta que dibujaba el sistema— y a la derecha un signo
+           «+» escrito con la tipografía. Dos maneras distintas de decir «aquí se
+           crea algo», y ninguna de las dos era el icono que el juego ya tiene
+           para crear. Ahora la tarjeta dice una cosa sola, y la dice con el
+           dibujo. Cuando ya hay temas propios, ese sitio lleva cuántos son:
+           entonces el dato manda sobre la invitación. */
+        '<button class="categoria categoria--propia categoria--sin-emoji" ' +
+                'data-categoria="' + esc(datos.MIS_TEMAS) + '">' +
           '<span><span class="categoria__nombre">' + ETIQUETA_MIS + '</span>' +
           '<span class="categoria__que">' +
             (propios
               ? 'Los temas que escribiste, para debatir o negociar.'
               : 'Lo que discutes y no está en la lista, escríbelo aquí para debatir o negociar.') +
           '</span></span>' +
-          '<span class="categoria__n">' + (propios || '+') + '</span>' +
+          '<span class="categoria__n">' + (propios || icono('mas', 34)) + '</span>' +
         '</button>' +
 
         (temas.length
@@ -1682,7 +1731,7 @@
     return '<button class="boton-icono boton-icono--derecha" data-accion="buscar" ' +
         'aria-expanded="' + (buscadorAbierto ? 'true' : 'false') + '" ' +
         'aria-label="' + (buscadorAbierto ? 'Cerrar la búsqueda' : 'Buscar un tema') + '">' +
-        window.ATWI.iconoSVG(buscadorAbierto ? 'cerrar' : 'lupa', 22) +
+        icono(buscadorAbierto ? 'cerrar' : 'lupa', 24) +
       '</button>';
   }
 
@@ -1746,7 +1795,7 @@
             '</span>' +
             (dentro
               ? '<button class="boton boton--suave cuenta__salir" data-accion="salir">' +
-                  window.ATWI.iconoSVG('salir', 18) + 'Salir</button>'
+                  icono('salir', 22) + 'Salir</button>'
               : '<button class="boton boton--suave cuenta__salir" data-accion="entrar">Entrar</button>') +
           '</div>'
         : '') +
@@ -2146,7 +2195,7 @@
          Ya no hay boton de «Editar tema»: cada trozo se toca y se edita solo,
          asi que abrir el formulario entero sobra y ademas competia con los
          lapices que tiene al lado. */
-      '<div class="aviso-ia">' + icono('aviso', 20) +
+      '<div class="aviso-ia">' + iconoSVG('aviso', 20) +
         '<span>Hablen libre: no hay lados asignados. Si el enunciado no se parece a la ' +
         'discusión de ustedes, tócalo y reescríbelo — el tema es una plantilla, no una ' +
         'sentencia.</span>' +
@@ -2265,7 +2314,7 @@
          propia pregunta, y por eso este aviso dice qué tiene que cumplir: si
          solo admite una respuesta decente, no es un desacuerdo, es un acusado y
          un fiscal, y el árbitro no tendría nada que arbitrar. */
-      '<div class="aviso-ia" style="margin-top:var(--e-4)">' + icono('aviso', 20) +
+      '<div class="aviso-ia" style="margin-top:var(--e-4)">' + iconoSVG('aviso', 20) +
         '<span>Escríbelo como <strong>pregunta</strong>, y que las dos respuestas se ' +
         'puedan defender. Si solo hay una respuesta decente, eso no es un desacuerdo: ' +
         'es una acusación, y el resultado no valdría nada.</span>' +

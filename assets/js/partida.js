@@ -839,7 +839,7 @@ window.ATWI = window.ATWI || {};
     return '<div class="pista pista--grande" data-pista="' + clave + '">' +
         '<button type="button" class="pista__play" data-oir="' + clave + '"' +
                 ' aria-label="Escuchar ' + esc(titulo) + '">' +
-          '<span class="pista__icono">' + iconoSVG('play', 26) + '</span>' +
+          '<span class="pista__icono">' + icono('play', 26) + '</span>' +
         '</button>' +
         '<div class="pista__quien">' +
           '<span class="pista__titulo">' + esc(titulo) + '</span>' +
@@ -1183,7 +1183,7 @@ window.ATWI = window.ATWI || {};
         '<button type="button" class="reproductor__vel" data-accion="r-vel">' +
           '<span id="r-vel">' + velocidad + '×</span></button>' +
         '<button type="button" class="boton-icono reproductor__cerrar" data-accion="r-cerrar" ' +
-          'aria-label="Cerrar el reproductor">' + iconoSVG('cerrar', 18) + '</button>' +
+          'aria-label="Cerrar el reproductor">' + icono('cerrar', 22) + '</button>' +
       '</div>' +
       '<div class="reproductor__pista">' +
         '<input type="range" id="r-barra" min="0" max="1000" value="0" step="1" ' +
@@ -1242,7 +1242,7 @@ window.ATWI = window.ATWI || {};
       e.classList.toggle('rueda--sonando', e.dataset.rueda === sonando && !a.paused);
     });
     var ib = $('.pista--grande .pista__icono');
-    if (ib) ib.innerHTML = iconoSVG(sonando === 'b' && !a.paused ? 'pausa' : 'play', 26);
+    if (ib) ib.innerHTML = icono(sonando === 'b' && !a.paused ? 'pausa' : 'play', 26);
   }
 
   var arrastrando = false;
@@ -1554,7 +1554,7 @@ window.ATWI = window.ATWI || {};
   function botonDeGrabar(estado) {
     if (estado === 'parar') {
       return '<button class="boton boton--bloque boton--grande boton--parar grabando"' +
-                    ' data-accion="p-parar">' + iconoSVG('parar', 22) + 'Parar' +
+                    ' data-accion="p-parar">' + icono('parar', 26) + 'Parar' +
                '<span class="boton__reloj" id="reloj-n">' +
                  relojTexto(Math.max(0, topeDeTurno() - grabadora.segundos())) +
                '</span></button>';

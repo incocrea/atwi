@@ -26,6 +26,7 @@ window.ATWI = window.ATWI || {};
   var auth = window.ATWI.auth;
   var datos = window.ATWI.datos;
   var icono = window.ATWI.icono;
+  var iconoSVG = window.ATWI.iconoSVG;   // a la fuerza el de línea
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   function esc(s) {
@@ -205,7 +206,7 @@ window.ATWI = window.ATWI || {};
   }
 
   var AVISO_IA =
-    '<div class="aviso-ia" style="margin-top:var(--e-5)">' + icono('aviso', 20) +
+    '<div class="aviso-ia" style="margin-top:var(--e-5)">' + iconoSVG('aviso', 20) +
       '<span>' + cfg.descargo + cfg.gancho + '</span>' +
     '</div>';
 

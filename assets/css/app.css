@@ -1947,6 +1947,10 @@ body.app {
   margin-bottom: var(--e-3);
 }
 .categoria--propia .categoria__emoji { background: var(--superficie); }
+/* Sin la casilla del emoji, la rejilla se queda en dos columnas: si no, el
+   texto arrancaría a 48 px del borde persiguiendo un hueco vacío. */
+.categoria--sin-emoji { grid-template-columns: 1fr auto; }
+.categoria--sin-emoji .categoria__n { display: grid; place-items: center; }
 .categoria--propia .categoria__nombre { color: var(--lavanda-oscuro); }
 .categoria--propia .categoria__que { color: var(--lavanda-oscuro); opacity: .82; }
 .categoria--propia .categoria__n {
@@ -2368,13 +2372,23 @@ body.app {
 }
 .pista--grande { padding: var(--e-4); column-gap: var(--e-4); }
 
+/* EL DISCO ES EL ICONO (2026-09-16), igual que en la carta de modo. Esto era un
+   cuadrado de color con un triángulo blanco de trazo dentro; el `play` ilustrado
+   ya es un disco con su triángulo y su perfil, así que el fondo quedaba como una
+   caja alrededor de otro botón.
+   Se va el color del modo, y aquí se puede: lo llevan el fondo de la sala, el
+   rótulo y el nombre de la pista. No era información, era repetición. */
 .pista__play {
   grid-row: span 2; border: 0; cursor: pointer; font: inherit;
-  width: 42px; height: 42px; border-radius: var(--radio-pastilla);
+  width: 42px; height: 42px; padding: 0;
   display: grid; place-items: center;
-  color: var(--blanco); background: var(--ctx-acento);
+  background: none;
   transition: transform var(--dur-corta) var(--suave);
 }
+/* El icono va envuelto en `.pista__icono`, así que el 100 % hay que dárselo a
+   los dos: al span primero, o el `.ico` mide el 100 % de una caja sin alto. */
+.pista__icono { display: block; width: 100%; height: 100%; }
+.pista__play .ico { width: 100%; height: 100%; }
 .pista--grande .pista__play { width: 58px; height: 58px; }
 .pista__play:active { transform: scale(.92); }
 

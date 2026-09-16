@@ -764,9 +764,13 @@ window.ATWI = window.ATWI || {};
        esa pantalla se leía como que la app se rompió en vez de como una decisión
        del juez. */
     var abajo = p.querySelector('#rev-abajo');
-    var boton = function (accion, texto) {
+    /* «Salir» lleva su puerta dibujada (titular, 2026-09-16). Es el único botón
+       de esta pantalla que saca de ella, y la palabra sola competía con el
+       «Qué dijo el juez» que ocupa el mismo sitio cuando hay juez. */
+    var boton = function (accion, texto, ico) {
       return '<button class="boton boton--bloque boton--grande revelacion__boton" ' +
-             'data-accion="' + accion + '">' + texto + '</button>';
+             'data-accion="' + accion + '">' +
+             (ico ? window.ATWI.icono(ico, 26) : '') + texto + '</button>';
     };
     /* «Salir» a secas, y no «Guardar y salir» (decisión del titular): el
        resultado YA está guardado --lo escribió el árbitro en `resultados` antes
@@ -790,7 +794,8 @@ window.ATWI = window.ATWI || {};
        un botón aquí. Los verbos genéricos --«salir», «cerrar», «volver»-- se
        prefijan con la pantalla. */
     abajo.innerHTML = hayJuez ? boton('ver-juez', 'Qué dijo el juez')
-                              : boton('rev-salir', r.sinResultado ? 'Entendido' : 'Salir');
+                              : boton('rev-salir', r.sinResultado ? 'Entendido' : 'Salir',
+                                          r.sinResultado ? '' : 'salir');
 
     /* LAS SERPENTINAS ESTALLAN CUANDO EL PUÑO LLEGA AL CENTRO, no antes. Salían
        a la vez que el resultado y el ganador aterrizaba medio segundo después,
@@ -828,7 +833,7 @@ window.ATWI = window.ATWI || {};
         juezSuelto(p, r);
         /* El botón se aparta a la izquierda para dejarle la derecha al juez. */
         abajo.classList.add('revelacion__abajo--conjuez');
-        abajo.innerHTML = boton('rev-salir', 'Salir');
+        abajo.innerHTML = boton('rev-salir', 'Salir', 'salir');
         return;
       }
       if (b.dataset.accion !== 'rev-salir') return;
