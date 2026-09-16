@@ -458,7 +458,8 @@
     };
     var s = {
       modo: FINALES[e.modo] ? e.modo : base.modo,
-      publico: e.publico === 'amigos' ? 'amigos' : 'pareja',
+      publico: MESAS_PROBADOR.some(function (m) { return m.clave === e.publico; })
+        ? e.publico : base.publico,
       juez: window.ATWI.esJuez(e.juez) ? e.juez : base.juez,
       /* UNA RESPUESTA POR MODO, no una sola compartida: «gana» no existe en
          Negociación ni «dos» en Controversia, así que con una sola cambiar de
@@ -490,6 +491,15 @@
     try { localStorage.setItem(CLAVE_PROBADOR, JSON.stringify(probador)); }
     catch (e) { /* modo incógnito */ }
   }
+
+  /* CON QUIÉN SE JUEGA, EN EL PROBADOR. Los nombres van sin el «Con» de las
+     cartas del catálogo: aquí son tres opciones en una fila de chips, no tres
+     cartas, y el «Con mi pareja» repetido tres veces no cabe ni hace falta. */
+  var MESAS_PROBADOR = [
+    { clave: 'pareja', nombre: 'Pareja' },
+    { clave: 'amigos', nombre: 'Amigos' },
+    { clave: 'familia', nombre: 'Familia' }
+  ];
 
   function chipsProbador(campo, opciones, puesto) {
     return '<div class="filtros">' + opciones.map(function (o) {
@@ -542,15 +552,20 @@
         chipsProbador('final', FINALES[e.modo], e.final) +
       '</div>' +
 
-      /* AQUÍ HABÍA UN «QUIÉNES JUEGAN» —pareja o amigos— Y SE QUITÓ (decisión
-         del titular, 2026-09-14): no cambiaba nada de lo que esta pantalla
-         sirve para mirar. `publico` solo lo lee `ganadorNegociacion[publico]`,
-         y desde que el titular de Negociación con acuerdo dice «Ambos» para los
-         dos, las dos ramas dan el mismo texto. Un control que no cambia nada de
-         lo que se ve enseña a no fiarse del resto de los controles.
-         Sigue en el estado, con valor fijo: es un campo del veredicto de verdad
-         y el de mentira tiene que tener su forma. El día que los dos públicos
-         vuelvan a decir cosas distintas, el control vuelve. */
+      /* Y EL CONTROL VOLVIÓ, que es lo que decía aquí que pasaría. Se había
+         quitado el 2026-09-14 porque no cambiaba nada de lo que esta pantalla
+         sirve para mirar —`publico` solo lo leía `ganadorNegociacion[publico]`,
+         y las dos ramas daban el mismo texto—, con la nota de que volvería el
+         día que las mesas dijeran cosas distintas. Ese día es hoy: **el
+         estallido del encuentro lleva el color de la mesa**, así que con este
+         chip se miran los tres sin cambiar de partida. Son tres y ya no dos:
+         Familia llegó el 2026-09-16. */
+      '<div><span class="pb-ficha__t">Con quién se juega</span>' +
+        '<p class="chico tenue" style="margin:2px 0 6px">Tiñe el VS y el choque ' +
+          'de puños de «Reproducir la entrada».</p>' +
+        chipsProbador('publico', MESAS_PROBADOR, e.publico) +
+      '</div>' +
+
       /* LA NOTA VA ENCIMA DE LAS FICHAS (ajuste del titular, 2026-09-15). Debajo
          se leía como un pie de página de algo que ya se había tocado: cuando
          llegabas a ella ya habías elegido. Arriba dice para qué sirve el control

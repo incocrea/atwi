@@ -173,14 +173,12 @@ window.ATWI = window.ATWI || {};
         /* El color va en paralelo: cada lado tiene el suyo y la pieza que hay que
            bajar es la de ESE color, no una cualquiera del personaje. */
         P.jugadores.map(function (j) { return j.color; })),
-      /* Y EL VS ENTRA EN LA MISMA ESPERA. Desde que es un dibujo de 337 KB y no
-         dos letras, puede llegar tarde; y llega justo en el fotograma del
-         golpe, que es el peor sitio posible: sale de un `scale(2.2)` en 460 ms
-         y una animación que ya empezó no se puede volver a empezar. En Pacto no
-         se pide, que ahí no hay VS sino chispa, y la chispa es CSS. */
-      P.modo === 'debate'
-        ? window.ATWI.precarga.listas(['../assets/img/iconos/vs-sol.png'])
-        : null
+      /* Y EL ESTALLIDO ENTRA EN LA MISMA ESPERA. Desde que es un dibujo de
+         200 KB y no dos letras ni un degradado, puede llegar tarde; y llega
+         justo en el fotograma del golpe, que es el peor sitio posible: sale de
+         un `scale(2.2)` en 460 ms y una animación que ya empezó no se puede
+         volver a empezar. */
+      window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
     ]);
     precargarElFinal();
     pintarAviso();
@@ -1394,6 +1392,27 @@ window.ATWI = window.ATWI || {};
      No lleva velo oscuro: en esta app no hay fondos oscuros. El que hay es un
      lavado del color del modo, que además dice de qué modo es la partida.
      ========================================================================== */
+  /* LO QUE ESTALLA EN EL ENCUENTRO. Dos ejes, y cada uno responde a una
+     pregunta distinta:
+
+     QUÉ SALE lo dice el MODO. En Controversia los dos se plantan y cae un VS;
+     en Pacto siguen hasta chocar el puño y sale un corazón. El dibujo dice de
+     qué va el modo antes que cualquier rótulo.
+
+     DE QUÉ COLOR lo dice la MESA (decisión del titular, 2026-09-16): rosa con
+     la pareja, azul con la familia, dorado con los amigos. Es la misma
+     distinción que ya tiñe el catálogo, y aquí cae en el único fotograma de la
+     partida donde se ven las dos personas juntas y sin nada más alrededor.
+     ⚠️ El dorado de amigos NO es su color: su mesa es lavanda (`#EDE6FF`) y
+     ninguna de las dos planchas trae morado. Es lo más neutro de lo que hay, y
+     se cambia en esta línea el día que el morado exista. */
+  var TINTE_DE_MESA = { pareja: 'rosa', amigos: 'sol', familia: 'azul' };
+
+  function piezaDelEncuentro(modo, publico) {
+    return '../assets/img/iconos/' + (modo === 'debate' ? 'vs' : 'choque') +
+           '-' + (TINTE_DE_MESA[publico] || 'sol') + '.png';
+  }
+
   var MS_ANTES_DEL_ENCUENTRO = 1000;   // desde que para la ficha del sorteo
   var MS_SALIDA_GANADOR = 300;         // lo que tarda en irse quien abre
   var MS_VIAJE = 620;                  // lo que dura la entrada entera
@@ -1453,20 +1472,19 @@ window.ATWI = window.ATWI || {};
                                                 clase: 'encuentro__fig' }) +
       '</span>' +
       '<span class="encuentro__rotulos">' + rotulado(izq) + rotulado(der) + '</span>' +
-      /* El destello del choque lo pone la interfaz y ya no el dibujo. Las
-         figuras traían las suyas y al juntarse se montaban unas sobre otras y
-         sobre el puño contrario; se regeneraron sin ellas. Este cae donde se
-         tocan de verdad, que es lo único que el dibujo no puede saber. */
-      /* EL VS ES UN DIBUJO Y YA NO DOS LETRAS (plancha del titular,
-         2026-09-16). Era texto con `-webkit-text-stroke` imitando el perfil de
-         pegatina, que es lo que se hacía cuando no había pieza; ahora la hay,
-         con su estallido y sus salpicaduras. Va por nombre y no por
-         `iconoDeModo`: ese mapea el modo a su tinte —coral o menta— y este
-         dibujo es dorado, así que pedirle `vs-coral` sería pedir un archivo
-         que no existe. El azul y el rosa están cortados esperando un modo. */
-      (pacto ? '<span class="encuentro__chispa"></span>'
-             : '<img class="encuentro__vs" src="../assets/img/iconos/vs-sol.png" ' +
-               'alt="" aria-hidden="true" decoding="async">');
+      /* EL ESTALLIDO LO PONE LA INTERFAZ Y NO EL DIBUJO. Las figuras traían el
+         suyo y al juntarse se montaban unos sobre otros y sobre el puño
+         contrario; se regeneraron sin ellos. Este cae donde se tocan de verdad,
+         que es lo único que el dibujo no puede saber.
+
+         LOS DOS SON YA PIEZAS DIBUJADAS (planchas del titular, 2026-09-16). El
+         VS eran dos letras con `-webkit-text-stroke` y el choque un
+         `repeating-conic-gradient` con máscara: los dos imitaban en código algo
+         que no existía, y ahora existe. Cuál toca y de qué color lo decide
+         `piezaDelEncuentro`. */
+      '<img class="encuentro__golpe encuentro__golpe--' + (pacto ? 'choque' : 'vs') + '" ' +
+        'src="' + piezaDelEncuentro(P.modo, P.publico) + '" ' +
+        'alt="" aria-hidden="true" decoding="async">';
     m.appendChild(caja);
 
     /* DOS MOMENTOS, NO UNO. La clase que arranca la entrada, el sonido del golpe
@@ -2898,9 +2916,7 @@ window.ATWI = window.ATWI || {};
         P.jugadores.map(function (j) { return j.avatar; }),
         [P.modo === 'debate' ? 'plante' : 'puno'],
         P.jugadores.map(function (j) { return j.color; })),
-      P.modo === 'debate'
-        ? window.ATWI.precarga.listas(['../assets/img/iconos/vs-sol.png'])
-        : null
+      window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
     ]);
     pintarAviso();
   }

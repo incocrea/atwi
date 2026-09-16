@@ -82,7 +82,9 @@
   background: var(--superficie); color: var(--tinta);
   border-color: var(--ctx-linea); box-shadow: var(--sombra-1);
 }
-.modal--inmersivo .boton--suave:hover { background: var(--ctx-halo); }
+/* El hover se hace con `filter` y no pisando el fondo: escribir `background`
+   se lleva por delante el degradado del relieve. */
+.modal--inmersivo .boton--suave:hover { filter: brightness(.97); }
 /* APAGADO, PERO OPACO. Iba con `opacity: .5` y en la sala eso es un agujero:
    detras del boton esta la figura de quien habla, que se dibuja mas grande que
    su hueco y se CORTA justo ahi. Al transparentar el boton se veian las piernas

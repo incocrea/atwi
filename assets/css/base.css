@@ -120,14 +120,19 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 .boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); filter: none; }
 .boton--debate { --cara: var(--debate); }
 .boton--negociacion { --cara: var(--negociacion); }
-/* Apagado es apagado: sin canto y sin brillo, porque lo que dice un botón en
-   relieve es «púlsame» y éste no se puede pulsar. */
+/* APAGADO CAMBIA DE COLOR, NO DE FORMA. Aquí se le quitaba el canto entero
+   —«un botón en relieve dice púlsame y éste no se puede pulsar»— y el efecto
+   era el contrario del buscado: el botón que espera al sorteo arranca apagado
+   y se enciende al aterrizar la ficha, así que la pieza CRECÍA cuatro segundos
+   después, en el momento en que la vista está puesta en otra cosa. Lo vio el
+   titular. Un botón que se apaga no se aplana: sigue siendo la misma pieza,
+   en gris y sin brillo. Lo que dice «no se puede pulsar» es el color, y que no
+   responda al dedo. */
 .boton[disabled] {
   --cara: var(--linea-fuerte);
-  color: var(--blanco); text-shadow: none; cursor: not-allowed;
-  box-shadow: none; margin-bottom: var(--canto); filter: none;
+  color: var(--blanco); text-shadow: none; cursor: not-allowed; filter: none;
 }
-.boton[disabled]:active { transform: none; box-shadow: none; }
+.boton[disabled]:active { transform: none; }
 
 /* Botón redondo de icono (cerrar, atrás) */
 .boton-icono {
