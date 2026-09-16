@@ -4253,987 +4253,891 @@
    "clase": "premio",
    "publico": "pareja",
    "categoria": "elige",
-   "titulo": "Las próximas películas",
-   "enunciado": "Quien gane elige las próximas tres películas que vean juntos."
+   "titulo": "El mando del fin de semana",
+   "enunciado": "Quien gane controla la tele todo el fin de semana y elige qué se ve."
   },
   {
    "id": "QP002",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "La serie que sigue",
-   "enunciado": "Quien gane decide con qué serie arrancan cuando terminen la de ahora."
+   "categoria": "hace",
+   "titulo": "Los platos de tres días",
+   "enunciado": "Quien pierda lava los platos los próximos tres días."
   },
   {
    "id": "QP003",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "El plan del sábado",
-   "enunciado": "Quien gane arma el plan del próximo sábado y el otro se deja llevar."
+   "categoria": "hace",
+   "titulo": "El desayuno del domingo",
+   "enunciado": "Quien pierda le prepara el desayuno a quien gane el domingo."
   },
   {
    "id": "QP004",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "Dónde se come afuera",
-   "enunciado": "Quien gane elige el restaurante la próxima vez que salgan a comer."
+   "categoria": "hace",
+   "titulo": "Masaje de diez minutos",
+   "enunciado": "Quien pierda le hace un masaje de diez minutos a quien gane."
   },
   {
    "id": "QP005",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "La música del carro",
-   "enunciado": "Quien gane manda en la música durante el próximo viaje largo."
+   "categoria": "hace",
+   "titulo": "La cama la hace el otro",
+   "enunciado": "Quien pierda hace la cama toda la semana."
   },
   {
    "id": "QP006",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "Los platos de hoy",
-   "enunciado": "Quien gane se libra de lavar los platos durante tres días."
+   "categoria": "elige",
+   "titulo": "La película de la noche",
+   "enunciado": "Quien gane elige la película la próxima noche que vean algo juntos."
   },
   {
    "id": "QP007",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "Tender la ropa",
-   "enunciado": "Quien gane no tiende la próxima lavada."
+   "categoria": "elige",
+   "titulo": "La música del viaje",
+   "enunciado": "Quien gane elige la música durante el próximo viaje largo de los dos."
   },
   {
    "id": "QP008",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "Sacar la basura",
-   "enunciado": "Quien gane se libra de bajar la basura por una semana."
+   "categoria": "elige",
+   "titulo": "El lado de la cama",
+   "enunciado": "Quien gane se queda una semana con el lado de la cama que prefiera."
   },
   {
    "id": "QP009",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El desayuno en la cama",
-   "enunciado": "Quien gane recibe el desayuno en la cama el próximo domingo."
+   "categoria": "hace",
+   "titulo": "La basura de la semana",
+   "enunciado": "Quien pierda saca la basura toda la semana."
   },
   {
    "id": "QP010",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "Masaje de diez minutos",
-   "enunciado": "Quien gane cobra un masaje de diez minutos cuando quiera esta semana."
+   "categoria": "elige",
+   "titulo": "El último pedazo",
+   "enunciado": "Quien gane se queda con el último pedazo de lo que estén comiendo."
   },
   {
    "id": "QP011",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El lado bueno de la cama",
-   "enunciado": "Quien gane se queda con el lado que prefiera durante una semana."
+   "categoria": "elige",
+   "titulo": "Dónde se come fuera",
+   "enunciado": "Quien gane elige el sitio la próxima vez que salgan a comer."
   },
   {
    "id": "QP012",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "El control remoto",
-   "enunciado": "Quien gane tiene el control remoto toda la noche, sin quejas."
+   "categoria": "hace",
+   "titulo": "La cena la cocina el otro",
+   "enunciado": "Quien pierda cocina la cena que pida quien gane."
   },
   {
    "id": "QP013",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "La cena la cocina el otro",
-   "enunciado": "Quien gane pide la cena que quiera y el otro la cocina."
+   "categoria": "hace",
+   "titulo": "La ropa la dobla el otro",
+   "enunciado": "Quien pierda dobla la próxima tanda de ropa limpia."
   },
   {
    "id": "QP014",
    "clase": "premio",
    "publico": "pareja",
    "categoria": "elige",
-   "titulo": "Quién maneja",
-   "enunciado": "Quien gane decide quién maneja la próxima salida."
+   "titulo": "El baño primero",
+   "enunciado": "Quien gane entra primero al baño durante una semana."
   },
   {
    "id": "QP015",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La cama se hace sola",
-   "enunciado": "Quien gane no hace la cama en toda la semana."
+   "categoria": "hace",
+   "titulo": "La siesta sin ruido",
+   "enunciado": "Quien pierda le deja a quien gane dormir una siesta sin despertarlo."
   },
   {
    "id": "QP016",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El postre entero",
-   "enunciado": "Quien gane se queda con el último pedazo del próximo postre."
+   "categoria": "hace",
+   "titulo": "El café de la mañana",
+   "enunciado": "Quien pierda le lleva el café a quien gane tres mañanas seguidas."
   },
   {
    "id": "QP017",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "La foto del perfil",
-   "enunciado": "Quien gane elige la próxima foto que suban juntos."
+   "categoria": "hace",
+   "titulo": "Una hora sin teléfono",
+   "enunciado": "Quien pierda pasa una hora sin tocar el teléfono, al lado de quien gane."
   },
   {
    "id": "QP018",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "Una hora sin teléfono",
-   "enunciado": "Quien gane pide una hora de la otra persona sin teléfono en la mano."
+   "categoria": "elige",
+   "titulo": "El plan del fin de semana",
+   "enunciado": "Quien gane arma el plan del fin de semana y quien pierda se apunta."
   },
   {
    "id": "QP019",
    "clase": "premio",
    "publico": "pareja",
    "categoria": "elige",
-   "titulo": "El orden del clóset",
-   "enunciado": "Quien gane decide cómo se organiza el clóset y el otro no discute."
+   "titulo": "La manta entera",
+   "enunciado": "Quien gane se queda con la manta esta noche."
   },
   {
    "id": "QP020",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "La temperatura",
-   "enunciado": "Quien gane manda en el ventilador o el aire durante una semana."
+   "categoria": "hace",
+   "titulo": "El supermercado",
+   "enunciado": "Quien pierda va solo al supermercado la próxima vez."
   },
   {
    "id": "QP021",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La compra del súper",
-   "enunciado": "Quien gane se libra de ir al súper la próxima vez."
+   "categoria": "invita",
+   "titulo": "El antojo",
+   "enunciado": "Quien pierda le compra a quien gane el antojo que pida."
   },
   {
    "id": "QP022",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "Un capricho del súper",
-   "enunciado": "Quien gane mete al carrito un antojo sin que nadie lo cuestione."
+   "categoria": "elige",
+   "titulo": "La temperatura",
+   "enunciado": "Quien gane decide el ventilador o el aire durante una semana."
   },
   {
    "id": "QP023",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "La siesta protegida",
-   "enunciado": "Quien gane tiene derecho a una siesta sin que lo despierten."
+   "categoria": "hace",
+   "titulo": "La mascota",
+   "enunciado": "Quien pierda saca o alimenta a la mascota tres días seguidos."
   },
   {
    "id": "QP024",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "El baño primero",
-   "enunciado": "Quien gane se baña primero toda la semana."
+   "categoria": "hace",
+   "titulo": "La ducha larga",
+   "enunciado": "Quien pierda deja a quien gane darse una ducha larga sin apurarlo."
   },
   {
    "id": "QP025",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "La almohada extra",
-   "enunciado": "Quien gane se queda con la almohada buena hasta la próxima partida."
+   "categoria": "invita",
+   "titulo": "El postre lo trae el otro",
+   "enunciado": "Quien gane elige el postre y quien pierda va a comprarlo."
   },
   {
    "id": "QP026",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El café de la mañana",
-   "enunciado": "Quien gane recibe el café hecho por tres mañanas seguidas."
+   "categoria": "elige",
+   "titulo": "La serie que sigue",
+   "enunciado": "Quien gane elige con qué serie siguen cuando terminen la de ahora."
   },
   {
    "id": "QP027",
    "clase": "premio",
    "publico": "pareja",
    "categoria": "elige",
-   "titulo": "La playlist de la cena",
-   "enunciado": "Quien gane pone la música de la próxima cena en casa."
+   "titulo": "El sofá entero",
+   "enunciado": "Quien gane se estira en el sofá y quien pierda se acomoda como pueda."
   },
   {
    "id": "QP028",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "Elegir el postre",
-   "enunciado": "Quien gane elige el postre la próxima vez que pidan algo dulce."
+   "categoria": "hace",
+   "titulo": "La cocina la limpia el otro",
+   "enunciado": "Quien pierda limpia la cocina después de la próxima comida."
   },
   {
    "id": "QP029",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El sofá entero",
-   "enunciado": "Quien gane se estira en el sofá y el otro se acomoda."
+   "categoria": "elige",
+   "titulo": "El despertador del sábado",
+   "enunciado": "Quien gane decide a qué hora suena el despertador el sábado."
   },
   {
    "id": "QP030",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La mascota la saca el otro",
-   "enunciado": "Quien gane se libra de sacar a la mascota tres días."
+   "categoria": "hace",
+   "titulo": "La mesa la levanta el otro",
+   "enunciado": "Quien pierda levanta la mesa las próximas tres comidas."
   },
   {
    "id": "QP031",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La decisión aburrida",
-   "enunciado": "Quien gane le pasa al otro la próxima decisión aburrida que haya que tomar."
+   "categoria": "hace",
+   "titulo": "El pedido lo trae el otro",
+   "enunciado": "Quien pierda pide la comida y baja a recogerla."
   },
   {
    "id": "QP032",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El plan con sus amigos",
-   "enunciado": "Quien gane se lleva al otro a un plan con sus amigos, sin resoplar."
+   "categoria": "elige",
+   "titulo": "La foto que se borra",
+   "enunciado": "Quien gane elige una foto suya que no le gusta y quien pierda la borra."
   },
   {
    "id": "QP033",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "La ducha larga",
-   "enunciado": "Quien gane se da una ducha larga sin que nadie le toque la puerta."
+   "categoria": "elige",
+   "titulo": "La música de la cena",
+   "enunciado": "Quien gane pone la música de la próxima cena en casa."
   },
   {
    "id": "QP034",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El domingo de nada",
-   "enunciado": "Quien gane se gana un domingo sin planes ni pendientes."
+   "categoria": "elige",
+   "titulo": "El asiento de siempre",
+   "enunciado": "Quien gane elige asiento en el cine y en la mesa durante una semana."
   },
   {
    "id": "QP035",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "La receta nueva",
-   "enunciado": "Quien gane elige la próxima receta que prueben en casa."
+   "categoria": "hace",
+   "titulo": "El trámite pendiente",
+   "enunciado": "Quien pierda se encarga del próximo trámite de los dos."
   },
   {
    "id": "QP036",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "El envío pendiente",
-   "enunciado": "Quien gane se libra del próximo trámite o envío que haya que hacer."
+   "categoria": "hace",
+   "titulo": "La llamada que da pereza",
+   "enunciado": "Quien pierda hace la próxima llamada que ninguno quiere hacer."
   },
   {
    "id": "QP037",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "La foto que se borra",
-   "enunciado": "Quien gane manda borrar una foto suya que no le gusta."
+   "categoria": "hace",
+   "titulo": "El regalo lo envuelve el otro",
+   "enunciado": "Quien pierda envuelve el próximo regalo que tengan que dar."
   },
   {
    "id": "QP038",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "El regalo lo envuelve el otro",
-   "enunciado": "Quien gane se libra de envolver el próximo regalo."
+   "categoria": "elige",
+   "titulo": "La receta nueva",
+   "enunciado": "Quien gane elige una receta nueva y quien pierda la cocina."
   },
   {
    "id": "QP039",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La mesa la levanta el otro",
-   "enunciado": "Quien gane se queda sentado después de la próxima comida."
+   "categoria": "hace",
+   "titulo": "El domingo libre",
+   "enunciado": "Quien gane se queda un domingo sin tareas y quien pierda cubre las suyas."
   },
   {
    "id": "QP040",
    "clase": "premio",
    "publico": "pareja",
    "categoria": "elige",
-   "titulo": "El despertador",
-   "enunciado": "Quien gane decide a qué hora suena el despertador el próximo finde."
+   "titulo": "La almohada buena",
+   "enunciado": "Quien gane se queda con la almohada que prefiera hasta la próxima partida."
   },
   {
    "id": "QP041",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La llamada incómoda",
-   "enunciado": "Quien gane le pasa al otro la próxima llamada que da pereza hacer."
+   "categoria": "elige",
+   "titulo": "El primero en probar",
+   "enunciado": "Quien gane prueba primero lo que se esté cocinando."
   },
   {
    "id": "QP042",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
-   "titulo": "Elegir el asiento",
-   "enunciado": "Quien gane elige asiento en el cine, en el carro y en la mesa por una semana."
+   "categoria": "hace",
+   "titulo": "Las plantas",
+   "enunciado": "Quien pierda riega las plantas toda la semana."
   },
   {
    "id": "QP043",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "La manta entera",
-   "enunciado": "Quien gane se queda con la manta esta noche."
+   "categoria": "hace",
+   "titulo": "Dos horas de silencio",
+   "enunciado": "Quien pierda le deja a quien gane dos horas de casa tranquila."
   },
   {
    "id": "QP044",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El primer sorbo",
-   "enunciado": "Quien gane prueba primero lo que se esté cocinando."
+   "categoria": "hace",
+   "titulo": "La ropa que se plancha",
+   "enunciado": "Quien pierda plancha la próxima tanda de ropa."
   },
   {
    "id": "QP045",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "Dos horas de silencio",
-   "enunciado": "Quien gane pide dos horas de casa en silencio para lo suyo."
+   "categoria": "hace",
+   "titulo": "La salida la arma el otro",
+   "enunciado": "Quien pierda organiza una salida entera para los dos."
   },
   {
    "id": "QP046",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "El pedido lo paga el otro",
-   "enunciado": "Quien gane no pone la parte del próximo pedido a domicilio."
+   "categoria": "hace",
+   "titulo": "Las bolsas las sube el otro",
+   "enunciado": "Quien pierda sube solo las bolsas de la próxima compra."
   },
   {
    "id": "QP047",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "La ropa se dobla sola",
-   "enunciado": "Quien gane se libra de doblar la próxima tanda de ropa."
+   "categoria": "elige",
+   "titulo": "La decisión aburrida",
+   "enunciado": "Quien gane le pasa a quien pierda la próxima decisión aburrida."
   },
   {
    "id": "QP048",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "libra",
-   "titulo": "El plan cancelado",
-   "enunciado": "Quien gane puede cancelar un plan sin dar explicaciones, una vez."
+   "categoria": "invita",
+   "titulo": "El pedido lo paga el otro",
+   "enunciado": "Quien pierda paga el próximo pedido a domicilio de los dos."
   },
   {
    "id": "QP049",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
-   "titulo": "La cita la arma el otro",
-   "enunciado": "Quien gane recibe una salida organizada de principio a fin."
+   "categoria": "elige",
+   "titulo": "La tarea que más odia",
+   "enunciado": "Quien gane le pasa a quien pierda la tarea de casa que más odia, una vez."
   },
   {
    "id": "QP050",
    "clase": "premio",
    "publico": "pareja",
    "categoria": "elige",
-   "titulo": "El veredicto de la semana",
-   "enunciado": "Quien gane decide el próximo tema que jueguen en ATWI."
+   "titulo": "El próximo premio",
+   "enunciado": "Quien gane elige el premio de la siguiente partida."
   },
   {
    "id": "QA001",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
+   "categoria": "invita",
    "titulo": "El café lo paga el otro",
-   "enunciado": "Quien gane no paga la próxima vez que salgan por un café."
+   "enunciado": "Quien pierda paga el café la próxima vez que se vean."
   },
   {
    "id": "QA002",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El delivery de la noche",
-   "enunciado": "Quien gane se libra de poner su parte del próximo pedido."
+   "categoria": "elige",
+   "titulo": "Dónde se come",
+   "enunciado": "Quien gane elige el sitio la próxima vez que coman juntos."
   },
   {
    "id": "QA003",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "Dónde se come",
-   "enunciado": "Quien gane elige el lugar la próxima vez que salgan a comer."
+   "categoria": "invita",
+   "titulo": "El pedido a domicilio",
+   "enunciado": "Quien pierda paga el próximo pedido a domicilio que compartan."
   },
   {
    "id": "QA004",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "La película del maratón",
-   "enunciado": "Quien gane elige la película de la próxima juntada."
+   "titulo": "La película del plan",
+   "enunciado": "Quien gane elige la película la próxima vez que vean algo juntos."
   },
   {
    "id": "QA005",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El conductor designado",
-   "enunciado": "Quien gane se libra de manejar la próxima salida de noche."
+   "categoria": "elige",
+   "titulo": "La música del viaje",
+   "enunciado": "Quien gane elige la música durante el próximo viaje de los dos."
   },
   {
    "id": "QA006",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "La música de la previa",
-   "enunciado": "Quien gane pone la música toda la próxima previa."
+   "categoria": "invita",
+   "titulo": "El postre lo invita el otro",
+   "enunciado": "Quien pierda invita el postre la próxima vez que salgan."
   },
   {
    "id": "QA007",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El hielo y la bebida",
-   "enunciado": "Quien gane no carga con el hielo ni con las bebidas la próxima vez."
+   "categoria": "hace",
+   "titulo": "La cuenta la hace el otro",
+   "enunciado": "Quien pierda divide la cuenta y se encarga de cobrar."
   },
   {
    "id": "QA008",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La cuenta la divide el otro",
-   "enunciado": "Quien gane se libra de hacer las cuentas de la próxima salida."
+   "categoria": "hace",
+   "titulo": "La reserva",
+   "enunciado": "Quien pierda llama y reserva mesa para la próxima salida."
   },
   {
    "id": "QA009",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El destino del próximo viaje",
-   "enunciado": "Quien gane elige a dónde van el próximo finde largo."
+   "categoria": "hace",
+   "titulo": "El favor de la semana",
+   "enunciado": "Quien gane le pide un favor concreto a quien pierda esta semana."
   },
   {
    "id": "QA010",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La reserva la hace el otro",
-   "enunciado": "Quien gane se libra de llamar y reservar la próxima vez."
+   "categoria": "hace",
+   "titulo": "La mano con lo pesado",
+   "enunciado": "Quien pierda ayuda a quien gane la próxima vez que mueva algo pesado."
   },
   {
    "id": "QA011",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El asado lo prende el otro",
-   "enunciado": "Quien gane no prende el fuego en la próxima juntada."
+   "categoria": "elige",
+   "titulo": "El primer turno",
+   "enunciado": "Quien gane juega primero la próxima vez que se pongan a jugar."
   },
   {
    "id": "QA012",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "La foto del grupo",
-   "enunciado": "Quien gane elige qué foto del grupo se sube y cuál no."
+   "titulo": "El asiento de adelante",
+   "enunciado": "Quien gane va adelante en el próximo viaje de los dos."
   },
   {
    "id": "QA013",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El juego de mesa",
-   "enunciado": "Quien gane elige a qué juegan la próxima noche de juegos."
+   "categoria": "hace",
+   "titulo": "El plan lo arma el otro",
+   "enunciado": "Quien pierda organiza el próximo plan de los dos, de principio a fin."
   },
   {
    "id": "QA014",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El último pedazo",
-   "enunciado": "Quien gane se queda con el último pedazo de lo que haya."
+   "categoria": "invita",
+   "titulo": "Las entradas",
+   "enunciado": "Quien pierda compra las entradas del próximo plan de los dos."
   },
   {
    "id": "QA015",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El asiento de adelante",
-   "enunciado": "Quien gane va adelante en el próximo viaje en carro."
+   "categoria": "invita",
+   "titulo": "El transporte de vuelta",
+   "enunciado": "Quien pierda pide y paga el transporte de vuelta."
   },
   {
    "id": "QA016",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La limpieza de después",
-   "enunciado": "Quien gane se libra de limpiar cuando termine la juntada."
+   "categoria": "invita",
+   "titulo": "La primera ronda",
+   "enunciado": "Quien pierda invita la primera ronda la próxima vez."
   },
   {
    "id": "QA017",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "El chiste que se retira",
-   "enunciado": "Quien gane manda jubilar un chiste repetido del grupo."
+   "titulo": "A qué se juega",
+   "enunciado": "Quien gane elige a qué juegan la próxima vez que se vean."
   },
   {
    "id": "QA018",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El apodo",
-   "enunciado": "Quien gane le pone apodo al otro por una semana en el grupo."
+   "categoria": "invita",
+   "titulo": "La propina",
+   "enunciado": "Quien pierda pone la propina completa la próxima salida."
   },
   {
    "id": "QA019",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "La salida la arma el otro",
-   "enunciado": "Quien gane recibe el próximo plan armado y solo tiene que aparecer."
+   "categoria": "invita",
+   "titulo": "El helado",
+   "enunciado": "Quien pierda invita un helado esta semana."
   },
   {
    "id": "QA020",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "El primero en elegir",
-   "enunciado": "Quien gane elige primero cuando pidan para compartir."
+   "titulo": "Quién elige primero",
+   "enunciado": "Quien gane elige primero cuando pidan algo para compartir."
   },
   {
    "id": "QA021",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "La cerveza la trae el otro",
-   "enunciado": "Quien gane no pone las bebidas la próxima vez."
+   "categoria": "elige",
+   "titulo": "El último pedazo",
+   "enunciado": "Quien gane se queda con el último pedazo de lo que compartan."
   },
   {
    "id": "QA022",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El que llega tarde paga",
-   "enunciado": "Quien gane queda perdonado la próxima vez que llegue tarde."
+   "categoria": "hace",
+   "titulo": "Recoger al final",
+   "enunciado": "Quien pierda recoge cuando terminen en casa de alguno de los dos."
   },
   {
    "id": "QA023",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "La playlist del viaje",
-   "enunciado": "Quien gane arma la playlist del próximo viaje en carro."
+   "categoria": "invita",
+   "titulo": "El desayuno del día después",
+   "enunciado": "Quien pierda invita el desayuno al día siguiente."
   },
   {
    "id": "QA024",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El favor sin preguntas",
-   "enunciado": "Quien gane cobra un favor razonable, sin explicaciones."
+   "categoria": "hace",
+   "titulo": "Una hora de ayuda",
+   "enunciado": "Quien pierda le da a quien gane una hora de ayuda en lo que pida."
   },
   {
    "id": "QA025",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "La historia que no se cuenta",
-   "enunciado": "Quien gane veta una anécdota suya por un mes."
+   "titulo": "A dónde se va",
+   "enunciado": "Quien gane elige a dónde van la próxima vez que salgan."
   },
   {
    "id": "QA026",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El postre compartido",
-   "enunciado": "Quien gane elige el postre que piden para compartir."
+   "categoria": "hace",
+   "titulo": "El que va por la comida",
+   "enunciado": "Quien pierda baja a buscar la comida cuando pidan algo."
   },
   {
    "id": "QA027",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "La mudanza la ayuda el otro",
-   "enunciado": "Quien gane se gana una mano en su próxima mudanza o mueble armado."
+   "categoria": "invita",
+   "titulo": "Las bebidas",
+   "enunciado": "Quien pierda pone las bebidas la próxima vez que se junten los dos."
   },
   {
    "id": "QA028",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El sticker del grupo",
-   "enunciado": "Quien gane elige el próximo sticker que se usa en el grupo."
+   "categoria": "hace",
+   "titulo": "El que sirve",
+   "enunciado": "Quien pierda le sirve a quien gane durante toda la tarde."
   },
   {
    "id": "QA029",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El taxi lo pide el otro",
-   "enunciado": "Quien gane se libra de pedir y coordinar el transporte."
+   "categoria": "elige",
+   "titulo": "El horario",
+   "enunciado": "Quien gane decide a qué hora se ven la próxima vez."
   },
   {
    "id": "QA030",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La mesa la elige el otro",
-   "enunciado": "Quien gane se libra de decidir dónde sentarse."
+   "categoria": "elige",
+   "titulo": "La revancha",
+   "enunciado": "Quien gane elige el próximo juego en el que se midan."
   },
   {
    "id": "QA031",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El plan que se repite",
-   "enunciado": "Quien gane elige qué plan del grupo se repite este mes."
+   "categoria": "hace",
+   "titulo": "El encargo",
+   "enunciado": "Quien pierda hace un encargo que le tocaba a quien gane."
   },
   {
    "id": "QA032",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El café de la oficina",
-   "enunciado": "Quien gane recibe un café invitado esta semana."
+   "categoria": "hace",
+   "titulo": "La comida casera",
+   "enunciado": "Quien pierda le cocina a quien gane una comida en casa."
   },
   {
    "id": "QA033",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "La foto de perfil del grupo",
-   "enunciado": "Quien gane elige la próxima foto del chat."
+   "categoria": "invita",
+   "titulo": "El café de la semana",
+   "enunciado": "Quien pierda le lleva el café a quien gane un día de esta semana."
   },
   {
    "id": "QA034",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "El primer turno en la consola",
-   "enunciado": "Quien gane agarra el control primero la próxima vez."
+   "titulo": "Llegar tarde una vez",
+   "enunciado": "Quien gane puede llegar tarde una vez sin que le digan nada."
   },
   {
    "id": "QA035",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "La discusión que se cierra",
-   "enunciado": "Quien gane cierra una discusión eterna del grupo por una semana."
+   "categoria": "hace",
+   "titulo": "El acompañante",
+   "enunciado": "Quien pierda acompaña a quien gane a un trámite aburrido."
   },
   {
    "id": "QA036",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El que va por la comida",
-   "enunciado": "Quien gane no baja a buscar el pedido."
+   "categoria": "hace",
+   "titulo": "La película que elija",
+   "enunciado": "Quien pierda ve entera la película que elija quien gane."
   },
   {
    "id": "QA037",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El cumpleaños lo organiza el otro",
-   "enunciado": "Quien gane se libra de organizar la próxima celebración."
+   "categoria": "elige",
+   "titulo": "El mejor lugar",
+   "enunciado": "Quien gane se queda con el mejor lugar la próxima vez que vean algo."
   },
   {
    "id": "QA038",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "La invitación de última hora",
-   "enunciado": "Quien gane puede sumar a alguien al próximo plan sin consultar."
+   "titulo": "Qué se cena",
+   "enunciado": "Quien gane elige qué se cena la próxima vez que coman juntos."
   },
   {
    "id": "QA039",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El audio largo perdonado",
-   "enunciado": "Quien gane manda un audio largo y nadie se queja."
+   "categoria": "hace",
+   "titulo": "Las bolsas",
+   "enunciado": "Quien pierda carga las bolsas la próxima vez que compren algo juntos."
   },
   {
    "id": "QA040",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El spoiler perdonado",
-   "enunciado": "Quien gane queda libre del próximo spoiler que suelte sin querer."
+   "categoria": "hace",
+   "titulo": "La fila",
+   "enunciado": "Quien pierda espera en la fila mientras quien gane se sienta."
   },
   {
    "id": "QA041",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La propina",
-   "enunciado": "Quien gane se libra de poner la propina la próxima vez."
+   "categoria": "hace",
+   "titulo": "El préstamo de una semana",
+   "enunciado": "Quien pierda le presta a quien gane algo suyo por una semana, si los dos están de acuerdo."
   },
   {
    "id": "QA042",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El lugar del sofá",
-   "enunciado": "Quien gane se queda con el mejor lugar en la próxima juntada."
+   "categoria": "elige",
+   "titulo": "Cambiar el plan",
+   "enunciado": "Quien gane puede cambiar el plan de los dos una vez, sin dar explicaciones."
   },
   {
    "id": "QA043",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La compra compartida",
-   "enunciado": "Quien gane no va al súper antes de la próxima juntada."
+   "categoria": "elige",
+   "titulo": "La partida que sigue",
+   "enunciado": "Quien gane elige a qué se juega después."
   },
   {
    "id": "QA044",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "El horario del plan",
-   "enunciado": "Quien gane decide a qué hora arranca la próxima salida."
+   "categoria": "invita",
+   "titulo": "El café del trabajo",
+   "enunciado": "Quien pierda invita el café algún día de esta semana."
   },
   {
    "id": "QA045",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "La revancha",
-   "enunciado": "Quien gane elige el próximo juego en el que se miden."
+   "titulo": "La foto de los dos",
+   "enunciado": "Quien gane elige cuál de las fotos de los dos se queda."
   },
   {
    "id": "QA046",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
-   "titulo": "El café de la mañana siguiente",
-   "enunciado": "Quien gane cobra el desayuno del día después."
+   "categoria": "hace",
+   "titulo": "La visita",
+   "enunciado": "Quien pierda va a casa de quien gane la próxima vez, y no al revés."
   },
   {
    "id": "QA047",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
-   "titulo": "La canción prohibida",
-   "enunciado": "Quien gane veta una canción del grupo por un mes."
+   "categoria": "hace",
+   "titulo": "El mensaje de coordinar",
+   "enunciado": "Quien pierda se encarga de escribir y coordinar el próximo plan."
   },
   {
    "id": "QA048",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "El que manda el mensaje",
-   "enunciado": "Quien gane se libra de escribir al grupo para coordinar."
+   "categoria": "invita",
+   "titulo": "El picoteo",
+   "enunciado": "Quien pierda lleva algo para comer la próxima vez que se vean."
   },
   {
    "id": "QA049",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "libra",
-   "titulo": "La entrada la compra el otro",
-   "enunciado": "Quien gane se libra de comprar las entradas del próximo plan."
+   "categoria": "hace",
+   "titulo": "La mano en la mudanza",
+   "enunciado": "Quien pierda le da a quien gane una mañana de ayuda cuando la pida."
   },
   {
    "id": "QA050",
    "clase": "premio",
    "publico": "amigos",
    "categoria": "elige",
-   "titulo": "El tema del próximo debate",
-   "enunciado": "Quien gane elige con qué juegan la próxima vez en ATWI."
+   "titulo": "El próximo premio",
+   "enunciado": "Quien gane elige el premio de la siguiente partida."
   },
   {
    "id": "QF001",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La limpieza general",
-   "enunciado": "Quien gane no ayuda en la próxima limpieza general de la casa."
+   "categoria": "hace",
+   "titulo": "Los platos de la comida",
+   "enunciado": "Quien pierda lava los platos de la próxima comida."
   },
   {
    "id": "QF002",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El menú del domingo",
-   "enunciado": "Quien gane elige qué se come en la próxima comida familiar."
+   "categoria": "hace",
+   "titulo": "La parte del otro",
+   "enunciado": "Quien pierda hace la parte de quien gane en la próxima limpieza."
   },
   {
    "id": "QF003",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "Los platos de la comida",
-   "enunciado": "Quien gane se libra de lavar los platos el próximo domingo."
+   "categoria": "elige",
+   "titulo": "El mando de la tarde",
+   "enunciado": "Quien gane controla la tele el resto del día y elige qué se ve."
   },
   {
    "id": "QF004",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "La película de la sobremesa",
-   "enunciado": "Quien gane elige qué se ve después de comer."
+   "categoria": "invita",
+   "titulo": "El postre lo trae el otro",
+   "enunciado": "Quien pierda lleva el postre a la próxima comida."
   },
   {
    "id": "QF005",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El control remoto familiar",
-   "enunciado": "Quien gane manda en la tele durante la próxima reunión."
+   "categoria": "hace",
+   "titulo": "La mesa la pone el otro",
+   "enunciado": "Quien pierda pone y levanta la mesa la próxima vez."
   },
   {
    "id": "QF006",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El mandado",
-   "enunciado": "Quien gane se libra del próximo mandado que haya que hacer."
+   "categoria": "elige",
+   "titulo": "El asiento en la mesa",
+   "enunciado": "Quien gane elige dónde se sienta en la próxima comida."
   },
   {
    "id": "QF007",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La mesa se pone sola",
-   "enunciado": "Quien gane no pone ni levanta la mesa la próxima comida."
+   "categoria": "elige",
+   "titulo": "Las sobras",
+   "enunciado": "Quien gane se lleva las sobras que quiera."
   },
   {
    "id": "QF008",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El postre lo trae el otro",
-   "enunciado": "Quien gane se libra de llevar el postre a la próxima reunión."
+   "categoria": "hace",
+   "titulo": "El encargo",
+   "enunciado": "Quien pierda hace el próximo encargo que le tocaba a quien gane."
   },
   {
    "id": "QF009",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "El asiento de siempre",
-   "enunciado": "Quien gane se queda con el mejor asiento de la mesa."
+   "categoria": "hace",
+   "titulo": "El café servido",
+   "enunciado": "Quien pierda le sirve el café a quien gane después de comer."
   },
   {
    "id": "QF010",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "La música de la reunión",
-   "enunciado": "Quien gane pone la música de la próxima juntada familiar."
+   "categoria": "hace",
+   "titulo": "La cocina la limpia el otro",
+   "enunciado": "Quien pierda limpia la cocina después de que cocinen."
   },
   {
    "id": "QF011",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El que va por la abuela",
-   "enunciado": "Quien gane se libra de ir a buscar y llevar a alguien."
+   "categoria": "hace",
+   "titulo": "El que cocina",
+   "enunciado": "Quien pierda cocina una vez lo que pida quien gane."
   },
   {
    "id": "QF012",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "elige",
-   "titulo": "La foto familiar",
-   "enunciado": "Quien gane elige la foto de todos que se manda al grupo."
-  },
-  {
-   "id": "QF013",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El regalo del próximo cumpleaños",
-   "enunciado": "Quien gane elige el regalo y el otro lo compra."
-  },
-  {
-   "id": "QF014",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La pregunta incómoda",
-   "enunciado": "Quien gane queda libre de contestar una pregunta familiar por un año."
-  },
-  {
-   "id": "QF015",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El chiste de siempre",
-   "enunciado": "Quien gane manda retirar la anécdota que le sacan en cada comida."
-  },
-  {
-   "id": "QF016",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La cocina la limpia el otro",
-   "enunciado": "Quien gane no limpia la cocina después de cocinar."
-  },
-  {
-   "id": "QF017",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El horario de la comida",
-   "enunciado": "Quien gane decide a qué hora se come el próximo domingo."
-  },
-  {
-   "id": "QF018",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El sobrino lo cuida el otro",
-   "enunciado": "Quien gane se libra del próximo turno de cuidar a los chicos."
-  },
-  {
-   "id": "QF019",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "Las sobras",
-   "enunciado": "Quien gane se lleva las sobras que quiera de la próxima comida."
-  },
-  {
-   "id": "QF020",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "El café de después",
-   "enunciado": "Quien gane recibe el café servido sin levantarse."
-  },
-  {
-   "id": "QF021",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "elige",
-   "titulo": "La casa de la próxima reunión",
-   "enunciado": "Quien gane decide en casa de quién se junta la próxima vez."
-  },
-  {
-   "id": "QF022",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El llamado a organizar",
-   "enunciado": "Quien gane se libra de ser quien coordina a todos por el grupo."
-  },
-  {
-   "id": "QF023",
-   "clase": "premio",
-   "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "La compra de la reunión",
-   "enunciado": "Quien gane no pone su parte de la próxima compra familiar."
-  },
-  {
-   "id": "QF024",
    "clase": "premio",
    "publico": "familia",
    "categoria": "elige",
@@ -5241,204 +5145,300 @@
    "enunciado": "Quien gane se sirve primero en la próxima comida."
   },
   {
+   "id": "QF013",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "La mascota",
+   "enunciado": "Quien pierda saca o alimenta a la mascota tres días seguidos."
+  },
+  {
+   "id": "QF014",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "Las plantas",
+   "enunciado": "Quien pierda riega las plantas toda la semana."
+  },
+  {
+   "id": "QF015",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "El supermercado",
+   "enunciado": "Quien pierda va al supermercado por los dos."
+  },
+  {
+   "id": "QF016",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "Las bolsas",
+   "enunciado": "Quien pierda carga las bolsas la próxima vez que compren."
+  },
+  {
+   "id": "QF017",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "Qué se ve después de comer",
+   "enunciado": "Quien gane elige qué se ve cuando terminen de comer."
+  },
+  {
+   "id": "QF018",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "La siesta tranquila",
+   "enunciado": "Quien pierda le deja a quien gane una siesta sin hacer ruido."
+  },
+  {
+   "id": "QF019",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "elige",
+   "titulo": "El baño primero",
+   "enunciado": "Quien gane entra primero al baño cuando se estén arreglando."
+  },
+  {
+   "id": "QF020",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "El favor de la semana",
+   "enunciado": "Quien gane le pide un favor concreto a quien pierda esta semana."
+  },
+  {
+   "id": "QF021",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "El acompañante",
+   "enunciado": "Quien pierda acompaña a quien gane al próximo trámite."
+  },
+  {
+   "id": "QF022",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "La ayuda con el teléfono",
+   "enunciado": "Quien pierda le arregla o le configura el teléfono a quien gane."
+  },
+  {
+   "id": "QF023",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "La fila",
+   "enunciado": "Quien pierda espera en la fila por quien gane."
+  },
+  {
+   "id": "QF024",
+   "clase": "premio",
+   "publico": "familia",
+   "categoria": "hace",
+   "titulo": "La ropa que se plancha",
+   "enunciado": "Quien pierda plancha la próxima tanda de ropa."
+  },
+  {
    "id": "QF025",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La sobremesa corta",
-   "enunciado": "Quien gane puede irse temprano de la próxima reunión sin dar explicaciones."
+   "categoria": "hace",
+   "titulo": "El cuarto ordenado",
+   "enunciado": "Quien pierda ordena una vez lo que quien gane deje sin ordenar."
   },
   {
    "id": "QF026",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El perro de la casa",
-   "enunciado": "Quien gane se libra de sacar o dar de comer a la mascota una semana."
+   "categoria": "elige",
+   "titulo": "La cama buena",
+   "enunciado": "Quien gane se queda con la cama buena cuando les toque quedarse a dormir."
   },
   {
    "id": "QF027",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "La receta de la abuela",
-   "enunciado": "Quien gane elige qué plato de la familia se cocina la próxima vez."
+   "categoria": "hace",
+   "titulo": "La puerta y el teléfono",
+   "enunciado": "Quien pierda atiende la puerta y el teléfono toda la tarde."
   },
   {
    "id": "QF028",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El armado del arbolito",
-   "enunciado": "Quien gane se libra de armar o desarmar la decoración."
+   "categoria": "hace",
+   "titulo": "El pan de tres días",
+   "enunciado": "Quien pierda va por el pan tres días seguidos."
   },
   {
    "id": "QF029",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El asado lo hace el otro",
-   "enunciado": "Quien gane no se para frente a la parrilla la próxima vez."
+   "categoria": "hace",
+   "titulo": "La basura de la semana",
+   "enunciado": "Quien pierda baja la basura toda la semana."
   },
   {
    "id": "QF030",
    "clase": "premio",
    "publico": "familia",
    "categoria": "elige",
-   "titulo": "La tanda de fotos",
-   "enunciado": "Quien gane decide cuántas fotos se sacan y cuándo se termina."
+   "titulo": "Qué se cocina",
+   "enunciado": "Quien gane elige qué se cocina la próxima vez que cocinen los dos."
   },
   {
    "id": "QF031",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El que baja las sillas",
-   "enunciado": "Quien gane se libra de acomodar sillas y mesas."
+   "categoria": "hace",
+   "titulo": "El regalo lo envuelve el otro",
+   "enunciado": "Quien pierda envuelve los regalos que tenga que dar quien gane."
   },
   {
    "id": "QF032",
    "clase": "premio",
    "publico": "familia",
    "categoria": "elige",
-   "titulo": "El tema que no se toca",
-   "enunciado": "Quien gane veta un tema de conversación durante la próxima comida."
+   "titulo": "La foto de los dos",
+   "enunciado": "Quien gane elige cuál de las fotos de los dos se queda."
   },
   {
    "id": "QF033",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El primer turno del baño",
-   "enunciado": "Quien gane entra primero cuando se están arreglando todos."
+   "categoria": "hace",
+   "titulo": "El café de la mañana",
+   "enunciado": "Quien pierda le prepara el café a quien gane tres mañanas."
   },
   {
    "id": "QF034",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La llamada de los domingos",
-   "enunciado": "Quien gane se libra de la próxima llamada de rutina."
+   "categoria": "elige",
+   "titulo": "El último pedazo",
+   "enunciado": "Quien gane se queda con el último pedazo del postre."
   },
   {
    "id": "QF035",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La cargada perdonada",
-   "enunciado": "Quien gane queda libre de una cargada familiar por un mes."
+   "categoria": "elige",
+   "titulo": "El asiento del viaje",
+   "enunciado": "Quien gane elige asiento en el próximo viaje que hagan juntos."
   },
   {
    "id": "QF036",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El envoltorio",
-   "enunciado": "Quien gane se libra de envolver los regalos de la próxima fecha."
+   "categoria": "elige",
+   "titulo": "La tarea que más odia",
+   "enunciado": "Quien gane le pasa a quien pierda la tarea de casa que más odia, una vez."
   },
   {
    "id": "QF037",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "El pan y la bebida",
-   "enunciado": "Quien gane no se encarga de traer lo que siempre falta."
+   "categoria": "hace",
+   "titulo": "La ropa la dobla el otro",
+   "enunciado": "Quien pierda dobla una vez la ropa de quien gane."
   },
   {
    "id": "QF038",
    "clase": "premio",
    "publico": "familia",
    "categoria": "elige",
-   "titulo": "El lugar en el carro",
-   "enunciado": "Quien gane elige asiento en el próximo viaje familiar."
+   "titulo": "La hora de comer",
+   "enunciado": "Quien gane decide a qué hora comen el próximo domingo."
   },
   {
    "id": "QF039",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El día de visita",
-   "enunciado": "Quien gane elige qué día se hace la próxima visita."
+   "categoria": "hace",
+   "titulo": "La visita que da pereza",
+   "enunciado": "Quien pierda acompaña a quien gane a la próxima visita que da pereza."
   },
   {
    "id": "QF040",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La ayuda con la tecnología",
-   "enunciado": "Quien gane se libra de configurar el teléfono de alguien."
+   "categoria": "hace",
+   "titulo": "El que madruga",
+   "enunciado": "Quien pierda se levanta primero y deja el desayuno listo."
   },
   {
    "id": "QF041",
    "clase": "premio",
    "publico": "familia",
    "categoria": "elige",
-   "titulo": "El brindis",
-   "enunciado": "Quien gane decide quién hace el brindis en la próxima fecha."
+   "titulo": "El sitio en el sofá",
+   "enunciado": "Quien gane se queda con el sitio del sofá que prefiera."
   },
   {
    "id": "QF042",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La ropa que se plancha",
-   "enunciado": "Quien gane se libra de la próxima tanda de planchado."
+   "categoria": "hace",
+   "titulo": "El préstamo de una semana",
+   "enunciado": "Quien pierda le presta a quien gane algo suyo por una semana, si los dos están de acuerdo."
   },
   {
    "id": "QF043",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El juego después de comer",
-   "enunciado": "Quien gane elige a qué se juega en la sobremesa."
+   "categoria": "hace",
+   "titulo": "Una hora de ayuda",
+   "enunciado": "Quien pierda le da a quien gane una hora de ayuda en lo que pida."
   },
   {
    "id": "QF044",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "La cuenta del restaurante",
-   "enunciado": "Quien gane no pone su parte la próxima vez que salgan todos."
+   "categoria": "hace",
+   "titulo": "Recoger al final",
+   "enunciado": "Quien pierda recoge lo que quede después de la próxima comida."
   },
   {
    "id": "QF045",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "La cama de visita",
-   "enunciado": "Quien gane se queda con la cama buena cuando alguien se queda a dormir."
+   "categoria": "elige",
+   "titulo": "La música mientras se cocina",
+   "enunciado": "Quien gane elige la música mientras cocinan o limpian los dos."
   },
   {
    "id": "QF046",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
-   "titulo": "El silencio de la siesta",
-   "enunciado": "Quien gane pide una siesta sin que nadie haga ruido."
+   "categoria": "hace",
+   "titulo": "La llamada pendiente",
+   "enunciado": "Quien pierda hace la llamada que le tocaba a quien gane."
   },
   {
    "id": "QF047",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
-   "titulo": "El pedido de la panadería",
-   "enunciado": "Quien gane elige qué se compra para el desayuno."
+   "categoria": "invita",
+   "titulo": "El pedido a domicilio",
+   "enunciado": "Quien pierda paga el próximo pedido a domicilio que compartan."
   },
   {
    "id": "QF048",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "libra",
-   "titulo": "La planta que se riega",
-   "enunciado": "Quien gane se libra de regar las plantas esta semana."
+   "categoria": "hace",
+   "titulo": "Lo que hay que alcanzar",
+   "enunciado": "Quien pierda se encarga de lo que haya que alcanzar en alto esta semana."
   },
   {
    "id": "QF049",
    "clase": "premio",
    "publico": "familia",
    "categoria": "elige",
-   "titulo": "El turno de contar la anécdota",
-   "enunciado": "Quien gane elige quién cuenta la historia de la reunión."
+   "titulo": "La discusión tonta",
+   "enunciado": "Quien gane se lleva la próxima discusión tonta de los dos, sin discutirla."
   },
   {
    "id": "QF050",
@@ -5446,7 +5446,7 @@
    "publico": "familia",
    "categoria": "elige",
    "titulo": "El próximo premio",
-   "enunciado": "Quien gane elige el premio de la siguiente partida de QuiénGane."
+   "enunciado": "Quien gane elige el premio de la siguiente partida."
   }
  ],
  "eje": "situacional",
