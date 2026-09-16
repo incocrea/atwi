@@ -427,7 +427,12 @@ body.app {
    tiene su proporción y era el rótulo quien decidía el alto de su carta.
    EL NÚMERO VIVE AQUÍ Y NO EN CADA REGLA: dos alturas escritas en dos sitios
    se desincronizan a la primera que alguien toque una. */
-:root { --alto-carta: 108px; }
+/* SUBE DE 108 A 132 px con las peanas definitivas (titular, 2026-09-16). No es
+   un capricho de aire: la peana va a TODO EL ANCHO y a lo ancho de la carta
+   mide 70 px de alto, así que con 108 al contenido le quedaban 38 y el rótulo
+   dibujado del modo ya mide 54. Lo que se mantiene es lo que se pidió: que las
+   seis midan lo mismo. */
+:root { --alto-carta: 132px; }
 .cartas-modo { display: grid; gap: var(--e-2); }
 
 .carta-modo {
@@ -437,7 +442,7 @@ body.app {
      medio es `minmax(0, 1fr)` por lo de siempre —si no, el texto más largo
      ensancha la fila y el home scrollea de lado—. */
   display: grid; grid-template-columns: 104px minmax(0, 1fr);
-  gap: var(--e-3); align-items: center;
+  gap: var(--e-3); align-items: center; align-content: start;
   width: 100%; min-height: var(--alto-carta); padding: 12px 74px 12px 12px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
@@ -486,16 +491,20 @@ body.app {
    traía dentro de un círculo blanco y se quitó al verlo puesto: la bombilla es
    una pegatina con su propio perfil blanco, así que ya viene recortada del
    fondo, y el disco no hacía más que ponerle un segundo borde alrededor. */
+/* ⚠️ ARRIBA Y NO CENTRADA, y esto lo dictó la peana nueva. Centrada en la
+   carta, su centro cae DENTRO del zócalo —la peana ocupa los 70 px de abajo de
+   los 132— y la bombilla quedaba medio hundida en el dibujo. Va alineada con
+   el texto, que es lo que hay arriba y con lo que se lee en pareja. */
 .carta-modo__explica {
-  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  position: absolute; right: 14px; top: 10px;
   width: 52px; height: 52px; padding: 0;
   display: grid; place-items: center;
   border: 0; background: none; cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
 }
-.carta-modo__explica:active { transform: translateY(-50%) scale(.9); }
+.carta-modo__explica:active { transform: scale(.9); }
 @media (prefers-reduced-motion: reduce) {
-  .carta-modo__explica:active { transform: translateY(-50%); }
+  .carta-modo__explica:active { transform: none; }
 }
 .carta-modo__explica .ico { width: 46px; height: 46px; }
 
@@ -510,10 +519,19 @@ body.app {
    lados: con margen se leería como un dibujo puesto encima y no como el suelo
    de la carta. El `padding-bottom` de la carta es lo que evita que el texto
    caiga sobre él. */
+/* LA PEANA ES EL ZÓCALO Y VA A TODO EL ANCHO (plancha definitiva del titular,
+   2026-09-16). Las seis salen ahora de la misma lámina —mismo grosor, misma
+   onda, el mismo tipo de adorno encima— y por eso pueden ir así: son anchas y
+   bajas, 512×100, o sea 70 px de alto a lo ancho de la carta. Las anteriores
+   medían 175 de alto y por eso hubo que hundirlas en una esquina; éstas caben
+   de lado a lado, que es como se leen de verdad como suelo.
+   A SANGRE POR LOS TRES LADOS y a plena opacidad: con margen se leería como un
+   dibujo puesto encima, y rebajada se leería como una mancha. Va detrás del
+   contenido (`z-index` 0 contra 1), y lo que mantiene el texto fuera de ella
+   es que el contenido se alinea ARRIBA. */
 .carta-modo__base, .publico__base {
-  position: absolute; right: -14px; bottom: -26px; z-index: 0;
-  width: 46%; height: auto; display: block; pointer-events: none;
-  opacity: .45;
+  position: absolute; left: -2px; right: -2px; bottom: -2px; z-index: 0;
+  width: calc(100% + 4px); height: auto; display: block; pointer-events: none;
 }
 .carta-modo__rotulo, .carta-modo__gancho,
 .publico__alto, .publico__texto { position: relative; z-index: 1; }
@@ -3933,7 +3951,7 @@ body.app {
 .publico {
   position: relative;
   display: grid; grid-template-columns: 76px minmax(0, 1fr);
-  gap: var(--e-3); align-items: center;
+  gap: var(--e-3); align-items: center; align-content: start;
   min-height: var(--alto-carta); padding: var(--e-3);
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
