@@ -29,10 +29,8 @@ window.ATWI.config = {
          único que tiene que hacer es decir a qué se juega. Redacción del
          titular (2026-09-16). */
       gancho: 'Defiende tu postura de forma divertida',
-      que: 'Un tema en común, ambos pueden estar a favor o en contra. Un juez IA escucha ' +
-           'sus argumentos, consulta qué dicen los expertos al respecto y evalúa quién ' +
-           'argumenta mejor su posición frente al tema. 100% neutral: lo que cuenta para ' +
-           'ganar es qué tan bien defiendes tu opinión, ¡no cuál es!',
+      que: 'Un tema en común, ambos pueden estar a favor o en contra. ' +
+           '¡Lo que cuenta para ganar es quién argumenta mejor su posición!',
       clave: 'No va de quién tiene la razón (eso no sirve de nada), va de que aprendas a ' +
              'defender mejor tu punto de vista.'
     },
@@ -40,9 +38,13 @@ window.ATWI.config = {
       nombre: 'Negociación',
       partido: ['Negoc', 'IA', 'ción'],
       gancho: 'Dialoga, encuentra acuerdos y avanza',
-      que: 'Un tema en el que cueste ponerse de acuerdo. Ambos presentan sus argumentos ' +
-           'e ideas, y un mediador IA que escucha las dos posiciones consulta qué dicen ' +
-           'los expertos sobre el tema y, según eso, propone 3 posibles acuerdos.',
+      /* DOS Y NO TRES, y el número no es de redacción: `docs/02` §13 le dice al
+         mediador «TU TRABAJO ES PROPONER DOS MANERAS DE QUEDAR», y el probador
+         pinta dos. Aquí ponía «3» desde antes y era una promesa que la pantalla
+         no iba a cumplir. Si algún día el mediador propone tres, se cambian el
+         prompt y esta línea a la vez. */
+      que: 'Ambos presentan sus argumentos e ideas, y un mediador IA experto propone ' +
+           '2 posibles acuerdos para seleccionar o ajustar.',
       clave: 'Si ningún acuerdo satisface a las dos partes, se vale seguir en desacuerdo y ' +
              'reintentar la negociación más adelante.'
     }
@@ -71,7 +73,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '05255a1',
+  version: '52273eb',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
