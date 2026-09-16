@@ -64,7 +64,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'ee81f16',
+  version: '888be7b',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -457,15 +457,16 @@ window.ATWI.config = {
 
     /* El desglose por criterio, con nombres que se entienden sin leer la
        rúbrica. El orden es el del peso. */
-    /* El cuarto es el ROTULO CORTO, para la cabecera de la minitabla desde que
-       es horizontal (2026-09-16): en 430 px no caben cinco veces «Pertinencia».
-       El largo se queda en el `title`, para quien se pare encima. */
+    /* [clave, nombre, peso]. Hubo un cuarto elemento con el rotulo abreviado
+       para la cabecera de la minitabla, y se fue: desde que va en diagonal caben
+       los nombres enteros, y «Ejem.» era pedirle a alguien que adivine una
+       palabra para ahorrar cinco pixeles que sobran. */
     criterios: [
-      ['pertinencia', 'Al tema', 30, 'Tema'],
-      ['solidez', 'Razones', 25, 'Razón'],
-      ['evidencia', 'Ejemplos', 20, 'Ejem.'],
-      ['escucha', 'Escucha', 15, 'Escu.'],
-      ['tono', 'Tono', 10, 'Tono']
+      ['pertinencia', 'Al tema', 30],
+      ['solidez', 'Razones', 25],
+      ['evidencia', 'Ejemplos', 20],
+      ['escucha', 'Escucha', 15],
+      ['tono', 'Tono', 10]
     ],
     encabezadoTabla: 'Cómo argumentaron',
     conUnTurno: 'Con un solo turno no hay escucha que puntuar: son cuatro criterios.'

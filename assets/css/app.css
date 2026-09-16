@@ -1440,7 +1440,9 @@ body.app {
    `<i>` por dentro y no en la celda: rotar la celda moveria tambien su caja y
    descuadraria la rejilla. El `<i>` sale del flujo con `position: absolute`,
    asi que la columna sigue midiendo lo que mide el numero de debajo. */
-.tabla--ancha .tabla__fila--cabeza { position: relative; height: 34px; padding-bottom: 0; }
+/* 52 px porque «Ejemplos» a -45 grados proyecta unos 45: con 34 se cortaba
+   contra el borde de arriba de la tarjeta. */
+.tabla--ancha .tabla__fila--cabeza { position: relative; height: 52px; padding-bottom: 0; }
 .tabla--ancha .tabla__fila--cabeza .tabla__n { position: relative; }
 .tabla--ancha .tabla__eti i {
   position: absolute; right: 2px; bottom: 0;

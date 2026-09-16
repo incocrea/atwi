@@ -1034,11 +1034,12 @@ window.ATWI = window.ATWI || {};
       '<div class="tabla__fila tabla__fila--cabeza">' +
         '<span class="tabla__quien"></span>' +
         criterios.map(function (c) {
-          /* c[3] ES EL ROTULO CORTO; c[2] es el PESO del criterio. Estaba
-             puesto `c[2]` y la cabecera salia «30 25 20 15 10», que son los
-             pesos de la rubrica y no dicen nada ahi. */
-          return '<span class="tabla__n tabla__eti"><i>' + esc(c[3] || c[1]) +
-                 '</i></span>';
+          /* EL NOMBRE ENTERO. `c[1]`, no el abreviado: en diagonal cabe
+             --«Ejemplos» mide 28 px de proyeccion-- y «Ejem.» con punto es
+             pedirle a alguien que adivine una palabra para ahorrar cinco
+             pixeles que sobran. (Y ojo: `c[2]` es el PESO del criterio; estuvo
+             puesto ahi un rato y la cabecera decia «30 25 20 15 10».) */
+          return '<span class="tabla__n tabla__eti"><i>' + esc(c[1]) + '</i></span>';
         }).join('') +
         '<span class="tabla__n tabla__n--total">Total</span>' +
       '</div>' +
