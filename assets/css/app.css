@@ -3569,11 +3569,17 @@ body.app {
 
 
 
-/* Cómo acabó la partida, al lado del estado. En el verde de «hecho» porque eso
-   es lo que dice: que esta ya está. */
-.partida__final {
-  margin-left: var(--e-2);
-  color: var(--tinta-suave);
-  font-weight: 700;
+/* CÓMO ACABÓ, detrás de las dos caras. Se separa con la flecha porque lo que
+   dice es la CONSECUENCIA de ese enfrentamiento: «Harold vs Diana → Empate».
+   Se empuja a la derecha con `margin-left:auto` para que quede pegado al borde
+   y no bailando según lo largos que sean los dos nombres. */
+.jugaron__final {
+  /* NO SE ENCOGE. `.jugaron` lleva `overflow:hidden`, así que con dos nombres
+     largos el resultado sería lo primero en desaparecer — justo el dato que se
+     añadió para no tener que abrir la tarjeta. Lo que cede es el nombre. */
+  flex-shrink: 0;
+  margin-left: auto; padding-left: var(--e-2);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+  color: var(--tinta-suave); white-space: nowrap;
 }
-.partida__final::before { content: '· '; color: var(--linea); font-weight: 400; }
+.jugaron__final::before { content: '→ '; color: var(--tinta-tenue); font-weight: 400; }

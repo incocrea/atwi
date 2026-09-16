@@ -1137,9 +1137,6 @@
               '<span class="partida__estado' +
                   (rot ? '' : ' partida__estado--hecha') + '">' +
                 esc(rot ? rot[0] : 'Terminada') +
-                (!rot && comoAcabo(d)
-                  ? '<span class="partida__final">' + esc(comoAcabo(d)) + '</span>'
-                  : '') +
                 '<span class="partida__avance">' + esc(avance) + '</span>' +
               '</span>' +
               '<span class="partida__senas">' +
@@ -1354,7 +1351,12 @@
     var t = d.turnos_grabados || [];
     var abreP = d.abre_lado !== 'invitado';
     function lado(cual, i) {
-      var par = ((cual === 'propone') === abreP) ? 0 : 1;
+      /* `orden` EMPIEZA EN 1, así que quien abre tiene los IMPARES. Estaba al
+         revés, igual que en `mesaDelDebate()` —de donde se copió— y con el
+         mismo efecto: las dos caras cambiadas de sitio. Aquí solo se nota en
+         las partidas viejas, que son las únicas que llegan a usar este respaldo
+         (las nuevas traen la ficha sellada por la migración 0031). */
+      var par = ((cual === 'propone') === abreP) ? 1 : 0;
       var x = t.filter(function (q) { return (q.orden || 0) % 2 === par; })[0];
       /* Y PARA EL LADO `propone`, EL PERFIL DE ESTA CUENTA COMO ÚLTIMO RECURSO.
          Las partidas abiertas antes de la migración 0031 no sellaban su ficha,
@@ -1380,9 +1382,17 @@
        modo entero en dos letras, y encima en la pantalla donde la pareja repasa
        lo que hizo junta. */
     var junta = d.modo === 'negociacion';
+    /* CÓMO ACABÓ VA AQUÍ, JUNTO A ELLOS (corrección del titular, 2026-09-16).
+       Estaba arriba, al lado de «Terminada», y ahí se leía como un estado más
+       de la partida. Pero «Empate» o «Ganó Harold» no dicen en qué punto está
+       la ronda: dicen algo SOBRE ESTAS DOS PERSONAS, y puesto detrás de sus dos
+       caras se lee solo, sin tener que buscar arriba de quién se habla. */
+    var final = comoAcabo(d);
     return '<span class="jugaron">' + (a || '') +
       (a && b ? '<span class="jugaron__vs">' + (junta ? 'y' : 'vs') + '</span>' : '') +
-      (b || '') + '</span>';
+      (b || '') +
+      (final ? '<span class="jugaron__final">' + esc(final) + '</span>' : '') +
+      '</span>';
   }
 
   /* LOS CINCO ESTADOS SE AGRUPAN EN TRES FAMILIAS, y de ahí sale el tinte de la
