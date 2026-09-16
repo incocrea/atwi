@@ -712,21 +712,33 @@ body.app {
 .cinta-modo--debate { background: var(--debate-tinte); }
 .cinta-modo--negociacion { background: var(--negociacion-tinte); }
 /* El rótulo manda el alto de la cinta. Se le fija el ALTO y no el ancho para
-   que las dos piezas queden del mismo tamaño aparente aunque una sea más larga,
-   y `min-width: 0` para que el flex la encoja antes que sacarla por el costado
-   en un lienzo estrecho. */
+   que las dos piezas queden del mismo tamaño aparente aunque una sea más larga.
+   Subió de 44 a 56 px con el mockup del titular: ahora comparte fila con dos
+   renglones de texto y a 44 se quedaba pequeño al lado.
+   `flex: none` y no `0 1 auto`: el que se encoge es el texto, que sabe partir
+   en más renglones; encoger un dibujo con el alto fijo lo deforma. */
 .cinta-modo__rotulo {
-  flex: 0 1 auto; min-width: 0; height: 44px; width: auto; display: block;
+  flex: none; height: 56px; width: auto; display: block;
 }
-/* `margin-left: auto` y no `flex: 1` en el rótulo: estirar un `img` con el alto
-   fijo lo deforma, así que el que se come el hueco sobrante es el botón. */
+/* El texto se come el hueco sobrante y es el único que puede encogerse, así que
+   `min-width: 0` va aquí: sin eso, una frase larga saca la cinta por el costado. */
+.cinta-modo__texto { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.cinta-modo__nombre {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  color: var(--tinta); line-height: 1.15;
+}
+.cinta-modo__que {
+  font-size: var(--t-mini); line-height: 1.25; color: var(--tinta-suave);
+}
+/* El disco de cambiar: blanco, redondo y del tamaño mínimo para tocarse. Sin
+   palabra al lado —la quitó el titular— el botón deja de ser una pastilla con
+   texto y pasa a ser el signo solo, así que necesita su propia diana. */
 .cinta-modo__cambiar {
-  flex: none; margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
-  padding: 5px 10px; border-radius: var(--radio-pastilla);
+  flex: none; display: grid; place-items: center;
+  width: 40px; height: 40px; border-radius: 50%;
   background: var(--superficie); box-shadow: var(--sombra-1);
-  font-size: var(--t-mini); font-weight: 800; color: var(--tinta-suave);
 }
-.cinta-modo .ico { width: 24px; height: 24px; flex: none; }
+.cinta-modo .ico { width: 26px; height: 26px; flex: none; }
 
 /* --- Tarjetas de modo (las de «con quién juegas») --------------------------- */
 .modos { display: grid; gap: var(--e-3); }

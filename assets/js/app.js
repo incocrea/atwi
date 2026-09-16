@@ -960,18 +960,26 @@
      catálogo, con el color del modo. */
   function cintaModo() {
     if (!propuesta.modo) return '';
-    return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" data-accion="cambiar-modo">' +
+    var m = cfg.modos[propuesta.modo] || {};
+    return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" ' +
+            'data-accion="cambiar-modo" aria-label="Cambiar de modo">' +
         /* El rótulo dibujado en lugar de icono más nombre: ya trae dentro su
-           icono y su color, así que ponerle otro al lado era decirlo dos veces.
-           «Van a jugar» delante partía la cinta en dos renglones, y tampoco
-           está. */
+           icono y su color, así que ponerle otro al lado era decirlo dos veces. */
         rotuloModo(propuesta.modo, 'cinta-modo__rotulo') +
-        /* Dice siempre lo mismo. Nombrar el destino —«Negociar», «Debatir»—
-           obligaba a leer dos veces para separar en qué modo estás de a cuál
-           irías; el botón es un interruptor y se comporta como uno. */
-        '<span class="cinta-modo__cambiar">' +
-          icono('cambiar', 24) + 'Cambiar modo' +
+        /* CON EL NOMBRE Y LA LÍNEA DE QUÉ SE JUEGA (mockup del titular,
+           2026-09-16). La cinta llevaba el dibujo y un botón de «Cambiar modo»,
+           y nada más: quien entra al catálogo sin venir de la portada veía un
+           rótulo y no sabía a qué había entrado. La frase es la misma `gancho`
+           que usan las cartas de la portada — un solo sitio. */
+        '<span class="cinta-modo__texto">' +
+          '<span class="cinta-modo__nombre">Modo ' + esc(m.nombre || '') + '</span>' +
+          (m.gancho ? '<span class="cinta-modo__que">' + esc(m.gancho) + '</span>' : '') +
         '</span>' +
+        /* SIN LA PALABRA (titular). Decía «Cambiar modo» al lado del icono de
+           cambiar: el dibujo ya es el reciclaje, así que la palabra repetía lo
+           que el signo dice, y aquí el sitio se lo come el texto descriptivo.
+           El nombre vive en el `aria-label` del botón. */
+        '<span class="cinta-modo__cambiar">' + icono('cambiar', 26) + '</span>' +
       '</button>';
   }
 
