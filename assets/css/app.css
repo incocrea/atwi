@@ -405,6 +405,14 @@ body.app {
      mínimo, así que dejaban de estar alineados con el dibujo justo en lo que se
      pedía que coincidiera. El rótulo crece 8 px y todo vuelve a cuadrar. */
   --alto-rotulo: 96px;
+  /* LOS SIGNOS SE DESATARON DEL RÓTULO (petición del titular, 2026-09-16: «un
+     poco más grandes los iconos de ayuda y play»). Iban a la altura del rótulo,
+     y de ahí salían los 44 de cada uno. Dos de 60 más los 8 del hueco.
+
+     No crece el rótulo con ellos porque lo que se pidió más grande es el signo:
+     la carta ya la manda el dibujo del modo, que se lee a metros, y lo que
+     costaba encontrar era dónde tocar. */
+  --alto-signos: 128px;
   display: flex; align-items: center; gap: var(--e-3);
   width: 100%; padding: var(--e-4);
   border: 0; border-radius: var(--radio-modal);
@@ -442,7 +450,7 @@ body.app {
    relleno, no el diámetro. */
 .carta-modo__salidas {
   display: grid; grid-auto-rows: 1fr; gap: var(--e-2);
-  flex: 0 0 auto; height: var(--alto-rotulo); justify-items: center;
+  flex: 0 0 auto; height: var(--alto-signos); justify-items: center;
 }
 /* CADA UNO ES UN CÍRCULO DEL ALTO QUE LE TOCA. `aspect-ratio` sobre la altura
    de la fila: así el diámetro sale del alto del rótulo y no de un número
