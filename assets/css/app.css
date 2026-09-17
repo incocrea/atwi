@@ -616,10 +616,9 @@ body.app {
   /* SIN `min-height` PROPIO: el suelo lo pone el track del grid
      (`--carta-min`), y si la carta además lo forzara desde dentro, el `1fr` no
      podría encogerla y volvería el scroll que esto viene a quitar. */
-  /* EL PADDING DERECHO ES EL SITIO DE LA BOMBILLA Y SE MIDE CONTRA ELLA: 20 de
-     separacion al canto mas 56 de disco. Subio de 58 a 76 el 2026-09-17, cuando
-     la bombilla crecio y se separo: medido, el texto se le metia 18 px debajo. */
-  width: 100%; padding: 12px 76px 12px 8px;
+  /* EL PADDING DERECHO ES EL SITIO DE LA BOMBILLA Y SE MIDE CONTRA ELLA: 10 de
+     separacion al canto mas 56 de disco. */
+  width: 100%; padding: 12px 66px 12px 8px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
   /* SIN FONDO Y CON HALO (titular, 2026-09-16). La carta deja de pintarse y lo
@@ -662,9 +661,9 @@ body.app {
   /* EN NEGRO Y NO EN GRIS (titular, 2026-09-16). Iba en `--tinta-suave`, que
      es el gris del texto secundario, y aquí no lo es: con el nombre del modo
      quitado de la fila, esta línea es lo ÚNICO que se lee de la carta. */
-  /* 15,5 px (titular, 2026-09-17): era la linea mas chica de la portada y es
-     la unica que hay que leer de la carta. */
-  font-size: 15.5px; line-height: 1.3; color: var(--tinta);
+  /* 14 px (titular, 2026-09-17). Estuvo un rato en 15,5 —subiendo desde los
+     12,5 de antes— y a 375 se partia en cuatro renglones de dos palabras. */
+  font-size: 14px; line-height: 1.3; color: var(--tinta);
 }
 
 /* LA CAJA ES QUIEN POSICIONA, porque dentro hay dos botones HERMANOS: la carta
@@ -681,8 +680,10 @@ body.app {
    los 132— y la bombilla quedaba medio hundida en el dibujo. Va alineada con
    el texto, que es lo que hay arriba y con lo que se lee en pareja. */
 .carta-modo__explica {
-  /* A 20 y 20, y mas grande (titular, 2026-09-17): iba a 8/10 y a 48 px. */
-  position: absolute; right: 20px; top: 20px;
+  /* A 10 y 10 (titular, 2026-09-17), para devolverle ancho al texto: estuvo un
+     rato a 20/20 y esos 10 px de mas salian del renglon. El tamano se queda
+     en 56. */
+  position: absolute; right: 10px; top: 10px;
   width: 56px; height: 56px; padding: 0;
   display: grid; place-items: center;
   border: 0; background: none; cursor: pointer;
@@ -964,6 +965,12 @@ body.app {
 }
 .cinta-modo--debate { background: var(--debate-tinte); }
 .cinta-modo--negociacion { background: var(--negociacion-tinte); }
+/* ⚠️ Y LA DE QUIÉNGANE FALTABA, así que salía en blanco mientras las otras dos
+   llevaban su tinte (lo vio el titular, 2026-09-17). Es el mismo hueco que dejó
+   `.boton--competencia`: reglas escritas cuando el juego tenía dos modos, que
+   no fallan —la clase existe, simplemente no pinta nada— y por eso nadie las
+   ve hasta que alguien compara las tres pantallas. */
+.cinta-modo--competencia { background: var(--competencia-tinte); }
 /* El rótulo manda el alto de la cinta. Se le fija el ALTO y no el ancho para
    que las dos piezas queden del mismo tamaño aparente aunque una sea más larga.
    Subió de 44 a 56 px con el mockup del titular: ahora comparte fila con dos
@@ -1065,10 +1072,28 @@ body.app {
    y la regla baja aquí, a un solo sitio y sin `id` que la levante.
    De qué mesa es la lista lo siguen diciendo la cinta de arriba y los chips
    (`--mesa-fuerte`), y `--mesa-claro` sigue vivo en «Mis propios temas». */
+/* DOS COLUMNAS: el tema y el lapiz (titular, 2026-09-17). Iba en una sola, con
+   el texto arriba y una fila de chips debajo; ahora el unico control de la
+   tarjeta esta arriba a la derecha, frente al titulo.
+   `align-items: start` es lo que lo deja ARRIBA: sin el, la rejilla estira las
+   dos celdas y el lapiz queda centrado contra un enunciado de tres renglones. */
 .tema-caja {
-  padding: var(--e-4); display: grid; gap: var(--e-2);
-  background: rgba(255, 255, 255, .6);
+  padding: var(--e-4);
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--e-2); align-items: start;
+  background: var(--carta-velo);
 }
+/* SOLO EL ICONO, sin caja, sin borde y sin palabra. Lo que lo hace tocable es
+   su propia diana de 40 px, que es mas grande que el dibujo: el lapiz mide 24 y
+   el resto es margen para el dedo. */
+.tema__editar {
+  width: 40px; height: 40px; margin: -6px -6px 0 0; padding: 0;
+  display: grid; place-items: center;
+  border: 0; background: none; cursor: pointer;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.tema__editar:active { transform: scale(.9); }
+@media (prefers-reduced-motion: reduce) { .tema__editar:active { transform: none; } }
 .tema {
   display: grid; gap: 6px; width: 100%; padding: 0;
   border: 0; background: none; font: inherit; color: inherit;
@@ -1078,17 +1103,10 @@ body.app {
 .tema:active { transform: scale(.99); }
 .tema__titulo { font-family: var(--display); font-weight: 800; }
 .tema__enunciado { font-size: var(--t-chico); color: var(--tinta-suave); }
-.tema__pie { display: flex; gap: var(--e-2); flex-wrap: wrap; align-items: center; }
 
-/* Personalizar parece un chip más porque es donde la vista ya está mirando,
-   pero es el único que se pulsa: por eso lleva borde y no relleno. */
-.chip--editar {
-  border: 1.5px dashed var(--linea-fuerte); background: transparent;
-  color: var(--tinta-suave); cursor: pointer; font-family: inherit;
-  margin-left: auto; gap: 5px;
-}
-.chip--editar:hover { border-color: var(--lavanda); color: var(--lavanda-oscuro); }
-.chip--editar:active { transform: scale(.94); }
+/* ⚠️ AQUÍ VIVÍA `.chip--editar`, el «Personalizar» con borde punteado, y se fue
+   con la fila de chips (titular, 2026-09-17): ahora es `.tema__editar`, solo el
+   lápiz y arriba a la derecha. */
 
 /* --- Estados vacíos -------------------------------------------------------- */
 .vacio { text-align: center; padding: var(--e-7) var(--e-4); color: var(--tinta-suave); }
@@ -2028,9 +2046,10 @@ body.app {
 
 /* Un tema ya debatido se apaga un punto: lo que interesa es ver lo que falta */
 .tema--hecho { opacity: .72; }
-.chip--hecho { background: var(--negociacion-tinte); color: var(--negociacion-oscuro); }
-.chip--hecho svg { width: 13px; height: 13px; }
-.chip--nuevo { background: var(--premio-tinte); color: var(--premio-hondo); }
+/* ⚠️ Y AQUÍ `.chip--hecho` Y `.chip--nuevo`, los de «Ya debatido» y «Sin
+   estrenar». Los quitó el titular de las tarjetas el 2026-09-17 y con eso no
+   los pinta nadie: lo ya jugado lo dicen el filtro de arriba y la opacidad de
+   `.tema--hecho`. */
 
 /* --- El buzón ------------------------------------------------------------------ */
 .buzon-boton {

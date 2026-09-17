@@ -897,30 +897,26 @@
   function tarjetaTema(t) {
     var hecho = datos.yaDebatido(t.id);
     var tocado = t.propio || datos.estaReescrito(t.id);
+    /* ⚠️ SE FUERON LOS DOS CHIPS (titular, 2026-09-17): el de intensidad
+       —«ligera», «profunda», o la familia del premio— y el de «Sin estrenar» /
+       «Ya debatido». Eran una fila entera de adorno debajo de cada tema en una
+       lista de 455, y la única de las dos cosas que alguien busca —lo ya
+       jugado— tiene su propio filtro arriba y además apaga la tarjeta
+       (`.tema--hecho`, opacidad .72). Lo que decía el chip sigue dicho.
+       Y PERSONALIZAR SUBE A LA ESQUINA Y DEJA DE SER UN BOTÓN CON PALABRA: es
+       solo el lápiz, frente al título. El nombre vive en el `aria-label` y en
+       el `title`, que es lo que lee quien no ve el dibujo. */
+    var que = tocado ? 'Editar' : 'Personalizar';
     return '<div class="tarjeta tema-caja' + (hecho ? ' tema--hecho' : '') + '">' +
         '<button class="tema" data-tema="' + esc(t.id) + '">' +
           '<span class="tema__titulo">' + esc(t.titulo) + '</span>' +
           '<span class="tema__enunciado">' + esc(t.enunciado) + '</span>' +
         '</button>' +
-        '<div class="tema__pie">' +
-          /* EL PRIMER CHIP DICE DE QUÉ VA LA FICHA, y no es el mismo dato en
-             las dos clases: un tema trae su `intensidad` —ligera, profunda— y
-             un premio trae su familia —elige, libra, recibe—. Con el nombre
-             del campo escrito a mano, los 150 premios pintaban un chip VACÍO.
-             Se toma el que haya; si no hay ninguno, no se pinta chip. */
-          (t.intensidad || t.categoria
-            ? '<span class="chip chip--' + esc(t.intensidad || t.categoria) + '">' +
-                esc(t.intensidad || t.categoria) + '</span>'
-            : '') +
-          (hecho
-            ? '<span class="chip chip--hecho">' + iconoSVG('listo', 13) + ' Ya debatido</span>'
-            : '<span class="chip chip--nuevo">Sin estrenar</span>') +
-          /* Directo al editor, sin pasar por el detalle: quien ve un tema que
-             no encaja con su discusión quiere arreglarlo ahí mismo. */
-          '<button class="chip chip--editar" data-editar-tema="' + esc(t.id) + '">' +
-            icono('lapiz', 22) +
-            (tocado ? 'Editar' : 'Personalizar') + '</button>' +
-        '</div>' +
+        /* Directo al editor, sin pasar por el detalle: quien ve un tema que
+           no encaja con su discusión quiere arreglarlo ahí mismo. */
+        '<button class="tema__editar" data-editar-tema="' + esc(t.id) + '" ' +
+          'aria-label="' + que + ' este ' + (t.clase === 'premio' ? 'premio' : 'tema') +
+          '" title="' + que + '">' + icono('lapiz', 24) + '</button>' +
       '</div>';
   }
 
