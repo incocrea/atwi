@@ -3314,7 +3314,27 @@
       var AIRE = 12;          /* lo que respira contra el borde del marco */
       var PICO = 10;          /* cuánto sobresale el pico */
 
-      var ancho = Math.min(330, m.width - AIRE * 2);
+      /* EL PICO APUNTA AL SIGNO, NO A SU MILÍMETRO CENTRAL. El disco mide 34 o
+         48 px, así que la punta vale en cualquier parte de él: exigirle el
+         centro exacto corría el globo por 20 px que nadie ve. `PUNTA` es lo que
+         se le deja de margen para que se lea encima del dibujo y no del canto. */
+      var PUNTA = 8;
+      var oIzq = dIzq + PUNTA, oDer = dIzq + d.width - PUNTA;
+      var ALCANCE = 38;   /* lo que el pico se puede acercar al canto del globo */
+
+      /* CENTRADO SI HAY ESPACIO (titular, 2026-09-17), y el espacio se USA:
+         antes de correr el globo se le da ANCHO. Con el marco a 430 el globo
+         de 330 centrado va de 50 a 380 y el signo de la carta está en 382 —o
+         sea FUERA de la caja—, así que no había ningún sitio donde poner el
+         pico y el globo se iba al canto derecho. Ensanchándolo hasta que la
+         punta llegue, se queda centrado y apunta igual.
+         Las dos condiciones —que el pico no se pase del signo por la izquierda
+         ni se quede corto por la derecha— despejadas en `w` con `x` centrado:
+         no hace falta probar anchos, sale el número. */
+      var tope = m.width - AIRE * 2;
+      var ancho = Math.min(tope, Math.max(330,
+        m.width - 2 * (oDer - ALCANCE),
+        2 * (oIzq + ALCANCE) - m.width));
       nodo.style.width = ancho + 'px';
       var alto = nodo.offsetHeight;
 
@@ -3336,11 +3356,11 @@
          no puede pegarse a las esquinas redondeadas, así que con un signo muy
          a un lado se quedaba corto y señalaba al aire. Así que el centro es una
          PREFERENCIA, no una orden: si el signo cae fuera de lo que el pico
-         alcanza, el globo se corre lo JUSTO para que la punta caiga encima de
-         él. Centrado siempre que se pueda; apuntando siempre. */
-      var ALCANCE = 38;   /* lo que el pico se puede acercar al canto */
+         alcanza —y eso, con el ancho ya estirado, solo pasa cuando el signo está
+         pegado al borde del marco—, el globo se corre lo JUSTO para que la punta
+         caiga encima de él. Centrado siempre que se pueda; apuntando siempre. */
       var x = Math.round((m.width - ancho) / 2);
-      x = Math.max(centroD - (ancho - ALCANCE), Math.min(x, centroD - ALCANCE));
+      x = Math.max(oIzq - (ancho - ALCANCE), Math.min(x, oDer - ALCANCE));
 
       x = Math.max(AIRE, Math.min(x, m.width - ancho - AIRE));
       nodo.style.left = Math.round(x) + 'px';

@@ -15,11 +15,11 @@
 <title>ATWI · El juego de debate para parejas, amigos y familia</title>
 <meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<link rel="stylesheet" href="assets/css/fuentes.css?v=dce102a">
-<link rel="stylesheet" href="assets/css/tokens.css?v=dce102a">
-<link rel="stylesheet" href="assets/css/base.css?v=dce102a">
-<link rel="stylesheet" href="assets/css/landing.css?v=dce102a">
-<link rel="stylesheet" href="assets/css/modal.css?v=dce102a">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=9b0082c">
+<link rel="stylesheet" href="assets/css/tokens.css?v=9b0082c">
+<link rel="stylesheet" href="assets/css/base.css?v=9b0082c">
+<link rel="stylesheet" href="assets/css/landing.css?v=9b0082c">
+<link rel="stylesheet" href="assets/css/modal.css?v=9b0082c">
 </head>
 
 <body class="landing">
@@ -61,28 +61,40 @@
           <article class="pantalla" data-titulo="Se elige el modo, y la carta es el botón">
             <div class="pantalla__cabecera">
               <img src="assets/img/logotipo-48.png" alt="" width="62" height="21">
-              <span class="pantalla__discos"><i></i><i></i><i></i></span>
+              <span class="pantalla__discos">
+                <i><img src="assets/img/landing/ayuda-morado.webp" alt="" width="18" height="18" loading="lazy"></i>
+                <i><img src="assets/img/landing/corazon.webp" alt="" width="18" height="18" loading="lazy"></i>
+                <i><img src="assets/img/landing/buzon.webp" alt="" width="18" height="18" loading="lazy"></i>
+                <i class="pantalla__yo"><img src="assets/img/personajes/kai-azul-ficha.webp" alt="" width="17" height="17" loading="lazy"></i>
+              </span>
             </div>
             <p class="pantalla__saludo">¡Hola, Sofía!</p>
             <div class="carta-mini carta-mini--debate">
               <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Controversia" width="170" height="88" loading="lazy">
               <span class="carta-mini__que">Defiende tu postura de forma divertida</span>
+              <img class="carta-mini__signo" src="assets/img/landing/ayuda-coral.webp" alt="" width="30" height="30" loading="lazy">
               <img class="carta-mini__base" src="assets/img/landing/base-debate.webp" alt="" width="320" height="53" loading="lazy">
             </div>
             <div class="carta-mini carta-mini--negociacion">
               <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Negociación" width="170" height="80" loading="lazy">
               <span class="carta-mini__que">Dialoga, encuentra acuerdos y avanza</span>
+              <img class="carta-mini__signo" src="assets/img/landing/ayuda-menta.webp" alt="" width="30" height="30" loading="lazy">
               <img class="carta-mini__base" src="assets/img/landing/base-negociacion.webp" alt="" width="320" height="56" loading="lazy">
             </div>
             <div class="carta-mini carta-mini--competencia">
               <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="QuiénGane" width="170" height="82" loading="lazy">
               <span class="carta-mini__que">Definen un premio y se lo ganan jugando</span>
+              <img class="carta-mini__signo" src="assets/img/landing/ayuda-azul.webp" alt="" width="30" height="30" loading="lazy">
               <img class="carta-mini__base" src="assets/img/landing/base-competencia.webp" alt="" width="320" height="53" loading="lazy">
             </div>
           </article>
 
           <!-- 2 · El encuentro -->
           <article class="pantalla pantalla--encuentro" data-titulo="Se sortea quién abre y empieza la ronda">
+            <!-- En el versus manda el LOGO del modo, no un título: es lo que
+                 sitúa la pantalla, y una cabecera encima diría lo mismo
+                 diciendo menos. -->
+            <img class="encuentro-mini__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Modo Controversia" width="170" height="88" loading="lazy">
             <div class="encuentro-mini">
               <img class="encuentro-mini__fig" src="assets/img/landing/kai-plante.webp" alt="" width="100" height="155" loading="lazy">
               <img class="encuentro-mini__vs" src="assets/img/landing/vs.webp" alt="" width="86" height="84" loading="lazy">
@@ -97,6 +109,13 @@
             <div class="pantalla__cabecera pantalla__cabecera--sala">
               <span class="chip-mini">Turno 2 de 2</span>
               <span class="reloj-mini">0:18</span>
+            </div>
+            <!-- Las intervenciones cerradas quedan en una lista reproducible:
+                 se vuelven a oír antes de contestar, y lo que suena es el
+                 personaje, no la grabación. -->
+            <div class="oidos-mini">
+              <span class="oido-mini"><i>▶</i> Kai · turno 1 <b>0:24</b></span>
+              <span class="oido-mini"><i>▶</i> Sofía · turno 1 <b>0:29</b></span>
             </div>
             <div class="sala-mini">
               <img class="sala-mini__fig" src="assets/img/landing/nina-hablando.webp" alt="" width="130" height="201" loading="lazy">
@@ -124,16 +143,33 @@
               <img src="assets/img/landing/rotulo-negociacion.webp" alt="" width="64" height="30" loading="lazy">
               <span><b>Modo Negociación</b><br>Dialoga, encuentra acuerdos y avanza</span>
             </div>
-            <p class="pantalla__saludo pantalla__saludo--chico">¿Con quién juegas?</p>
+            <div class="filtros-mini">
+              <i class="chip-mini chip-mini--mesa">Pareja</i>
+              <i class="chip-mini chip-mini--suave">Amigos</i>
+              <i class="chip-mini chip-mini--suave">Familia</i>
+            </div>
+            <!-- Los cuatro son temas REALES del catálogo, copiados tal cual. Un
+                 tema de ejemplo inventado para una landing es la app diciendo
+                 que tiene algo que no tiene. -->
             <div class="tema-mini">
-              <b>El margen del aeropuerto</b>
-              <span>¿Se llega con mucho margen o se llega con lo justo?</span>
-              <i class="chip-mini chip-mini--suave">ligera</i>
+              <b>El chiste en mitad de la discusión</b>
+              <span>Hacer una broma en mitad de una discusión, ¿baja la tensión o esquiva el tema?</span>
             </div>
             <div class="tema-mini">
-              <b>La taza que espera «un rato»</b>
-              <span>¿Se enjuaga en el momento o puede esperar?</span>
-              <i class="chip-mini chip-mini--suave">ligera</i>
+              <b>Sentados o de pasada</b>
+              <span>Un tema importante, ¿se puede hablar mientras se hace otra cosa o hay que parar y sentarse?</span>
+            </div>
+            <div class="tema-mini">
+              <b>«Luego hablamos»</b>
+              <span>Cuando llega un mensaje sobre un tema pendiente, ¿hay que contestar en el momento o vale dejarlo para después?</span>
+            </div>
+            <div class="tema-mini">
+              <b>De una habitación a otra</b>
+              <span>Hablar a voces de una habitación a otra, ¿es lo normal en una casa o hay que ir donde está el otro?</span>
+            </div>
+            <div class="tema-mini">
+              <b>Interrumpir para matizar</b>
+              <span>Cuando el otro cuenta su versión y dice algo que no es exacto, ¿se corrige en el momento o se espera al final?</span>
             </div>
           </article>
 
@@ -294,7 +330,7 @@
 
 </div>
 
-<script src="assets/js/config.js?v=dce102a"></script>
-<script src="assets/js/landing.js?v=dce102a"></script>
+<script src="assets/js/config.js?v=9b0082c"></script>
+<script src="assets/js/landing.js?v=9b0082c"></script>
 </body>
 </html>
