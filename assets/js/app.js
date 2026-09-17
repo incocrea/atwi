@@ -2504,8 +2504,8 @@
               : 'Cambia la pregunta para que se parezca a la discusión de ustedes. ' +
                 'El tema original del catálogo no se toca: puedes volver a él cuando quieras.')
           : (esPremio
-              ? 'Escribe qué hace o qué deja quien pierda. Algo concreto, entre ustedes ' +
-                'dos, que se pueda cumplir esta semana.'
+              ? 'Escribe qué se lleva quien gane. Algo concreto, entre ustedes dos, ' +
+                'que se pueda cumplir esta semana.'
               : 'Escríbelo como una pregunta de opinión, con las dos salidas dentro. ' +
                 'Nadie elige lado: cada quien dice lo suyo al hablar.')) +
       '</p>' +
@@ -2527,7 +2527,7 @@
                    t ? t.enunciado : '', 'textarea',
                    esPremio
                      ? 'Por ejemplo: «Quien gane controla la tele todo el fin de semana» ' +
-                       'o «Quien pierda lava los platos tres días».'
+                       'o «A quien gane le lavan los platos tres días».'
                      : 'Una pregunta de opinión. Por ejemplo: «¿Los platos se lavan al ' +
                        'terminar de comer o pueden esperar a la mañana?».', 240) +
 
@@ -2545,8 +2545,8 @@
              protege al que perdería un juicio injusto y aquí al que perdería
              algo que no quería apostar. Lo dice también la línea `clave` del
              modo, y es la regla que hace que este modo sea un juego. */
-          ? '<span>Es <strong>entre ustedes dos</strong>: quien pierda hace o deja algo a ' +
-            'quien gane. Que se pueda cumplir esta semana y que perderlo no duela.</span>'
+          ? '<span>Escríbelo por el <strong>lado bueno</strong>: qué se lleva quien gane, ' +
+            'no qué le toca al otro. Que se pueda cumplir esta semana y no duela.</span>'
           : '<span>Escríbelo como <strong>pregunta</strong>, y que las dos respuestas se ' +
             'puedan defender. Si solo hay una respuesta decente, eso no es un desacuerdo: ' +
             'es una acusación, y el resultado no valdría nada.</span>') +
@@ -2598,8 +2598,12 @@
     var fallo = titulo.length < 3 ? 'El título necesita al menos tres letras.' : esPremio
       ? (enunciado.length < 12
           ? 'El premio se queda corto: di qué se lleva quien gane.'
-          : !/gane|pierda|ganador|perdedor/i.test(enunciado)
-            ? 'Falta de quién es: escríbelo como «Quien gane…» o «Quien pierda…».' : '')
+          /* SE ESCRIBE DESDE EL QUE GANA. «Quien pierda lava los platos» dice
+             lo mismo y se lee como un castigo; el modo celebra al que gana. */
+          : /pierda|perdedor|pierde/i.test(enunciado)
+            ? 'Dilo por el lado bueno: qué se lleva quien gane, no qué le toca al otro.'
+          : !/gane|ganador/i.test(enunciado)
+            ? 'Falta de quién es: escríbelo como «Quien gane…».' : '')
       : (enunciado.length < 15
           ? 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.'
           /* No se exige el signo de interrogación —hay preguntas sin él— pero sí
