@@ -89,7 +89,18 @@
      centrado (decisión del titular) ese atajo ya no existe, y además la ficha
      de la cabecera es la que se ve en el resto del juego: dejarla fuera justo
      en la portada la convertía en un elemento que aparece y desaparece. */
+  /* EL DISCO DEL PROBADOR SE ENCIENDE AQUÍ, y no en el HTML, porque el HTML no
+     sabe quién entró: `puedeProbar()` mira el correo de la sesión o el modo de
+     pruebas, y las dos cosas pueden cambiar sin recargar la página. Va pegado
+     al refresco de la ficha porque es la misma pregunta —qué enseña la
+     cabecera a ESTA persona— hecha sobre dos piezas. */
+  function refrescarProbadorCabecera() {
+    var b = $('.ayuda-cabecera--probar');
+    if (b) b.hidden = !puedeProbar();
+  }
+
   function refrescarFichaCabecera() {
+    refrescarProbadorCabecera();
     var b = $('#ficha-cabecera');
     if (!b) return;
     var p = datos.perfil();
@@ -307,23 +318,15 @@
          es lo único que hay en esa parte de la portada: tres cartas grandes,
          cada una con su nombre dibujado y un botón de ayuda. Un rótulo que
          describe lo que ya se ve gasta el alto que necesitan las cartas. */
+      /* Y NADA DEBAJO (titular, 2026-09-17). Aquí iba el botón del PROBADOR con
+         su título «Solo para vos», y se fue a la cabecera: dos piezas de
+         interfaz para una puerta de servicio, y encima ocupando el alto que
+         ahora se reparten las tres cartas. Ver `.ayuda-cabecera--probar`. */
       '<div class="cartas-modo">' +
         cartaModo('debate') +
         cartaModo('negociacion') +
         cartaModo('competencia') +
-      '</div>' +
-
-
-      /* EL PROBADOR, Y SOLO PARA QUIEN PUEDE VERLO. Aquí había cinco botones
-         sueltos, uno por caso, con todo lo demás cerrado: el juez salía por
-         sorteo, los personajes del perfil y el texto era siempre el mismo. Para
-         mirar una escena concreta —este juez, estos dos, este final— no había
-         forma. El botón abre una pantalla donde la escena se arma a mano. */
-      (puedeProbar()
-        ? '<h2 style="margin:var(--e-6) 0 var(--e-3)">Solo para vos</h2>' +
-          '<button class="boton boton--suave boton--bloque" data-accion="probador">' +
-            'Probador de resultados</button>'
-        : '');
+      '</div>';
   }
 
   /* ========================================================================

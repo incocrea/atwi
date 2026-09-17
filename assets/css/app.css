@@ -525,12 +525,63 @@ body.app {
    10 % menos sobre eso (titular, el mismo día, al verlas puestas). Sube solo el
    alto de la carta: el rótulo, el icono de la mesa y la peana conservan su
    tamaño y el centrado vertical reparte el aire por arriba y por abajo. */
-:root { --alto-carta: 155px; }
+/* ⚠️ Y DESDE EL 2026-09-17 EL ALTO NO ES FIJO, LO REPARTE EL VIEWPORT (titular):
+   «que las 3 queden equitativamente distribuidas y a la altura ideal para llenar
+   el contenedor SIN generar scroll». O sea que el número que manda no es el alto
+   de la carta sino el hueco que queda entre el saludo y la barra, dividido entre
+   tres. Un alto fijo hace lo contrario: en un teléfono bajo obliga a scrollear
+   justo en la pantalla donde solo hay que elegir una de tres cosas, y en uno
+   alto deja un vacío debajo de la tercera.
+   Lo hace el GRID con `minmax(--carta-min, 1fr)` sobre un contenedor estirado:
+   `1fr` reparte lo que sobra en partes iguales, y el mínimo es el suelo por
+   debajo del cual el contenido no cabe.
+   ⚠️ Y `--alto-carta` SE FUE: con el alto repartido no lo leía ya nadie, y una
+   variable que nadie usa es lo mismo que un PNG que nadie pinta —se queda ahí
+   pareciendo que manda algo—. Lo que valía de ella, los 155 px medidos, está
+   dicho en el techo y el suelo de abajo. */
+:root {
+  /* EL SUELO: por debajo, el rótulo dibujado y su línea de texto se pisan. No
+     son los 155 px que tenían: el sitio donde esto importa es el teléfono bajo,
+     y ahí lo que se pide es que la carta ENCOJA, no que fuerce el scroll.
+     MEDIDO CONTRA EL CONTENIDO, no a ojo: las dos piezas van en columnas, así
+     que el alto lo manda la más alta —el rótulo dibujado, 54 px— más los 24 de
+     padding: 78. El suelo está en 112 y no en 78 porque lo que se estropea
+     antes que el texto es la PEANA, que se hunde por el pie y a menos de eso
+     ocupa más de la mitad de la carta.
+     Con 112, un marco de 600 px —un teléfono bajo con las barras del navegador
+     puestas— entra justo sin scroll: 3×112 + 32 de huecos + 48 del saludo son
+     416 de los 425 que tiene la vista. Por debajo de eso sí scrollea, y es lo
+     correcto: encoger más rompe el dibujo. */
+  --carta-min: 112px;
+  /* Y EL TECHO, que hace falta por el otro lado: en el marco de escritorio
+     (920 px) el reparto daría cartas de 219 px, con el dibujo y una línea de
+     texto flotando en el medio de un rectángulo enorme. */
+  --carta-max: 190px;
+}
 /* EL HUECO ENTRE CARTAS, AL DOBLE (titular, 2026-09-16): de 8 a 16 px. Con las
    peanas desenfocadas asomando por el pie de cada una, 8 px dejaban el zócalo
    de una casi tocando el techo de la siguiente y la columna se leía como un
    bloque. El mismo número en las tres mesas del catálogo. */
 .cartas-modo { display: grid; gap: var(--e-4); }
+
+/* LAS TRES CARTAS SE REPARTEN EL ALTO QUE SOBRA. Las dos pantallas que eligen
+   entre tres cosas —el modo en la portada y la mesa en el catálogo— son una
+   columna que no debe scrollear, así que su vista pasa a ser una caja flexible
+   y el bloque de cartas se queda con todo lo que quede libre.
+   ⚠️ `min-height: 0` en el bloque: sin él, el mínimo de contenido de las tres
+   filas le impide encogerse y el `1fr` no sirve de nada. Es el mismo `minmax`
+   de siempre visto por dentro.
+   El `max-height` es el techo, y se calcula con las mismas piezas que el grid
+   —tres cartas y dos huecos— para que no haya dos números que cuadrar. */
+#v-jugar[data-activa],
+#v-catalogo[data-paso="modo"][data-activa] { display: flex; flex-direction: column; }
+
+.cartas-modo, .publicos {
+  flex: 1 1 auto;
+  min-height: 0;
+  grid-auto-rows: minmax(var(--carta-min), 1fr);
+  max-height: calc(var(--carta-max) * 3 + var(--e-4) * 2);
+}
 
 .carta-modo {
   /* Lo que ancla el disco de ayuda a SU carta y no al marco. */
@@ -554,7 +605,10 @@ body.app {
   /* Y EL PADDING VERTICAL, SIMÉTRICO: con 20 arriba y 10 abajo el centro caía
      cinco píxeles por encima del de la carta, que es justo lo que se estaba
      corrigiendo. */
-  width: 100%; min-height: var(--alto-carta); padding: 12px 58px 12px 8px;
+  /* SIN `min-height` PROPIO: el suelo lo pone el track del grid
+     (`--carta-min`), y si la carta además lo forzara desde dentro, el `1fr` no
+     podría encogerla y volvería el scroll que esto viene a quitar. */
+  width: 100%; padding: 12px 58px 12px 8px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
   /* SIN FONDO Y CON HALO (titular, 2026-09-16). La carta deja de pintarse y lo
@@ -4096,7 +4150,8 @@ body.app {
   position: relative;
   display: grid; grid-template-columns: 76px minmax(0, 1fr);
   gap: var(--e-2); align-items: center;
-  min-height: var(--alto-carta); padding: var(--e-3);
+  /* El suelo lo pone el track, igual que en las de modo. */
+  padding: var(--e-3);
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
   /* Lo mismo que en `.carta-modo`, y por lo mismo: las seis cartas son

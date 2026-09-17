@@ -9,13 +9,13 @@
 <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
 <link rel="manifest" href="../site.webmanifest">
 <title>ATWI</title>
-<meta name="description" content="¡Resuélvelo como adulto, Jugando! Modo ControversIA y modo NegocIAción.">
+<meta name="description" content="¡Resuélvelo Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=3dbbee8">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=3dbbee8">
-<link rel="stylesheet" href="../assets/css/base.css?v=3dbbee8">
-<link rel="stylesheet" href="../assets/css/app.css?v=3dbbee8">
-<link rel="stylesheet" href="../assets/css/modal.css?v=3dbbee8">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=c4ade3e">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=c4ade3e">
+<link rel="stylesheet" href="../assets/css/base.css?v=c4ade3e">
+<link rel="stylesheet" href="../assets/css/app.css?v=c4ade3e">
+<link rel="stylesheet" href="../assets/css/modal.css?v=c4ade3e">
 </head>
 
 <body class="app">
@@ -25,9 +25,23 @@
   <header class="cabecera">
     <div>
       <div class="cabecera__titulo"><img src="../assets/img/logotipo-48.png" alt="ATWI" width="123" height="41"></div>
-      <div class="cabecera__sub">¡Resuélvelo como adulto, <b>Jugando!</b></div>
+      <div class="cabecera__sub">¡Resuélvelo <b>Jugando!</b></div>
     </div>
     <div class="monedero">
+      <!-- EL PROBADOR DE RESULTADOS, y solo para quien puede verlo (titular,
+           2026-09-17). Estaba abajo del todo de la portada, con su propio
+           título «Solo para vos» y un botón de ancho completo, o sea dos
+           piezas de interfaz para una puerta de servicio —y encima gastando el
+           alto que ahora se reparten las cartas—. Aquí es un disco más de la
+           cabecera, con el signo de AVISO: es lo único de esta app que no es
+           para quien juega, y el rojo lo dice sin escribirlo.
+           Nace oculto y lo enciende `puedeProbar()`: en el HTML no hay forma
+           de saber quién entró. -->
+      <button class="ayuda-cabecera ayuda-cabecera--probar" data-accion="probador"
+              hidden aria-label="Probador de resultados" title="Probador de resultados">
+        <span data-icono="aviso" data-tam="26"></span>
+      </button>
+
       <!-- EL AVISO DE IA VIVE AQUÍ (titular, 2026-09-17), y es el PRIMERO. Bajo
            las cartas era un signo suelto en mitad de la portada; arriba está
            con los otros dos indicadores, con el mismo disco, y el globo sale
@@ -320,18 +334,18 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=3dbbee8"></script>
-<script src="../assets/js/precarga.js?v=3dbbee8"></script>
-<script src="../assets/js/iconos.js?v=3dbbee8"></script>
-<script src="../assets/js/personajes.js?v=3dbbee8"></script>
-<script src="../assets/js/datos.js?v=3dbbee8"></script>
-<script src="../assets/js/sonido.js?v=3dbbee8"></script>
-<script src="../assets/js/veredicto.js?v=3dbbee8"></script>
-<script src="../assets/js/grabadora.js?v=3dbbee8"></script>
-<script src="../assets/js/partida.js?v=3dbbee8"></script>
-<script src="../assets/js/auth.js?v=3dbbee8"></script>
-<script src="../assets/js/entrada.js?v=3dbbee8"></script>
-<script src="../assets/js/nube.js?v=3dbbee8"></script>
-<script src="../assets/js/app.js?v=3dbbee8"></script>
+<script src="../assets/js/config.js?v=c4ade3e"></script>
+<script src="../assets/js/precarga.js?v=c4ade3e"></script>
+<script src="../assets/js/iconos.js?v=c4ade3e"></script>
+<script src="../assets/js/personajes.js?v=c4ade3e"></script>
+<script src="../assets/js/datos.js?v=c4ade3e"></script>
+<script src="../assets/js/sonido.js?v=c4ade3e"></script>
+<script src="../assets/js/veredicto.js?v=c4ade3e"></script>
+<script src="../assets/js/grabadora.js?v=c4ade3e"></script>
+<script src="../assets/js/partida.js?v=c4ade3e"></script>
+<script src="../assets/js/auth.js?v=c4ade3e"></script>
+<script src="../assets/js/entrada.js?v=c4ade3e"></script>
+<script src="../assets/js/nube.js?v=c4ade3e"></script>
+<script src="../assets/js/app.js?v=c4ade3e"></script>
 </body>
 </html>
