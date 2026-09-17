@@ -2528,7 +2528,14 @@
         campoTexto('e-titulo', 'Título corto', t ? t.titulo : '', 'input',
                    esPremio
                      ? 'Cómo lo van a ver en la lista. Por ejemplo: «El control remoto».'
-                     : 'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».', 60) +
+                     : 'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».',
+                   /* 30 Y NO 60 (titular, 2026-09-17): el titulo tiene que
+                      caber en UNA linea de la tarjeta sin llegar al lapiz de
+                      editar. Medido a 375, que es el ancho mas estrecho: le
+                      quedan 245 px, y con 30 caracteres ninguno de los 455 del
+                      catalogo se pasa —con 32 se pasarian once—. Lo que explica
+                      es el enunciado, que sigue en 175. */
+                   30) +
         campoTexto('e-enunciado', esPremio ? 'El premio' : 'La pregunta',
                    t ? t.enunciado : '', 'textarea',
                    esPremio

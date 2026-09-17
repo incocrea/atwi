@@ -294,7 +294,7 @@
   {
    "id": "T003",
    "categoria": "En mitad de la discusión",
-   "titulo": "El chiste en mitad de la discusión",
+   "titulo": "El chiste en plena discusión",
    "enunciado": "Hacer una broma en mitad de una discusión, ¿baja la tensión o esquiva el tema?",
    "ejemplo": "A: «Si suelto una broma y nadie se ríe, entonces vuelvo al tema sin insistir». B: «Si una broma me sienta mal, entonces lo digo en el momento».",
    "insignia": "Humorista de Guardia",
@@ -535,7 +535,7 @@
   {
    "id": "T019",
    "categoria": "En mitad de la discusión",
-   "titulo": "Lo que dijiste y cómo lo dijiste",
+   "titulo": "Lo que dijiste y cómo",
    "enunciado": "Cuando algo se dice en mal tono, ¿se responde primero al tono o primero a lo que se dijo?",
    "ejemplo": "A: «Si el tono me molesta, entonces contesto primero al fondo». B: «Si me señalan el tono, entonces repito la misma frase mejor dicha».",
    "insignia": "Doble Lectura",
@@ -596,7 +596,7 @@
   {
    "id": "T023",
    "categoria": "En la cocina y la mesa",
-   "titulo": "Las sobras, ¿se guardan o se tiran?",
+   "titulo": "Las sobras: guardar o tirar",
    "enunciado": "Lo que sobra de una comida, ¿se guarda por si acaso o se tira lo que se sabe que nadie va a comerse?",
    "ejemplo": "A: «Si guardo comida en la nevera, entonces le escribo la fecha en la tapa». B: «Si el viernes abro la nevera por la noche, entonces tiro yo lo caducado».",
    "insignia": "Instituto Superior del Táper",
@@ -626,7 +626,7 @@
   {
    "id": "T025",
    "categoria": "Las tareas y los arreglos",
-   "titulo": "Repaso diario o limpieza a fondo",
+   "titulo": "Repaso diario o a fondo",
    "enunciado": "¿Funciona mejor un repaso corto cada día o dejar la limpieza a fondo para un día fijo de la semana?",
    "ejemplo": "A: «Si termino de cenar entre semana, entonces paso un paño por la encimera». B: «Si el sábado a las once estoy en casa, entonces limpio yo el baño».",
    "insignia": "Doble Escuela del Trapo",
@@ -975,7 +975,7 @@
   {
    "id": "T048",
    "categoria": "Con gente delante",
-   "titulo": "Diciembre lleno o diciembre en blanco",
+   "titulo": "Diciembre lleno o en blanco",
    "enunciado": "En las fiestas, ¿se dice que sí a todos los planes o se reservan días sin nada apuntado?",
    "ejemplo": "A — Si nos llega una invitación de fiestas, entonces yo la cuento esa misma noche. B — Si miramos el calendario de diciembre, entonces yo marco dos días libres.",
    "insignia": "Maratón de Diciembre",
@@ -1126,7 +1126,7 @@
   {
    "id": "T058",
    "categoria": "Manías y orden",
-   "titulo": "Las luces de las habitaciones vacías",
+   "titulo": "La luz de los cuartos vacíos",
    "enunciado": "Las luces, ¿se apagan al salir de una habitación o pueden quedarse encendidas si vas a volver enseguida?",
    "ejemplo": "A — «Si me acuesto, entonces apago yo las luces del pasillo sin comentarlo». B — «Si salgo de una habitación por la noche, entonces apago su luz».",
    "insignia": "Guardia Nocturna del Interruptor",
@@ -1277,7 +1277,7 @@
   {
    "id": "T068",
    "categoria": "Manías y orden",
-   "titulo": "Cosas que se guardan por recuerdo",
+   "titulo": "Lo que se guarda por recuerdo",
    "enunciado": "Los objetos que ya no se usan pero tienen recuerdo, ¿se conservan o llega un punto en que ocupan más de lo que devuelven?",
    "ejemplo": "A — «Si guardo algo por recuerdo, entonces lo meto en mi caja». B — «Si veo la caja de recuerdos en el armario, entonces la dejo donde está».",
    "insignia": "Depósito de Pruebas Sentimentales",
@@ -1292,7 +1292,7 @@
   {
    "id": "T069",
    "categoria": "Cuando salen las cuentas",
-   "titulo": "La cuenta: a medias o por turnos",
+   "titulo": "A medias o por turnos",
    "enunciado": "Cuando salimos a comer los dos, ¿la cuenta se parte a medias cada vez o invita uno y la siguiente vez el otro?",
    "ejemplo": "A: «Si nos traen la cuenta al final de la cena, entonces digo cómo la pago». B: «Si invito yo en un restaurante, entonces no lo menciono el resto de la noche».",
    "insignia": "Pistoleros de la cuenta",
@@ -1337,7 +1337,7 @@
   {
    "id": "T072",
    "categoria": "Cuando salen las cuentas",
-   "titulo": "Marca blanca o marca de siempre",
+   "titulo": "Marca blanca o la de siempre",
    "enunciado": "En la compra del súper, ¿marca blanca en casi todo o hay productos en los que compensa la marca de siempre?",
    "ejemplo": "A: «Si dudo en el súper con algo que yo no uso, entonces elijo la conocida». B: «Si abro un producto en casa y no me convence, entonces lo digo ese día».",
    "insignia": "Catadores de pasillo",
@@ -1367,7 +1367,7 @@
   {
    "id": "T074",
    "categoria": "Las tareas y los arreglos",
-   "titulo": "La luz, el aire y la calefacción",
+   "titulo": "La luz y la calefacción",
    "enunciado": "En casa, ¿apagar y ajustar para que no suba la factura o tenerla a gusto aunque cueste algo más?",
    "ejemplo": "A: «Si al acostarme veo una luz encendida en el salón, entonces la apago sin comentarlo». B: «Si por la noche subo la calefacción en casa, entonces lo digo en voz alta».",
    "insignia": "Guardianes del termostato",
@@ -1398,7 +1398,7 @@
   {
    "id": "T076",
    "categoria": "Cuando salen las cuentas",
-   "titulo": "La compra grande o ir cada dos días",
+   "titulo": "Compra grande o cada dos días",
    "enunciado": "¿Hacer una compra grande para varios días o ir comprando poco y a menudo lo que va haciendo falta?",
    "ejemplo": "A: «Si el sábado hago la compra grande, entonces escribo la lista antes de salir». B: «Si paso por el súper entre semana, entonces compro solo lo de esos días».",
    "insignia": "Expedición al súper",
@@ -1413,7 +1413,7 @@
   {
    "id": "T077",
    "categoria": "Las decisiones de dinero",
-   "titulo": "Las suscripciones que no usamos",
+   "titulo": "Suscripciones que no usamos",
    "enunciado": "Las suscripciones que apenas se usan, ¿se cancelan ya o se dejan y se revisan más adelante?",
    "ejemplo": "A: «Si el primer domingo de mes estoy en el sofá, entonces reviso los cobros». B: «Si veo la lista de cobros en la mesa, entonces digo cuál quiero conservar».",
    "insignia": "Auditores de sofá",
@@ -1473,7 +1473,7 @@
   {
    "id": "T081",
    "categoria": "Las decisiones de dinero",
-   "titulo": "La tarifa barata o la cancelable",
+   "titulo": "Tarifa barata o cancelable",
    "enunciado": "Al reservar un viaje o unas entradas, ¿la tarifa barata sin derecho a cancelar o pagar más por poder echarse atrás?",
    "ejemplo": "A: «Si reservo un viaje desde casa, entonces digo qué tarifa he elegido antes de pagar». B: «Si al final no podemos usar una reserva, entonces no menciono la tarifa».",
    "insignia": "Tarifa con paracaídas",
@@ -1578,7 +1578,7 @@
   {
    "id": "T088",
    "categoria": "Por el móvil",
-   "titulo": "El vídeo que hay que ver ahora mismo",
+   "titulo": "El vídeo que hay que ver ya",
    "enunciado": "Cuando uno encuentra algo gracioso en el teléfono, ¿se enseña en el momento o se guarda para luego?",
    "ejemplo": "A: «Si veo un vídeo y mi pareja está trabajando, entonces se lo mando sin llamarla». B: «Si me siento en el sofá después de cenar, entonces abro lo que me mandó».",
    "insignia": "Corresponsal de Última Hora",
@@ -1593,7 +1593,7 @@
   {
    "id": "T089",
    "categoria": "Por el móvil",
-   "titulo": "Buscarlo en el teléfono para ver quién acierta",
+   "titulo": "Buscarlo en vez de discutirlo",
    "enunciado": "Cuando hay desacuerdo sobre un dato, ¿se busca en el teléfono en ese momento o se deja que la conversación siga?",
    "ejemplo": "A: «Si quiero comprobar un dato durante la cena, entonces lo apunto y lo miro después». B: «Si se mira un dato en la mesa, entonces leo el resultado en voz alta».",
    "insignia": "Verificador de Sobremesa",
@@ -1608,7 +1608,7 @@
   {
    "id": "T090",
    "categoria": "En la alcoba",
-   "titulo": "Una manta para los dos o una para cada uno",
+   "titulo": "Una manta o una para cada uno",
    "enunciado": "Para dormir, ¿se comparte una sola manta o cada uno tiene la suya?",
    "ejemplo": "A: «Si me acuesto, entonces dejo estirada a mi lado la manta pequeña». B: «Si me destapo de madrugada, entonces uso mi manta pequeña».",
    "insignia": "Perito en Metros de Manta",
@@ -1623,7 +1623,7 @@
   {
    "id": "T091",
    "categoria": "En la alcoba",
-   "titulo": "La ventana del dormitorio, abierta o cerrada",
+   "titulo": "La ventana del dormitorio",
    "enunciado": "Por la noche, ¿la ventana del dormitorio se queda abierta o cerrada?",
    "ejemplo": "A: «Si apagamos la luz para dormir, entonces cierro yo la ventana del dormitorio». B: «Si termino de cenar, entonces abro la ventana del dormitorio de par en par».",
    "insignia": "Inspector de Corrientes de Aire",
@@ -1638,7 +1638,7 @@
   {
    "id": "T092",
    "categoria": "En la alcoba",
-   "titulo": "La mascota duerme en la cama o fuera",
+   "titulo": "La mascota en la cama o fuera",
    "enunciado": "¿El perro o el gato duerme en la cama o fuera de la cama?",
    "ejemplo": "A: «Si me acuesto y el perro está en la cama, entonces lo bajo yo». B: «Si el perro entra en el dormitorio por la mañana, entonces lo dejo subir».",
    "insignia": "Perito en Inquilinos de Cuatro Patas",
@@ -1670,7 +1670,7 @@
   {
    "id": "T094",
    "categoria": "Por el móvil",
-   "titulo": "Mensajes de trabajo a las once de la noche",
+   "titulo": "Mensajes de trabajo de noche",
    "enunciado": "Un mensaje de trabajo que llega a las once de la noche, ¿se contesta o se deja para el día siguiente?",
    "ejemplo": "A: «Si me escriben del trabajo después de cenar, entonces contesto de pie en la cocina». B: «Si mi pareja contesta trabajo de noche, entonces sigo con lo mío sin preguntar».",
    "insignia": "Perito en Horas Intempestivas",
@@ -1685,7 +1685,7 @@
   {
    "id": "T095",
    "categoria": "Con gente delante",
-   "titulo": "Lo nuestro, ¿se cuenta en redes?",
+   "titulo": "Lo nuestro en redes",
    "enunciado": "Los planes de los dos, ¿se cuentan en redes o se llevan en privado?",
    "ejemplo": "A: «Si voy a publicar un plan de los dos, entonces se lo enseño antes». B: «Si me enseñan algo para publicar, entonces contesto sí o no en ese momento».",
    "insignia": "Cronista de la Vida Pública",
@@ -1731,7 +1731,7 @@
   {
    "id": "T098",
    "categoria": "En el sofá",
-   "titulo": "Vídeos con sonido en la misma habitación",
+   "titulo": "Vídeos con sonido al lado",
    "enunciado": "En una habitación compartida, ¿se pueden ver vídeos con sonido o se usan auriculares?",
    "ejemplo": "A: «Si veo vídeos en el sofá con mi pareja delante, entonces me pongo los auriculares». B: «Si veo que mi pareja va a poner un vídeo, entonces le acerco los auriculares».",
    "insignia": "Comisión de Ruidos Domésticos",
@@ -1791,7 +1791,7 @@
   {
    "id": "T102",
    "categoria": "Por el móvil",
-   "titulo": "¿Se puede escuchar y mirar el teléfono a la vez?",
+   "titulo": "Escuchar y mirar la pantalla",
    "enunciado": "Mientras uno cuenta algo, ¿se puede mirar el teléfono a la vez o eso ya es dejar de escuchar?",
    "ejemplo": "A: «Si mi pareja empieza a contarme algo, entonces dejo el teléfono boca abajo». B: «Si quiero contar algo largo, entonces aviso antes de empezar y espero un momento».",
    "insignia": "Cátedra del «Sigue, que te escucho»",
@@ -1806,7 +1806,7 @@
   {
    "id": "T103",
    "categoria": "En la alcoba",
-   "titulo": "Dormir algunas noches en camas separadas",
+   "titulo": "Dormir en camas separadas",
    "enunciado": "Cuando una noche no se duerme bien, ¿cada uno se va a dormir donde descanse o se sigue durmiendo en la misma cama?",
    "ejemplo": "A: «Si me voy a la otra habitación de madrugada, entonces vuelvo antes de levantarme». B: «Si hemos dormido separados, entonces llevo yo el desayuno a la cama».",
    "insignia": "Perito en Geografía Nocturna",
@@ -1821,7 +1821,7 @@
   {
    "id": "T104",
    "categoria": "En la alcoba",
-   "titulo": "Acostarse a la vez o cada uno a su hora",
+   "titulo": "Acostarse a la vez o no",
    "enunciado": "¿Conviene acostarse los dos a la misma hora o cada uno cuando le entra el sueño?",
    "ejemplo": "A: «Si mi pareja se va a la cama entre semana, entonces la acompaño al dormitorio». B: «Si son las once y mi pareja sigue despierta, entonces me acuesto yo solo».",
    "insignia": "Cátedra del Búho y la Alondra",
@@ -1876,7 +1876,7 @@
    "id": "A003",
    "publico": "amigos",
    "categoria": "Cuando llega la cuenta",
-   "titulo": "La propina cuando el servicio fue malo",
+   "titulo": "La propina con mal servicio",
    "enunciado": "Si la atención fue mala, ¿igual se deja propina o ahí se nota que no?",
    "intensidad": "media",
    "intereses": [
@@ -1900,7 +1900,7 @@
    "id": "A005",
    "publico": "amigos",
    "categoria": "Cuando llega la cuenta",
-   "titulo": "Pedir para compartir sin preguntar",
+   "titulo": "Pedir para todos sin avisar",
    "enunciado": "En una mesa de amigos, ¿se pide para compartir por defecto o cada quien pide lo suyo?",
    "intensidad": "ligera",
    "intereses": [
@@ -1936,7 +1936,7 @@
    "id": "A008",
    "publico": "amigos",
    "categoria": "Cuando llega la cuenta",
-   "titulo": "Avisar del precio antes de proponer",
+   "titulo": "Avisar del precio al proponer",
    "enunciado": "Al proponer un plan caro, ¿hay que decir el precio de entrada o ya se pregunta quien quiera?",
    "intensidad": "media",
    "intereses": [
@@ -1948,7 +1948,7 @@
    "id": "A009",
    "publico": "amigos",
    "categoria": "Cuando llega la cuenta",
-   "titulo": "Pagar con el móvil y cobrar después",
+   "titulo": "Pagar uno y cobrar después",
    "enunciado": "Si uno paga todo y luego cobra, ¿se pasa la cuenta ese mismo día o se deja para cuando salga?",
    "intensidad": "ligera",
    "intereses": [
@@ -2008,7 +2008,7 @@
    "id": "A014",
    "publico": "amigos",
    "categoria": "El grupo de chat",
-   "titulo": "Sacar un tema serio por el grupo",
+   "titulo": "Un tema serio por el grupo",
    "enunciado": "Lo importante de verdad, ¿se cuenta en el grupo o se dice en persona?",
    "intensidad": "media",
    "intereses": [
@@ -2032,7 +2032,7 @@
    "id": "A016",
    "publico": "amigos",
    "categoria": "El grupo de chat",
-   "titulo": "Los memes a las tres de la mañana",
+   "titulo": "Los memes de madrugada",
    "enunciado": "¿Hay una hora a partir de la cual no se escribe al grupo o eso lo arregla el modo silencio?",
    "intensidad": "ligera",
    "intereses": [
@@ -2068,7 +2068,7 @@
    "id": "A019",
    "publico": "amigos",
    "categoria": "El grupo de chat",
-   "titulo": "Sacar capturas de otra conversación",
+   "titulo": "Capturas de otra conversación",
    "enunciado": "Reenviar al grupo una captura de un chat privado, ¿se puede o hay que preguntar antes?",
    "intensidad": "media",
    "intereses": [
@@ -2284,7 +2284,7 @@
    "id": "A037",
    "publico": "amigos",
    "categoria": "El viaje de amigos",
-   "titulo": "El que no participa de los gastos",
+   "titulo": "El que no pone para gastos",
    "enunciado": "Si alguien no viene a una actividad pagada, ¿se le descuenta o entra en el reparto igual?",
    "intensidad": "media",
    "intereses": [
@@ -2332,7 +2332,7 @@
    "id": "A041",
    "publico": "amigos",
    "categoria": "Los regalos y las fechas",
-   "titulo": "Regalo conjunto o cada uno el suyo",
+   "titulo": "Regalo conjunto o por separado",
    "enunciado": "Para un cumpleaños del grupo, ¿se hace un regalo entre todos o cada quien regala lo suyo?",
    "intensidad": "ligera",
    "intereses": [
@@ -2572,7 +2572,7 @@
    "id": "A061",
    "publico": "amigos",
    "categoria": "Quien entra al grupo",
-   "titulo": "Llevar pareja al plan de amigos",
+   "titulo": "Llevar pareja al plan",
    "enunciado": "A una quedada del grupo de siempre, ¿se puede llevar pareja o eso es solo del grupo?",
    "intensidad": "media",
    "intereses": [
@@ -2728,7 +2728,7 @@
    "id": "A074",
    "publico": "amigos",
    "categoria": "En la mesa y en el bar",
-   "titulo": "El que monopoliza la conversación",
+   "titulo": "El que acapara la conversación",
    "enunciado": "Cuando alguien habla todo el rato, ¿se le corta o se deja correr?",
    "intensidad": "media",
    "intereses": [
@@ -2788,7 +2788,7 @@
    "id": "A079",
    "publico": "amigos",
    "categoria": "En la mesa y en el bar",
-   "titulo": "Volver a contar la misma historia",
+   "titulo": "Contar otra vez lo mismo",
    "enunciado": "Las anécdotas de siempre, ¿se vuelven a contar o ya está?",
    "intensidad": "ligera",
    "intereses": [
@@ -2824,7 +2824,7 @@
    "id": "A082",
    "publico": "amigos",
    "categoria": "Lo que se cuenta",
-   "titulo": "Decir lo que piensas de su pareja",
+   "titulo": "Opinar sobre su pareja",
    "enunciado": "Si la pareja de un amigo no te convence, ¿se dice o te lo callas?",
    "intensidad": "media",
    "intereses": [
@@ -2884,7 +2884,7 @@
    "id": "A087",
    "publico": "amigos",
    "categoria": "Lo que se cuenta",
-   "titulo": "Dar la opinión sobre su trabajo",
+   "titulo": "Opinar sobre su trabajo",
    "enunciado": "Si un amigo te enseña algo suyo, ¿se dice lo que piensas o se apoya y ya?",
    "intensidad": "media",
    "intereses": [
@@ -2908,7 +2908,7 @@
    "id": "A089",
    "publico": "amigos",
    "categoria": "Lo que se cuenta",
-   "titulo": "Felicitar por lo que le fue bien",
+   "titulo": "Felicitar cuando le va bien",
    "enunciado": "Cuando a alguien le va muy bien, ¿se celebra sin más o se puede decir que da un poco de envidia?",
    "intensidad": "media",
    "intereses": [
@@ -2956,7 +2956,7 @@
    "id": "A093",
    "publico": "amigos",
    "categoria": "Series, deporte y pantallas",
-   "titulo": "Recomendar algo y que no lo vean",
+   "titulo": "Recomendar y que no lo vean",
    "enunciado": "Cuando recomiendas algo y no lo ven, ¿se insiste o se deja?",
    "intensidad": "ligera",
    "intereses": [
@@ -2968,7 +2968,7 @@
    "id": "A094",
    "publico": "amigos",
    "categoria": "Series, deporte y pantallas",
-   "titulo": "Ver el partido en casa o en el bar",
+   "titulo": "El partido en casa o en el bar",
    "enunciado": "Un partido importante, ¿se ve en casa tranquilo o en el bar con gente?",
    "intensidad": "ligera",
    "intereses": [
@@ -2992,7 +2992,7 @@
    "id": "A096",
    "publico": "amigos",
    "categoria": "Series, deporte y pantallas",
-   "titulo": "El que va con el equipo que gana",
+   "titulo": "El que va con el que gana",
    "enunciado": "Cambiar de equipo favorito, ¿se puede o eso no se hace?",
    "intensidad": "ligera",
    "intereses": [
@@ -3004,7 +3004,7 @@
    "id": "A097",
    "publico": "amigos",
    "categoria": "Series, deporte y pantallas",
-   "titulo": "Las notificaciones de resultados",
+   "titulo": "Que te cuenten el resultado",
    "enunciado": "Si alguien va a ver el partido más tarde, ¿el resto se calla el resultado o eso ya es su problema?",
    "intensidad": "ligera",
    "intereses": [
@@ -3016,7 +3016,7 @@
    "id": "A098",
    "publico": "amigos",
    "categoria": "Series, deporte y pantallas",
-   "titulo": "Maratón o un capítulo por semana",
+   "titulo": "Maratón o uno por semana",
    "enunciado": "Una serie nueva, ¿de una sentada o un capítulo por semana?",
    "intensidad": "ligera",
    "intereses": [
@@ -3064,7 +3064,7 @@
    "id": "F002",
    "publico": "familia",
    "categoria": "Las comidas de los domingos",
-   "titulo": "Llevar algo o llegar con las manos vacías",
+   "titulo": "Llegar con las manos vacías",
    "enunciado": "A una comida en casa de un familiar, ¿hay que llevar algo o se va y ya está?",
    "intensidad": "ligera",
    "intereses": [
@@ -3184,7 +3184,7 @@
    "id": "F012",
    "publico": "familia",
    "categoria": "Las fiestas y dónde se pasan",
-   "titulo": "Repartir las fiestas entre familias",
+   "titulo": "Repartir las fiestas",
    "enunciado": "Cuando hay dos familias, ¿se parte el día o se alterna un año cada una?",
    "intensidad": "media",
    "intereses": [
@@ -3196,7 +3196,7 @@
    "id": "F013",
    "publico": "familia",
    "categoria": "Las fiestas y dónde se pasan",
-   "titulo": "Los que no vienen a las fiestas",
+   "titulo": "Los que no vienen",
    "enunciado": "Si alguien no viene a la comida de Navidad, ¿se le pregunta por qué o se respeta y ya?",
    "intensidad": "media",
    "intereses": [
@@ -3220,7 +3220,7 @@
    "id": "F015",
    "publico": "familia",
    "categoria": "Las fiestas y dónde se pasan",
-   "titulo": "Los villancicos y las canciones",
+   "titulo": "La música de las fiestas",
    "enunciado": "En las fiestas, ¿se canta y se pone música o eso ya no se lleva?",
    "intensidad": "ligera",
    "intereses": [
@@ -3280,7 +3280,7 @@
    "id": "F020",
    "publico": "familia",
    "categoria": "Las fiestas y dónde se pasan",
-   "titulo": "Cumpleaños de adultos en familia",
+   "titulo": "Cumpleaños de adultos",
    "enunciado": "El cumpleaños de un adulto, ¿se celebra en familia o eso ya es cosa de amigos?",
    "intensidad": "ligera",
    "intereses": [
@@ -3580,7 +3580,7 @@
    "id": "F045",
    "publico": "familia",
    "categoria": "Las visitas",
-   "titulo": "Llevar a los niños a casa ajena",
+   "titulo": "Llevar niños a casa ajena",
    "enunciado": "A una visita corta, ¿se llevan los niños o mejor se van los adultos solos?",
    "intensidad": "ligera",
    "intereses": [
@@ -3700,7 +3700,7 @@
    "id": "F055",
    "publico": "familia",
    "categoria": "Lo que opinan de tu vida",
-   "titulo": "Opinar sobre cómo crían los demás",
+   "titulo": "Opinar sobre cómo crían",
    "enunciado": "Sobre cómo cría otro a sus hijos, ¿se opina o se muerde uno la lengua?",
    "intensidad": "media",
    "intereses": [
@@ -3748,7 +3748,7 @@
    "id": "F059",
    "publico": "familia",
    "categoria": "Lo que opinan de tu vida",
-   "titulo": "Decirle a alguien que se equivoca",
+   "titulo": "Decir que alguien se equivoca",
    "enunciado": "Cuando un familiar va a hacer algo que te parece un error, ¿se le dice o se le deja?",
    "intensidad": "media",
    "intereses": [
@@ -3772,7 +3772,7 @@
    "id": "F061",
    "publico": "familia",
    "categoria": "Primos, sobrinos y los peques",
-   "titulo": "Quién cuida a los niños en la comida",
+   "titulo": "Quién cuida a los niños",
    "enunciado": "En una reunión, ¿los niños los vigilan sus padres o los vigila quien esté cerca?",
    "intensidad": "media",
    "intereses": [
@@ -3880,7 +3880,7 @@
    "id": "F070",
    "publico": "familia",
    "categoria": "Primos, sobrinos y los peques",
-   "titulo": "Hablar de los niños todo el rato",
+   "titulo": "Hablar solo de los niños",
    "enunciado": "En una mesa con padres y sin padres, ¿se habla de niños o se busca otro tema?",
    "intensidad": "ligera",
    "intereses": [
@@ -3904,7 +3904,7 @@
    "id": "F072",
    "publico": "familia",
    "categoria": "Lo que se presta en familia",
-   "titulo": "Las herramientas que no vuelven",
+   "titulo": "Lo prestado que no vuelve",
    "enunciado": "Lo prestado que lleva meses fuera, ¿se reclama o se espera?",
    "intensidad": "ligera",
    "intereses": [
@@ -3988,7 +3988,7 @@
    "id": "F079",
    "publico": "familia",
    "categoria": "Lo que se presta en familia",
-   "titulo": "Los electrodomésticos que sobran",
+   "titulo": "Los aparatos que sobran",
    "enunciado": "Cuando alguien cambia de nevera o de tele, ¿la vieja se ofrece a la familia o se vende?",
    "intensidad": "ligera",
    "intereses": [
@@ -4000,7 +4000,7 @@
    "id": "F080",
    "publico": "familia",
    "categoria": "Lo que se presta en familia",
-   "titulo": "Lo que se hereda de los abuelos",
+   "titulo": "Lo que dejaron los abuelos",
    "enunciado": "Los objetos con valor sentimental, ¿se quedan con quien los quiere o rotan?",
    "intensidad": "media",
    "intereses": [
@@ -4024,7 +4024,7 @@
    "id": "F082",
    "publico": "familia",
    "categoria": "Las costumbres de siempre",
-   "titulo": "El sitio de cada uno en la mesa",
+   "titulo": "El sitio de cada uno",
    "enunciado": "Los sitios en la mesa familiar, ¿son los de siempre o se sienta cada uno donde quiera?",
    "intensidad": "ligera",
    "intereses": [
@@ -4132,7 +4132,7 @@
    "id": "F091",
    "publico": "familia",
    "categoria": "Los viajes y el verano",
-   "titulo": "Vacaciones toda la familia junta",
+   "titulo": "Vacaciones todos juntos",
    "enunciado": "Las vacaciones, ¿una semana todos juntos o cada núcleo por su lado?",
    "intensidad": "media",
    "intereses": [
@@ -4144,7 +4144,7 @@
    "id": "F092",
    "publico": "familia",
    "categoria": "Los viajes y el verano",
-   "titulo": "Quién paga qué en la casa compartida",
+   "titulo": "Quién paga qué en la casa",
    "enunciado": "En una casa alquilada entre varios, ¿se divide todo por igual o por número de personas?",
    "intensidad": "media",
    "intereses": [
@@ -4216,7 +4216,7 @@
    "id": "F098",
    "publico": "familia",
    "categoria": "Los viajes y el verano",
-   "titulo": "Ir a ver a la familia en vacaciones",
+   "titulo": "La familia en vacaciones",
    "enunciado": "Las vacaciones, ¿se usan para visitar familia o eso ya es otro viaje?",
    "intensidad": "media",
    "intereses": [

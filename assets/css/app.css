@@ -1101,7 +1101,14 @@ body.app {
   transition: transform var(--dur-corta) var(--suave);
 }
 .tema:active { transform: scale(.99); }
-.tema__titulo { font-family: var(--display); font-weight: 800; }
+/* UNA SOLA LINEA, Y ESTA ES LA RED. El tope de 30 caracteres impide el caso
+   normal, pero 30 no es un ancho: 30 emes miden 266 px y solo caben 245. Con
+   esto, un titulo raro se corta con puntos suspensivos en vez de partirse en
+   dos renglones y empujar el enunciado contra el lapiz. */
+.tema__titulo {
+  font-family: var(--display); font-weight: 800;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
 .tema__enunciado { font-size: var(--t-chico); color: var(--tinta-suave); }
 
 /* ⚠️ AQUÍ VIVÍA `.chip--editar`, el «Personalizar» con borde punteado, y se fue
