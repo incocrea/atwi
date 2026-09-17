@@ -818,6 +818,8 @@ function arranque(q) {
     voz: h.voz || null,
     tono: h.tono ? parseInt(h.tono, 10) : 0,
     ritmo: h.ritmo ? parseInt(h.ritmo, 10) : 6,
+    estilo: h.estilo || null,
+    temperatura: h.temperatura ? Number(h.temperatura) : null,
     como: h.como || NEUTRO.replace('NOMBRE', q.toUpperCase())
   };
 }
@@ -830,6 +832,9 @@ function arranque(q) {
    ignora `<prosody>` y `express-as` en ellas. Enseñar los deslizadores sería
    prometer un ajuste que no hace nada. */
 function esHD(voz) { return /:DragonHD/.test(voz || ''); }
+/* La temperatura es el único ajuste de una voz HD: 0 a 1, y Azure arranca en
+   1.0. Baja = más estable entre tomas, alta = más expresiva. */
+function temperaturaDe(v) { var t = Number(v && v.temperatura); return (!t || isNaN(t)) ? 1 : t; }
 
 function estiloHTML(q, elegida) {
   var c = CASTING.candidatas.filter(function (x) { return x.voz === elegida.voz; })[0];
@@ -859,7 +864,9 @@ function probarAsi(q) {
   fetch('/_locutar', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ voz: v.voz, tono: v.tono, ritmo: v.ritmo,
-                           estilo: v.estilo || null, texto: frase })
+                           estilo: v.estilo || null,
+                           temperatura: esHD(v.voz) ? temperaturaDe(v) : null,
+                           texto: frase })
   }).then(function (r) {
     if (!r.ok) return r.text().then(function (t) { throw new Error(t || r.status); });
     /* Si esta toma se genero o salio del disco. Lo dice el servidor, que es
@@ -875,8 +882,10 @@ function probarAsi(q) {
     return tocador.play();
   }).then(function () {
     marcarSonando('probar-' + q);
-    vDecir(q + ' con ' + corto(v.voz) + ', tono ' + v.tono +
-           '% y ritmo ' + v.ritmo + '%' + (v.estilo ? ', estilo ' + v.estilo : '') +
+    vDecir(q + ' con ' + corto(v.voz) +
+           (esHD(v.voz) ? ', temperatura ' + temperaturaDe(v).toFixed(2)
+                        : ', tono ' + v.tono + '% y ritmo ' + v.ritmo + '%' +
+                          (v.estilo ? ', estilo ' + v.estilo : '')) +
            ' · ' + (ultima.nueva ? 'generada' : 'reusada, sin costo') +
            ' · ' + ultima.nuevas + ' generadas en total (' +
            ultima.chars.toLocaleString('es') + ' caracteres, ' +
@@ -886,7 +895,9 @@ function probarAsi(q) {
   });
 }
 
-function corto(v) { return (v || '—').replace('es-MX-', '').replace('Neural', ''); }
+function corto(v) {
+  return (v || '—').replace(/^es-[A-Z]{2}-/, '').replace(':DragonHDLatestNeural', ' HD').replace('Neural', '');
+}
 
 /* ¿Este personaje se movio de lo que hay desplegado? Es lo que decide si sale
    en el bloque para pegar y si la cabecera dice «cambiado». */
@@ -894,7 +905,8 @@ function esDistinto(q) {
   var h = arranque(q), v = VOCES[q];
   return Boolean(v) && (v.voz !== h.voz || v.tono !== h.tono ||
                         v.ritmo !== h.ritmo || comoDe(q) !== h.como ||
-                        (v.estilo || null) !== (h.estilo || null));
+                        (v.estilo || null) !== (h.estilo || null) ||
+                        (esHD(v.voz) && temperaturaDe(v) !== temperaturaDe(h)));
 }
 
 function pintarVoces() {
@@ -915,8 +927,10 @@ function pintarVoces() {
         '<span class="chico">' + (esJuez(q)
           ? 'todavía sin voz en el juego · dice las frases entre turnos y presenta el veredicto'
           : 'en el juego: ' + corto(hoy.voz) + ' ' +
-            (hoy.tono >= 0 ? '+' : '') + hoy.tono + '% / ' +
-            (hoy.ritmo >= 0 ? '+' : '') + hoy.ritmo + '%' +
+            (esHD(hoy.voz)
+              ? 'temperatura ' + temperaturaDe(hoy).toFixed(2)
+              : (hoy.tono >= 0 ? '+' : '') + hoy.tono + '% / ' +
+                (hoy.ritmo >= 0 ? '+' : '') + hoy.ritmo + '%') +
             (esDistinto(q) ? ' &nbsp;→&nbsp; <b>cambiado</b>' : '')) +
         '</span>' +
       '</header>' +
@@ -957,8 +971,12 @@ function pintarVoces() {
 
       '<div class="afinar">' +
         (esHD(elegida.voz)
-          ? '<span class="chico">✦ voz HD: la emoción, las pausas y el énfasis los pone la voz ' +
-            'leyendo el texto. Tono, ritmo y estilo no aplican.</span>'
+          ? '<label>temperatura <input type="range" data-temperatura="' + q + '" value="' +
+              temperaturaDe(elegida) + '" min="0.3" max="1" step="0.05" style="width:150px">' +
+              '<output data-eco="temperatura-' + q + '">' + temperaturaDe(elegida).toFixed(2) + '</output></label>' +
+            '<span class="chico">✦ voz HD: la emoción, las pausas y el énfasis los pone la voz ' +
+            'leyendo el texto. Lo único que se ajusta es la temperatura: baja, más estable; ' +
+            'alta, más expresiva.</span>'
           : '<label>tono <input type="range" data-tono="' + q + '" value="' +
               elegida.tono + '" min="-30" max="60" step="1" style="width:150px">' +
               '<output data-eco="tono-' + q + '">' + (elegida.tono >= 0 ? '+' : '') +
@@ -970,7 +988,7 @@ function pintarVoces() {
             estiloHTML(q, elegida)) +
         '<button class="suena" data-probar="' + q + '" data-id="probar-' + q +
           '" data-sonando="no">▶ oírlo así</button>' +
-        (c && !esJuez(q) ? '<span class="chico">' + (c.altono >= 0 ? '+' : '') + c.altono +
+        (c && !esJuez(q) && !esHD(c.voz) ? '<span class="chico">' + (c.altono >= 0 ? '+' : '') + c.altono +
              '% la deja sonando donde Kai y Luna</span>' : '') +
         (esJuez(q) ? '<span class="chico">al juez no se le sube el tono: no es un ' +
              'chico de veinte, y la altura de la voz es media de la partida</span>' : '') +
@@ -1005,7 +1023,8 @@ function pintarSalida() {
     l.push('  ' + q + ': {\n' +
            "    voz: '" + v.voz + "', estilo: " +
            (v.estilo ? "'" + v.estilo + "'" : 'null') + ", tono: '" + pct(v.tono) +
-           "', ritmo: '" + pct(v.ritmo) + "',\n" +
+           "', ritmo: '" + pct(v.ritmo) + "'," +
+           (esHD(v.voz) ? " temperatura: '" + temperaturaDe(v).toFixed(2) + "'," : '') + '\n' +
            '    quien: `' + citar(comoDe(q)) + '`,\n' +
            '  },');
   });
@@ -1049,9 +1068,10 @@ function elegirVoz(q, nombreVoz) {
   var c = CASTING.candidatas.filter(function (x) { return x.voz === nombreVoz; })[0];
   var v = mio(q);
   v.voz = nombreVoz;
-  v.tono = c ? c.altono : 0;
+  v.tono = (esHD(nombreVoz) || !c) ? 0 : c.altono;   /* en HD el tono no existe */
   v.ritmo = 6;
   v.estilo = null;                 /* el estilo es de la voz anterior, no de esta */
+  v.temperatura = esHD(nombreVoz) ? 1 : null;   /* HD arranca donde Azure: 1.0 */
   guardarVoces();
   pintarVoces();
 }
@@ -1107,7 +1127,8 @@ document.addEventListener('change', function (e) {
 function mio(q) {
   if (VOCES[q]) return VOCES[q];
   var a = arranque(q);
-  return (VOCES[q] = { voz: a.voz, tono: a.tono, ritmo: a.ritmo, estilo: a.estilo || null });
+  return (VOCES[q] = { voz: a.voz, tono: a.tono, ritmo: a.ritmo, estilo: a.estilo || null,
+                       temperatura: a.temperatura || null });
 }
 
 /* La personalidad efectiva: la tuya si la editaste, la desplegada si no. */
@@ -1122,13 +1143,13 @@ function comoDe(q) {
 var pendienteVoz = null;
 document.addEventListener('input', function (e) {
   var t = e.target;
-  var q = t.dataset && (t.dataset.tono || t.dataset.ritmo);
+  var q = t.dataset && (t.dataset.tono || t.dataset.ritmo || t.dataset.temperatura);
   if (!q) return;
-  var cual = t.dataset.tono ? 'tono' : 'ritmo';
+  var cual = t.dataset.tono ? 'tono' : t.dataset.ritmo ? 'ritmo' : 'temperatura';
   var n = Number(t.value);
   mio(q)[cual] = n;
   var eco = document.querySelector('[data-eco="' + cual + '-' + q + '"]');
-  if (eco) eco.textContent = (n >= 0 ? '+' : '') + n + '%';
+  if (eco) eco.textContent = cual === 'temperatura' ? n.toFixed(2) : (n >= 0 ? '+' : '') + n + '%';
   var cab = document.querySelector('.voz-caso[data-quien="' + q + '"] header .chico');
   if (cab && !esJuez(q) && esDistinto(q) && cab.innerHTML.indexOf('cambiado') < 0) {
     cab.innerHTML += ' &nbsp;→&nbsp; <b>cambiado</b>';
