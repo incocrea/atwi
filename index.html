@@ -15,11 +15,11 @@
 <title>ATWI · El juego de debate para parejas, amigos y familia</title>
 <meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<link rel="stylesheet" href="assets/css/fuentes.css?v=3db5111">
-<link rel="stylesheet" href="assets/css/tokens.css?v=3db5111">
-<link rel="stylesheet" href="assets/css/base.css?v=3db5111">
-<link rel="stylesheet" href="assets/css/landing.css?v=3db5111">
-<link rel="stylesheet" href="assets/css/modal.css?v=3db5111">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=ef7eb39">
+<link rel="stylesheet" href="assets/css/tokens.css?v=ef7eb39">
+<link rel="stylesheet" href="assets/css/base.css?v=ef7eb39">
+<link rel="stylesheet" href="assets/css/landing.css?v=ef7eb39">
+<link rel="stylesheet" href="assets/css/modal.css?v=ef7eb39">
 </head>
 
 <body class="landing">
@@ -48,141 +48,30 @@
       </p>
     </div>
 
-    <!-- EL PASE DE PANTALLAS. No son capturas: son las pantallas de verdad
-         rehechas en HTML con los MISMOS dibujos que usa el juego. Una captura
-         envejece el día que algo se mueve y nadie se entera; esto se ve nítido
-         en cualquier pantalla, pesa una décima parte y, si el color de un modo
-         cambia en `tokens.css`, cambia aquí también. -->
-    <figure class="pase">
-      <div class="telefono">
-        <div class="pase__pista" id="pase" tabindex="0" aria-label="Pantallas del juego">
+    <!-- EL VISOR: UNA PARTIDA DE VERDAD, NO UNA MAQUETA (titular, 2026-09-17).
+         Aquí había un pase de cinco pantallas rehechas en HTML. Lo que hay
+         ahora es el JUEGO, corriendo dentro de un iframe: el sorteo, la ronda ya
+         jugada con su reproductor —con los audios reales de Harold contra
+         Julia— y el veredicto con su ceremonia. Enseñar una maqueta de algo que
+         existe es enseñar menos de lo que hay.
 
-          <!-- 1 · La portada -->
-          <article class="pantalla" data-titulo="Se elige el modo, y la carta es el botón">
-            <div class="pantalla__cabecera">
-              <img src="assets/img/landing/logotipo-chico.webp" alt="" width="62" height="21">
-              <span class="pantalla__discos">
-                <i><img src="assets/img/landing/ayuda-morado.webp" alt="" width="18" height="18" loading="lazy"></i>
-                <i><img src="assets/img/landing/corazon.webp" alt="" width="18" height="18" loading="lazy"></i>
-                <i><img src="assets/img/landing/buzon.webp" alt="" width="18" height="18" loading="lazy"></i>
-                <i class="pantalla__yo"><img src="assets/img/personajes/nina-morado-ficha.webp" alt="" width="17" height="17" loading="lazy"></i>
-              </span>
-            </div>
-            <p class="pantalla__saludo">¡Hola, Sofía!</p>
-            <div class="carta-mini carta-mini--debate">
-              <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Controversia" width="170" height="88" loading="lazy">
-              <span class="carta-mini__que">Defiende tu postura de forma divertida</span>
-              <img class="carta-mini__signo" src="assets/img/landing/ayuda-coral.webp" alt="" width="30" height="30" loading="lazy">
-              <img class="carta-mini__base" src="assets/img/landing/base-debate.webp" alt="" width="320" height="53" loading="lazy">
-            </div>
-            <div class="carta-mini carta-mini--negociacion">
-              <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Negociación" width="170" height="80" loading="lazy">
-              <span class="carta-mini__que">Dialoga, encuentra acuerdos y avanza</span>
-              <img class="carta-mini__signo" src="assets/img/landing/ayuda-menta.webp" alt="" width="30" height="30" loading="lazy">
-              <img class="carta-mini__base" src="assets/img/landing/base-negociacion.webp" alt="" width="320" height="56" loading="lazy">
-            </div>
-            <div class="carta-mini carta-mini--competencia">
-              <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="QuiénGane" width="170" height="82" loading="lazy">
-              <span class="carta-mini__que">Definen un premio y se lo ganan jugando</span>
-              <img class="carta-mini__signo" src="assets/img/landing/ayuda-azul.webp" alt="" width="30" height="30" loading="lazy">
-              <img class="carta-mini__base" src="assets/img/landing/base-competencia.webp" alt="" width="320" height="53" loading="lazy">
-            </div>
-          </article>
-
-          <!-- 2 · El encuentro -->
-          <article class="pantalla pantalla--encuentro" data-titulo="Se sortea quién abre y empieza la ronda">
-            <!-- En el versus manda el LOGO del modo, no un título: es lo que
-                 sitúa la pantalla, y una cabecera encima diría lo mismo
-                 diciendo menos. -->
-            <img class="encuentro-mini__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Modo Controversia" width="170" height="88" loading="lazy">
-            <div class="encuentro-mini">
-              <img class="encuentro-mini__fig" src="assets/img/landing/kai-plante.webp" alt="" width="100" height="155" loading="lazy">
-              <img class="encuentro-mini__vs" src="assets/img/landing/vs.webp" alt="" width="86" height="84" loading="lazy">
-              <img class="encuentro-mini__fig" src="assets/img/landing/nina-plante.webp" alt="" width="100" height="155" loading="lazy">
-            </div>
-            <p class="pantalla__pie-txt">Abre <b>Kai</b> · 2 turnos cada quien</p>
-            <span class="boton-mini boton-mini--debate">Empezar</span>
-          </article>
-
-          <!-- 3 · La sala -->
-          <article class="pantalla pantalla--sala" data-titulo="Cada quien graba su turno, sin que nadie interrumpa">
-            <div class="pantalla__cabecera pantalla__cabecera--sala">
-              <span class="chip-mini">Turno 2 de 2</span>
-              <span class="reloj-mini">0:18</span>
-            </div>
-            <!-- Las intervenciones cerradas quedan en una lista reproducible:
-                 se vuelven a oír antes de contestar, y lo que suena es el
-                 personaje, no la grabación. -->
-            <div class="oidos-mini">
-              <span class="oido-mini"><i>▶</i> Kai · turno 1 <b>0:24</b></span>
-              <span class="oido-mini"><i>▶</i> Sofía · turno 1 <b>0:29</b></span>
-            </div>
-            <div class="sala-mini">
-              <img class="sala-mini__fig" src="assets/img/landing/nina-hablando.webp" alt="" width="130" height="201" loading="lazy">
-              <span class="sala-mini__nombre">Sofía</span>
-              <span class="sala-mini__boton"><span class="sala-mini__punto"></span>Parar</span>
-            </div>
-          </article>
-
-          <!-- 4 · El veredicto -->
-          <article class="pantalla pantalla--veredicto" data-titulo="El juez explica con qué criterios decidió">
-            <img class="veredicto-mini__fig" src="assets/img/landing/nina-ganar.webp" alt="" width="104" height="161" loading="lazy">
-            <p class="veredicto-mini__eti">Gana Sofía</p>
-            <div class="tabla-mini">
-              <span></span><u>Sofía</u><u class="tenue">Kai</u>
-              <span>Al tema</span><b>85</b><b class="tenue">60</b>
-              <span>Razones</span><b>80</b><b class="tenue">45</b>
-              <span>Ejemplos</span><b>78</b><b class="tenue">65</b>
-              <span>Escucha</span><b>75</b><b class="tenue">70</b>
-            </div>
-            <p class="pantalla__pie-txt">«Sostuvo su posición con un ejemplo concreto en los dos turnos.»</p>
-          </article>
-
-          <!-- 5 · El catálogo -->
-          <article class="pantalla" data-titulo="455 fichas, o el tema que traen ustedes">
-            <div class="cinta-mini">
-              <img src="assets/img/landing/rotulo-negociacion.webp" alt="" width="64" height="30" loading="lazy">
-              <span><b>Modo Negociación</b><br>Dialoga, encuentra acuerdos y avanza</span>
-            </div>
-            <div class="filtros-mini">
-              <i class="chip-mini chip-mini--mesa">Pareja</i>
-              <i class="chip-mini chip-mini--suave">Amigos</i>
-              <i class="chip-mini chip-mini--suave">Familia</i>
-            </div>
-            <!-- Los cuatro son temas REALES del catálogo, copiados tal cual. Un
-                 tema de ejemplo inventado para una landing es la app diciendo
-                 que tiene algo que no tiene. -->
-            <div class="tema-mini">
-              <b>El chiste en mitad de la discusión</b>
-              <span>Hacer una broma en mitad de una discusión, ¿baja la tensión o esquiva el tema?</span>
-            </div>
-            <div class="tema-mini">
-              <b>Sentados o de pasada</b>
-              <span>Un tema importante, ¿se puede hablar mientras se hace otra cosa o hay que parar y sentarse?</span>
-            </div>
-            <div class="tema-mini">
-              <b>«Luego hablamos»</b>
-              <span>Cuando llega un mensaje sobre un tema pendiente, ¿hay que contestar en el momento o vale dejarlo para después?</span>
-            </div>
-            <div class="tema-mini">
-              <b>De una habitación a otra</b>
-              <span>Hablar a voces de una habitación a otra, ¿es lo normal en una casa o hay que ir donde está el otro?</span>
-            </div>
-            <div class="tema-mini">
-              <b>Interrumpir para matizar</b>
-              <span>Cuando el otro cuenta su versión y dice algo que no es exacto, ¿se corrige en el momento o se espera al final?</span>
-            </div>
-          </article>
-
+         ⚠️ EL IFRAME NO SE CARGA HASTA QUE SE PULSA. Son la app entera más 438 KB
+         de audio, y quien entra a leer qué es ATWI no tiene por qué bajárselos.
+         Lo pone `landing.js` al tocar el botón. -->
+    <figure class="visor">
+      <div class="telefono" id="visor-caja">
+        <div class="visor__portada" id="visor-portada">
+          <img class="visor__rotulo" src="assets/img/landing/rotulo-debate.webp"
+               alt="Modo Controversia" width="170" height="88" loading="lazy">
+          <p class="visor__que">Una partida entera, de principio a fin:<br>el sorteo, lo que dijo cada quien y el veredicto.</p>
+          <button class="boton boton--grande visor__boton" type="button" id="visor-ver">Ver partida</button>
+          <p class="visor__nota">Se oye de verdad. Sube el volumen.</p>
         </div>
       </div>
-
-      <figcaption class="pase__pie">
-        <button class="pase__flecha" type="button" data-pase="-1" aria-label="Pantalla anterior">‹</button>
-        <span class="pase__texto" id="pase-texto">Se elige el modo, y la carta es el botón</span>
-        <button class="pase__flecha" type="button" data-pase="1" aria-label="Pantalla siguiente">›</button>
+      <figcaption class="visor__pie">
+        Harold y Julia discutieron esto en serio. Lo que se oye es la voz del
+        personaje de cada uno, y el veredicto es el que dio el juez.
       </figcaption>
-      <div class="pase__puntos" id="pase-puntos" aria-label="Ir a una pantalla"></div>
     </figure>
   </header>
 
@@ -337,6 +226,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=3db5111"></script>
+<script src="assets/js/landing.js?v=ef7eb39"></script>
 </body>
 </html>

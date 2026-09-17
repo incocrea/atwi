@@ -4559,3 +4559,24 @@ body.app {
    estaba la suya. No se oculta del todo: el hueco vacío se nota más. */
 [data-globo-abierto] { opacity: .2; transition: opacity var(--dur-corta) var(--suave); }
 
+
+/* --- El visor de la landing (`?demo=1`) ---------------------------------------
+   La app entera se reduce a la partida: fuera la barra de abajo y la cabecera,
+   que son la navegacion del juego —perfil, historial, buzon— y aqui no llevan a
+   ninguna parte. Lo que se ensena es UNA partida, no una app que recorrer.
+   El marco pasa a ocupar el iframe entero: el telefono ya lo dibuja la landing
+   alrededor, y dibujar un segundo telefono dentro del primero seria un marco
+   dentro de otro marco. */
+body[data-demo] .barra,
+body[data-demo] > .marco > .cabecera { display: none; }
+body[data-demo] .marco {
+  /* ⚠️ CONSERVA SU `max-width`. Quitarlo parecia lo logico —el iframe ya acota—
+     pero el juego esta disenado para una columna de 430 px y no crece: sin el
+     tope, el repaso pinta las dos figuras del encuentro a lo ancho que le den y
+     se montan una encima de otra. Lo unico que sobra aqui es el TELEFONO
+     dibujado, porque la landing ya dibuja uno alrededor del iframe. */
+  height: 100dvh;
+  border: 0; border-radius: 0; box-shadow: none;
+  grid-template-rows: 1fr;
+}
+body[data-demo] { background: var(--crema); }

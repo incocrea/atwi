@@ -177,8 +177,21 @@
     });
   }
 
+  /* ⚠️ EN EL VISOR DE LA LANDING NO SE SINCRONIZA NADA (2026-09-17). La demo
+     corre dentro de un iframe en una página informativa, y esto baja los 24 MB
+     de dibujos del juego entero: bajárselos a alguien que entró a leer qué es
+     ATWI y le dio a «ver partida» es exactamente lo que esta precarga existe
+     para NO hacer —se pensó para quien ya está jugando, no para una visita—.
+     La demo pide a demanda lo poco que pinta (las poses del encuentro y las
+     fichas, por `precargarPoses`), que es un puñado de archivos y no una
+     sincronización.
+     Y de paso no registra el trabajador de servicio con scope en la raíz del
+     sitio, que desde un iframe de la landing es otra cosa que nadie pidió. */
+  function esElVisor() { return /[?&]demo=1/.test(location.search); }
+
   /* Después del `load`: hasta ahí, todo lo que se pida compite con el CSS, el
      JS y el catálogo, que es lo que de verdad tiene prisa. */
-  if (document.readyState === 'complete') setTimeout(arrancar, 0);
+  if (esElVisor()) { /* nada */ }
+  else if (document.readyState === 'complete') setTimeout(arrancar, 0);
   else window.addEventListener('load', arrancar);
 }());

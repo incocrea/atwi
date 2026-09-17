@@ -5,12 +5,9 @@
    producto vive en /app/ y es solo móvil.
 
    ⚠️ ESTA HOJA NO CARGA `app.css`, así que todo lo que se vea aquí se escribe
-   aquí. Las maquetas del pase (`.pantalla` y lo que va dentro) son una
-   RECONSTRUCCIÓN de las pantallas del juego, no las pantallas: comparten los
-   dibujos y los tokens de color, no las reglas. Si el juego cambia de aspecto,
-   esto no se entera — y ese es el precio que se paga por no usar capturas, que
-   habrían envejecido igual pero además pesando diez veces más y viéndose
-   borrosas en cualquier pantalla de densidad alta.
+   aquí. La excepción es el VISOR: lo que hay dentro del teléfono es el juego de
+   verdad, en un iframe con su propio documento y sus propias hojas. Por eso no
+   puede desincronizarse del juego — no es una copia, es el original.
    ========================================================================== */
 
 body.landing {
@@ -46,8 +43,10 @@ body.landing {
   align-items: center;
 }
 @media (min-width: 900px) {
-  /* `minmax(0, …)` y no `1.02fr` a secas: `1fr` es `minmax(auto, 1fr)` y el
-     mínimo de contenido del pase son sus cinco pantallas SUMADAS. */
+  /* `minmax(0, …)` y no `1.02fr` a secas: `1fr` es `minmax(auto, 1fr)`, o sea
+     que el mínimo de contenido de la columna puede ensancharla y sacar la
+     página de su ancho. Lo puso el pase de pantallas —cuyo mínimo eran sus
+     cinco pantallas sumadas— y se queda porque la trampa no era del pase. */
   .heroe { grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); padding: var(--e-8) 0; }
 }
 
@@ -62,18 +61,20 @@ body.landing {
 .heroe__entrada { font-size: 1.125rem; color: var(--tinta-suave); max-width: 34rem; margin-top: var(--e-4); }
 .heroe__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-5); }
 
-/* --- El pase de pantallas --------------------------------------------------- */
-/* ⚠️ `min-width: 0` O LA PÁGINA SCROLLEA DE LADO EN EL MÓVIL. La pista son
-   cinco pantallas en fila, así que el ancho MÍNIMO intrínseco del pase es la
-   suma de las cinco —848 px medidos a 375— y una columna `auto` de grid
-   respeta ese mínimo aunque el `overflow: hidden` del teléfono lo recorte:
-   la caja se ve bien y el documento mide 848. */
-.pase { margin: 0; justify-self: center; width: min(100%, 318px); min-width: 0; }
+/* --- El visor de la partida ---------------------------------------------- */
+/* ⚠️ AQUI VIVIAN LAS CINCO PANTALLAS DEL PASE —`.pantalla`, `.carta-mini`,
+   `.encuentro-mini`, `.sala-mini`, `.tabla-mini`, `.tema-mini`— rehechas en
+   HTML con los dibujos del juego. Se fueron enteras el 2026-09-17: lo que hay
+   ahora es el juego de verdad dentro de un iframe, asi que mantener una maqueta
+   de lo mismo era mantener dos veces la misma pantalla y que una de las dos se
+   quedara vieja. */
+.visor { margin: 0; justify-self: center; width: min(100%, 318px); min-width: 0; }
 
-/* El mismo recurso que el juego usa en escritorio: un teléfono dibujado. Aquí
-   además acota el carrusel, así que el scroll lateral vive dentro de la pieza
-   y nunca llega a la página. */
+/* El mismo telefono dibujado que usa el juego en escritorio. Aqui ademas acota
+   el iframe, que no trae marco propio: en `?demo=1` el juego se queda sin
+   borde, sin radio y sin sombra justamente porque el marco lo pone esto. */
 .telefono {
+  position: relative;
   width: 100%;
   aspect-ratio: 9 / 19;
   border-radius: 38px;
@@ -82,302 +83,30 @@ body.landing {
   box-shadow: var(--sombra-marco);
   overflow: hidden;
 }
-
-.pase__pista {
-  display: flex;
-  min-width: 0;
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
+.visor__marco {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: 0; display: block;
 }
-.pase__pista::-webkit-scrollbar { display: none; }
-/* ⚠️ NO LLEVA `scroll-behavior: smooth`. Puesto en el CSS intercepta CUALQUIER
-   asignacion de `scrollLeft`, tambien las que no quieren animacion, y con la
-   pestana en segundo plano las deja sin efecto: el pase se quedaba clavado en
-   la primera pantalla. Lo suave lo pide el JS llamada a llamada. */
 
-/* --- Los controles del pase ------------------------------------------------- */
-.pase__pie {
-  display: grid;
-  grid-template-columns: 38px 1fr 38px;
-  align-items: center;
-  gap: var(--e-2);
+/* La portada: lo unico que pesa hasta que alguien pulsa. */
+.visor__portada {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--e-3);
+  padding: var(--e-5) var(--e-4);
+  text-align: center;
+  background: var(--debate-tinte);
+}
+.visor__rotulo { width: 150px; height: auto; display: block; }
+.visor__que { font-size: .9rem; line-height: 1.45; color: var(--tinta); margin: 0; }
+.visor__boton { margin-top: var(--e-2); }
+.visor__nota { font-size: var(--t-chico); color: var(--tinta-suave); margin: 0; }
+.visor__pie {
   margin-top: var(--e-4);
+  font-size: var(--t-chico); line-height: 1.5;
+  color: var(--tinta-suave); text-align: center;
 }
-.pase__flecha {
-  width: 38px; height: 38px;
-  border-radius: var(--radio-pastilla);
-  border: 2px solid var(--linea);
-  background: var(--superficie);
-  color: var(--tinta-suave);
-  font-size: 1.4rem; line-height: 1;
-  cursor: pointer;
-  display: grid; place-items: center;
-}
-.pase__flecha:hover { background: var(--crema-hondo); color: var(--tinta); }
-.pase__flecha[disabled] { opacity: .35; cursor: default; }
-.pase__texto {
-  text-align: center;
-  font-size: var(--t-chico);
-  color: var(--tinta-suave);
-  min-height: 2.6em;
-  display: grid; place-items: center;
-}
-.pase__puntos { display: flex; justify-content: center; gap: 7px; margin-top: var(--e-2); }
-.pase__punto {
-  width: 8px; height: 8px; padding: 0;
-  border: 0; border-radius: var(--radio-pastilla);
-  background: var(--linea-fuerte);
-  cursor: pointer;
-  transition: width var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
-}
-.pase__punto[aria-current="true"] { width: 22px; background: var(--lavanda); }
-
-/* --- Una pantalla del pase -------------------------------------------------- */
-.pantalla {
-  flex: 0 0 100%;
-  scroll-snap-align: center;
-  height: 100%;
-  padding: 12px 12px 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-  background: var(--crema);
-  /* La barra inferior del juego, insinuada: cuatro pastillas al pie. No es un
-     adorno — sin ella la maqueta no se lee como una app. */
-  position: relative;
-  overflow: hidden;
-}
-.pantalla::after {
-  content: '';
-  position: absolute; inset: auto 0 0 0; height: 20px;
-  background:
-    radial-gradient(circle at 12.5% 50%, var(--linea-fuerte) 3px, transparent 3.5px),
-    radial-gradient(circle at 37.5% 50%, var(--linea-fuerte) 3px, transparent 3.5px),
-    radial-gradient(circle at 62.5% 50%, var(--linea-fuerte) 3px, transparent 3.5px),
-    radial-gradient(circle at 87.5% 50%, var(--linea-fuerte) 3px, transparent 3.5px),
-    var(--superficie);
-  border-top: 1px solid var(--linea);
-}
-
-.pantalla__cabecera { display: flex; align-items: center; justify-content: space-between; }
-/* Los cuatro discos de la cabecera del juego, en orden: el aviso de IA, las
-   vidas, el buzón y la ficha de quien juega. */
-.pantalla__discos { display: flex; gap: 4px; }
-.pantalla__discos i {
-  width: 19px; height: 19px; border-radius: var(--radio-pastilla);
-  background: var(--superficie); box-shadow: var(--sombra-1);
-  display: grid; place-items: center;
-  overflow: hidden;
-}
-.pantalla__discos img { width: 15px; height: 15px; object-fit: contain; display: block; }
-.pantalla__yo img { width: 19px; height: 19px; object-position: center bottom; }
-.pantalla__saludo {
-  margin: 2px 0 0;
-  text-align: center;
-  font-family: var(--display); font-weight: 800;
-  font-size: 1.05rem; color: var(--tinta);
-}
-.pantalla__saludo--chico { font-size: .9rem; }
-.pantalla__pie-txt {
-  margin: 0; text-align: center;
-  font-size: .62rem; line-height: 1.35; color: var(--tinta-suave);
-}
-
-/* --- Maqueta: las cartas de modo de la portada ------------------------------ */
-.carta-mini {
-  position: relative;
-  /* El alto sale de la proporción del juego, no de lo que quepa: allí la carta
-     ocupa el 20 % del alto de la pantalla, y con 108 aquí salía al 16 % — se
-     leía como una lista de tres filas y no como tres cartas. */
-  height: 138px;
-  /* El padding derecho es el sitio de la bombilla, como en el juego: si el
-     texto se le mete debajo, la carta crece y las tres dejan de medir igual. */
-  padding: 12px 42px 40px 10px;
-  border-radius: var(--radio-tarjeta);
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: 106px 1fr;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--sombra-1);
-  background: linear-gradient(165deg, var(--tinte) 0%, #fff 78%);
-}
-.carta-mini--debate { --tinte: var(--debate-tinte); }
-.carta-mini--negociacion { --tinte: var(--negociacion-tinte); }
-.carta-mini--competencia { --tinte: var(--competencia-tinte); }
-.carta-mini__rotulo { width: 106px; height: auto; display: block; position: relative; z-index: 1; }
-.carta-mini__que {
-  position: relative; z-index: 1;
-  text-align: center;
-  font-size: .68rem; line-height: 1.32; font-weight: 700;
-  color: var(--tinta-suave);
-}
-/* Va arriba y no centrada, como en el juego: con el zócalo ocupando el pie, su
-   centro caería DENTRO del dibujo y quedaría medio hundida. */
-.carta-mini__signo {
-  position: absolute; top: 12px; right: 8px;
-  width: 30px; height: auto; z-index: 1;
-}
-/* La peana se sale por los lados y la carta la corta, igual que en el juego: al
-   118 % se ven cortados los adornos del borde y deja de leerse como un dibujo
-   pegado dentro. Y SE HUNDE, para que asome solo la parte alta de la onda: a
-   ras del suelo se veía entera y pesaba tanto como lo que hay que leer. */
-.carta-mini__base {
-  position: absolute; left: 50%; bottom: -16px;
-  width: 118%; height: auto;
-  transform: translateX(-50%);
-}
-
-/* --- Maqueta: el encuentro -------------------------------------------------- */
-.pantalla--encuentro { justify-content: center; align-items: center; background: var(--debate-tinte); }
-.encuentro-mini__rotulo { width: 132px; height: auto; display: block; margin-bottom: 10px; }
-/* EL HUECO DEL MEDIO ES DEL SIGNO. Con las figuras juntas, el VS les caía
-   encima del pecho: en el juego los dos se plantan SEPARADOS y el signo cae en
-   el hueco que dejan. Medido: 90 + 70 + 90 = 250 de los 300 de pantalla, y el
-   VS de 80 apenas les roza 5 px por lado. */
-.encuentro-mini {
-  position: relative;
-  display: flex; align-items: flex-end; justify-content: center;
-  gap: 70px;
-  margin-bottom: 4px;
-}
-.encuentro-mini__fig { width: 90px; height: auto; display: block; }
-/* Va frente a los PUÑOS, no frente a las caras: al 58 % de la banda, como en el
-   juego. Aquí las dos figuras están de plante, así que cae en el hueco. */
-.encuentro-mini__vs {
-  position: absolute; left: 50%; top: 58%;
-  width: 80px; height: auto;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 6px 10px rgba(46, 42, 63, .2));
-}
-
-/* El botón del juego a escala de maqueta: lo que lo hace una pieza y no un
-   rectángulo pintado es el CANTO, así que aunque aquí no se pulse, va. */
-.boton-mini {
-  align-self: center;
-  padding: 9px 26px;
-  border-radius: var(--radio-pastilla);
-  font-family: var(--display); font-weight: 800; font-size: .8rem;
-  color: var(--blanco);
-  background: linear-gradient(180deg, color-mix(in srgb, var(--cara) 78%, #fff) 0%, var(--cara) 100%);
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.45),
-              0 4px 0 color-mix(in srgb, var(--cara) 72%, #000),
-              0 8px 14px rgba(46, 42, 63, .18);
-  margin-bottom: 4px;
-}
-.boton-mini--debate { --cara: var(--debate); }
-.boton-mini--negociacion { --cara: var(--negociacion); }
-
-/* --- Maqueta: la sala ------------------------------------------------------- */
-.pantalla--sala { background: var(--debate-tinte); }
-.pantalla__cabecera--sala { padding: 0 2px; }
-.chip-mini {
-  font-size: .58rem; font-weight: 800; font-style: normal;
-  padding: 3px 8px; border-radius: var(--radio-pastilla);
-  background: var(--debate); color: var(--blanco);
-}
-.chip-mini--mesa { background: var(--rosa-oscuro); }
-.chip-mini--suave { background: var(--superficie); color: var(--tinta-suave); box-shadow: var(--sombra-1); }
-.reloj-mini {
-  font-family: var(--display); font-weight: 800;
-  font-size: .95rem; color: var(--debate-oscuro);
-}
-.oidos-mini { display: grid; gap: 6px; }
-.oido-mini {
-  display: flex; align-items: center; gap: 7px;
-  padding: 7px 10px;
-  border-radius: var(--radio-pastilla);
-  background: var(--superficie);
-  box-shadow: var(--sombra-1);
-  font-size: .64rem; color: var(--tinta);
-}
-.oido-mini i { font-style: normal; color: var(--debate); font-size: .55rem; }
-.oido-mini b { margin-left: auto; font-variant-numeric: tabular-nums; color: var(--tinta-tenue); font-weight: 700; }
-.sala-mini {
-  flex: 1;
-  position: relative;
-  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
-  padding-bottom: 30px;
-}
-.sala-mini__fig { width: 122px; height: auto; display: block; }
-.sala-mini__nombre {
-  margin-top: -6px;
-  font-family: var(--display); font-weight: 800; font-size: .75rem;
-  padding: 3px 12px; border-radius: var(--radio-pastilla);
-  background: var(--superficie); color: var(--tinta);
-  box-shadow: var(--sombra-1);
-}
-/* El botón de grabar, con su canto: es la pieza que más se toca del juego. */
-.sala-mini__boton {
-  margin-top: 12px;
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 20px;
-  border-radius: var(--radio-pastilla);
-  background: linear-gradient(180deg, #F79C79 0%, var(--debate) 100%);
-  color: var(--blanco); font-weight: 800; font-size: .78rem;
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.45), 0 4px 0 var(--debate-oscuro);
-}
-.sala-mini__punto { width: 9px; height: 9px; border-radius: var(--radio-pastilla); background: var(--blanco); }
-
-/* --- Maqueta: el veredicto -------------------------------------------------- */
-.pantalla--veredicto { background: var(--veredicto-fondo); align-items: center; justify-content: center; }
-.veredicto-mini__fig { width: 98px; height: auto; display: block; margin-top: 2px; }
-.veredicto-mini__eti {
-  margin: -6px 0 0;
-  font-family: var(--display); font-weight: 800; font-size: 1rem;
-  color: var(--sol-oscuro);
-}
-.tabla-mini {
-  width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  gap: 5px 10px;
-  padding: 10px 12px;
-  border-radius: var(--radio-tarjeta);
-  background: var(--veredicto-tarjeta);
-  box-shadow: 0 6px 16px var(--veredicto-sombra);
-  font-size: .66rem;
-}
-.tabla-mini span { color: var(--tinta-suave); }
-/* Sin los dos nombres arriba, las columnas son dos filas de cifras de nadie.
-   ⚠️ Y ESTO NO ES UN MARCADOR ENTRE LOS DOS: es el desglose de UNA partida,
-   que es justo lo que la regla permite. Lo prohibido es el acumulado. */
-.tabla-mini u {
-  text-decoration: none; text-align: right;
-  font-family: var(--display); font-weight: 800; font-size: .6rem;
-  color: var(--sol-oscuro);
-}
-.tabla-mini u.tenue { color: var(--tinta-tenue); }
-.tabla-mini b { font-variant-numeric: tabular-nums; text-align: right; min-width: 1.6em; }
-.tabla-mini b:not(.tenue) { color: var(--sol-oscuro); }
-
-/* --- Maqueta: el catálogo --------------------------------------------------- */
-.cinta-mini {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 10px;
-  border-radius: var(--radio-tarjeta);
-  background: var(--negociacion-tinte);
-  font-size: .6rem; line-height: 1.35; color: var(--tinta-suave);
-}
-.cinta-mini img { width: 56px; height: auto; display: block; flex: none; }
-.cinta-mini b { color: var(--tinta); font-size: .68rem; }
-/* Los chips de mesa: el puesto va en color solido con texto blanco, como en
-   el catalogo. En blanco translucido sobre el tinte se leia como apagado. */
-.filtros-mini { display: flex; gap: 5px; }
-.tema-mini {
-  display: grid; gap: 3px; justify-items: start;
-  padding: 10px 12px;
-  border-radius: var(--radio-tarjeta);
-  /* En el catalogo tine la MESA, no el modo: estos son los temas de la pareja
-     y el modo ya esta dicho arriba, en la cinta. */
-  background: var(--rosa-tinte);
-  box-shadow: var(--sombra-1);
-}
-.tema-mini b { font-size: .76rem; line-height: 1.25; color: var(--tinta); }
-.tema-mini span { font-size: .64rem; line-height: 1.32; color: var(--tinta-suave); }
 
 /* --- Secciones -------------------------------------------------------------- */
 .seccion { padding: var(--e-7) 0; }

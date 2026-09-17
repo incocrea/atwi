@@ -302,7 +302,13 @@ window.ATWI = window.ATWI || {};
           /* La ruta, todavia sin bajar. El audio se trae al tocarlo: bajar seis
              de golpe al abrir es gastar datos de alguien por si acaso. */
           ruta: x.abogado ? x.voz_ruta : x.audio_ruta,
-          url: null
+          /* SALVO QUE EL TURNO YA TRAIGA LA URL. De la base nunca viene —alli
+             solo esta la ruta dentro del cubo— pero la demo de la landing llega
+             con los audios ya servidos desde `assets/`, y esto es lo que hace
+             que no tenga que pedirle nada al almacen. Escrito `url: null` a
+             secas, la url congelada se perdia aqui y el reproductor se quedaba
+             mudo sin decir por que. */
+          url: x.url || null
         };
       })
     };

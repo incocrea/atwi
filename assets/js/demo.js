@@ -26,6 +26,7 @@ window.ATWI.demo = {
   "invitado_nombre": "Julia",
   "juez": "vera",
   "modo": "debate",
+  "propone": "demo-propone",
   "propone_avatar": "kai",
   "propone_color": "azul",
   "propone_nombre": "Harold",
@@ -76,7 +77,7 @@ window.ATWI.demo = {
       "nombre": "Harold",
       "numero": 1,
       "orden": 0,
-      "perfil": "41e34dd2-da9b-4084-a5ba-f235f2e91cc6",
+      "perfil": "demo-propone",
       "segundos": 22,
       "transcripcion": "Yo digo que sí vale traer lo de antes, porque lo de hoy casi nunca es solo lo de hoy. Leí que el 80 por 100 de las discusiones de pareja son en realidad sobre cosas viejas que nunca se cerraron. Si no se traen, no se cierran nunca. Lo del lavaplatos del martes no es el lavaplatos, es que llevo meses diciendo lo mismo.",
       "url": "../assets/audio/demo/0.mp3"
@@ -102,7 +103,7 @@ window.ATWI.demo = {
       "nombre": "Harold",
       "numero": 2,
       "orden": 2,
-      "perfil": "41e34dd2-da9b-4084-a5ba-f235f2e91cc6",
+      "perfil": "demo-propone",
       "segundos": 22,
       "transcripcion": "Entiendo lo de arreglar una cosa, pero es que lo de antes es la explicación de lo de ahora. Si te lo digo suelto parece que me enojo por un plato. Y vuelvo a lo mismo, si el 80 por 100 de las peleas vienen de lo viejo, ignorarlo es pelearse por lo mismo cada semana con otro nombre. Yo prefiero decirlo entero una vez.",
       "url": "../assets/audio/demo/2.mp3"
