@@ -175,6 +175,9 @@ body.app {
 .marco:has(#v-catalogo[data-activa][data-modo="negociacion"]) {
   --fondo: url(../img/fondos/negociacion.webp);
 }
+.marco:has(#v-catalogo[data-activa][data-modo="competencia"]) {
+  --fondo: url(../img/fondos/competencia.webp);
+}
 /* El catalogo tambien se abre desde la barra de abajo, sin haber elegido modo
    todavia: ahi no hay modo del que sacar el fondo, y sin esto la pantalla se
    quedaria en blanco. Se le deja el del home, que es donde se elige. */
@@ -195,6 +198,14 @@ body.app {
   inset: 0 0 calc(var(--barra-alto) + env(safe-area-inset-bottom, 0px)) 0;
   background: var(--fondo) center top / cover no-repeat;
   pointer-events: none;
+  /* ⚠️ EL DESENFOQUE DE LOS FONDOS NO ESTÁ AQUÍ: va quemado en el WEBP, lo
+     pone `tools/fondos.py`. Con `filter: blur()` habría hecho falta un
+     pseudo-elemento en cada uno de los cuatro modales que llevan fondo —el
+     suyo está en el propio elemento y el filtro se llevaría por delante el
+     texto—, y además el blur difumina hacia fuera de la caja y deja una orla
+     clara en los cuatro bordes. En el archivo no pasa ninguna de las dos
+     cosas, se pinta sin filtro en tiempo real —que en un móvil se nota— y de
+     paso pesa menos, porque una imagen borrosa comprime mejor. */
   /* Detras de la cabecera, las vistas y la barra, que son hijos posicionados
      de la misma rejilla. Sin esto se pintaria encima de la cabecera, que no
      esta posicionada. */
@@ -261,6 +272,16 @@ body.app {
 #m-abogados.modal--negociacion {
   background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
               var(--negociacion-tinte);
+}
+/* QuiénGane llega hasta elegir premio, así que hoy solo pasa por dos de estos
+   cuatro modales; se declaran los cuatro igual para que el día que la sala
+   exista no haya una pantalla suya en blanco. */
+#m-tema.modal--competencia,
+#m-explicar.modal--competencia,
+#m-preparar.modal--competencia,
+#m-abogados.modal--competencia {
+  background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
 }
 #m-explicar .modal__pie,
 #m-preparar .modal__pie { background: none; border-top: 0; }
