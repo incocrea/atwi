@@ -593,7 +593,15 @@ body.app {
      que empaqueta la fila contra el techo: el rótulo quedaba arriba y el resto
      del alto era hueco. Sin él, la fila se estira al alto de la carta y
      `align-items: center` deja el dibujo y su línea en el medio. */
-  display: grid; grid-template-columns: 146px minmax(0, 1fr);
+  /* ⚠️ EL ROTULO CEDE EN PANTALLA ESTRECHA, y hace falta desde que la bombilla
+     crecio (2026-09-17). Con la columna clavada en 146 px, a 375 al texto le
+     quedaban 85 y «Defiende tu postura de forma divertida» se partia en CUATRO
+     renglones de dos palabras. Medido.
+     El `minmax` del texto es lo que obliga a ceder al dibujo: un `1fr` a secas
+     no encoge a un track fijo, se limita a repartir lo que sobra. Con 118 de
+     suelo, a 375 el rotulo baja a ~137 —que se sigue leyendo— y el texto vuelve
+     a tres renglones. */
+  display: grid; grid-template-columns: minmax(104px, 146px) minmax(118px, 1fr);
   gap: 4px; align-items: center;
   /* EL PADDING DERECHO ES EL SITIO DE LA BOMBILLA, y se mide contra ella: 48
      de disco más 8 de aire a cada lado. Con el rótulo a 146 px, cada píxel que
@@ -608,7 +616,10 @@ body.app {
   /* SIN `min-height` PROPIO: el suelo lo pone el track del grid
      (`--carta-min`), y si la carta además lo forzara desde dentro, el `1fr` no
      podría encogerla y volvería el scroll que esto viene a quitar. */
-  width: 100%; padding: 12px 58px 12px 8px;
+  /* EL PADDING DERECHO ES EL SITIO DE LA BOMBILLA Y SE MIDE CONTRA ELLA: 20 de
+     separacion al canto mas 56 de disco. Subio de 58 a 76 el 2026-09-17, cuando
+     la bombilla crecio y se separo: medido, el texto se le metia 18 px debajo. */
+  width: 100%; padding: 12px 76px 12px 8px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
   /* SIN FONDO Y CON HALO (titular, 2026-09-16). La carta deja de pintarse y lo
@@ -651,7 +662,9 @@ body.app {
   /* EN NEGRO Y NO EN GRIS (titular, 2026-09-16). Iba en `--tinta-suave`, que
      es el gris del texto secundario, y aquí no lo es: con el nombre del modo
      quitado de la fila, esta línea es lo ÚNICO que se lee de la carta. */
-  font-size: 12.5px; line-height: 1.3; color: var(--tinta);
+  /* 15,5 px (titular, 2026-09-17): era la linea mas chica de la portada y es
+     la unica que hay que leer de la carta. */
+  font-size: 15.5px; line-height: 1.3; color: var(--tinta);
 }
 
 /* LA CAJA ES QUIEN POSICIONA, porque dentro hay dos botones HERMANOS: la carta
@@ -668,8 +681,9 @@ body.app {
    los 132— y la bombilla quedaba medio hundida en el dibujo. Va alineada con
    el texto, que es lo que hay arriba y con lo que se lee en pareja. */
 .carta-modo__explica {
-  position: absolute; right: 8px; top: 10px;
-  width: 48px; height: 48px; padding: 0;
+  /* A 20 y 20, y mas grande (titular, 2026-09-17): iba a 8/10 y a 48 px. */
+  position: absolute; right: 20px; top: 20px;
+  width: 56px; height: 56px; padding: 0;
   display: grid; place-items: center;
   border: 0; background: none; cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
@@ -678,7 +692,7 @@ body.app {
 @media (prefers-reduced-motion: reduce) {
   .carta-modo__explica:active { transform: none; }
 }
-.carta-modo__explica .ico { width: 48px; height: 48px; }
+.carta-modo__explica .ico { width: 56px; height: 56px; }
 
 /* LAS PEANAS VUELVEN (titular, 2026-09-16), y van ENTERAS.
    ⚠️ El primer intento las recortó con `object-fit: cover` para que cupieran en
