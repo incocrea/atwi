@@ -117,6 +117,14 @@
   --crema: #FBF7F2;           /* fondo de la app */
   --crema-hondo: #F3EDE4;     /* fondo de zonas hundidas */
   --superficie: #FFFFFF;      /* tarjetas, modales, campos */
+  /* EL VELO DE LAS CARDS (titular, 2026-09-17). Una card ya no se pinta de
+     blanco opaco: deja pasar el fondo dibujado de la pantalla, que es lo que
+     hace que el juego se vea como un juego y no como un formulario sobre
+     papel. El numero vive AQUI y no repetido en cada regla: son doce sitios,
+     y doce `.6` escritos a mano se desincronizan en cuanto alguien retoque
+     uno. `--superficie` sigue viva para lo que NO es una card --campos,
+     modales, discos de la cabecera, el reproductor--, que necesitan tapar. */
+  --carta-velo: rgba(255, 255, 255, .6);
   --tinta: #2E2A3F;           /* texto principal: ciruela muy oscuro, no negro */
   --tinta-suave: #6D6683;     /* texto secundario (AA sobre crema y superficie) */
   --tinta-tenue: #9A94AC;     /* pistas y texto deshabilitado */

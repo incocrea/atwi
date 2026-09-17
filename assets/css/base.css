@@ -183,7 +183,8 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 
 /* --- Tarjetas ------------------------------------------------------------- */
 .tarjeta {
-  background: var(--superficie);
+  /* Translucida desde el 2026-09-17: ver `--carta-velo` en tokens. */
+  background: var(--carta-velo);
   border-radius: var(--radio-tarjeta);
   box-shadow: var(--sombra-1);
   padding: var(--e-4);
@@ -193,12 +194,21 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 .tarjeta--pulsable:active { transform: scale(.985); box-shadow: var(--sombra-2); }
 
 /* --- Campos --------------------------------------------------------------- */
+/* SIN BORDE (titular, 2026-09-17). Llevaba 2 px de `--linea`, y lo que separa
+   el campo de lo que tiene detras es su propio blanco: con las cards ya
+   traslucidas, el borde era la unica linea dura que quedaba en pantalla.
+   ⚠️ PERO EL BORDE ERA TAMBIEN EL FOCO, y eso no se puede perder: un campo
+   enfocado que no se distingue del que no lo esta deja sin saber donde se
+   escribe a quien navega con el teclado. Lo sustituye un ANILLO por `box-shadow`
+   —no un `outline`, que en algunos navegadores no sigue el `border-radius` y
+   dibujaria un rectangulo sobre una pastilla— y se dibuja POR FUERA, con
+   `spread` positivo, asi que no mueve ni un pixel del texto de dentro. */
 .campo {
   width: 100%; min-height: var(--diana); padding: var(--e-3) var(--e-4);
   font: inherit; color: var(--tinta);
-  background: var(--superficie); border: 2px solid var(--linea); border-radius: var(--radio-boton);
+  background: var(--superficie); border: 0; border-radius: var(--radio-boton);
 }
-.campo:focus { border-color: var(--lavanda); outline: none; }
+.campo:focus { outline: none; box-shadow: 0 0 0 2px var(--lavanda); }
 .campo::placeholder { color: var(--tinta-tenue); }
 textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
 

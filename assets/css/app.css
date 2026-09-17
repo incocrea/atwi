@@ -831,7 +831,7 @@ body.app {
 }
 .juez-ficha {
   display: grid; justify-items: center; gap: 6px;
-  background: var(--superficie); border: 0; border-radius: var(--radio-carta);
+  background: var(--carta-velo); border: 0; border-radius: var(--radio-carta);
   padding: var(--e-3) 6px; cursor: pointer; font: inherit;
   box-shadow: var(--sombra-1);
 }
@@ -849,7 +849,7 @@ body.app {
    que es por donde se sale una rejilla de seis. */
 .pb-ficha {
   display: grid; gap: var(--e-2);
-  background: var(--superficie); border-radius: var(--radio-carta);
+  background: var(--carta-velo); border-radius: var(--radio-carta);
   padding: var(--e-3); box-shadow: var(--sombra-1);
 }
 .pb-ficha__t {
@@ -889,7 +889,7 @@ body.app {
   display: grid; justify-items: center; gap: 6px;
   padding: var(--e-3) var(--e-2);
   border: 2px solid transparent; border-radius: var(--radio-carta);
-  background: var(--superficie); box-shadow: var(--sombra-1);
+  background: var(--carta-velo); box-shadow: var(--sombra-1);
   font: inherit; cursor: pointer; min-width: 0;
 }
 .personaje[aria-pressed="true"] { border-color: var(--pj); box-shadow: var(--sombra-2); }
@@ -992,7 +992,7 @@ body.app {
   padding: var(--e-4);
   border-radius: var(--radio-tarjeta);
   border: 0;
-  background: var(--superficie);
+  background: var(--carta-velo);
   box-shadow: var(--sombra-1);
   text-align: left;
   font: inherit;
@@ -1019,7 +1019,7 @@ body.app {
   padding: var(--e-3) var(--e-4);
   border-radius: var(--radio-tarjeta);
   border: 0;
-  background: var(--superficie);
+  background: var(--carta-velo);
   box-shadow: var(--sombra-1);
   text-align: left;
   font: inherit;
@@ -1097,7 +1097,7 @@ body.app {
   text-align: center;
   padding: var(--e-4) var(--e-2);
   border-radius: var(--radio-tarjeta);
-  background: var(--superficie);
+  background: var(--carta-velo);
   box-shadow: var(--sombra-1);
 }
 .contador__n { font-family: var(--display); font-weight: 800; font-size: 1.75rem; line-height: 1; }
@@ -1696,7 +1696,7 @@ body.app {
    las de nombre porque un nombre largo ensancharía la columna y el juego no
    scrollea de lado. */
 .tabla {
-  margin-top: var(--e-2); text-align: left; background: var(--superficie);
+  margin-top: var(--e-2); text-align: left; background: var(--carta-velo);
   border-radius: var(--radio-carta); padding: var(--e-3); box-shadow: var(--sombra-1);
 }
 .tabla__fila {
@@ -1994,7 +1994,23 @@ body.app {
   color: var(--tinta-suave);
   box-shadow: var(--sombra-1);
 }
-.chip--filtro[aria-pressed="true"] { background: var(--ctx-pastilla); color: var(--blanco); box-shadow: none; }
+/* EL CHIP PUESTO LLEVA EL COLOR DEL MODO (titular, 2026-09-17). Salia con
+   `--ctx-pastilla`, que es el tono neutro del contexto «catalogo»: un marron
+   oliva que no es de ningun modo y que encima chocaba con el fondo coral de
+   Controversia. El modo ya esta dicho arriba en la cinta, y el filtro puesto es
+   lo unico con color solido de esa fila, asi que era la pieza que mas
+   desentonaba.
+   VAN LOS TONOS `-oscuro` Y NO LOS BASE, por lo mismo que los chips de mesa
+   usan `--mesa-fuerte`: el texto va en blanco y el coral base (#F07F55) con
+   blanco encima se queda en 2,3:1. Con los oscuros salen 4,6 / 4,9 / 5,6:1.
+   El respaldo es el de siempre: fuera del catalogo no hay `--modo-fuerte`. */
+#v-catalogo[data-modo="debate"]      { --modo-fuerte: var(--debate-oscuro); }
+#v-catalogo[data-modo="negociacion"] { --modo-fuerte: var(--negociacion-oscuro); }
+#v-catalogo[data-modo="competencia"] { --modo-fuerte: var(--competencia-oscuro); }
+.chip--filtro[aria-pressed="true"] {
+  background: var(--modo-fuerte, var(--ctx-pastilla));
+  color: var(--blanco); box-shadow: none;
+}
 
 /* Un tema ya debatido se apaga un punto: lo que interesa es ver lo que falta */
 .tema--hecho { opacity: .72; }
@@ -2078,7 +2094,7 @@ body.app {
   align-items: start;
   width: 100%; padding: var(--e-3) var(--e-4);
   border: 0; border-radius: var(--radio-tarjeta);
-  background: var(--superficie); box-shadow: var(--sombra-1);
+  background: var(--carta-velo); box-shadow: var(--sombra-1);
   text-align: left; font: inherit; color: inherit; cursor: pointer;
   --av: var(--lavanda); --av-tinte: var(--lavanda-tinte); --av-hondo: var(--lavanda-oscuro);
 }
@@ -2313,7 +2329,7 @@ body.app {
 .propuesta {
   display: grid; gap: var(--e-2); text-align: left; width: 100%;
   border: 2px solid transparent; border-radius: var(--radio-carta);
-  background: var(--superficie); box-shadow: var(--sombra-1);
+  background: var(--carta-velo); box-shadow: var(--sombra-1);
   padding: var(--e-3); cursor: pointer; font: inherit; color: var(--tinta);
 }
 .propuesta__texto {
@@ -2815,7 +2831,7 @@ body.app {
 }
 @keyframes detalle-entra { from { opacity: 0; } to { opacity: 1; } }
 .detalle__caja {
-  background: var(--superficie); border-radius: var(--radio-tarjeta);
+  background: var(--carta-velo); border-radius: var(--radio-tarjeta);
   padding: var(--e-4); box-shadow: var(--sombra-2); max-width: 340px; width: 100%;
 }
 .detalle__titulo {
@@ -3045,7 +3061,7 @@ body.app {
    pantalla completa y saca a la persona del juego. Se pregunta aquí mismo. */
 .confirmar {
   display: grid; gap: var(--e-2); margin-top: var(--e-2);
-  background: var(--superficie); border-radius: var(--radio-tarjeta);
+  background: var(--carta-velo); border-radius: var(--radio-tarjeta);
   box-shadow: var(--sombra-2);
   padding: var(--e-3) var(--e-4) var(--e-4);
   animation: entra var(--dur-corta) var(--suave);
