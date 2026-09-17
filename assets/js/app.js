@@ -314,14 +314,25 @@
         cartaModo('competencia') +
       '</div>' +
 
-      /* EN EL HOME EL AVISO NO LLEVA TARJETA. Detrás hay un fondo dibujado, y
-         una caja lavanda encima lo tapaba justo en el tercio de abajo. Sin caja
-         el fondo se ve entero y el texto se sostiene con una sombra blanca
-         suave, que es lo que lo despega sin poner una pared. En las otras
-         pantallas el aviso sí lleva su caja: ahí el fondo es liso. */
-      '<div class="aviso-ia aviso-ia--desnudo" style="margin-top:var(--e-5)">' +
-        iconoSVG('aviso', 20) +
-        '<span>' + DESCARGO + '</span>' +
+      /* EL AVISO DE IA PASA A UN SIGNO (titular, 2026-09-17), y es la primera
+         prueba del GLOBO. Eran cuatro renglones de letra pequeña al pie de la
+         portada: ocupaban el sitio de la tercera carta y, por estar siempre,
+         se leían una vez y nunca más. Ahora es la bombilla morada —el lavanda
+         de la marca, el color de esta pantalla— centrada bajo las cartas, y lo
+         que dice sale en un globo que nace de ella.
+         ⚠️ ESTO LO DEJA A UN TOQUE Y NO A LA VISTA: `config.js` dice que el
+         descargo «protege y hay que tenerlo siempre a la vista». La decisión es
+         del titular y está anotada; si el descargo tiene que verse sin tocar
+         nada, este es el sitio donde volver.
+         UN POCO MÁS GRANDE QUE EL DE LAS CARTAS (56 contra 48): allí la
+         bombilla acompaña a un rótulo dibujado y aquí está sola en su renglón;
+         al mismo tamaño se leería como un resto de la carta de arriba. */
+      '<div class="ayuda-suelta">' +
+        '<button class="ayuda-suelta__signo" data-globo="descargo" ' +
+                'aria-expanded="false" aria-label="Qué hace la IA en ATWI" ' +
+                'title="Qué hace la IA en ATWI">' +
+          window.ATWI.icono('ayuda-morado', 56) +
+        '</button>' +
       '</div>' +
 
       /* EL PROBADOR, Y SOLO PARA QUIEN PUEDE VERLO. Aquí había cinco botones
@@ -3170,6 +3181,147 @@
   }
 
   /* ======================================================================
+     EL GLOBO: una explicación que sale del signo que la pide
+     ======================================================================
+
+     PRUEBA PEDIDA POR EL TITULAR (2026-09-17), y empieza por UNA sola: el
+     aviso de IA de la portada. Si convence, las demás ayudas —las bombillas de
+     las cartas de modo, que hoy abren un modal a pantalla completa— se mudan
+     aquí.
+
+     POR QUÉ NO ES UN MODAL. Un modal a pantalla completa es la ceremonia
+     correcta para entrar a algo —elegir modo, ver un veredicto— y es demasiada
+     para contestar «¿qué es esto?»: tapa la pantalla entera, hay que cerrarlo
+     para volver, y mientras está abierto se pierde de vista aquello sobre lo
+     que se preguntaba. El globo sale DEL signo que se tocó, deja ver lo de
+     detrás y se cierra con un toque en cualquier sitio.
+
+     SE COLOCA SOLO, y esa es la parte que no se puede improvisar: mide dónde
+     está el disparador dentro del MARCO —no del viewport del navegador, porque
+     en escritorio el juego vive dentro de un teléfono dibujado— y elige arriba
+     o abajo según dónde quepa, acotándose a los bordes. Si se saliera, el juego
+     scrollearía de lado, y eso no pasa nunca.
+
+     EL PICO ES LO QUE LO HACE UN GLOBO. Va pegado al centro del disparador
+     —aunque la caja se haya corrido para no salirse— y de ahí NACE la
+     animación: el `transform-origin` es el pico, no el centro de la caja, que
+     es la diferencia entre «algo apareció» y «esto lo abrió ese botón». Misma
+     idea que el estallido del choque de puños, que nace del punto de contacto.
+     ---------------------------------------------------------------------- */
+
+  var globoAbierto = null;
+
+  function cerrarGlobo() {
+    if (!globoAbierto) return;
+    var g = globoAbierto;
+    globoAbierto = null;
+    if (g.disparador) {
+      g.disparador.setAttribute('aria-expanded', 'false');
+      /* El foco vuelve a quien lo abrió: si no, se queda en el aire y el
+         siguiente tabulador empieza desde el principio de la pantalla. */
+      if (document.activeElement === g.nodo || g.nodo.contains(document.activeElement)) {
+        g.disparador.focus();
+      }
+    }
+    g.nodo.dataset.cerrando = '1';
+    var fuera = function () { if (g.nodo.parentNode) g.nodo.parentNode.removeChild(g.nodo); };
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) fuera();
+    else setTimeout(fuera, 160);
+    window.removeEventListener('resize', g.recolocar);
+  }
+
+  /** Abre un globo colgado de `disparador` con `html` dentro. */
+  function abrirGlobo(disparador, html, etiqueta) {
+    var marco = document.querySelector('.marco');
+    if (!marco || !disparador) return;
+    /* Tocar el mismo signo lo cierra: es un interruptor, no un botón de abrir. */
+    var eraEste = globoAbierto && globoAbierto.disparador === disparador;
+    cerrarGlobo();
+    if (eraEste) return;
+
+    var nodo = document.createElement('div');
+    nodo.className = 'globo';
+    nodo.setAttribute('role', 'dialog');
+    nodo.setAttribute('aria-label', etiqueta || 'Información');
+    nodo.tabIndex = -1;
+    nodo.innerHTML =
+      '<div class="globo__caja">' + html + '</div>' +
+      '<span class="globo__pico" aria-hidden="true"></span>';
+    marco.appendChild(nodo);
+
+    var recolocar = function () {
+      var m = marco.getBoundingClientRect();
+      var d = disparador.getBoundingClientRect();
+      /* Todo en coordenadas DEL MARCO. */
+      var dIzq = d.left - m.left, dArriba = d.top - m.top;
+      var centroD = dIzq + d.width / 2;
+      var AIRE = 12;          /* lo que respira contra el borde del marco */
+      var PICO = 10;          /* cuánto sobresale el pico */
+
+      var ancho = Math.min(320, m.width - AIRE * 2);
+      nodo.style.width = ancho + 'px';
+      var alto = nodo.offsetHeight;
+
+      /* ARRIBA SI CABE, y si no abajo. Se mide contra el alto de verdad del
+         globo, no contra un número inventado: un texto largo cabe o no cabe
+         según lo que ocupe, no según lo que ocupara el día que se escribió. */
+      var huecoArriba = dArriba - AIRE;
+      var huecoAbajo = m.height - (dArriba + d.height) - AIRE;
+      var arriba = huecoArriba >= alto + PICO || huecoArriba >= huecoAbajo;
+
+      var y = arriba ? dArriba - alto - PICO : dArriba + d.height + PICO;
+      y = Math.max(AIRE, Math.min(y, m.height - alto - AIRE));
+
+      var x = centroD - ancho / 2;
+      x = Math.max(AIRE, Math.min(x, m.width - ancho - AIRE));
+
+      nodo.style.left = Math.round(x) + 'px';
+      nodo.style.top = Math.round(y) + 'px';
+      nodo.dataset.lado = arriba ? 'arriba' : 'abajo';
+
+      /* EL PICO APUNTA AL BOTÓN AUNQUE LA CAJA SE HAYA CORRIDO. Se acota para
+         que no se salga por las esquinas redondeadas, donde dejaría de leerse
+         como un pico y parecería un defecto. */
+      var px = Math.max(20, Math.min(centroD - x, ancho - 20));
+      nodo.style.setProperty('--pico-x', Math.round(px) + 'px');
+      /* Y de ahí nace la animación. */
+      nodo.style.transformOrigin = Math.round(px) + 'px ' + (arriba ? '100%' : '0');
+    };
+
+    recolocar();
+    /* Se marca abierto DESPUÉS de colocarlo: la animación tiene que arrancar
+       desde su sitio, o se ve viajar desde la esquina.
+       ⚠️ Y SE MARCA A MANO, NO EN `requestAnimationFrame`. Con rAF el globo se
+       quedó a medio aparecer: ese callback NO CORRE si la pestaña no está
+       pintando —otra ventana delante, el móvil con la pantalla apagada— y el
+       globo se queda invisible hasta que algo obligue a repintar. Lo único que
+       hacía falta era que el navegador hubiera calculado el estado inicial
+       antes de cambiarlo, y eso ya lo forzó `recolocar()` al leer
+       `offsetHeight`: leer una medida vacía el lote de estilos pendientes. */
+    void nodo.offsetHeight;
+    nodo.dataset.abierto = '1';
+    disparador.setAttribute('aria-expanded', 'true');
+    nodo.focus();
+
+    globoAbierto = { nodo: nodo, disparador: disparador, recolocar: recolocar };
+    window.addEventListener('resize', recolocar);
+  }
+
+  /* Se cierra tocando fuera y con Escape. El clic de dentro no cuenta —hay
+     enlaces ahí— y el del propio disparador tampoco, que ya lo alterna él. */
+  document.addEventListener('pointerdown', function (e) {
+    if (!globoAbierto) return;
+    if (globoAbierto.nodo.contains(e.target)) return;
+    if (globoAbierto.disparador.contains(e.target)) return;
+    cerrarGlobo();
+  }, true);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && globoAbierto) { e.stopPropagation(); cerrarGlobo(); }
+  }, true);
+
+  window.ATWI.globo = { abrir: abrirGlobo, cerrar: cerrarGlobo };
+
+  /* ======================================================================
      Pintado y eventos
      ====================================================================== */
   function pintar(nombre) {
@@ -3261,6 +3413,22 @@
 
     var expli = e.target.closest('[data-explicar]');
     if (expli) { abrirExplicar(expli.dataset.explicar); return; }
+
+    /* Los globos. Hoy solo hay uno —el descargo de IA de la portada—; la tabla
+       existe para que añadir el siguiente sea una fila y no un `if` más. */
+    var glo = e.target.closest('[data-globo]');
+    if (glo) {
+      var GLOBOS = {
+        descargo: {
+          eti: 'Qué hace la IA en ATWI',
+          html: '<p class="globo__titulo">Esto lo juega una IA</p>' +
+                '<p class="globo__texto">' + DESCARGO + '</p>',
+        },
+      };
+      var g = GLOBOS[glo.dataset.globo];
+      if (g) abrirGlobo(glo, g.html, g.eti);
+      return;
+    }
 
     /* Empezar por el modo: se guarda y se va a buscar tema con él puesto. */
     var crear = e.target.closest('[data-crear]');

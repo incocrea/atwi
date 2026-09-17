@@ -4151,3 +4151,85 @@ body.app {
 }
 
 /* La peana de la mesa comparte regla con la del modo: ver `.carta-modo__base`. */
+
+/* --- EL GLOBO: la explicación sale del signo que la pide ---------------------
+   Primera prueba, pedida por el titular (2026-09-17), con el aviso de IA de la
+   portada. Lo coloca `ATWI.globo` midiendo contra el MARCO; aquí está solo cómo
+   se ve y cómo entra.
+
+   VA DENTRO DEL MARCO Y EN ABSOLUTO, no fijo al viewport: en escritorio el
+   juego se dibuja dentro de un teléfono, y un `fixed` se habría anclado a la
+   ventana del navegador —o sea, fuera del teléfono—. */
+.globo {
+  position: absolute;
+  z-index: 60;
+  opacity: 0;
+  transform: scale(.72);
+  transition: opacity 140ms var(--suave), transform var(--dur-media) var(--suave);
+}
+/* NACE DEL PICO Y SE PASA DE TAMAÑO ANTES DE ASENTAR. El rebote es de 1,04 y no
+   de 1,3 como el del encuentro: aquí no celebra nada, solo dice «me abriste
+   tú». `transform-origin` lo pone el JS en el pico. */
+.globo[data-abierto] {
+  opacity: 1;
+  transform: scale(1);
+  animation: globo-entra var(--dur-media) var(--suave);
+}
+.globo[data-cerrando] { opacity: 0; transform: scale(.82); transition-duration: 120ms; }
+@keyframes globo-entra {
+  0%   { transform: scale(.72); }
+  62%  { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .globo { transform: none; transition: opacity 120ms linear; }
+  .globo[data-abierto] { transform: none; animation: none; }
+  .globo[data-cerrando] { transform: none; }
+}
+
+.globo__caja {
+  position: relative;
+  z-index: 1;
+  background: var(--blanco);
+  border-radius: var(--radio-tarjeta);
+  padding: var(--e-4);
+  box-shadow: var(--sombra-3);
+  text-align: left;
+}
+.globo__titulo { font-family: var(--display); font-weight: 800; font-size: 1rem; margin: 0 0 6px; }
+.globo__texto { font-size: .8125rem; line-height: 1.5; color: var(--tinta-suave); margin: 0; }
+
+/* EL PICO ES UN CUADRADO GIRADO, no un triángulo de bordes: así hereda el mismo
+   blanco y la misma sombra que la caja y no hay dos colores que mantener
+   sincronizados. Queda DEBAJO de la caja (`z-index`), que le tapa la mitad de
+   dentro y lo deja como un pico limpio. */
+.globo__pico {
+  position: absolute;
+  left: var(--pico-x, 50%);
+  width: 18px; height: 18px;
+  margin-left: -9px;
+  background: var(--blanco);
+  border-radius: 3px;
+  transform: rotate(45deg);
+  box-shadow: var(--sombra-2);
+}
+.globo[data-lado="arriba"] .globo__pico { bottom: -6px; }
+.globo[data-lado="abajo"]  .globo__pico { top: -6px; }
+
+/* --- El signo suelto que lo abre --------------------------------------------
+   Centrado en su propio renglón bajo las cartas. Es más grande que el de las
+   cartas (56 contra 48) porque allí acompaña a un rótulo dibujado y aquí está
+   solo: al mismo tamaño se leería como un resto de la carta de arriba. */
+.ayuda-suelta { display: flex; justify-content: center; margin-top: var(--e-5); }
+.ayuda-suelta__signo {
+  border: 0; background: none; padding: 4px; cursor: pointer; line-height: 0;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.ayuda-suelta__signo .ico { width: 56px; height: 56px; }
+.ayuda-suelta__signo:active { transform: scale(.9); }
+/* Puesto, se queda un punto más grande: el globo está abierto por él. */
+.ayuda-suelta__signo[aria-expanded="true"] { transform: scale(1.06); }
+@media (prefers-reduced-motion: reduce) {
+  .ayuda-suelta__signo, .ayuda-suelta__signo:active,
+  .ayuda-suelta__signo[aria-expanded="true"] { transition: none; transform: none; }
+}

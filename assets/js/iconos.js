@@ -96,7 +96,13 @@ window.ATWI = window.ATWI || {};
                     'debate', 'negociacion', 'micro', 'mas',
                     'energia', 'buzon',
                     'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
-                    'ayuda-coral', 'ayuda-menta', 'ayuda-sol',
+                    /* EL MORADO SE PUBLICA DESDE EL 2026-09-17, y aquí decía
+                       que no podía: «es de un modo que aún no se ha anunciado».
+                       Eso se cayó solo cuando QuiénGane resultó ser AZUL —lo
+                       dice su peana, medida— y su bombilla se quedó dorada. El
+                       morado es el lavanda de la marca, o sea el color de la
+                       portada, y ahí es donde se usa: el aviso de IA. */
+                    'ayuda-coral', 'ayuda-menta', 'ayuda-sol', 'ayuda-morado',
                     /* La tercera tanda (2026-09-16): los ocho que pedía la
                        auditoría. `parar`, `pausa` y `play` salen del cortador
                        nivelados entre sí porque son tres estados del MISMO
