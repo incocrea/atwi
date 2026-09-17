@@ -19,6 +19,26 @@
   var portada = document.getElementById('visor-portada');
   if (!boton || !caja) return;
 
+  /* EL MOVIL DE REFERENCIA, y es el mismo con el que se prueba el juego entero
+     (CLAUDE.md: «el juego se prueba en vista movil, 375x812»). El iframe corre
+     SIEMPRE a este tamano y lo que cambia es el `scale`: asi lo que se ve es el
+     telefono de verdad, reducido, y no un layout distinto apretado en 300 px.
+     El juego no es fluido —es una columna con las figuras y las fichas medidas
+     en pixeles— asi que darle un viewport mas estrecho no lo encoge: lo rompe. */
+  var ANCHO_MOVIL = 375;
+
+  function escalar() {
+    /* `clientWidth` y no `getBoundingClientRect().width`: el segundo devuelve el
+       ancho YA escalado si algun dia el propio marco lleva transform, y entonces
+       el factor se realimentaria. */
+    var ancho = caja.clientWidth;
+    if (ancho) caja.style.setProperty('--escala', ancho / ANCHO_MOVIL);
+  }
+
+  escalar();
+  if (window.ResizeObserver) new ResizeObserver(escalar).observe(caja);
+  else window.addEventListener('resize', escalar);
+
   boton.addEventListener('click', function () {
     boton.disabled = true;
     boton.textContent = 'Cargando…';
