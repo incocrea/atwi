@@ -300,7 +300,10 @@
          explicación de cada modo vivía en otra tarjeta, de adorno, que nadie
          relacionaba con el botón. Ahora es una sola cosa: la tarjeta explica y
          la tarjeta empieza. */
-      '<h2 class="titulo-centrado">Selecciona el modo</h2>' +
+      /* SIN TÍTULO ENCIMA (titular, 2026-09-16). Decía «Selecciona el modo» y
+         es lo único que hay en esa parte de la portada: tres cartas grandes,
+         cada una con su nombre dibujado y un botón de ayuda. Un rótulo que
+         describe lo que ya se ve gasta el alto que necesitan las cartas. */
       '<div class="cartas-modo">' +
         cartaModo('debate') +
         cartaModo('negociacion') +

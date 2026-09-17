@@ -542,9 +542,15 @@ body.app {
    Va centrada con `left: 50%` y `translateX` para que el recorte sea igual por
    los dos lados: anclándola a un lado, el dibujo se descentraría. */
 .carta-modo__base, .publico__base {
-  position: absolute; left: 50%; bottom: -2px; z-index: 0;
+  position: absolute; left: 50%; z-index: 0;
   width: 118%; transform: translateX(-50%);
   height: auto; display: block; pointer-events: none;
+  /* SE HUNDE POR ABAJO (titular, 2026-09-16, con el mockup al lado). A ras del
+     suelo la pieza se ve entera —70 px de los 132 de la carta, más de la
+     mitad— y pesa tanto como lo que hay que leer. Hundida, asoma solo la parte
+     alta de la onda y sus adornos, que es donde está el dibujo; lo que se
+     esconde es la franja lisa de abajo, que no aporta nada. */
+  bottom: -20px;
 }
 .carta-modo__rotulo, .carta-modo__gancho,
 .publico__alto, .publico__texto { position: relative; z-index: 1; }
