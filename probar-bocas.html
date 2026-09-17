@@ -883,7 +883,8 @@ function probarAsi(q) {
   }).then(function () {
     marcarSonando('probar-' + q);
     vDecir(q + ' con ' + corto(v.voz) +
-           (esHD(v.voz) ? ', temperatura ' + temperaturaDe(v).toFixed(2)
+           (esHD(v.voz) ? ', temperatura ' + temperaturaDe(v).toFixed(2) +
+                          (v.ritmo ? ', ritmo ' + (v.ritmo >= 0 ? '+' : '') + v.ritmo + '%' : '')
                         : ', tono ' + v.tono + '% y ritmo ' + v.ritmo + '%' +
                           (v.estilo ? ', estilo ' + v.estilo : '')) +
            ' · ' + (ultima.nueva ? 'generada' : 'reusada, sin costo') +
@@ -974,9 +975,17 @@ function pintarVoces() {
           ? '<label>temperatura <input type="range" data-temperatura="' + q + '" value="' +
               temperaturaDe(elegida) + '" min="0.3" max="1" step="0.05" style="width:150px">' +
               '<output data-eco="temperatura-' + q + '">' + temperaturaDe(elegida).toFixed(2) + '</output></label>' +
+            /* MEDIDO EN JORGE HD (2026-09-17): el ritmo SÍ lo obedece (+30 % → 9,1
+               síl/s desde 7,2) y el tono LO IGNORA (114 Hz con +30 % y con −20 %).
+               Por eso hay ritmo y no hay tono. El brillo nunca fue un control:
+               es una medida del casting. */
+            '<label>ritmo <input type="range" data-ritmo="' + q + '" value="' +
+              elegida.ritmo + '" min="-25" max="40" step="1" style="width:150px">' +
+              '<output data-eco="ritmo-' + q + '">' + (elegida.ritmo >= 0 ? '+' : '') +
+              elegida.ritmo + '%</output></label>' +
             '<span class="chico">✦ voz HD: la emoción, las pausas y el énfasis los pone la voz ' +
-            'leyendo el texto. Lo único que se ajusta es la temperatura: baja, más estable; ' +
-            'alta, más expresiva.</span>'
+            'leyendo el texto. Se ajustan la temperatura (baja, más estable; alta, más expresiva) ' +
+            'y el ritmo. El tono no: medido, la voz lo ignora.</span>'
           : '<label>tono <input type="range" data-tono="' + q + '" value="' +
               elegida.tono + '" min="-30" max="60" step="1" style="width:150px">' +
               '<output data-eco="tono-' + q + '">' + (elegida.tono >= 0 ? '+' : '') +
@@ -1069,7 +1078,7 @@ function elegirVoz(q, nombreVoz) {
   var v = mio(q);
   v.voz = nombreVoz;
   v.tono = (esHD(nombreVoz) || !c) ? 0 : c.altono;   /* en HD el tono no existe */
-  v.ritmo = 6;
+  v.ritmo = esHD(nombreVoz) ? 0 : 6;                  /* HD arranca a su ritmo natural */
   v.estilo = null;                 /* el estilo es de la voz anterior, no de esta */
   v.temperatura = esHD(nombreVoz) ? 1 : null;   /* HD arranca donde Azure: 1.0 */
   guardarVoces();
