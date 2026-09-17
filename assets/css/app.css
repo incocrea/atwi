@@ -498,24 +498,25 @@ body.app {
   width: 100%; min-height: var(--alto-carta); padding: 12px 58px 12px 8px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
-  box-shadow: var(--sombra-2);
+  /* SIN FONDO Y CON HALO (titular, 2026-09-16). La carta deja de pintarse y lo
+     que la separa del fondo de la pantalla es la sombra, que pasa de proyectada
+     —`--sombra-2`, 6 px abajo y 20 de difuminado— a un halo pegado al canto:
+     `spread` de 5 px reparte mancha por los CUATRO lados y el blur corto la deja
+     ceñida en vez de desparramada. Lo que sigue diciendo de qué modo es cada
+     carta son el rótulo dibujado y su peana, que ya llevan el color. */
+  background: none;
+  box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10);
   cursor: pointer; transition: transform var(--dur-corta) var(--suave);
 }
 .carta-modo:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .carta-modo:active { transform: none; } }
 
-/* El fondo es el tinte del modo: el color dice cuál es cuál antes de leer
-   nada. En degradado suave y no plano porque encima va el rótulo dibujado, que
-   ya es saturado; a plena fuerza competirían. */
-.carta-modo--debate {
-  background: linear-gradient(120deg, var(--debate-tinte), #FFF8F4 82%);
-}
-.carta-modo--negociacion {
-  background: linear-gradient(120deg, var(--negociacion-tinte), #F4FCF9 82%);
-}
-.carta-modo--competencia {
-  background: linear-gradient(120deg, var(--competencia-tinte), #F4FAFE 82%);
-}
+/* ⚠️ AQUÍ VIVÍA EL TINTE DE CADA MODO —`linear-gradient` del color del modo a
+   casi blanco, uno por modificador— y se quitó con el fondo de arriba. Se deja
+   dicho porque el orden importa: estas tres reglas van DESPUÉS de `.carta-modo`
+   y tienen su misma especificidad, así que cualquiera que vuelva a escribir
+   `background` aquí le borra el `none` de la base sin dar ningún error y sin
+   que nadie sepa por qué la carta volvió a pintarse. */
 
 /* El rótulo dibujado, a su ancho de columna. Se le fija el ANCHO y no el alto:
    los tres tienen proporciones distintas y fijando el alto el más ancho se
@@ -4036,7 +4037,13 @@ body.app {
   min-height: var(--alto-carta); padding: var(--e-3);
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
-  box-shadow: var(--sombra-2); cursor: pointer;
+  /* Lo mismo que en `.carta-modo`, y por lo mismo: las seis cartas son
+     hermanas y si una se despinta y la otra no, dejan de leerse como el mismo
+     objeto. Aquí el color de la mesa sigue vivo en los chips y en las tarjetas
+     de tema —`--mesa-fuerte` y `--mesa-claro`—: lo que se va es solo el relleno
+     de la carta. */
+  background: none;
+  box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10); cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
 }
 .publico:active { transform: scale(.985); }
@@ -4059,7 +4066,12 @@ body.app {
 .publico--pareja,  #v-catalogo[data-paso="pareja"]  { --mesa: #FFE4EC; --mesa-claro: #FFF6F9; --mesa-fuerte: #E4658F; }
 .publico--amigos,  #v-catalogo[data-paso="amigos"]  { --mesa: #EDE6FF; --mesa-claro: #F8F5FF; --mesa-fuerte: #9B58C6; }
 .publico--familia, #v-catalogo[data-paso="familia"] { --mesa: #DDEEFF; --mesa-claro: #F4FAFF; --mesa-fuerte: #3D86DC; }
-.publico { background: linear-gradient(175deg, var(--mesa), var(--mesa-claro) 72%); }
+/* ⚠️ Y AQUÍ ESTABA EL RELLENO DE LA CARTA DE MESA —`linear-gradient(175deg,
+   var(--mesa), var(--mesa-claro) 72%)`—, que se quitó con el de las de modo.
+   Esta línea iba DESPUÉS de `.publico`, así que era ella y no la clase base
+   quien decidía el fondo: volver a escribirla aquí anula el `background: none`
+   de arriba sin dar error. Los tres tonos de `--mesa` siguen en uso más abajo,
+   en las tarjetas de tema y en los chips. */
 
 /* Las tarjetas de tema y la de «Mis propios temas» toman el tinte de su mesa.
    El de respaldo es el blanco de siempre: fuera del catálogo —y en la pantalla
