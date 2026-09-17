@@ -94,7 +94,13 @@ window.ATWI = window.ATWI || {};
      `arte/iconos/sin-usar/` por si el modo que falta los pide. */
   var ILUSTRADOS = ['jugar', 'catalogo', 'historial', 'perfil',
                     'debate', 'negociacion', 'micro', 'mas',
-                    'energia', 'buzon',
+                    /* `energia` SE FUE el 2026-09-17: el juego pasa a contar
+                       VIDAS y el rayo no lo pinta nadie. El dibujo se guarda en
+                       `arte/iconos/sin-usar/` por si vuelve.
+                       Y `corazon` ENTRA: hasta hoy era el único aviso del buzón
+                       que seguía siendo un trazo, así que además de las vidas
+                       arregla eso. */
+                    'corazon', 'buzon',
                     'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
                     /* EL MORADO SE PUBLICA DESDE EL 2026-09-17, y aquí decía
                        que no podía: «es de un modo que aún no se ha anunciado».
