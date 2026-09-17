@@ -102,7 +102,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '7b361c3',
+  version: 'b35b5cc',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -358,8 +358,12 @@ window.ATWI.config = {
        que un veredicto se lea como burla.
        La clave la manda el árbitro; `parejo` es la única que celebra. */
     empate: {
-      parejo: 'Quedaron muy parejos: la diferencia era demasiado chica para separarlos. ' +
-              'El empate es un resultado, no un fallo.',
+      /* LOS 8 PUNTOS LOS DICE LA PANTALLA, NO EL JUEZ (v2.3, S16): la regla de
+         los 8 la aplica el codigo con los totales, asi que el modelo escribe la
+         justificacion sin saber si al final hubo ganador o empate. La frase
+         «no llego a 8» que el prompt le pedia no podia escribirla; va aqui. */
+      parejo: 'Quedaron muy parejos: la diferencia no llegó a los 8 puntos que hacen falta ' +
+              'para dar un ganador. El empate es un resultado, no un fallo.',
       seDioVuelta: 'El juez leyó la ronda dos veces, y cada vez le dio el punto a uno ' +
                    'distinto. Cuando eso pasa, el resultado es empate: separarlos sería ' +
                    'fiarse de por dónde empezó a leer.',
