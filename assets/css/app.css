@@ -4279,7 +4279,10 @@ body.app {
      asoma por fuera a propósito y se quedaba con el borde izquierdo comido. Lo
      que hay que recortar es solo la onda, y para eso está `.globo__recorte`. */
   background: var(--globo-tinte);
-  border: 3px solid var(--globo-borde);   /* 2 antes: el titular lo pidió más grueso */
+  /* SIN BORDE (titular, 2026-09-17): lo que separa el globo del fondo es el
+     CRISTAL, no una línea. Con el velo puesto, el borde era una segunda cosa
+     haciendo el mismo trabajo, y además obligaba a mantener un color por tinte
+     y a soldarle el pico. `--globo-borde` sigue vivo: es el color del aspa. */
   border-radius: var(--radio-modal);
   /* El hueco de arriba a la izquierda es el sitio de la bombilla, y el de abajo
      el de la onda: si no se reservan, el texto se mete debajo de las dos. */
@@ -4302,12 +4305,10 @@ body.app {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  /* ⚠️ EL RADIO ES EL DE DENTRO, NO EL HEREDADO. `inset: 0` coloca esto en la
-     caja INTERIOR —el borde queda fuera—, así que con el radio exterior (28) la
-     curva recortaba de más y dejaba ver una franja del fondo pegada al borde:
-     por ahí se colaba el tinte claro bajo la onda y el pico parecía una pieza
-     suelta. El radio de dentro es el de fuera menos el grosor del borde. */
-  border-radius: calc(var(--radio-modal) - 3px);
+  /* El radio es el mismo de la caja: sin borde, `inset: 0` ya coincide con
+     ella. Cuando tenía borde, el recorte caía en la caja INTERIOR y heredar el
+     radio exterior dejaba ver una franja del fondo pegada al canto. */
+  border-radius: inherit;
   pointer-events: none;
 }
 /* Y EL PIE SE REFUERZA, porque el PNG de la peana se DESVANECE en su última
@@ -4334,26 +4335,12 @@ body.app {
   filter: drop-shadow(0 3px 6px rgba(46, 42, 63, .18));
 }
 
-.globo__cerrar {
-  position: absolute;
-  top: 8px; right: 8px;
-  z-index: 3;
-  display: grid; place-items: center;
-  width: 32px; height: 32px;
-  border: 0; border-radius: var(--radio-pastilla);
-  background: none; color: var(--globo-borde);
-  cursor: pointer;
-  transition: color var(--dur-corta) var(--suave), transform var(--dur-corta) var(--suave);
-}
-.globo__cerrar:hover { color: var(--globo-fuerte); }
-.globo__cerrar:active { transform: scale(.88); }
-
 .globo__dicho { position: relative; z-index: 2; }
 .globo__titulo {
   font-family: var(--display); font-weight: 800;
   font-size: 1.0625rem; line-height: 1.2;
   color: var(--globo-fuerte);
-  margin: 0 0 6px; padding-right: 28px;   /* el hueco del aspa */
+  margin: 0 0 6px;
 }
 .globo__texto { font-size: .8125rem; line-height: 1.5; color: var(--tinta); margin: 0; }
 /* EL BOTÓN DE JUGAR, en los globos de modo. Va por encima de la onda —que es
@@ -4384,15 +4371,11 @@ body.app {
   width: 118%; transform: translateX(-50%);
 }
 
-/* EL PICO VA SOLDADO, NO PEGADO (titular, 2026-09-17). Antes era un cuadrado
-   con borde en los cuatro lados y la caja lo tapaba por la mitad: el borde de
-   la CAJA seguía pasando por delante y dejaba una raya que cortaba el pico del
-   globo, como dos piezas juntas en vez de una.
-   LO QUE LO SUELDA SON DOS COSAS: el pico se pinta POR ENCIMA de la caja
-   —`z-index` 2 contra 1—, así que su fondo borra el tramo de borde que
-   estorbaba; y lleva borde SOLO EN LOS DOS LADOS DE FUERA, que son los que
-   continúan la línea del globo. Los de dentro no existen, así que no queda
-   nada que dibuje la costura. */
+/* EL PICO VA SOLDADO, NO PEGADO. Es la misma masa de color que la caja y se
+   pinta POR ENCIMA de ella —`z-index` 2 contra 1—, así que no hay ninguna línea
+   que los separe: son una pieza. Cuando el globo llevaba borde hacía falta
+   además darle borde a los dos lados de fuera para que la línea le diera la
+   vuelta; sin borde eso sobra. */
 .globo__pico {
   position: absolute;
   left: var(--pico-x, 50%);
@@ -4425,8 +4408,6 @@ body.app {
 }
 .globo[data-lado="abajo"] .globo__pico {
   top: -11px;
-  border-left: 3px solid var(--globo-borde);
-  border-top: 3px solid var(--globo-borde);
   border-radius: 5px 0 0 0;
 }
 

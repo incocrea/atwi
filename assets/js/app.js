@@ -3264,7 +3264,10 @@
        —`main.vistas` tiene `z-index: 1`, o sea que CREA UN CONTEXTO DE
        APILAMIENTO y encierra dentro a todo lo suyo: un `z-index: 61` en el
        botón solo compite ahí dentro, nunca contra el velo—. Con el signo
-       dentro del globo, el globo entero es nítido y el problema no existe. */
+       dentro del globo, el globo entero es nítido y el problema no existe.
+       SIN ASPA DE CERRAR (titular, 2026-09-17): se cierra tocando fuera, con
+       Escape o tocando otra vez el signo. Un aspa en una pieza que se va sola
+       al primer toque en cualquier sitio es un botón para lo que ya pasa. */
     nodo.innerHTML =
       '<div class="globo__caja">' +
         /* LA ONDA SE RECORTA AQUÍ DENTRO Y NO EN LA CAJA (titular, 2026-09-17).
@@ -3276,8 +3279,6 @@
           '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="">' +
         '</span>' +
         window.ATWI.icono(t.signo, 82).replace('class="ico"', 'class="ico globo__signo"') +
-        '<button class="globo__cerrar" data-cerrar-globo aria-label="Cerrar">' +
-          iconoSVG('cerrar', 18) + '</button>' +
         '<div class="globo__dicho">' +
           (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
           '<p class="globo__texto">' + esc(dicho.texto || '') + '</p>' +
@@ -3295,7 +3296,6 @@
       '</div>' +
       '<span class="globo__pico" aria-hidden="true"></span>';
     marco.appendChild(nodo);
-    nodo.querySelector('[data-cerrar-globo]').addEventListener('click', cerrarGlobo);
 
     var recolocar = function () {
       var m = marco.getBoundingClientRect();
