@@ -4228,7 +4228,9 @@ body.app {
 .globo__caja {
   position: relative;
   z-index: 1;
-  overflow: hidden;                 /* recorta la onda del pie por el radio */
+  /* SIN `overflow: hidden` (titular, 2026-09-17): recortaba la BOMBILLA, que
+     asoma por fuera a propósito y se quedaba con el borde izquierdo comido. Lo
+     que hay que recortar es solo la onda, y para eso está `.globo__recorte`. */
   background: var(--globo-tinte);
   border: 2px solid var(--globo-borde);
   border-radius: var(--radio-modal);
@@ -4237,7 +4239,7 @@ body.app {
   /* EL HUECO DE ABAJO ES EL ALTO DE LA ONDA, MEDIDO: con 40 px el texto se le
      metía encima 9 px —la onda ocupa 57 a este ancho— y la última línea se leía
      sobre el dibujo. */
-  padding: var(--e-4) var(--e-4) 58px 74px;
+  padding: var(--e-4) var(--e-4) 58px 82px;
   box-shadow: var(--sombra-3);
   text-align: left;
 }
@@ -4246,13 +4248,24 @@ body.app {
 .globo[data-tinte="competencia"] { --globo-tinte: var(--competencia-tinte); --globo-borde: #9BD1F5; --globo-fuerte: var(--competencia-oscuro); }
 .globo[data-tinte="lavanda"]     { --globo-tinte: var(--lavanda-tinte);     --globo-borde: #C3B8F5; --globo-fuerte: var(--lavanda-oscuro); }
 
+/* El recorte es SOLO para la onda: hereda el radio de la caja y se queda al
+   fondo, así que la onda se corta por la curva y nada más se recorta. */
+.globo__recorte {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
 /* LA BOMBILLA ASOMA POR EL BORDE, que es lo que lo convierte en una pegatina
    pegada al globo y no en un icono metido dentro de una caja. Va sobre el pico
    y el borde, así que necesita quedar por encima de los dos. */
 .globo__signo {
   position: absolute;
-  top: -10px; left: -14px;
-  width: 66px; height: 66px;
+  top: -16px; left: -18px;
+  width: 82px; height: 82px;   /* 66 antes: el titular la pidió mayor */
   z-index: 3;
   filter: drop-shadow(0 3px 6px rgba(46, 42, 63, .18));
 }
@@ -4279,6 +4292,16 @@ body.app {
   margin: 0 0 6px; padding-right: 28px;   /* el hueco del aspa */
 }
 .globo__texto { font-size: .8125rem; line-height: 1.5; color: var(--tinta); margin: 0; }
+/* EL BOTÓN DE JUGAR, en los globos de modo. Va por encima de la onda —que es
+   justo donde cae— y con el color del modo, declarando `--cara` y nada más,
+   como manda la regla de los botones: escribir `background` le borraría el
+   relieve. */
+.globo__jugar {
+  position: relative;
+  z-index: 2;
+  margin-top: var(--e-4);
+}
+
 .globo__clave {
   font-size: .75rem; line-height: 1.45; font-style: italic;
   color: var(--globo-fuerte); margin: 8px 0 0;
@@ -4293,8 +4316,6 @@ body.app {
   position: absolute;
   left: 50%; bottom: -8px;
   width: 118%; transform: translateX(-50%);
-  z-index: 0;
-  pointer-events: none;
 }
 
 /* EL PICO HEREDA EL FONDO Y EL BORDE DE LA CAJA. Es un cuadrado girado 45°, no

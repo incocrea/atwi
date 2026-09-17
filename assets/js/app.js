@@ -3240,11 +3240,11 @@
      la marca. Las peanas son las MISMAS piezas de las cartas —medidas: amigos
      es lavanda, debate coral, negociacion menta, competencia azul— así que el
      globo y la carta de la que sale son la misma familia sin dibujar nada
-     nuevo. QuienGane lleva bombilla DORADA porque azul no hay. */
+     nuevo. */
   var TINTES = {
     debate:      { signo: 'ayuda-coral',  peana: 'base-debate' },
     negociacion: { signo: 'ayuda-menta',  peana: 'base-negociacion' },
-    competencia: { signo: 'ayuda-sol',    peana: 'base-competencia' },
+    competencia: { signo: 'ayuda-azul',   peana: 'base-competencia' },
     lavanda:     { signo: 'ayuda-morado', peana: 'base-amigos' },
   };
 
@@ -3287,7 +3287,15 @@
        dentro del globo, el globo entero es nítido y el problema no existe. */
     nodo.innerHTML =
       '<div class="globo__caja">' +
-        window.ATWI.icono(t.signo, 66).replace('class="ico"', 'class="ico globo__signo"') +
+        /* LA ONDA SE RECORTA AQUÍ DENTRO Y NO EN LA CAJA (titular, 2026-09-17).
+           Con `overflow: hidden` en la caja, lo que se recortaba TAMBIÉN era la
+           bombilla, que asoma por fuera a propósito: le comía el borde
+           izquierdo. Un envoltorio propio recorta la onda con el mismo radio y
+           deja la caja visible. */
+        '<span class="globo__recorte" aria-hidden="true">' +
+          '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="">' +
+        '</span>' +
+        window.ATWI.icono(t.signo, 82).replace('class="ico"', 'class="ico globo__signo"') +
         '<button class="globo__cerrar" data-cerrar-globo aria-label="Cerrar">' +
           iconoSVG('cerrar', 18) + '</button>' +
         '<div class="globo__dicho">' +
@@ -3297,8 +3305,13 @@
              el modal —leída de corrido se perdía entre lo demás, y es lo único
              que hay que llevarse—. */
           (dicho.clave ? '<p class="globo__clave">«' + esc(dicho.clave) + '»</p>' : '') +
+          /* EL GLOBO DE UN MODO LLEVA SU BOTÓN (titular, 2026-09-17): quien lee
+             de qué va el modo ya está decidiendo, y hacerle cerrar el globo y
+             buscar la carta otra vez es un paso de más. Usa `data-crear`, el
+             mismo camino que la carta. */
+          (o.jugar ? '<button class="boton boton--bloque globo__jugar boton--' + o.jugar +
+                     '" data-crear="' + o.jugar + '">Jugar ahora</button>' : '') +
         '</div>' +
-        '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="" aria-hidden="true">' +
       '</div>' +
       '<span class="globo__pico" aria-hidden="true"></span>';
     marco.appendChild(nodo);
@@ -3327,8 +3340,11 @@
       var y = arriba ? dArriba - alto - PICO : dArriba + d.height + PICO;
       y = Math.max(AIRE, Math.min(y, m.height - alto - AIRE));
 
-      var x = centroD - ancho / 2;
-      x = Math.max(AIRE, Math.min(x, m.width - ancho - AIRE));
+      /* CENTRADO EN LA PANTALLA (titular, 2026-09-17), no colgado del signo.
+         Colgado, un signo de la esquina dejaba el globo pegado a un lado y la
+         portada se veía descuadrada; centrado siempre cae donde la vista ya
+         está mirando. Lo que sigue apuntando al signo es el PICO. */
+      var x = Math.round((m.width - ancho) / 2);
 
       nodo.style.left = Math.round(x) + 'px';
       nodo.style.top = Math.round(y) + 'px';
@@ -3479,7 +3495,8 @@
       var mo = cfg.modos[expli.dataset.explicar];
       if (mo) {
         abrirGlobo(expli, { titulo: mo.nombre || 'Cómo se juega', texto: mo.que, clave: mo.clave },
-                   { tinte: expli.dataset.explicar, etiqueta: 'Cómo se juega' });
+                   { tinte: expli.dataset.explicar, etiqueta: 'Cómo se juega',
+                     jugar: expli.dataset.explicar });
       }
       return;
     }
@@ -3489,7 +3506,7 @@
     var glo = e.target.closest('[data-globo]');
     if (glo) {
       if (glo.dataset.globo === 'descargo') {
-        abrirGlobo(glo, { titulo: 'Esto lo juega una IA', texto: DESCARGO },
+        abrirGlobo(glo, { titulo: '¡Importante!', texto: DESCARGO },
                    { tinte: 'lavanda', etiqueta: 'Qué hace la IA en ATWI' });
       }
       return;
@@ -3498,6 +3515,9 @@
     /* Empezar por el modo: se guarda y se va a buscar tema con él puesto. */
     var crear = e.target.closest('[data-crear]');
     if (crear) {
+      /* El globo vive fuera de la vista, así que un cambio de pantalla no se lo
+         lleva: hay que cerrarlo a mano o se queda flotando sobre el catálogo. */
+      cerrarGlobo();
       propuesta.modo = crear.dataset.crear;
       propuesta.turnos = cfg.reglas.turnosPorDefecto;
       reiniciarCatalogo();

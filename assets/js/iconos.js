@@ -103,6 +103,9 @@ window.ATWI = window.ATWI || {};
                        morado es el lavanda de la marca, o sea el color de la
                        portada, y ahí es donde se usa: el aviso de IA. */
                     'ayuda-coral', 'ayuda-menta', 'ayuda-sol', 'ayuda-morado',
+                    /* El azul llegó el 2026-09-17, con la quinta columna de la
+                       plancha: QuiénGane deja la dorada y lleva la suya. */
+                    'ayuda-azul',
                     /* La tercera tanda (2026-09-16): los ocho que pedía la
                        auditoría. `parar`, `pausa` y `play` salen del cortador
                        nivelados entre sí porque son tres estados del MISMO

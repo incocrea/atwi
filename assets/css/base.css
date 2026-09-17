@@ -126,6 +126,9 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
 .boton--fantasma:hover { background: var(--crema-hondo); color: var(--tinta); filter: none; }
 .boton--debate { --cara: var(--debate); }
 .boton--negociacion { --cara: var(--negociacion); }
+/* FALTABA, desde que entró el tercer modo: `abrirExplicar` ya pedía
+   `boton--<modo>` para los tres y el de QuiénGane salía sin su color. */
+.boton--competencia { --cara: var(--competencia); }
 /* APAGADO CAMBIA DE COLOR, NO DE FORMA. Aquí se le quitaba el canto entero
    —«un botón en relieve dice púlsame y éste no se puede pulsar»— y el efecto
    era el contrario del buscado: el botón que espera al sorteo arranca apagado
