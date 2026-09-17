@@ -9,17 +9,17 @@
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
 <meta property="og:title" content="ATWI · El juego de debate">
-<meta property="og:description" content="De uno a cinco turnos. Ustedes deciden antes de grabar; despues habla la maquina.">
+<meta property="og:description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 <meta property="og:image" content="assets/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<title>ATWI · El juego de debate para parejas</title>
-<meta name="description" content="De uno a cinco turnos. Ustedes deciden antes de grabar; después habla la máquina.">
+<title>ATWI · El juego de debate para parejas, amigos y familia</title>
+<meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<link rel="stylesheet" href="assets/css/fuentes.css?v=9e57a62">
-<link rel="stylesheet" href="assets/css/tokens.css?v=9e57a62">
-<link rel="stylesheet" href="assets/css/base.css?v=9e57a62">
-<link rel="stylesheet" href="assets/css/landing.css?v=9e57a62">
-<link rel="stylesheet" href="assets/css/modal.css?v=9e57a62">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=61c3b80">
+<link rel="stylesheet" href="assets/css/tokens.css?v=61c3b80">
+<link rel="stylesheet" href="assets/css/base.css?v=61c3b80">
+<link rel="stylesheet" href="assets/css/landing.css?v=61c3b80">
+<link rel="stylesheet" href="assets/css/modal.css?v=61c3b80">
 </head>
 
 <body class="landing">
@@ -33,75 +33,166 @@
 
   <header class="heroe">
     <div>
-      <h1 class="heroe__titular">De uno a cinco turnos.<br>Ustedes <em>deciden</em>.</h1>
+      <h1 class="heroe__titular">Lo que discuten siempre,<br><em>jugado</em> de otra manera.</h1>
       <p class="heroe__entrada">
-        Lo deciden antes de grabar; después habla la máquina. ATWI es un juego de debate
-        para parejas: graban sus turnos de voz sobre algo que vienen discutiendo y una
-        inteligencia artificial devuelve un resultado. Ustedes eligen de qué tipo.
+        Graban por turnos lo que cada quien tiene para decir, y una inteligencia
+        artificial devuelve el resultado. Hay tres maneras de jugarlo: compitiendo por
+        quién argumenta mejor, buscando un acuerdo, o apostando algo y ganándoselo.
       </p>
       <div class="heroe__acciones">
         <a class="boton boton--grande" href="app/">Empezar a jugar</a>
-        <a class="boton boton--suave boton--grande" href="#modos">Ver cómo funciona</a>
+        <a class="boton boton--suave boton--grande boton--punteado" href="#modos">Ver los tres modos</a>
       </div>
       <p class="chico tenue" style="margin-top:var(--e-4)">
-        Gratis para empezar · Sin descargar nada · Diseñado para el móvil
+        Gratis para empezar · Sin descargar nada · Pensado para el móvil
       </p>
     </div>
 
-    <div class="mock" aria-hidden="true">
-      <div class="mock__barra"></div>
-      <div class="tarjeta" style="margin-top:var(--e-3)">
-        <p style="font-family:var(--display);font-weight:800;font-size:.95rem;line-height:1.3">
-          Los platos se lavan justo después de comer
-        </p>
-        <p class="chico suave" style="margin-top:6px">Tareas del hogar · ligera</p>
+    <!-- EL PASE DE PANTALLAS. No son capturas: son las pantallas de verdad
+         rehechas en HTML con los MISMOS dibujos que usa el juego. Una captura
+         envejece el día que algo se mueve y nadie se entera; esto se ve nítido
+         en cualquier pantalla, pesa una décima parte y, si el color de un modo
+         cambia en `tokens.css`, cambia aquí también. -->
+    <figure class="pase">
+      <div class="telefono">
+        <div class="pase__pista" id="pase" tabindex="0" aria-label="Pantallas del juego">
+
+          <!-- 1 · La portada -->
+          <article class="pantalla" data-titulo="Se elige el modo, y la carta es el botón">
+            <div class="pantalla__cabecera">
+              <img src="assets/img/logotipo-48.png" alt="" width="62" height="21">
+              <span class="pantalla__discos"><i></i><i></i><i></i></span>
+            </div>
+            <p class="pantalla__saludo">¡Hola, Sofía!</p>
+            <div class="carta-mini carta-mini--debate">
+              <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Controversia" width="170" height="88" loading="lazy">
+              <span class="carta-mini__que">Defiende tu postura de forma divertida</span>
+              <img class="carta-mini__base" src="assets/img/landing/base-debate.webp" alt="" width="320" height="53" loading="lazy">
+            </div>
+            <div class="carta-mini carta-mini--negociacion">
+              <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Negociación" width="170" height="80" loading="lazy">
+              <span class="carta-mini__que">Dialoga, encuentra acuerdos y avanza</span>
+              <img class="carta-mini__base" src="assets/img/landing/base-negociacion.webp" alt="" width="320" height="56" loading="lazy">
+            </div>
+            <div class="carta-mini carta-mini--competencia">
+              <img class="carta-mini__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="QuiénGane" width="170" height="82" loading="lazy">
+              <span class="carta-mini__que">Definen un premio y se lo ganan jugando</span>
+              <img class="carta-mini__base" src="assets/img/landing/base-competencia.webp" alt="" width="320" height="53" loading="lazy">
+            </div>
+          </article>
+
+          <!-- 2 · El encuentro -->
+          <article class="pantalla pantalla--encuentro" data-titulo="Se sortea quién abre y empieza la ronda">
+            <div class="encuentro-mini">
+              <img class="encuentro-mini__fig" src="assets/img/landing/kai-plante.webp" alt="" width="100" height="155" loading="lazy">
+              <img class="encuentro-mini__vs" src="assets/img/landing/vs.webp" alt="" width="86" height="84" loading="lazy">
+              <img class="encuentro-mini__fig" src="assets/img/landing/luna-plante.webp" alt="" width="100" height="155" loading="lazy">
+            </div>
+            <p class="pantalla__pie-txt">Abre <b>Sofía</b> · 2 turnos cada quien</p>
+            <span class="boton-mini boton-mini--debate">Empezar</span>
+          </article>
+
+          <!-- 3 · La sala -->
+          <article class="pantalla pantalla--sala" data-titulo="Cada quien graba su turno, sin que nadie interrumpa">
+            <div class="pantalla__cabecera pantalla__cabecera--sala">
+              <span class="chip-mini">Turno 2 de 2</span>
+              <span class="reloj-mini">0:18</span>
+            </div>
+            <div class="sala-mini">
+              <img class="sala-mini__fig" src="assets/img/landing/nina-hablando.webp" alt="" width="130" height="201" loading="lazy">
+              <span class="sala-mini__nombre">Sofía</span>
+              <span class="sala-mini__boton"><span class="sala-mini__punto"></span>Parar</span>
+            </div>
+          </article>
+
+          <!-- 4 · El veredicto -->
+          <article class="pantalla pantalla--veredicto" data-titulo="El juez explica con qué criterios decidió">
+            <img class="veredicto-mini__fig" src="assets/img/landing/dante-ganar.webp" alt="" width="104" height="161" loading="lazy">
+            <p class="veredicto-mini__eti">Gana Sofía</p>
+            <div class="tabla-mini">
+              <span>Al tema</span><b>85</b><b class="tenue">60</b>
+              <span>Razones</span><b>80</b><b class="tenue">45</b>
+              <span>Ejemplos</span><b>78</b><b class="tenue">65</b>
+              <span>Escucha</span><b>75</b><b class="tenue">70</b>
+            </div>
+            <p class="pantalla__pie-txt">«Sostuvo su posición con un ejemplo concreto en los dos turnos.»</p>
+          </article>
+
+          <!-- 5 · El catálogo -->
+          <article class="pantalla" data-titulo="455 fichas, o el tema que traen ustedes">
+            <div class="cinta-mini">
+              <img src="assets/img/landing/rotulo-negociacion.webp" alt="" width="64" height="30" loading="lazy">
+              <span><b>Modo Negociación</b><br>Dialoga, encuentra acuerdos y avanza</span>
+            </div>
+            <p class="pantalla__saludo pantalla__saludo--chico">¿Con quién juegas?</p>
+            <div class="tema-mini">
+              <b>El margen del aeropuerto</b>
+              <span>¿Se llega con mucho margen o se llega con lo justo?</span>
+              <i class="chip-mini chip-mini--suave">ligera</i>
+            </div>
+            <div class="tema-mini">
+              <b>La taza que espera «un rato»</b>
+              <span>¿Se enjuaga en el momento o puede esperar?</span>
+              <i class="chip-mini chip-mini--suave">ligera</i>
+            </div>
+          </article>
+
+        </div>
       </div>
-      <div class="tarjeta" style="background:var(--debate-tinte);box-shadow:none">
-        <p class="chico" style="color:var(--debate-oscuro);font-weight:800">🎤 Modo Controvers<b class="ia">IA</b></p>
-        <p class="chico" style="color:var(--debate-oscuro)">Hay ganador</p>
-      </div>
-      <div class="tarjeta" style="background:var(--negociacion-tinte);box-shadow:none">
-        <p class="chico" style="color:var(--negociacion-oscuro);font-weight:800">🤝 Modo Negoc<b class="ia">IA</b>ción</p>
-        <p class="chico" style="color:var(--negociacion-oscuro)">Ganáis los dos</p>
-      </div>
-    </div>
+
+      <figcaption class="pase__pie">
+        <button class="pase__flecha" type="button" data-pase="-1" aria-label="Pantalla anterior">‹</button>
+        <span class="pase__texto" id="pase-texto">Se elige el modo, y la carta es el botón</span>
+        <button class="pase__flecha" type="button" data-pase="1" aria-label="Pantalla siguiente">›</button>
+      </figcaption>
+      <div class="pase__puntos" id="pase-puntos" role="tablist" aria-label="Ir a una pantalla"></div>
+    </figure>
   </header>
 
   <section class="seccion" id="modos">
-    <h2 class="seccion__titulo">Dos formas de jugar el mismo tema</h2>
+    <h2 class="seccion__titulo">Tres maneras de jugar el mismo rato</h2>
     <p class="seccion__entrada">
-      El modo no lo impone nadie. Quien propone el debate elige uno, y la otra persona
-      lo acepta o pide el otro. Si no se ponen de acuerdo, no se juega.
+      El modo no lo impone nadie: quien propone elige uno y la otra persona lo acepta o
+      pide otro. Si no se ponen de acuerdo, no se juega.
     </p>
 
     <div class="rejilla-modos">
       <article class="ficha-modo ficha-modo--debate">
-        <div class="ficha-modo__icono" style="font-size:1.75rem">🎤</div>
-        <h3>Modo Controvers<b class="ia">IA</b></h3>
-        <p class="suave chico" style="margin-top:var(--e-2)">
-          Un tema central, dos partes que compiten por quién argumenta mejor su opinión,
-          y un juez imparcial que evalúa, declara ganador y explica por qué.
+        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Modo Controversia" width="170" height="88" loading="lazy">
+        <p class="suave chico">
+          Un tema con dos respuestas defendibles. Cada quien sostiene la suya y un juez
+          dice quién la defendió mejor, con la rúbrica a la vista.
         </p>
         <ul class="ficha-modo__lista">
-          <li><span>·</span> Competencia sana, divertida y amigable</li>
-          <li><span>·</span> No va de hacer sentir mal a quien tienes enfrente: va de probar hasta dónde sabes defender tus ideas</li>
-          <li><span>·</span> Puntúa con una rúbrica que tienen a la vista desde el principio</li>
-          <li><span>·</span> Quien pierde puede pedir la revancha</li>
+          <li><span>·</span> Gana quien argumenta mejor, no quien tiene la razón</li>
+          <li><span>·</span> Cinco criterios, y el desglose se ve entero al final</li>
+          <li><span>·</span> Pueden acabar de acuerdo, y eso no es un fallo: también se puntúa</li>
         </ul>
       </article>
 
       <article class="ficha-modo ficha-modo--negociacion">
-        <div class="ficha-modo__icono" style="font-size:1.75rem">🤝</div>
-        <h3>Modo Negoc<b class="ia">IA</b>ción</h3>
-        <p class="suave chico" style="margin-top:var(--e-2)">
-          Un tema en el que no están de acuerdo. Exponen por turnos y al final un
-          negociador de IA propone acuerdos que puedan dejar satisfechas a las dos partes.
+        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Modo Negociación" width="170" height="80" loading="lazy">
+        <p class="suave chico">
+          Aquí no hay ganador. Exponen por turnos y un mediador propone <b>dos</b> maneras
+          de quedar, enseñando qué recoge de cada quien.
         </p>
         <ul class="ficha-modo__lista">
-          <li><span>·</span> Aquí no gana uno: ganáis los dos, o no gana nadie</li>
-          <li><span>·</span> Propone tres acuerdos posibles y ustedes votan</li>
-          <li><span>·</span> El que elijan queda editable antes de que los dos lo firmen</li>
-          <li><span>·</span> Y pueden acordar seguir en desacuerdo: no hay que cerrarlo en una sola ronda, se puede alargar o repetir</li>
+          <li><span>·</span> Eligen una, la ajustan con sus palabras y la firman</li>
+          <li><span>·</span> Queda un acta, que es un recordatorio y nada más</li>
+          <li><span>·</span> Y pueden acordar seguir en desacuerdo: eso también se guarda</li>
+        </ul>
+      </article>
+
+      <article class="ficha-modo ficha-modo--competencia">
+        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="Modo QuiénGane" width="170" height="82" loading="lazy">
+        <p class="suave chico">
+          Aquí no se argumenta: se apuesta. Definen qué se lleva quien gane —una comida,
+          un favor, la próxima elección— y lo deciden jugando.
+        </p>
+        <ul class="ficha-modo__lista">
+          <li><span>·</span> El premio se cumple esta semana y se puede señalar</li>
+          <li><span>·</span> Si duele perderlo, es un castigo con otro nombre, y no entra</li>
+          <li><span>·</span> 150 premios escritos, o el que se inventen ustedes</li>
         </ul>
       </article>
     </div>
@@ -111,26 +202,57 @@
     <h2 class="seccion__titulo">Cómo se juega</h2>
     <div class="pasos-juego">
       <article class="paso-juego">
-        <h3>Elegís el tema</h3>
-        <p class="chico suave" style="margin-top:var(--e-2)">
-          El suyo, el de verdad. O uno del catálogo, con más de cien temas por los que
-          discuten las parejas, para cuando no tienen nada entre manos.
+        <h3>Eligen con quién y sobre qué</h3>
+        <p class="chico suave">
+          Pareja, amigos o familia: cada mesa trae sus propios temas, porque no se discute
+          lo mismo con tu pareja que con tu hermano. Hay <b>305 temas y 150 premios</b>
+          escritos, y también pueden traer el suyo.
         </p>
       </article>
       <article class="paso-juego">
-        <h3>Los turnos que acuerden</h3>
-        <p class="chico suave" style="margin-top:var(--e-2)">
-          De uno a cinco cada quien, decidido antes de empezar. Graban por turnos y con el
-          tiempo contado: nadie interrumpe a nadie, que es justo lo que no pasa en una
-          discusión de verdad.
+        <h3>Graban por turnos</h3>
+        <p class="chico suave">
+          De uno a tres turnos cada quien, con el tiempo contado y siempre alternos: nadie
+          graba sin haber escuchado antes al otro. Eso solo, ya cambia la discusión.
         </p>
       </article>
       <article class="paso-juego">
-        <h3>Redoble y resultado</h3>
-        <p class="chico suave" style="margin-top:var(--e-2)">
-          Un redoble de tambor, y el veredicto o el acta. Con el desglose delante:
-          siempre van a saber por qué salió lo que salió.
+        <h3>Y llega el resultado</h3>
+        <p class="chico suave">
+          Un redoble, y el veredicto o el acta. Con el desglose delante: siempre van a
+          saber por qué salió lo que salió.
         </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="seccion seccion--extra">
+    <h2 class="seccion__titulo">Dos cosas que hacen que funcione</h2>
+    <div class="rejilla-extra">
+      <article class="tarjeta-extra">
+        <h3>Cada quien elige su personaje</h3>
+        <p class="chico suave">
+          Lo que se vuelve a escuchar no es la grabación: es el personaje diciendo lo que
+          dijiste, con su voz. Oír el propio argumento en otra boca lo separa de quien lo
+          dijo, y esa distancia es la que baja la guardia.
+        </p>
+        <div class="caras">
+          <img src="assets/img/personajes/kai-azul-ficha.webp" alt="" width="54" height="54" loading="lazy">
+          <img src="assets/img/personajes/nina-morado-ficha.webp" alt="" width="54" height="54" loading="lazy">
+          <img src="assets/img/personajes/dante-verde-ficha.webp" alt="" width="54" height="54" loading="lazy">
+          <img src="assets/img/personajes/luna-amarillo-ficha.webp" alt="" width="54" height="54" loading="lazy">
+          <img src="assets/img/personajes/maya-azul-ficha.webp" alt="" width="54" height="54" loading="lazy">
+          <img src="assets/img/personajes/nico-verde-ficha.webp" alt="" width="54" height="54" loading="lazy">
+        </div>
+      </article>
+      <article class="tarjeta-extra">
+        <h3>Y puede hablar por ti un abogado</h3>
+        <p class="chico suave">
+          Si lo prendes, tu intervención sale ordenada: le quita las muletillas y coloca
+          mejor lo que ya dijiste. Nunca añade una razón que no dijeras — y el texto
+          original no se borra nunca.
+        </p>
+        <p class="chico tenue">Con abogado se juzga la versión que autorizaste; sin él, lo que dijiste tal cual.</p>
       </article>
     </div>
   </section>
@@ -156,7 +278,7 @@
 
   <footer class="pie">
     <div class="pie__enlaces">
-      <a href="#modos">Cómo funciona</a>
+      <a href="#modos">Los tres modos</a>
       <a href="app/">Jugar</a>
     </div>
     <!-- LA MISMA REDACCIÓN QUE `config.descargo`, y hay que mantenerlas iguales a
@@ -165,13 +287,14 @@
          vieja al cambiarse la otra—. Si se toca una, se tocan las dos. -->
     <p>ATWI usa IA para facilitar la resolución de conflictos y promover el ejercicio
       del debate. Aunque ayuda a mediar diferencias y lograr acuerdos de forma divertida,
-      no reemplaza la terapia ni asesoramiento profesional.</p>
+      <strong>no reemplaza la terapia ni asesoramiento profesional.</strong></p>
     <p class="pie__gancho">«Es como el UNO, pero en vez de provocar discusiones busca solucionarlas.»</p>
     <p>ATWI · Proyecto en construcción.</p>
   </footer>
 
 </div>
 
-<script src="assets/js/config.js?v=9e57a62"></script>
+<script src="assets/js/config.js?v=61c3b80"></script>
+<script src="assets/js/landing.js?v=61c3b80"></script>
 </body>
 </html>
