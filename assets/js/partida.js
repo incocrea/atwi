@@ -536,9 +536,16 @@ window.ATWI = window.ATWI || {};
     }
 
     if (P.repaso) {
-      /* En la demo, salir no es irse: es volver a empezar. */
+      /* En la demo, salir no es irse: es volver a empezar —la navegacion del
+         visor es ficticia y no hay ningun sitio al que volver—.
+         ⚠️ LA BANDERA SE LEE ANTES DE CERRAR, y esto fallaba: `cerrar()` acaba
+         poniendo `P = null`, asi que preguntar por `P.demo` DESPUES lanza y el
+         reinicio no llega a ocurrir nunca. Lo que quedaba era el modal cerrado
+         sobre la vista de la app, que en el visor esta vacia: un telefono en
+         blanco. Lo vio el titular dando al atras desde la ronda. */
+      var eraDemo = P.demo;
       cerrar();
-      if (P.demo && window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
+      if (eraDemo && window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
       return;
     }
     if (P.ensayo) {
