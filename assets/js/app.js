@@ -1576,15 +1576,14 @@
      viejas, que no la tienen sellada, se cae a los turnos. */
   function quienesJugaron(d) {
     var t = d.turnos_grabados || [];
-    var abreP = d.abre_lado !== 'invitado';
     function lado(cual, i) {
-      /* `orden` EMPIEZA EN 1, así que quien abre tiene los IMPARES. Estaba al
-         revés, igual que en `mesaDelDebate()` —de donde se copió— y con el
-         mismo efecto: las dos caras cambiadas de sitio. Aquí solo se nota en
-         las partidas viejas, que son las únicas que llegan a usar este respaldo
-         (las nuevas traen la ficha sellada por la migración 0031). */
-      var par = ((cual === 'propone') === abreP) ? 1 : 0;
-      var x = t.filter(function (q) { return (q.orden || 0) % 2 === par; })[0];
+      /* EL LADO LO DICE `perfil`, y la regla vive en un solo sitio
+         (`nube.ladoDeTurno`). Aquí se dedujo de la paridad de `orden` —copiado
+         de `mesaDelDebate()`— y salió mal las dos veces que se tocó, porque la
+         app numera `orden` desde 0 y el banco de pruebas lo hacía desde 1. */
+      var x = t.filter(function (q) {
+        return window.ATWI.nube.ladoDeTurno(q, d) === cual;
+      })[0];
       /* Y PARA EL LADO `propone`, EL PERFIL DE ESTA CUENTA COMO ÚLTIMO RECURSO.
          Las partidas abiertas antes de la migración 0031 no sellaban su ficha,
          así que la tarjeta enseñaba UNA sola cara --la del invitado-- y un «vs»

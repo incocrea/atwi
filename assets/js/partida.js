@@ -243,24 +243,30 @@ window.ATWI = window.ATWI || {};
   function mesaDelDebate(d, t) {
     var abreP = d.abre_lado !== 'invitado';
     function fichaDeLado(lado, i) {
-      /* Qué paridad de `orden` le toca a este lado. `orden` EMPIEZA EN 1, así
-         que quien abre tiene los IMPARES (1, 3, 5) y el otro los pares.
+      /* DE QUÉ LADO ES UN TURNO LO DICE `perfil`, NO LA PARIDAD DE `orden`.
+         Es la misma regla que usa el árbitro (`ladoDe`): el turno cuyo `perfil`
+         es quien propone es de `propone`, y lo demás —nulo en partida local— es
+         del invitado.
 
-         ⚠️ AQUÍ ESTABA AL REVÉS, y lo encontró el ejercicio 1 del banco de
-         pruebas (2026-09-16). El comentario decía «si abre quien propone, sus
-         turnos son los pares» —falso— y el código lo obedecía: la ficha de
-         `propone` se rellenaba con los turnos del invitado y viceversa.
+         ⚠️ ESTO SE INTENTÓ DOS VECES POR LA PARIDAD Y LAS DOS SALIÓ MAL, una en
+         cada sentido. La app manda `orden` EMPEZANDO EN 0
+         (`subirTurno(v, P.intervenciones.length - 1)`), así que quien abre lleva
+         los PARES; el 2026-09-16 se cambió a impares creyendo que empezaba en 1,
+         porque el ejercicio 1 del banco de pruebas estaba numerado desde 1 y el
+         banco parecía dar la razón. Lo zanja el CHECK de la base —`orden entre 0
+         y 5`—: con numeración desde 1 una ronda de tres turnos necesitaría un 6
+         y no cabría. Lo descubrió el ejercicio 10, que es la primera de tres
+         turnos que se corre.
 
-         SE VEÍA POCO Y PODÍA COSTAR CARO. En pantalla solo se notaba en el
-         repaso, con las dos caras cambiadas de sitio. Pero `delArbitro()` da
-         por hecho que `jugadores[0]` es el lado `propone`, así que un veredicto
-         abierto desde el historial habría coronado a la otra persona. En el
-         ejercicio 1 salió empate y no se vio; con un ganador sí. `CLAUDE.md`
-         ya avisaba de esta clase de fallo: «un veredicto con el nombre cambiado
-         es de los peores fallos que esta app puede tener». */
-      var abreEste = (lado === 'propone') === abreP;
-      var par = abreEste ? 1 : 0;
-      var x = t.filter(function (q) { return (q.orden || 0) % 2 === par; })[0];
+         Y NO SE ARREGLA INVIRTIENDO EL NÚMERO OTRA VEZ, porque entonces queda
+         una tercera convención esperando a fallar. Se usa el dato que dice lo
+         que hay que saber. Lo que había en juego: `delArbitro()` da por hecho
+         que `jugadores[0]` es el lado `propone`, así que con los lados cambiados
+         un veredicto abierto desde el historial corona a la otra persona, que es
+         el fallo que `CLAUDE.md` llama el peor que esta app puede tener. */
+      var x = t.filter(function (q) {
+        return window.ATWI.nube.ladoDeTurno(q, d) === lado;
+      })[0];
       if (x) {
         return { nombre: x.nombre || (i ? 'La otra parte' : 'Vos'),
                  avatar: x.avatar || (i ? 'luna' : 'kai'),

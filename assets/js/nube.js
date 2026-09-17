@@ -492,7 +492,11 @@ window.ATWI = window.ATWI || {};
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
       'invitado_nombre,invitado_avatar,invitado_color,' +
-      'turnos_grabados:turnos(orden,numero,nombre,avatar,color,abogado,segundos,' +
+      /* `perfil` DICE DE QUÉ LADO ES CADA TURNO, y sin él había que deducirlo
+         por la paridad de `orden`, que es justo donde se falló dos veces. Es la
+         misma columna con la que el árbitro decide el lado (`ladoDe`): nulo es
+         el invitado de una partida local, y lo demás se compara con `propone`. */
+      'turnos_grabados:turnos(orden,numero,perfil,nombre,avatar,color,abogado,segundos,' +
       'voz_ruta,audio_ruta,transcripcion,guion,creado),' +
       'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,' +
       'desglose,lo_mejor,lo_que_dijo,visto,creado)';
@@ -616,7 +620,19 @@ window.ATWI = window.ATWI || {};
     }).catch(function (e) { return apuntar('no se pudo borrar: ' + e.message); });
   }
 
+  /**
+   * De qué lado es un turno. UNA SOLA DEFINICIÓN, y a propósito: esto se
+   * dedujo de la paridad de `orden` en dos archivos distintos y salió mal las
+   * dos veces, una en cada sentido. Es la misma regla que aplica el árbitro en
+   * `ladoDe`, así que el cliente y el juez no pueden discrepar sobre quién es
+   * quién — que es exactamente el fallo que no nos podemos permitir.
+   */
+  function ladoDeTurno(t, d) {
+    return t && t.perfil && d && t.perfil === d.propone ? 'propone' : 'invitado';
+  }
+
   window.ATWI.nube = {
+    ladoDeTurno: ladoDeTurno,
     historial: historial,
     oirDelAlmacen: oirDelAlmacen,
     olvidar: olvidar,
