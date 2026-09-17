@@ -825,6 +825,12 @@ function arranque(q) {
 /* El estilo solo sale si la voz lo admite. Envolverlo en una que no los tiene
    no da error --Azure lo ignora y devuelve la voz plana-- asi que el fallo
    seria mudo y se notaria solo al oirlo, que es la peor clase de fallo. */
+/* LAS VOCES HD (DragonHD, 2026-09-17) no llevan tono, ritmo ni estilo: la
+   emoción, las pausas y el énfasis los pone la voz leyendo el texto, y Azure
+   ignora `<prosody>` y `express-as` en ellas. Enseñar los deslizadores sería
+   prometer un ajuste que no hace nada. */
+function esHD(voz) { return /:DragonHD/.test(voz || ''); }
+
 function estiloHTML(q, elegida) {
   var c = CASTING.candidatas.filter(function (x) { return x.voz === elegida.voz; })[0];
   if (!c || !c.estilos.length) return '';
@@ -930,6 +936,9 @@ function pintarVoces() {
                  de España— y son las únicas donde la animación se puede sacar
                  del estilo en vez de forzando el tono. */
               (x.estilos.length ? '♪ ' : '') +
+              /* Las HD llevan su marca: infieren la emoción del texto y no
+                 admiten tono, ritmo ni estilo. */
+              (x.hd ? '✦ HD ' : '') +
               nombreCorto(x) + ' (' + x.pais + ') · ' + x.alto + ' Hz · ' +
               'anim ' + x.animacion.toFixed(1) + ' · brillo ' + x.brillo +
               (x.quien ? ' · la de ' + x.quien : '') + '</option>';
@@ -947,15 +956,18 @@ function pintarVoces() {
         '</p>' : '') +
 
       '<div class="afinar">' +
-        '<label>tono <input type="range" data-tono="' + q + '" value="' +
-          elegida.tono + '" min="-30" max="60" step="1" style="width:150px">' +
-          '<output data-eco="tono-' + q + '">' + (elegida.tono >= 0 ? '+' : '') +
-          elegida.tono + '%</output></label>' +
-        '<label>ritmo <input type="range" data-ritmo="' + q + '" value="' +
-          elegida.ritmo + '" min="-25" max="40" step="1" style="width:150px">' +
-          '<output data-eco="ritmo-' + q + '">' + (elegida.ritmo >= 0 ? '+' : '') +
-          elegida.ritmo + '%</output></label>' +
-        estiloHTML(q, elegida) +
+        (esHD(elegida.voz)
+          ? '<span class="chico">✦ voz HD: la emoción, las pausas y el énfasis los pone la voz ' +
+            'leyendo el texto. Tono, ritmo y estilo no aplican.</span>'
+          : '<label>tono <input type="range" data-tono="' + q + '" value="' +
+              elegida.tono + '" min="-30" max="60" step="1" style="width:150px">' +
+              '<output data-eco="tono-' + q + '">' + (elegida.tono >= 0 ? '+' : '') +
+              elegida.tono + '%</output></label>' +
+            '<label>ritmo <input type="range" data-ritmo="' + q + '" value="' +
+              elegida.ritmo + '" min="-25" max="40" step="1" style="width:150px">' +
+              '<output data-eco="ritmo-' + q + '">' + (elegida.ritmo >= 0 ? '+' : '') +
+              elegida.ritmo + '%</output></label>' +
+            estiloHTML(q, elegida)) +
         '<button class="suena" data-probar="' + q + '" data-id="probar-' + q +
           '" data-sonando="no">▶ oírlo así</button>' +
         (c && !esJuez(q) ? '<span class="chico">' + (c.altono >= 0 ? '+' : '') + c.altono +

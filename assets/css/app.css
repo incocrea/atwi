@@ -4160,6 +4160,37 @@ body.app {
    VA DENTRO DEL MARCO Y EN ABSOLUTO, no fijo al viewport: en escritorio el
    juego se dibuja dentro de un teléfono, y un `fixed` se habría anclado a la
    ventana del navegador —o sea, fuera del teléfono—. */
+/* EL CRISTAL (titular, 2026-09-17): un velo esmerilado entre el globo y el
+   fondo, para que el globo resalte. NO ES UN VELO OSCURO, y eso no es un gusto:
+   el juego entero es claro —«ni fondos oscuros ni degradados»— y una capa negra
+   lo convertiría en otra app. Es blanco muy tenue MÁS desenfoque: lo que aleja
+   el fondo es el blur, no la opacidad, así que el dibujo de detrás se sigue
+   viendo y solo deja de competir.
+   VA DENTRO DEL MARCO, como el globo, o en escritorio esmerilaría la página
+   entera alrededor del teléfono dibujado. */
+.globo-velo {
+  position: absolute;
+  inset: 0;
+  z-index: 59;
+  opacity: 0;
+  background: rgba(255, 255, 255, .28);
+  -webkit-backdrop-filter: blur(7px) saturate(.9);
+  backdrop-filter: blur(7px) saturate(.9);
+  transition: opacity var(--dur-media) var(--suave);
+}
+.globo-velo[data-abierto] { opacity: 1; }
+.globo-velo[data-cerrando] { opacity: 0; transition-duration: 120ms; }
+/* DONDE NO HAY `backdrop-filter` el velo tiene que seguir haciendo su trabajo,
+   y sin blur lo único que queda es subir el blanco: se despega igual, aunque
+   con menos gracia. Sin esto, en un navegador viejo el velo sería invisible y
+   el globo se leería sobre el dibujo. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .globo-velo { background: rgba(255, 255, 255, .72); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .globo-velo { transition-duration: 100ms; }
+}
+
 .globo {
   position: absolute;
   z-index: 60;
@@ -4187,34 +4218,108 @@ body.app {
   .globo[data-cerrando] { transform: none; }
 }
 
+/* LA CAJA, SEGÚN EL MOCKUP DEL TITULAR (2026-09-17, segundo ejemplo): tinte
+   muy claro del color que toque, borde del mismo color a media fuerza, la
+   bombilla asomando por arriba a la izquierda, el aspa de cerrar arriba a la
+   derecha y una onda decorativa al pie.
+   EL COLOR NO ES DECORACIÓN: es de qué habla el globo. Cada modo trae el suyo
+   —coral, menta, azul— y el aviso de IA el lavanda de la marca, que es el color
+   de la portada donde vive. */
 .globo__caja {
   position: relative;
   z-index: 1;
-  background: var(--blanco);
-  border-radius: var(--radio-tarjeta);
-  padding: var(--e-4);
+  overflow: hidden;                 /* recorta la onda del pie por el radio */
+  background: var(--globo-tinte);
+  border: 2px solid var(--globo-borde);
+  border-radius: var(--radio-modal);
+  /* El hueco de arriba a la izquierda es el sitio de la bombilla, y el de abajo
+     el de la onda: si no se reservan, el texto se mete debajo de las dos. */
+  /* EL HUECO DE ABAJO ES EL ALTO DE LA ONDA, MEDIDO: con 40 px el texto se le
+     metía encima 9 px —la onda ocupa 57 a este ancho— y la última línea se leía
+     sobre el dibujo. */
+  padding: var(--e-4) var(--e-4) 58px 74px;
   box-shadow: var(--sombra-3);
   text-align: left;
 }
-.globo__titulo { font-family: var(--display); font-weight: 800; font-size: 1rem; margin: 0 0 6px; }
-.globo__texto { font-size: .8125rem; line-height: 1.5; color: var(--tinta-suave); margin: 0; }
+.globo[data-tinte="debate"]      { --globo-tinte: var(--debate-tinte);      --globo-borde: #F5B49A; --globo-fuerte: var(--debate-oscuro); }
+.globo[data-tinte="negociacion"] { --globo-tinte: var(--negociacion-tinte); --globo-borde: #8FD9C7; --globo-fuerte: var(--negociacion-oscuro); }
+.globo[data-tinte="competencia"] { --globo-tinte: var(--competencia-tinte); --globo-borde: #9BD1F5; --globo-fuerte: var(--competencia-oscuro); }
+.globo[data-tinte="lavanda"]     { --globo-tinte: var(--lavanda-tinte);     --globo-borde: #C3B8F5; --globo-fuerte: var(--lavanda-oscuro); }
 
-/* EL PICO ES UN CUADRADO GIRADO, no un triángulo de bordes: así hereda el mismo
-   blanco y la misma sombra que la caja y no hay dos colores que mantener
-   sincronizados. Queda DEBAJO de la caja (`z-index`), que le tapa la mitad de
-   dentro y lo deja como un pico limpio. */
+/* LA BOMBILLA ASOMA POR EL BORDE, que es lo que lo convierte en una pegatina
+   pegada al globo y no en un icono metido dentro de una caja. Va sobre el pico
+   y el borde, así que necesita quedar por encima de los dos. */
+.globo__signo {
+  position: absolute;
+  top: -10px; left: -14px;
+  width: 66px; height: 66px;
+  z-index: 3;
+  filter: drop-shadow(0 3px 6px rgba(46, 42, 63, .18));
+}
+
+.globo__cerrar {
+  position: absolute;
+  top: 8px; right: 8px;
+  z-index: 3;
+  display: grid; place-items: center;
+  width: 32px; height: 32px;
+  border: 0; border-radius: var(--radio-pastilla);
+  background: none; color: var(--globo-borde);
+  cursor: pointer;
+  transition: color var(--dur-corta) var(--suave), transform var(--dur-corta) var(--suave);
+}
+.globo__cerrar:hover { color: var(--globo-fuerte); }
+.globo__cerrar:active { transform: scale(.88); }
+
+.globo__dicho { position: relative; z-index: 2; }
+.globo__titulo {
+  font-family: var(--display); font-weight: 800;
+  font-size: 1.0625rem; line-height: 1.2;
+  color: var(--globo-fuerte);
+  margin: 0 0 6px; padding-right: 28px;   /* el hueco del aspa */
+}
+.globo__texto { font-size: .8125rem; line-height: 1.5; color: var(--tinta); margin: 0; }
+.globo__clave {
+  font-size: .75rem; line-height: 1.45; font-style: italic;
+  color: var(--globo-fuerte); margin: 8px 0 0;
+}
+
+/* LA ONDA DEL PIE ES LA MISMA PIEZA QUE LA PEANA DE LAS CARTAS, a sangre por
+   los tres lados y recortada por el radio de la caja. Se sale un 118 % por los
+   lados igual que allí: al 100 % se le ven los dos extremos redondeados y se
+   delata como un dibujo pegado dentro; cortada por el canto, se lee como el
+   suelo del globo. */
+.globo__base {
+  position: absolute;
+  left: 50%; bottom: -8px;
+  width: 118%; transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* EL PICO HEREDA EL FONDO Y EL BORDE DE LA CAJA. Es un cuadrado girado 45°, no
+   un triángulo de bordes: así el borde del globo le da la vuelta sin que haya
+   dos colores que mantener sincronizados. La caja lo tapa por la mitad de
+   dentro (`z-index`), y por eso solo se le ven los dos lados de fuera. */
 .globo__pico {
   position: absolute;
   left: var(--pico-x, 50%);
-  width: 18px; height: 18px;
-  margin-left: -9px;
-  background: var(--blanco);
-  border-radius: 3px;
+  width: 20px; height: 20px;
+  margin-left: -10px;
+  background: var(--globo-tinte);
+  border: 2px solid var(--globo-borde);
+  border-radius: 4px;
   transform: rotate(45deg);
-  box-shadow: var(--sombra-2);
 }
-.globo[data-lado="arriba"] .globo__pico { bottom: -6px; }
-.globo[data-lado="abajo"]  .globo__pico { top: -6px; }
+.globo[data-lado="arriba"] .globo__pico { bottom: -8px; }
+.globo[data-lado="abajo"]  .globo__pico { top: -8px; }
+
+/* EL SIGNO QUE LO ABRIÓ SE APARTA MIENTRAS EL GLOBO ESTÁ ABIERTO. El globo
+   trae su propia bombilla asomando, así que dejar la otra debajo —y encima
+   borrosa por el cristal— eran dos bombillas discutiendo por el mismo sitio.
+   Atenuada, la que manda es la del globo y el pico sigue apuntando a donde
+   estaba la suya. No se oculta del todo: el hueco vacío se nota más. */
+[data-globo-abierto] { opacity: .2; transition: opacity var(--dur-corta) var(--suave); }
 
 /* --- El signo suelto que lo abre --------------------------------------------
    Centrado en su propio renglón bajo las cartas. Es más grande que el de las

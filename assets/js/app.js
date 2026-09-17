@@ -3223,15 +3223,34 @@
         g.disparador.focus();
       }
     }
+    if (g.disparador) delete g.disparador.dataset.globoAbierto;
     g.nodo.dataset.cerrando = '1';
-    var fuera = function () { if (g.nodo.parentNode) g.nodo.parentNode.removeChild(g.nodo); };
+    if (g.velo) g.velo.dataset.cerrando = '1';
+    var fuera = function () {
+      if (g.nodo.parentNode) g.nodo.parentNode.removeChild(g.nodo);
+      if (g.velo && g.velo.parentNode) g.velo.parentNode.removeChild(g.velo);
+    };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) fuera();
     else setTimeout(fuera, 160);
     window.removeEventListener('resize', g.recolocar);
   }
 
-  /** Abre un globo colgado de `disparador` con `html` dentro. */
-  function abrirGlobo(disparador, html, etiqueta) {
+  /* CADA GLOBO LLEVA SU COLOR Y SU PEANA, como las cartas de modo: el de un
+     modo sale con el tinte de ese modo, y el del aviso de IA con el lavanda de
+     la marca. Las peanas son las MISMAS piezas de las cartas —medidas: amigos
+     es lavanda, debate coral, negociacion menta, competencia azul— así que el
+     globo y la carta de la que sale son la misma familia sin dibujar nada
+     nuevo. QuienGane lleva bombilla DORADA porque azul no hay. */
+  var TINTES = {
+    debate:      { signo: 'ayuda-coral',  peana: 'base-debate' },
+    negociacion: { signo: 'ayuda-menta',  peana: 'base-negociacion' },
+    competencia: { signo: 'ayuda-sol',    peana: 'base-competencia' },
+    lavanda:     { signo: 'ayuda-morado', peana: 'base-amigos' },
+  };
+
+  /** Abre un globo colgado de `disparador`.
+      `dicho` es {titulo, texto} y `opciones` {tinte, etiqueta}. */
+  function abrirGlobo(disparador, dicho, opciones) {
     var marco = document.querySelector('.marco');
     if (!marco || !disparador) return;
     /* Tocar el mismo signo lo cierra: es un interruptor, no un botón de abrir. */
@@ -3239,15 +3258,51 @@
     cerrarGlobo();
     if (eraEste) return;
 
+    var o = opciones || {};
+    var tinte = TINTES[o.tinte] ? o.tinte : 'lavanda';
+    var t = TINTES[tinte];
+
+    /* EL CRISTAL (titular, 2026-09-17). Un velo esmerilado entre el globo y lo
+       que hay detrás: la portada tiene un fondo dibujado y tres cartas con
+       color, y el globo competía con todo eso. NO ES UN VELO OSCURO —el juego
+       es claro entero y una capa negra lo convertiría en otra app—: es un
+       cristal, blanco muy tenue y desenfoque, que aleja el fondo sin apagarlo.
+       Va antes que el globo en el DOM, así que queda debajo de él. */
+    var velo = document.createElement('div');
+    velo.className = 'globo-velo';
+    marco.appendChild(velo);
+
     var nodo = document.createElement('div');
     nodo.className = 'globo';
+    nodo.dataset.tinte = tinte;
     nodo.setAttribute('role', 'dialog');
-    nodo.setAttribute('aria-label', etiqueta || 'Información');
+    nodo.setAttribute('aria-label', o.etiqueta || dicho.titulo || 'Información');
     nodo.tabIndex = -1;
+    /* LA BOMBILLA VA DENTRO Y ASOMANDO, no fuera (mockup del titular). Y eso
+       resolvió de paso un problema que no tenía arreglo limpio: con el signo
+       fuera había que dejarlo nítido por encima del cristal, y no se podía
+       —`main.vistas` tiene `z-index: 1`, o sea que CREA UN CONTEXTO DE
+       APILAMIENTO y encierra dentro a todo lo suyo: un `z-index: 61` en el
+       botón solo compite ahí dentro, nunca contra el velo—. Con el signo
+       dentro del globo, el globo entero es nítido y el problema no existe. */
     nodo.innerHTML =
-      '<div class="globo__caja">' + html + '</div>' +
+      '<div class="globo__caja">' +
+        window.ATWI.icono(t.signo, 66).replace('class="ico"', 'class="ico globo__signo"') +
+        '<button class="globo__cerrar" data-cerrar-globo aria-label="Cerrar">' +
+          iconoSVG('cerrar', 18) + '</button>' +
+        '<div class="globo__dicho">' +
+          (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
+          '<p class="globo__texto">' + esc(dicho.texto || '') + '</p>' +
+          /* La frase que importa, aparte y entrecomillada: es lo mismo que hacía
+             el modal —leída de corrido se perdía entre lo demás, y es lo único
+             que hay que llevarse—. */
+          (dicho.clave ? '<p class="globo__clave">«' + esc(dicho.clave) + '»</p>' : '') +
+        '</div>' +
+        '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="" aria-hidden="true">' +
+      '</div>' +
       '<span class="globo__pico" aria-hidden="true"></span>';
     marco.appendChild(nodo);
+    nodo.querySelector('[data-cerrar-globo]').addEventListener('click', cerrarGlobo);
 
     var recolocar = function () {
       var m = marco.getBoundingClientRect();
@@ -3258,7 +3313,7 @@
       var AIRE = 12;          /* lo que respira contra el borde del marco */
       var PICO = 10;          /* cuánto sobresale el pico */
 
-      var ancho = Math.min(320, m.width - AIRE * 2);
+      var ancho = Math.min(330, m.width - AIRE * 2);
       nodo.style.width = ancho + 'px';
       var alto = nodo.offsetHeight;
 
@@ -3282,7 +3337,9 @@
       /* EL PICO APUNTA AL BOTÓN AUNQUE LA CAJA SE HAYA CORRIDO. Se acota para
          que no se salga por las esquinas redondeadas, donde dejaría de leerse
          como un pico y parecería un defecto. */
-      var px = Math.max(20, Math.min(centroD - x, ancho - 20));
+      /* 34 y no 24: el radio de la caja es 28, así que más cerca del canto el
+         pico se pega a la curva y se lee como un defecto, no como un pico. */
+      var px = Math.max(34, Math.min(centroD - x, ancho - 34));
       nodo.style.setProperty('--pico-x', Math.round(px) + 'px');
       /* Y de ahí nace la animación. */
       nodo.style.transformOrigin = Math.round(px) + 'px ' + (arriba ? '100%' : '0');
@@ -3300,10 +3357,12 @@
        `offsetHeight`: leer una medida vacía el lote de estilos pendientes. */
     void nodo.offsetHeight;
     nodo.dataset.abierto = '1';
+    velo.dataset.abierto = '1';
     disparador.setAttribute('aria-expanded', 'true');
+    disparador.dataset.globoAbierto = '1';
     nodo.focus();
 
-    globoAbierto = { nodo: nodo, disparador: disparador, recolocar: recolocar };
+    globoAbierto = { nodo: nodo, disparador: disparador, velo: velo, recolocar: recolocar };
     window.addEventListener('resize', recolocar);
   }
 
@@ -3411,22 +3470,28 @@
     var ret = e.target.closest('[data-retocar]');
     if (ret) { abrirRetocar(ret.dataset.retocar); return; }
 
+    /* LAS AYUDAS DE MODO SALEN EN GLOBO Y NO EN MODAL (titular, 2026-09-17).
+       Abrían `#m-explicar` a pantalla completa para decir dos frases; ahora la
+       explicación sale de la misma bombilla que se tocó, con el color de su
+       modo. `abrirExplicar` se queda por si hay que volver. */
     var expli = e.target.closest('[data-explicar]');
-    if (expli) { abrirExplicar(expli.dataset.explicar); return; }
+    if (expli) {
+      var mo = cfg.modos[expli.dataset.explicar];
+      if (mo) {
+        abrirGlobo(expli, { titulo: mo.nombre || 'Cómo se juega', texto: mo.que, clave: mo.clave },
+                   { tinte: expli.dataset.explicar, etiqueta: 'Cómo se juega' });
+      }
+      return;
+    }
 
     /* Los globos. Hoy solo hay uno —el descargo de IA de la portada—; la tabla
        existe para que añadir el siguiente sea una fila y no un `if` más. */
     var glo = e.target.closest('[data-globo]');
     if (glo) {
-      var GLOBOS = {
-        descargo: {
-          eti: 'Qué hace la IA en ATWI',
-          html: '<p class="globo__titulo">Esto lo juega una IA</p>' +
-                '<p class="globo__texto">' + DESCARGO + '</p>',
-        },
-      };
-      var g = GLOBOS[glo.dataset.globo];
-      if (g) abrirGlobo(glo, g.html, g.eti);
+      if (glo.dataset.globo === 'descargo') {
+        abrirGlobo(glo, { titulo: 'Esto lo juega una IA', texto: DESCARGO },
+                   { tinte: 'lavanda', etiqueta: 'Qué hace la IA en ATWI' });
+      }
       return;
     }
 
