@@ -4241,13 +4241,14 @@ body.app {
    2026-09-17): las dos llevan el velo blanco. Lo que queda de la mesa en esta
    tarjeta es el BORDE de puntos, que es donde el color no compite con el texto
    ni con el fondo dibujado de la pantalla.
-   Y ES EL MISMO COLOR QUE LOS CHIPS (titular, 2026-09-17): `--mesa-fuerte`, el
-   solido de su mesa, y no el `color-mix` sobre `--mesa` que llevaba —un lavado
-   del tinte con un 8 % de tinta, que salia apagado justo al lado de los chips
-   que van en el tono pleno—. Dos piezas que dicen «esta lista es de la pareja»
-   tienen que decirlo con el mismo color. */
+   ⚠️ Y ESE BORDE ES DEL MODO, NO DE LA MESA (titular, 2026-09-17, corrigiendo
+   el primer intento). Estuvo un rato en `--mesa-fuerte` —el solido de los
+   chips de mesa— y la tarjeta acababa con DOS colores a la vez: el borde rosa
+   de la pareja alrededor de un texto azul de QuiénGane. Una pieza dice una
+   cosa: aquí manda el modo, que es el mismo `--modo-fuerte` del texto y de los
+   chips de filtro. `--mesa-fuerte` se queda solo en los chips de mesa. */
 #v-catalogo .categoria--propia {
-  border-color: var(--mesa-fuerte, var(--lavanda-claro));
+  border-color: var(--modo-fuerte, var(--lavanda-claro));
 }
 
 /* EL ICONO BAJÓ DE 88 A 76 px porque a ese tamaño se comía el ancho que
