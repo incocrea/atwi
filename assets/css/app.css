@@ -1041,7 +1041,20 @@ body.app {
 /* La caja es la tarjeta; dentro, el botón grande del tema y la fila de chips.
    El padding vive en la caja y el botón lo ocupa entero, para que tocar
    «cualquier parte del tema» siga funcionando como antes. */
-.tema-caja { padding: var(--e-4); display: grid; gap: var(--e-2); }
+/* VELO BLANCO AL 60 % (titular, 2026-09-17), la misma pieza que llevan el globo
+   y —al 20 %— las seis cartas de selección: deja pasar el fondo dibujado de la
+   pantalla en vez de taparlo con una plancha de color.
+   ⚠️ ESTO REVOCA EL TINTE POR MESA EN LAS TARJETAS DE TEMA. Hasta hoy el fondo
+   salía de `--mesa-claro` —rosa la pareja, lavanda los amigos, azul la familia—
+   y la regla vivía en `#v-catalogo` porque solo allí existe esa variable. Con
+   un blanco igual para las tres, el fondo deja de depender de nada del catálogo
+   y la regla baja aquí, a un solo sitio y sin `id` que la levante.
+   De qué mesa es la lista lo siguen diciendo la cinta de arriba y los chips
+   (`--mesa-fuerte`), y `--mesa-claro` sigue vivo en «Mis propios temas». */
+.tema-caja {
+  padding: var(--e-4); display: grid; gap: var(--e-2);
+  background: rgba(255, 255, 255, .6);
+}
 .tema {
   display: grid; gap: 6px; width: 100%; padding: 0;
   border: 0; background: none; font: inherit; color: inherit;
@@ -4191,11 +4204,11 @@ body.app {
    de arriba sin dar error. Los tres tonos de `--mesa` siguen en uso más abajo,
    en las tarjetas de tema y en los chips. */
 
-/* Las tarjetas de tema y la de «Mis propios temas» toman el tinte de su mesa.
-   El de respaldo es el blanco de siempre: fuera del catálogo —y en la pantalla
-   de elegir mesa, donde todavía no hay ninguna— `--mesa-claro` no existe y la
-   tarjeta se queda como estaba. */
-#v-catalogo .tema-caja { background: var(--mesa-claro, var(--superficie)); }
+/* La de «Mis propios temas» toma el tinte de su mesa. El de respaldo es el
+   lavanda: fuera del catálogo —y en la pantalla de elegir mesa, donde todavía
+   no hay ninguna— `--mesa-claro` no existe.
+   ⚠️ LAS TARJETAS DE TEMA YA NO ENTRAN AQUÍ: desde el 2026-09-17 llevan el velo
+   blanco al 60 % y su regla está con `.tema-caja`. */
 #v-catalogo .categoria--propia {
   background: linear-gradient(175deg, var(--mesa, var(--lavanda-tinte)),
                                       var(--mesa-claro, var(--lavanda-tinte)) 80%);
