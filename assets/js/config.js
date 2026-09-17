@@ -79,10 +79,19 @@ window.ATWI.config = {
      el descargo protege y hay que tenerlo siempre a la vista; el gancho explica
      de qué va esto en una línea, y eso solo hace falta la primera vez. En una
      pantalla que se abre cada día, repetir la frase de presentación la gasta. */
-  descargo:
+  /* VA PARTIDO EN DOS, y no es un capricho de formato: la primera mitad cuenta
+     qué hace la IA y la segunda es LA QUE PROTEGE. En el globo esa segunda va
+     en negrita y en el color del tinte (titular, 2026-09-17), porque leída de
+     corrido dentro del párrafo es justo la frase que se salta quien va con
+     prisa. `descargo` se compone al final del archivo y sigue siendo el texto
+     entero: así quien lo quiera de una pieza no se entera de esto, y las dos
+     mitades no pueden desincronizarse de su suma. */
+  descargoBase:
     'ATWI usa IA para facilitar la resolución de conflictos y promover el ejercicio ' +
     'del debate. Aunque ayuda a mediar diferencias y lograr acuerdos de forma ' +
-    'divertida, no reemplaza la terapia ni asesoramiento profesional.',
+    'divertida, ',
+  descargoOjo:
+    'no reemplaza la terapia ni asesoramiento profesional.',
 
   gancho:
     '<span class="aviso-ia__gancho">«Es como el UNO, pero en vez de provocar ' +
@@ -93,7 +102,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'b38bdc4',
+  version: 'e2e59a0',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -508,3 +517,8 @@ window.ATWI.config = {
     conUnTurno: 'Con un solo turno no hay escucha que puntuar: son cuatro criterios.'
   }
 };
+
+/* El descargo entero, para quien no distinga sus dos mitades (la puerta de
+   entrada lo pinta de corrido). Se compone aquí y no se escribe dos veces. */
+window.ATWI.config.descargo =
+  window.ATWI.config.descargoBase + window.ATWI.config.descargoOjo;

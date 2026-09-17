@@ -4343,6 +4343,10 @@ body.app {
   margin: 0 0 6px;
 }
 .globo__texto { font-size: .8125rem; line-height: 1.5; color: var(--tinta); margin: 0; }
+/* La frase que protege: en el color del globo y en negrita. No cambia de
+   tamaño ni se va aparte —sigue siendo el final de la misma oración—; lo que
+   la destaca es el peso y el color. */
+.globo__ojo { font-weight: 800; color: var(--globo-fuerte); }
 /* EL BOTÓN DE JUGAR, en los globos de modo. Va por encima de la onda —que es
    justo donde cae— y con el color del modo, declarando `--cara` y nada más,
    como manda la regla de los botones: escribir `background` le borraría el

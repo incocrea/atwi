@@ -26,7 +26,6 @@
     });
   }
 
-  var DESCARGO = cfg.descargo;
 
   /* El nombre del modo con el «IA» resaltado: negoc·IA·ción, controvers·IA. */
   function nombreModo(clave) {
@@ -3281,7 +3280,16 @@
         window.ATWI.icono(t.signo, 82).replace('class="ico"', 'class="ico globo__signo"') +
         '<div class="globo__dicho">' +
           (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
-          '<p class="globo__texto">' + esc(dicho.texto || '') + '</p>' +
+          '<p class="globo__texto">' + esc(dicho.texto || '') +
+            /* LA FRASE QUE PROTEGE, dentro del mismo párrafo y no aparte: es el
+               final de la misma oración, y sacarla a un bloque propio la
+               convertiría en una nota al margen —que es justo lo que se lee
+               cuando ya se dejó de leer—. Lo que la separa es el peso y el
+               color, no el sitio. */
+            /* Sin espacio: `descargoBase` ya acaba en uno, que es lo que hace
+               que el texto compuesto se lea bien donde va de una pieza. */
+            (dicho.ojo ? '<b class="globo__ojo">' + esc(dicho.ojo) + '</b>' : '') +
+          '</p>' +
           /* La frase que importa, aparte y entrecomillada: es lo mismo que hacía
              el modal —leída de corrido se perdía entre lo demás, y es lo único
              que hay que llevarse—. */
@@ -3496,7 +3504,8 @@
     var glo = e.target.closest('[data-globo]');
     if (glo) {
       if (glo.dataset.globo === 'descargo') {
-        abrirGlobo(glo, { titulo: '¡Importante!', texto: DESCARGO },
+        abrirGlobo(glo, { titulo: '¡Importante!', texto: cfg.descargoBase,
+                          ojo: cfg.descargoOjo },
                    { tinte: 'lavanda', etiqueta: 'Qué hace la IA en ATWI' });
       }
       return;
