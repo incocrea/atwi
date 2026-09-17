@@ -884,7 +884,8 @@ function probarAsi(q) {
     marcarSonando('probar-' + q);
     vDecir(q + ' con ' + corto(v.voz) +
            (esHD(v.voz) ? ', temperatura ' + temperaturaDe(v).toFixed(2) +
-                          (v.ritmo ? ', ritmo ' + (v.ritmo >= 0 ? '+' : '') + v.ritmo + '%' : '')
+                          (v.ritmo ? ', ritmo ' + (v.ritmo >= 0 ? '+' : '') + v.ritmo + '%' : '') +
+                          (v.estilo ? ', estilo ' + v.estilo : '')
                         : ', tono ' + v.tono + '% y ritmo ' + v.ritmo + '%' +
                           (v.estilo ? ', estilo ' + v.estilo : '')) +
            ' · ' + (ultima.nueva ? 'generada' : 'reusada, sin costo') +
