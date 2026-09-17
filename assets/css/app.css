@@ -4239,7 +4239,7 @@ body.app {
   /* EL HUECO DE ABAJO ES EL ALTO DE LA ONDA, MEDIDO: con 40 px el texto se le
      metía encima 9 px —la onda ocupa 57 a este ancho— y la última línea se leía
      sobre el dibujo. */
-  padding: var(--e-4) var(--e-4) 58px 82px;
+  padding: var(--e-4) var(--e-4) 58px 90px;
   box-shadow: var(--sombra-3);
   text-align: left;
 }
@@ -4264,8 +4264,8 @@ body.app {
    y el borde, así que necesita quedar por encima de los dos. */
 .globo__signo {
   position: absolute;
-  top: -16px; left: -18px;
-  width: 82px; height: 82px;   /* 66 antes: el titular la pidió mayor */
+  top: -20px; left: -22px;
+  width: 96px; height: 96px;   /* 66 → 82 → 96: el titular la fue subiendo */
   z-index: 3;
   filter: drop-shadow(0 3px 6px rgba(46, 42, 63, .18));
 }
@@ -4302,8 +4302,10 @@ body.app {
   margin-top: var(--e-4);
 }
 
+/* EN NEGRITA (titular, 2026-09-17): es la frase que hay que llevarse de la
+   explicación, y en cursiva fina se leía como una nota al pie de lo otro. */
 .globo__clave {
-  font-size: .75rem; line-height: 1.45; font-style: italic;
+  font-size: .75rem; line-height: 1.45; font-style: italic; font-weight: 700;
   color: var(--globo-fuerte); margin: 8px 0 0;
 }
 
