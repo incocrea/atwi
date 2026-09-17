@@ -83,14 +83,18 @@
     pintar(nombre);
   }
 
-  /* El atajo al perfil vive en la cabecera, al lado del buzón, salvo en Jugar
-     —donde la ficha grande del saludo ya hace de atajo— y en el propio Perfil,
-     donde no tendría a dónde llevar. */
+  /* El atajo al perfil vive en la cabecera, al lado del buzón, y SALE EN TODAS
+     LAS VISTAS menos en el propio Perfil, donde no tendría a dónde llevar.
+     Hasta el 2026-09-17 se escondía también en Jugar, porque allí la ficha
+     grande del saludo hacía de atajo; con el saludo reducido a un título
+     centrado (decisión del titular) ese atajo ya no existe, y además la ficha
+     de la cabecera es la que se ve en el resto del juego: dejarla fuera justo
+     en la portada la convertía en un elemento que aparece y desaparece. */
   function refrescarFichaCabecera() {
     var b = $('#ficha-cabecera');
     if (!b) return;
     var p = datos.perfil();
-    b.hidden = vistaActual === 'perfil' || vistaActual === 'jugar';
+    b.hidden = vistaActual === 'perfil';
     /* CON SU COLOR. Antes daba igual --el color era un aro y esta cara va sin
        aro-- pero ahora el color ES el dibujo: sin pasarlo, quien juega de
        amarillo se ve de azul en su propia cabecera. */
@@ -274,17 +278,17 @@
     var caja = $('#v-jugar');
 
     caja.innerHTML =
-      /* La ficha del saludo ES el atajo al perfil: es lo más grande de la
-         pantalla y es donde la mano va a buscarse a sí misma. */
-      '<div class="saludo">' +
-        '<button class="avatar-boton" data-vista="perfil" aria-label="Tu perfil">' +
-          avatarHTML(p) + '</button>' +
-        '<div class="saludo__datos">' +
-          '<h1 class="saludo__hola">' + (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
-          '<p class="chico suave">Nivel ' + p.nivel + ' · ' + p.puntos + ' de ' + p.puntosNivel + ' puntos</p>' +
-          '<div class="nivel-barra"><i style="width:' + Math.min(100, Math.round(p.puntos / p.puntosNivel * 100)) + '%"></i></div>' +
-        '</div>' +
-      '</div>' +
+      /* EL SALUDO ES UN TÍTULO, NO UNA FICHA (titular, 2026-09-17). Ocupaba el
+         primer tercio de la portada con la ficha grande, el nivel y la barra de
+         progreso, y encima competía con las tres cartas, que son lo que de
+         verdad se viene a elegir. Ahora es el mismo título centrado que usan el
+         catálogo y las mesas —misma clase, mismo sitio— y el atajo al perfil es
+         la ficha de la cabecera, como en el resto del juego.
+         EL NIVEL SE OCULTA, NO SE BORRA: los puntos todavía no significan nada
+         para quien juega, así que anunciarlos es prometer un sistema que no
+         existe. El bloque `.saludo` sigue en `app.css` esperándolo. */
+      '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">' +
+        (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
 
       /* EL VEREDICTO QUE TE ESTÁ ESPERANDO, delante de todo. Quien cerró la app
          mientras el juez leía no tiene por qué acordarse de ir al historial a

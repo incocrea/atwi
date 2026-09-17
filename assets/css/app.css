@@ -367,6 +367,14 @@ body.app {
 /* El saludo se alinea a la DERECHA, contra el borde de la barra de nivel: la
    ficha ancla el bloque por la izquierda y el texto cierra por la otra punta,
    que es lo que lo convierte en una unidad y no en dos cosas pegadas. */
+/* ⚠️ GUARDADO Y SIN PINTAR DESDE EL 2026-09-17, a propósito. El titular quitó
+   de la portada la ficha grande, el nivel y la barra: el saludo es ahora el
+   mismo título centrado que el catálogo, y el atajo al perfil es la ficha de la
+   cabecera. Estas cuatro reglas —y `.avatar-boton` y `.nivel-barra` más abajo—
+   NO se borran porque la decisión fue «ocultar por ahora»: el día que los
+   puntos signifiquen algo, el bloque vuelve tal cual estaba. Si ese día no
+   llega, se borran de una vez; lo que no puede pasar es que alguien las borre
+   creyendo que sobran. */
 .saludo { display: flex; align-items: center; gap: var(--e-4); margin-bottom: var(--e-4); }
 .saludo__datos { flex: 1; min-width: 0; text-align: right; }
 /* Más pequeño que un h1 suelto: aquí compite con la ficha, no manda solo. */
