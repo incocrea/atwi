@@ -46,7 +46,9 @@ body.landing {
   align-items: center;
 }
 @media (min-width: 900px) {
-  .heroe { grid-template-columns: 1.02fr .98fr; padding: var(--e-8) 0; }
+  /* `minmax(0, …)` y no `1.02fr` a secas: `1fr` es `minmax(auto, 1fr)` y el
+     mínimo de contenido del pase son sus cinco pantallas SUMADAS. */
+  .heroe { grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr); padding: var(--e-8) 0; }
 }
 
 .heroe__titular {
@@ -61,7 +63,12 @@ body.landing {
 .heroe__acciones { display: flex; flex-wrap: wrap; gap: var(--e-3); margin-top: var(--e-5); }
 
 /* --- El pase de pantallas --------------------------------------------------- */
-.pase { margin: 0; justify-self: center; width: min(100%, 318px); }
+/* ⚠️ `min-width: 0` O LA PÁGINA SCROLLEA DE LADO EN EL MÓVIL. La pista son
+   cinco pantallas en fila, así que el ancho MÍNIMO intrínseco del pase es la
+   suma de las cinco —848 px medidos a 375— y una columna `auto` de grid
+   respeta ese mínimo aunque el `overflow: hidden` del teléfono lo recorte:
+   la caja se ve bien y el documento mide 848. */
+.pase { margin: 0; justify-self: center; width: min(100%, 318px); min-width: 0; }
 
 /* El mismo recurso que el juego usa en escritorio: un teléfono dibujado. Aquí
    además acota el carrusel, así que el scroll lateral vive dentro de la pieza
@@ -78,15 +85,18 @@ body.landing {
 
 .pase__pista {
   display: flex;
+  min-width: 0;
   height: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  scroll-behavior: smooth;
 }
 .pase__pista::-webkit-scrollbar { display: none; }
-@media (prefers-reduced-motion: reduce) { .pase__pista { scroll-behavior: auto; } }
+/* ⚠️ NO LLEVA `scroll-behavior: smooth`. Puesto en el CSS intercepta CUALQUIER
+   asignacion de `scrollLeft`, tambien las que no quieren animacion, y con la
+   pestana en segundo plano las deja sin efecto: el pase se quedaba clavado en
+   la primera pantalla. Lo suave lo pide el JS llamada a llamada. */
 
 /* --- Los controles del pase ------------------------------------------------- */
 .pase__pie {
@@ -123,7 +133,7 @@ body.landing {
   cursor: pointer;
   transition: width var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
 }
-.pase__punto[aria-selected="true"] { width: 22px; background: var(--lavanda); }
+.pase__punto[aria-current="true"] { width: 22px; background: var(--lavanda); }
 
 /* --- Una pantalla del pase -------------------------------------------------- */
 .pantalla {
@@ -332,6 +342,15 @@ body.landing {
   font-size: .66rem;
 }
 .tabla-mini span { color: var(--tinta-suave); }
+/* Sin los dos nombres arriba, las columnas son dos filas de cifras de nadie.
+   ⚠️ Y ESTO NO ES UN MARCADOR ENTRE LOS DOS: es el desglose de UNA partida,
+   que es justo lo que la regla permite. Lo prohibido es el acumulado. */
+.tabla-mini u {
+  text-decoration: none; text-align: right;
+  font-family: var(--display); font-weight: 800; font-size: .6rem;
+  color: var(--sol-oscuro);
+}
+.tabla-mini u.tenue { color: var(--tinta-tenue); }
 .tabla-mini b { font-variant-numeric: tabular-nums; text-align: right; min-width: 1.6em; }
 .tabla-mini b:not(.tenue) { color: var(--sol-oscuro); }
 
