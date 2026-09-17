@@ -1118,10 +1118,13 @@
 
     // Paso 0: con quien se juega. De eso depende que temas tienen sentido.
     if (!modoPublico) {
+      /* SIN BAJADA (titular, 2026-09-16). Decía «los temas cambian según con
+         quién estés debatiendo», que es lo que las tres cartas ya enseñan: cada
+         una trae su nombre, de qué va y tres palabras de lo que se discute
+         ahí. Una frase que anuncia lo que hay justo debajo gasta el alto que
+         necesitan las cartas. */
       caja.innerHTML = cinta +
-        '<h1 class="vista__titulo" style="margin-bottom:var(--e-2)">¿Con quién juegas?</h1>' +
-        '<p class="chico suave vista__bajada" style="margin-bottom:var(--e-4)">' +
-          esc(palabras().cambian) + '</p>' +
+        '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">¿Con quién juegas?</h1>' +
         '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
       return;
     }

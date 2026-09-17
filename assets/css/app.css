@@ -316,15 +316,14 @@ body.app {
    la comería. Va dentro del apilado del propio botón, con el icono y la
    etiqueta por encima. */
 .barra-item { position: relative; }
-.barra-item[aria-current="page"] { color: var(--blanco); }
-.barra-item[aria-current="page"]::before {
-  content: '';
-  position: absolute;
-  inset: 6px 8px;
-  border-radius: 16px;
-  background: var(--ctx-pastilla);
-  z-index: 0;
-}
+/* EL ACTIVO SE MARCA CON COLOR, NO CON CAJA (titular, 2026-09-16). Llevaba una
+   pastilla de fondo detrás del icono y el rótulo; se va. Los cuatro iconos son
+   pegatinas a todo color y los tres apagados van en gris —`grayscale(.55)`—,
+   así que el que está encendido ya se distingue solo: ponerle además una caja
+   era marcar dos veces lo mismo y meter un bloque de color opaco sobre el
+   fondo dibujado. Lo que queda es el color del rótulo y el icono a todo color,
+   que es lo que de verdad dice dónde estás. */
+.barra-item[aria-current="page"] { color: var(--ctx-pastilla); }
 .barra-item > * { position: relative; z-index: 1; }
 .barra-item[aria-current="page"] svg { transform: translateY(-1px) scale(1.06); }
 .barra-item:active { transform: scale(.94); }
