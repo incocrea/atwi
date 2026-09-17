@@ -3097,6 +3097,16 @@ window.ATWI = window.ATWI || {};
      camino que una partida del historial, con el debate congelado como si
      viniera del servidor. */
   function demoLaRonda() {
+    /* ⚠️ LA CORTINILLA SE QUITA A MANO, Y AQUI SE OLVIDABA. El encuentro —las
+       dos figuras y el estallido— cuelga del MODAL y no de la pantalla del
+       sorteo, asi que no se va solo al cambiar de escena: lo retira
+       `P.limpiarEncuentro()`, y en una partida de verdad eso lo llama
+       `pintarTurno()`. La demo no pasa por ahi, va a `repasar()`, que reemplaza
+       `P` ENTERO —y con el la referencia a esa funcion— antes de que nadie la
+       llame. Resultado: las dos figuras del versus se quedaban detras de la
+       ronda hasta el final. Lo vio el titular.
+       Por eso se limpia ANTES de montar la mesa nueva. */
+    if (P && P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
     repasar(window.ATWI.demo, {});
     P.demo = true;
     P.ensayo = true;   /* que no cuente ni sello ni contadores al cerrarse */
