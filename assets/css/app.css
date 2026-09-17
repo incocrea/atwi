@@ -562,9 +562,12 @@ body.app {
      tamaño. Lo que hace el blur es mandarla al fondo sin bajarle la opacidad
      —rebajada se vería lavada, desenfocada sigue teniendo su color—, y de paso
      despega el texto de encima, que es lo único que tiene que estar nítido.
-     4 px sobre una pieza que se pinta a 70 px de alto: pierde el filo del
-     contorno y conserva la silueta. Es el mando para ajustarlo. */
-  filter: blur(4px);
+     Empezó en 4 px y el titular lo bajó a un tercio (2026-09-16): a 4 la pieza
+     se leía como una mancha de color y perdía los corazones y las estrellas,
+     que son lo que la hace decorativa. A 1,3 solo se le quita el filo del
+     contorno —lo justo para que no compita con el texto— y el dibujo sigue
+     reconociéndose. Es el mando para ajustarlo. */
+  filter: blur(1.3px);
 }
 .carta-modo__rotulo, .carta-modo__gancho,
 .publico__alto, .publico__texto { position: relative; z-index: 1; }
