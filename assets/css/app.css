@@ -4232,7 +4232,7 @@ body.app {
      asoma por fuera a propósito y se quedaba con el borde izquierdo comido. Lo
      que hay que recortar es solo la onda, y para eso está `.globo__recorte`. */
   background: var(--globo-tinte);
-  border: 2px solid var(--globo-borde);
+  border: 3px solid var(--globo-borde);   /* 2 antes: el titular lo pidió más grueso */
   border-radius: var(--radio-modal);
   /* El hueco de arriba a la izquierda es el sitio de la bombilla, y el de abajo
      el de la onda: si no se reservan, el texto se mete debajo de las dos. */
@@ -4243,10 +4243,10 @@ body.app {
   box-shadow: var(--sombra-3);
   text-align: left;
 }
-.globo[data-tinte="debate"]      { --globo-tinte: var(--debate-tinte);      --globo-borde: #F5B49A; --globo-fuerte: var(--debate-oscuro); }
-.globo[data-tinte="negociacion"] { --globo-tinte: var(--negociacion-tinte); --globo-borde: #8FD9C7; --globo-fuerte: var(--negociacion-oscuro); }
-.globo[data-tinte="competencia"] { --globo-tinte: var(--competencia-tinte); --globo-borde: #9BD1F5; --globo-fuerte: var(--competencia-oscuro); }
-.globo[data-tinte="lavanda"]     { --globo-tinte: var(--lavanda-tinte);     --globo-borde: #C3B8F5; --globo-fuerte: var(--lavanda-oscuro); }
+.globo[data-tinte="debate"]      { --globo-tinte: var(--debate-tinte);      --globo-borde: #F5B49A; --globo-fuerte: var(--debate-oscuro);  --globo-onda: #F35400;}
+.globo[data-tinte="negociacion"] { --globo-tinte: var(--negociacion-tinte); --globo-borde: #8FD9C7; --globo-fuerte: var(--negociacion-oscuro);  --globo-onda: #04A347;}
+.globo[data-tinte="competencia"] { --globo-tinte: var(--competencia-tinte); --globo-borde: #9BD1F5; --globo-fuerte: var(--competencia-oscuro);  --globo-onda: #007EF8;}
+.globo[data-tinte="lavanda"]     { --globo-tinte: var(--lavanda-tinte);     --globo-borde: #C3B8F5; --globo-fuerte: var(--lavanda-oscuro);  --globo-onda: #6323F9;}
 
 /* El recorte es SOLO para la onda: hereda el radio de la caja y se queda al
    fondo, así que la onda se corta por la curva y nada más se recorta. */
@@ -4255,8 +4255,25 @@ body.app {
   inset: 0;
   z-index: 0;
   overflow: hidden;
-  border-radius: inherit;
+  /* ⚠️ EL RADIO ES EL DE DENTRO, NO EL HEREDADO. `inset: 0` coloca esto en la
+     caja INTERIOR —el borde queda fuera—, así que con el radio exterior (28) la
+     curva recortaba de más y dejaba ver una franja del fondo pegada al borde:
+     por ahí se colaba el tinte claro bajo la onda y el pico parecía una pieza
+     suelta. El radio de dentro es el de fuera menos el grosor del borde. */
+  border-radius: calc(var(--radio-modal) - 3px);
   pointer-events: none;
+}
+/* Y EL PIE SE REFUERZA, porque el PNG de la peana se DESVANECE en su última
+   franja —medido: en la fila de abajo solo 1 de cada 13 puntos es opaco—. Sin
+   esto, entre la onda y el canto del globo queda un hilo del fondo claro, justo
+   donde nace el pico. La banda va DETRÁS de la onda (`::before` se pinta antes
+   que los hijos), así que no tapa ni una burbuja del dibujo. */
+.globo__recorte::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 16px;
+  background: var(--globo-onda);
 }
 
 /* LA BOMBILLA ASOMA POR EL BORDE, que es lo que lo convierte en una pegatina
@@ -4320,22 +4337,51 @@ body.app {
   width: 118%; transform: translateX(-50%);
 }
 
-/* EL PICO HEREDA EL FONDO Y EL BORDE DE LA CAJA. Es un cuadrado girado 45°, no
-   un triángulo de bordes: así el borde del globo le da la vuelta sin que haya
-   dos colores que mantener sincronizados. La caja lo tapa por la mitad de
-   dentro (`z-index`), y por eso solo se le ven los dos lados de fuera. */
+/* EL PICO VA SOLDADO, NO PEGADO (titular, 2026-09-17). Antes era un cuadrado
+   con borde en los cuatro lados y la caja lo tapaba por la mitad: el borde de
+   la CAJA seguía pasando por delante y dejaba una raya que cortaba el pico del
+   globo, como dos piezas juntas en vez de una.
+   LO QUE LO SUELDA SON DOS COSAS: el pico se pinta POR ENCIMA de la caja
+   —`z-index` 2 contra 1—, así que su fondo borra el tramo de borde que
+   estorbaba; y lleva borde SOLO EN LOS DOS LADOS DE FUERA, que son los que
+   continúan la línea del globo. Los de dentro no existen, así que no queda
+   nada que dibuje la costura. */
 .globo__pico {
   position: absolute;
   left: var(--pico-x, 50%);
-  width: 20px; height: 20px;
-  margin-left: -10px;
+  z-index: 2;
+  width: 22px; height: 22px;
+  margin-left: -11px;
   background: var(--globo-tinte);
-  border: 2px solid var(--globo-borde);
-  border-radius: 4px;
+  border: 0;
   transform: rotate(45deg);
 }
-.globo[data-lado="arriba"] .globo__pico { bottom: -8px; }
-.globo[data-lado="abajo"]  .globo__pico { top: -8px; }
+/* Girado 45°, el vértice de abajo es la esquina entre `right` y `bottom`; el de
+   arriba, la de `left` y `top`. Por eso el borde cambia de lado con el globo, y
+   el radio redondea solo la punta, como la tiene el globo en sus esquinas. */
+/* ⚠️ EL PICO DE ABAJO NO ES UN ROMBO, ES UN TRIÁNGULO, y sale de la ONDA y no
+   del borde. Ahí abajo del globo no está el fondo de la caja: está la peana. Un
+   cuadrado girado dejaba ver sus dos caras de arriba recortadas contra el
+   dibujo y se leía como una pieza pegada; un triángulo del color del PIE de su
+   peana —medido en la franja que toca el canto: amigos #6323F9, debate #F35400,
+   negociacion #04A347, competencia #007EF8— es la onda continuando hacia abajo.
+   Sin borde y sin girar, porque la onda tampoco los tiene. */
+.globo[data-lado="arriba"] .globo__pico {
+  bottom: -13px;
+  width: 30px; height: 15px;
+  margin-left: -15px;
+  background: var(--globo-onda);
+  border: 0;
+  border-radius: 0;
+  transform: none;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.globo[data-lado="abajo"] .globo__pico {
+  top: -11px;
+  border-left: 3px solid var(--globo-borde);
+  border-top: 3px solid var(--globo-borde);
+  border-radius: 5px 0 0 0;
+}
 
 /* EL SIGNO QUE LO ABRIÓ SE APARTA MIENTRAS EL GLOBO ESTÁ ABIERTO. El globo
    trae su propia bombilla asomando, así que dejar la otra debajo —y encima

@@ -3343,9 +3343,18 @@
       /* CENTRADO EN LA PANTALLA (titular, 2026-09-17), no colgado del signo.
          Colgado, un signo de la esquina dejaba el globo pegado a un lado y la
          portada se veía descuadrada; centrado siempre cae donde la vista ya
-         está mirando. Lo que sigue apuntando al signo es el PICO. */
+         está mirando. Lo que apunta al signo es el PICO.
+         PERO EL PICO TIENE UN ALCANCE, y centrar a secas lo dejaba sin llegar:
+         no puede pegarse a las esquinas redondeadas, así que con un signo muy
+         a un lado se quedaba corto y señalaba al aire. Así que el centro es una
+         PREFERENCIA, no una orden: si el signo cae fuera de lo que el pico
+         alcanza, el globo se corre lo JUSTO para que la punta caiga encima de
+         él. Centrado siempre que se pueda; apuntando siempre. */
+      var ALCANCE = 38;   /* lo que el pico se puede acercar al canto */
       var x = Math.round((m.width - ancho) / 2);
+      x = Math.max(centroD - (ancho - ALCANCE), Math.min(x, centroD - ALCANCE));
 
+      x = Math.max(AIRE, Math.min(x, m.width - ancho - AIRE));
       nodo.style.left = Math.round(x) + 'px';
       nodo.style.top = Math.round(y) + 'px';
       nodo.dataset.lado = arriba ? 'arriba' : 'abajo';
@@ -3353,9 +3362,10 @@
       /* EL PICO APUNTA AL BOTÓN AUNQUE LA CAJA SE HAYA CORRIDO. Se acota para
          que no se salga por las esquinas redondeadas, donde dejaría de leerse
          como un pico y parecería un defecto. */
-      /* 34 y no 24: el radio de la caja es 28, así que más cerca del canto el
-         pico se pega a la curva y se lee como un defecto, no como un pico. */
-      var px = Math.max(34, Math.min(centroD - x, ancho - 34));
+      /* EL MISMO `ALCANCE` que decidió dónde va el globo: si aquí se acotara
+         con otro número, el globo se habría corrido para que el pico llegara y
+         el pico se quedaría en otro sitio. Una cuenta, un número. */
+      var px = Math.max(ALCANCE, Math.min(centroD - x, ancho - ALCANCE));
       nodo.style.setProperty('--pico-x', Math.round(px) + 'px');
       /* Y de ahí nace la animación. */
       nodo.style.transformOrigin = Math.round(px) + 'px ' + (arriba ? '100%' : '0');
