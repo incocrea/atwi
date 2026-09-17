@@ -488,7 +488,14 @@ window.ATWI = window.ATWI || {};
        alguien por si acaso.
        `juez` VIENE DEL DEBATE y también faltaba: sin él, un veredicto abierto
        desde el historial no sabría quién lo dictó. */
-    var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,juez,' +
+    /* ⚠️ `propone` —EL UUID— HACE FALTA, y faltaba. Sin él `ladoDeTurno` compara
+       `t.perfil` contra `undefined`, así que NINGÚN turno sale del lado
+       `propone` y los dos lados acaban cogiendo el primero: las dos figuras de
+       la sala salían con la misma ficha y el veredicto nombraba dos veces a la
+       misma persona. Lo vio el titular en el ejercicio 10.
+       Estaban `propone_nombre/avatar/color` pero no la columna que dice de
+       quién es la partida, porque hasta ahora nadie la miraba desde el cliente. */
+    var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,juez,propone,' +
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
       'invitado_nombre,invitado_avatar,invitado_color,' +
@@ -628,6 +635,14 @@ window.ATWI = window.ATWI || {};
    * quién — que es exactamente el fallo que no nos podemos permitir.
    */
   function ladoDeTurno(t, d) {
+    /* Y SI FALTA `propone`, SE DICE. Sin esta guarda el fallo es MUDO: la
+       comparación da falsa siempre, todos los turnos salen del lado invitado y
+       lo que se ve es una partida con la misma ficha en los dos lados. Eso ya
+       pasó una vez, y lo que costó encontrarlo fue que no se quejaba nadie. */
+    if (d && !d.propone && window.console) {
+      console.warn('[atwi] el debate llegó sin `propone`: no se puede saber de ' +
+                   'qué lado es cada turno. Falta la columna en la consulta.');
+    }
     return t && t.perfil && d && t.perfil === d.propone ? 'propone' : 'invitado';
   }
 
