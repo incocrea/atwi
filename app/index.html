@@ -11,11 +11,11 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo como adulto, Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=e536bb8">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=e536bb8">
-<link rel="stylesheet" href="../assets/css/base.css?v=e536bb8">
-<link rel="stylesheet" href="../assets/css/app.css?v=e536bb8">
-<link rel="stylesheet" href="../assets/css/modal.css?v=e536bb8">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=4ea7fa3">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=4ea7fa3">
+<link rel="stylesheet" href="../assets/css/base.css?v=4ea7fa3">
+<link rel="stylesheet" href="../assets/css/app.css?v=4ea7fa3">
+<link rel="stylesheet" href="../assets/css/modal.css?v=4ea7fa3">
 </head>
 
 <body class="app">
@@ -54,6 +54,42 @@
   </main>
 
   <nav class="barra" aria-label="Navegación principal">
+    <!-- LAS BURBUJAS DE LA BARRA (propuesta del titular, 2026-09-16).
+         VAN INLINE Y NO COMO IMAGEN DE FONDO, y ese es el motivo de que estén
+         aquí y no en `assets/img/`: este dibujo tiene que TOMAR EL COLOR DE LA
+         PANTALLA. La barra cambia de tinte con el contexto --lavanda en la
+         portada, coral en Juicio, menta en Pacto, azul en QuienGane-- y un PNG
+         o un SVG cargado con `url()` traeria su color quemado y desentonaria
+         en tres de cada cuatro pantallas. Inline hereda `currentColor`, asi
+         que las burbujas son siempre el mismo color de la barra un punto mas
+         saturado, sea cual sea.
+         Es transparente entera: lo que se ve detras es el fondo de la barra,
+         que ya esta puesto. Y `preserveAspectRatio="none"` porque esto no es
+         un dibujo que deba conservar su forma, es una textura que se estira a
+         lo que mida la pantalla. -->
+    <svg class="barra__burbujas" viewBox="0 0 430 74" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="currentColor">
+        <!-- Las grandes van medio salidas por el borde de abajo: lo que se ve
+             es un casquete, que es lo que las hace parecer burbujas subiendo. -->
+        <circle cx="26" cy="70" r="17" opacity=".16"/>
+        <circle cx="150" cy="76" r="22" opacity=".12"/>
+        <circle cx="290" cy="73" r="19" opacity=".14"/>
+        <circle cx="404" cy="78" r="24" opacity=".11"/>
+        <!-- Las medianas, repartidas sin ritmo: a intervalos iguales se leerian
+             como una cenefa y no como algo flotando. -->
+        <circle cx="72" cy="30" r="7" opacity=".14"/>
+        <circle cx="198" cy="19" r="5.5" opacity=".16"/>
+        <circle cx="246" cy="46" r="8" opacity=".10"/>
+        <circle cx="344" cy="26" r="6.5" opacity=".15"/>
+        <!-- Y las chicas, que son las que dan la sensacion de movimiento. -->
+        <circle cx="104" cy="14" r="3.2" opacity=".18"/>
+        <circle cx="176" cy="52" r="2.6" opacity=".16"/>
+        <circle cx="312" cy="12" r="3" opacity=".17"/>
+        <circle cx="376" cy="48" r="2.4" opacity=".15"/>
+        <circle cx="52" cy="50" r="2.8" opacity=".14"/>
+        <circle cx="226" cy="8" r="2.2" opacity=".16"/>
+      </g>
+    </svg>
     <button class="barra-item" data-vista="jugar" data-etiqueta="Jugar"></button>
     <button class="barra-item" data-vista="catalogo" data-etiqueta="Catálogo"></button>
     <button class="barra-item" data-vista="historial" data-etiqueta="Historial"></button>
@@ -270,18 +306,18 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=e536bb8"></script>
-<script src="../assets/js/precarga.js?v=e536bb8"></script>
-<script src="../assets/js/iconos.js?v=e536bb8"></script>
-<script src="../assets/js/personajes.js?v=e536bb8"></script>
-<script src="../assets/js/datos.js?v=e536bb8"></script>
-<script src="../assets/js/sonido.js?v=e536bb8"></script>
-<script src="../assets/js/veredicto.js?v=e536bb8"></script>
-<script src="../assets/js/grabadora.js?v=e536bb8"></script>
-<script src="../assets/js/partida.js?v=e536bb8"></script>
-<script src="../assets/js/auth.js?v=e536bb8"></script>
-<script src="../assets/js/entrada.js?v=e536bb8"></script>
-<script src="../assets/js/nube.js?v=e536bb8"></script>
-<script src="../assets/js/app.js?v=e536bb8"></script>
+<script src="../assets/js/config.js?v=4ea7fa3"></script>
+<script src="../assets/js/precarga.js?v=4ea7fa3"></script>
+<script src="../assets/js/iconos.js?v=4ea7fa3"></script>
+<script src="../assets/js/personajes.js?v=4ea7fa3"></script>
+<script src="../assets/js/datos.js?v=4ea7fa3"></script>
+<script src="../assets/js/sonido.js?v=4ea7fa3"></script>
+<script src="../assets/js/veredicto.js?v=4ea7fa3"></script>
+<script src="../assets/js/grabadora.js?v=4ea7fa3"></script>
+<script src="../assets/js/partida.js?v=4ea7fa3"></script>
+<script src="../assets/js/auth.js?v=4ea7fa3"></script>
+<script src="../assets/js/entrada.js?v=4ea7fa3"></script>
+<script src="../assets/js/nube.js?v=4ea7fa3"></script>
+<script src="../assets/js/app.js?v=4ea7fa3"></script>
 </body>
 </html>

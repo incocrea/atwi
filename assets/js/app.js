@@ -3463,10 +3463,15 @@
     }
     else if (a === 'ficha-invitado') { abrirFicha('invitado'); }
     else if (a === 'cambiar-modo') {
-      /* Solo hay dos modos, así que «cambiar» es alternar. Mandar de vuelta a
-         la portada para elegir entre dos era pedir tres toques donde basta uno,
-         y encima perdía el sitio del catálogo. */
-      propuesta.modo = propuesta.modo === 'debate' ? 'negociacion' : 'debate';
+      /* ROTA ENTRE LOS MODOS QUE HAYA, y ya no alterna entre dos. Esto se
+         escribió cuando eran dos —«cambiar» era alternar— y con QuiénGane
+         dentro se quedó dando vueltas entre Juicio y Pacto sin pasar nunca por
+         el tercero: lo vio el titular. Ahora la lista sale de `cfg.modos`, así
+         que el día que entre un cuarto tampoco hay que tocar esto.
+         Sigue sin mandar de vuelta a la portada: elegir desde aquí es un toque
+         y volver serían tres, y encima perdería el sitio del catálogo. */
+      var modos = Object.keys(cfg.modos);
+      propuesta.modo = modos[(modos.indexOf(propuesta.modo) + 1) % modos.length];
       pintarCatalogo();
     }
     else if (a === 'proponer') { proponer(); }

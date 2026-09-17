@@ -305,6 +305,9 @@ body.app {
 
 /* --- Barra inferior fija --------------------------------------------------- */
 .barra {
+  /* `relative` para que las burbujas se anclen a la barra, y `overflow` para
+     que las que se salen por abajo se corten en su borde. */
+  position: relative; overflow: hidden;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   height: calc(var(--barra-alto) + env(safe-area-inset-bottom, 0px));
@@ -313,6 +316,15 @@ body.app {
   border-top: 1px solid rgba(46, 42, 63, .08);
   box-shadow: 0 -4px 20px rgba(46, 42, 63, .06);
   transition: background var(--dur-media) var(--suave);
+}
+
+/* FUERA DE LA REJILLA, o serían una quinta columna y los cuatro botones se
+   encogerían. El color sale de `--ctx-pastilla`, que es el mismo tinte que ya
+   lleva el rótulo del item activo: las burbujas son la barra un punto más
+   saturada, no un color nuevo. */
+.barra__burbujas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  color: var(--ctx-pastilla); pointer-events: none; z-index: 0;
 }
 
 .barra-item {
@@ -345,6 +357,8 @@ body.app {
    fondo dibujado. Lo que queda es el color del rótulo y el icono a todo color,
    que es lo que de verdad dice dónde estás. */
 .barra-item[aria-current="page"] { color: var(--ctx-pastilla); }
+/* Los botones, por delante de las burbujas. */
+.barra-item { position: relative; z-index: 1; }
 .barra-item > * { position: relative; z-index: 1; }
 .barra-item[aria-current="page"] svg { transform: translateY(-1px) scale(1.06); }
 .barra-item:active { transform: scale(.94); }
@@ -453,7 +467,11 @@ body.app {
    dibujado del modo ya mide 54. Lo que se mantiene es lo que se pidió: que las
    seis midan lo mismo. */
 :root { --alto-carta: 132px; }
-.cartas-modo { display: grid; gap: var(--e-2); }
+/* EL HUECO ENTRE CARTAS, AL DOBLE (titular, 2026-09-16): de 8 a 16 px. Con las
+   peanas desenfocadas asomando por el pie de cada una, 8 px dejaban el zócalo
+   de una casi tocando el techo de la siguiente y la columna se leía como un
+   bloque. El mismo número en las tres mesas del catálogo. */
+.cartas-modo { display: grid; gap: var(--e-4); }
 
 .carta-modo {
   /* Lo que ancla el disco de ayuda a SU carta y no al marco. */
@@ -4009,7 +4027,7 @@ body.app {
    mismo que las cartas de modo: en columnas de 110 px el nombre y la frase se
    parten en cuatro renglones apretados, y aquí además hay tres palabras más
    que enseñar. En fila cabe todo y las tres se comparan igual de bien. */
-.publicos { display: grid; gap: var(--e-2); }
+.publicos { display: grid; gap: var(--e-4); }
 
 .publico {
   position: relative;
