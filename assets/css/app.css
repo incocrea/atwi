@@ -2238,7 +2238,11 @@ body.app {
    además contrasta con ese arena, que el dorado de premio no hacía. */
 .categoria--propia {
   border: 2px dashed var(--lavanda-claro);
-  background: var(--lavanda-tinte);
+  /* EL MISMO FONDO QUE LAS TARJETAS DE TEMA (titular, 2026-09-17): es una mas
+     de la lista y se leia como un bloque aparte. Lo que la sigue distinguiendo
+     es lo que de verdad la distingue —el borde de puntos, el lavanda de su
+     texto y el signo de crear—, no una plancha de color detras. */
+  background: var(--carta-velo);
   box-shadow: none;
   margin-bottom: var(--e-3);
 }
@@ -2247,10 +2251,17 @@ body.app {
    texto arrancaría a 48 px del borde persiguiendo un hueco vacío. */
 .categoria--sin-emoji { grid-template-columns: 1fr auto; }
 .categoria--sin-emoji .categoria__n { display: grid; place-items: center; }
-.categoria--propia .categoria__nombre { color: var(--lavanda-oscuro); }
-.categoria--propia .categoria__que { color: var(--lavanda-oscuro); opacity: .82; }
+/* EL TEXTO TOMA EL COLOR DEL MODO (titular, 2026-09-17), el mismo
+   `--modo-fuerte` que llevan los chips de filtro puestos. Iba en lavanda de
+   marca, que es el color de la PORTADA: dentro del catálogo era el único
+   morado de la pantalla y la tarjeta se leía como si viniera de otro sitio.
+   El respaldo sigue siendo el lavanda, para cuando esta tarjeta se pinte fuera
+   del catálogo —donde no hay modo—. */
+.categoria--propia .categoria__nombre { color: var(--modo-fuerte, var(--lavanda-oscuro)); }
+.categoria--propia .categoria__que { color: var(--modo-fuerte, var(--lavanda-oscuro)); opacity: .82; }
 .categoria--propia .categoria__n {
-  color: var(--lavanda-oscuro); font-family: var(--display); font-size: var(--t-h3);
+  color: var(--modo-fuerte, var(--lavanda-oscuro));
+  font-family: var(--display); font-size: var(--t-h3);
 }
 
 .fila--entre { justify-content: space-between; align-items: center; }
@@ -4206,13 +4217,18 @@ body.app {
    de con quién juegas. Las tarjetas de tema pertenecen a la lista, y la lista
    es de la mesa: son los temas de la pareja, o los de los amigos. El modo ya
    está dicho arriba en la cinta y no necesita repetirse en cada tarjeta. */
-/* Tres tonos por mesa y cada uno tiene su trabajo: `--mesa` tiñe el fondo de
-   la carta, `--mesa-claro` el de las tarjetas de tema dentro de esa lista, y
-   `--mesa-fuerte` es el sólido de los chips, donde hace falta contraste contra
-   texto blanco. Los tres salen de la misma familia de color. */
-.publico--pareja,  #v-catalogo[data-paso="pareja"]  { --mesa: #FFE4EC; --mesa-claro: #FFF6F9; --mesa-fuerte: #E4658F; }
-.publico--amigos,  #v-catalogo[data-paso="amigos"]  { --mesa: #EDE6FF; --mesa-claro: #F8F5FF; --mesa-fuerte: #9B58C6; }
-.publico--familia, #v-catalogo[data-paso="familia"] { --mesa: #DDEEFF; --mesa-claro: #F4FAFF; --mesa-fuerte: #3D86DC; }
+/* ⚠️ ERAN TRES TONOS POR MESA Y QUEDA UNO. `--mesa` teñía el relleno de la
+   carta de «¿con quién juegas?» y `--mesa-claro` el de las tarjetas de tema;
+   los dos se fueron cuando esas piezas pasaron al velo blanco (2026-09-17), y
+   lo que quedaba eran dos variables declaradas que ya no leía nadie —lo mismo
+   que un PNG huérfano: se quedan ahí pareciendo que mandan algo—.
+   `--mesa-fuerte` es el que sigue, y ahora hace DOS trabajos que son el mismo:
+   el sólido de los chips y el borde de puntos de «Mis propios temas», las dos
+   piezas que dicen de quién es esta lista. Va en tono pleno porque en los chips
+   lleva texto blanco encima. */
+.publico--pareja,  #v-catalogo[data-paso="pareja"]  { --mesa-fuerte: #E4658F; }
+.publico--amigos,  #v-catalogo[data-paso="amigos"]  { --mesa-fuerte: #9B58C6; }
+.publico--familia, #v-catalogo[data-paso="familia"] { --mesa-fuerte: #3D86DC; }
 /* ⚠️ Y AQUÍ ESTABA EL RELLENO DE LA CARTA DE MESA —`linear-gradient(175deg,
    var(--mesa), var(--mesa-claro) 72%)`—, que se quitó con el de las de modo.
    Esta línea iba DESPUÉS de `.publico`, así que era ella y no la clase base
@@ -4220,15 +4236,18 @@ body.app {
    de arriba sin dar error. Los tres tonos de `--mesa` siguen en uso más abajo,
    en las tarjetas de tema y en los chips. */
 
-/* La de «Mis propios temas» toma el tinte de su mesa. El de respaldo es el
-   lavanda: fuera del catálogo —y en la pantalla de elegir mesa, donde todavía
-   no hay ninguna— `--mesa-claro` no existe.
-   ⚠️ LAS TARJETAS DE TEMA YA NO ENTRAN AQUÍ: desde el 2026-09-17 llevan el velo
-   blanco al 60 % y su regla está con `.tema-caja`. */
+/* ⚠️ AQUÍ VIVÍA EL TINTE POR MESA, Y YA NO LO LLEVA NADIE. Primero se fue el de
+   las tarjetas de tema y despues el de «Mis propios temas» (titular,
+   2026-09-17): las dos llevan el velo blanco. Lo que queda de la mesa en esta
+   tarjeta es el BORDE de puntos, que es donde el color no compite con el texto
+   ni con el fondo dibujado de la pantalla.
+   Y ES EL MISMO COLOR QUE LOS CHIPS (titular, 2026-09-17): `--mesa-fuerte`, el
+   solido de su mesa, y no el `color-mix` sobre `--mesa` que llevaba —un lavado
+   del tinte con un 8 % de tinta, que salia apagado justo al lado de los chips
+   que van en el tono pleno—. Dos piezas que dicen «esta lista es de la pareja»
+   tienen que decirlo con el mismo color. */
 #v-catalogo .categoria--propia {
-  background: linear-gradient(175deg, var(--mesa, var(--lavanda-tinte)),
-                                      var(--mesa-claro, var(--lavanda-tinte)) 80%);
-  border-color: color-mix(in srgb, var(--mesa, var(--lavanda-claro)) 70%, var(--tinta) 8%);
+  border-color: var(--mesa-fuerte, var(--lavanda-claro));
 }
 
 /* EL ICONO BAJÓ DE 88 A 76 px porque a ese tamaño se comía el ancho que
