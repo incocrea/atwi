@@ -186,12 +186,20 @@ window.ATWI = window.ATWI || {};
   }
 
   /* --- Piezas de pantalla ---------------------------------------------------- */
-  function cabeza(emoji, titulo, bajada) {
+  /* `pieza` es el logotipo (null), un icono ILUSTRADO ya montado —que viene
+     como HTML y trae su propio tamaño— o, mientras no haya dibujo para ese
+     concepto, un emoji del sistema, que sí necesita que alguien le diga de qué
+     tamaño va. De ahí el `charAt`: no es adivinar, es distinguir una pieza que
+     ya sabe medirse de un carácter que no. */
+  function cabeza(pieza, titulo, bajada) {
+    var esHTML = typeof pieza === 'string' && pieza.charAt(0) === '<';
     return '<div class="centrado" style="padding:var(--e-5) 0 var(--e-5)">' +
-        (emoji === null
+        (pieza === null
           ? '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70" ' +
             'style="margin:0 auto;height:58px;width:auto">'
-          : '<div style="font-size:3.25rem;line-height:1">' + emoji + '</div>') +
+          : esHTML
+            ? '<div style="line-height:1">' + pieza + '</div>'
+            : '<div style="font-size:3.25rem;line-height:1">' + pieza + '</div>') +
         '<h1 style="margin-top:var(--e-3)">' + esc(titulo) + '</h1>' +
         '<p class="chico suave" style="margin-top:var(--e-2)">' + bajada + '</p>' +
       '</div>';
@@ -246,7 +254,7 @@ window.ATWI = window.ATWI || {};
 
     } else if (p === 'revisa') {
       caja.innerHTML =
-        cabeza('📬', 'Mira tu correo',
+        cabeza(icono('buzon', 76), 'Mira tu correo',
                'Mandamos un enlace a <strong>' + esc(estado.correo) + '</strong>. Ábrelo en este mismo teléfono y entras solo.') +
         '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
           '<p class="chico suave">¿No llega? Mira en el correo no deseado. El enlace caduca en una hora.</p>' +

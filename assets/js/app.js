@@ -1235,7 +1235,7 @@
 
         (temas.length
           ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
-          : estadoVacio('🔍', 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+          : estadoVacio(icono('lupa', 76), 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
       devolverFoco();
     }).catch(function () {
       caja.innerHTML = estadoVacio('😕', 'No se pudo cargar el catálogo', 'Comprueba que estás sirviendo el sitio con tools/servir.ps1 y no abriendo el archivo directamente.');
@@ -1258,7 +1258,7 @@
     var titulo = '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">Historial</h1>';
 
     if (!window.ATWI.nube || !window.ATWI.nube.hay()) {
-      caja.innerHTML = titulo + estadoVacio('📜', 'Entrá con tu cuenta',
+      caja.innerHTML = titulo + estadoVacio(icono('historial', 76), 'Entrá con tu cuenta',
         'El historial vive en el servidor, para que lo tengas en cualquier teléfono. ' +
         'Sin sesión no hay nada que traer.');
       return;
@@ -1283,7 +1283,7 @@
          (2026-09-15): ahora entran y se retoman. Lo que sí sigue siendo verdad
          es que una ronda sin ninguna intervención no aparece: no hay nada que
          oír ni que seguir. */
-      caja.innerHTML = titulo + estadoVacio('📜', 'Todavía no hay nada',
+      caja.innerHTML = titulo + estadoVacio(icono('historial', 76), 'Todavía no hay nada',
         'Aquí van a estar sus partidas: las terminadas, con su resultado, y las que ' +
         'dejaron a medias, para seguirlas cuando quieran. El historial nunca se ' +
         'sobrescribe: una revancha añade una versión nueva y la anterior sigue ahí.');
@@ -1312,7 +1312,7 @@
             'Jugar cada quien desde su teléfono —mandar lo tuyo y que te avise ' +
             'cuando conteste la otra parte— es lo que sigue. Por ahora las ' +
             'partidas son las de este teléfono, y están en la otra pestaña.')
-        : estadoVacio('📜', 'Ninguna partida en este teléfono',
+        : estadoVacio(icono('historial', 76), 'Ninguna partida en este teléfono',
             'Aquí van las que juegan los dos sentados en el mismo móvil.'))) +
       lista.map(function (d) {
         var t = d.turnos_grabados || [];
@@ -1816,7 +1816,7 @@
       return;
     }
     if (!actas.length) {
-      caja.innerHTML = cabecera + estadoVacio('🤝', 'Todavía no hay actas',
+      caja.innerHTML = cabecera + estadoVacio(icono('negociacion', 76), 'Todavía no hay actas',
         'Cuando cierren una Negociación —con acuerdo o sin él— queda aquí lo que ' +
         'quedaron. Es un recordatorio, no un contrato.');
       return;
@@ -2290,7 +2290,7 @@
          antes vivían en una tarjeta de la portada. */
       var esperan = partidasQueEsperan();
       if (!lista.length && !esperan.length) {
-        caja.innerHTML = estadoVacio('📭', 'Buzón vacío',
+        caja.innerHTML = estadoVacio(icono('buzon', 76), 'Buzón vacío',
           'Aquí llegan las invitaciones a debatir, los avisos de que te toca grabar y los resultados.');
         return;
       }
@@ -3143,7 +3143,7 @@
 
     $('#m-invitar .modal__cuerpo').innerHTML =
       '<div class="centrado" style="padding:var(--e-6) 0">' +
-        '<div style="font-size:3.5rem;margin-bottom:var(--e-3)">📨</div>' +
+        '<div style="margin-bottom:var(--e-3)">' + icono('buzon', 76) + '</div>' +
         '<h2 style="margin-bottom:var(--e-2)">Propuesta lista</h2>' +
         '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
           'Le vas a proponer <strong>' + esc(t.titulo) + '</strong> en modo ' +
