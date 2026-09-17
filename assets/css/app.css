@@ -441,8 +441,12 @@ body.app {
   /* TRES COLUMNAS: el rótulo, el texto y el hueco del disco. El `1fr` del
      medio es `minmax(0, 1fr)` por lo de siempre —si no, el texto más largo
      ensancha la fila y el home scrollea de lado—. */
+  /* CENTRADO VERTICAL (titular, 2026-09-16). Iba con `align-content: start`,
+     que empaqueta la fila contra el techo: el rótulo quedaba arriba y el resto
+     del alto era hueco. Sin él, la fila se estira al alto de la carta y
+     `align-items: center` deja el dibujo y su línea en el medio. */
   display: grid; grid-template-columns: 146px minmax(0, 1fr);
-  gap: 4px; align-items: center; align-content: start;
+  gap: 4px; align-items: center;
   /* EL PADDING DERECHO ES EL SITIO DE LA BOMBILLA, y se mide contra ella: 48
      de disco más 8 de aire a cada lado. Con el rótulo a 146 px, cada píxel que
      se le quite de más al texto lo parte en un renglón más: quedan 123.
@@ -450,7 +454,10 @@ body.app {
      rótulo y la línea de texto estaban pegados al techo de la carta mientras
      el zócalo se hundía por abajo, y entre los dos dejaban la fila descuadrada
      hacia arriba. */
-  width: 100%; min-height: var(--alto-carta); padding: 20px 58px 10px 8px;
+  /* Y EL PADDING VERTICAL, SIMÉTRICO: con 20 arriba y 10 abajo el centro caía
+     cinco píxeles por encima del de la carta, que es justo lo que se estaba
+     corrigiendo. */
+  width: 100%; min-height: var(--alto-carta); padding: 12px 58px 12px 8px;
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
   box-shadow: var(--sombra-2);
@@ -562,12 +569,12 @@ body.app {
      tamaño. Lo que hace el blur es mandarla al fondo sin bajarle la opacidad
      —rebajada se vería lavada, desenfocada sigue teniendo su color—, y de paso
      despega el texto de encima, que es lo único que tiene que estar nítido.
-     Empezó en 4 px y el titular lo bajó a un tercio (2026-09-16): a 4 la pieza
-     se leía como una mancha de color y perdía los corazones y las estrellas,
-     que son lo que la hace decorativa. A 1,3 solo se le quita el filo del
-     contorno —lo justo para que no compita con el texto— y el dibujo sigue
+     Se afinó en tres pasadas (titular, 2026-09-16): 4 px dejaba la pieza como
+     una mancha de color y le comía los corazones y las estrellas, que son lo
+     que la hace decorativa; 1,3 se quedaba corto. A 2,1 pierde el filo del
+     contorno —lo justo para no competir con el texto— y el dibujo sigue
      reconociéndose. Es el mando para ajustarlo. */
-  filter: blur(1.3px);
+  filter: blur(2.1px);
 }
 .carta-modo__rotulo, .carta-modo__gancho,
 .publico__alto, .publico__texto { position: relative; z-index: 1; }
@@ -3987,7 +3994,7 @@ body.app {
 .publico {
   position: relative;
   display: grid; grid-template-columns: 76px minmax(0, 1fr);
-  gap: var(--e-2); align-items: start; align-content: start;
+  gap: var(--e-2); align-items: center;
   min-height: var(--alto-carta); padding: var(--e-3);
   border: 0; border-radius: var(--radio-carta); overflow: hidden;
   text-align: left; font: inherit; color: var(--tinta);
@@ -4027,12 +4034,11 @@ body.app {
   border-color: color-mix(in srgb, var(--mesa, var(--lavanda-claro)) 70%, var(--tinta) 8%);
 }
 
-/* EL ICONO SUBE Y SE ENCOGE (titular, 2026-09-16). Iba centrado en la fila y
-   a 88 px: centrado caía sobre el zócalo —que se hunde por abajo— y a ese
-   tamaño se comía el ancho que necesitan los tres chips. Arriba queda a la
-   altura del nombre, que es con lo que se lee en pareja. Los 4 px de margen
-   son para que su perfil blanco no toque el canto del texto. */
-.publico__alto { display: block; margin-top: 4px; }
+/* EL ICONO BAJÓ DE 88 A 76 px porque a ese tamaño se comía el ancho que
+   necesitan los tres chips. Va centrado vertical, como el rótulo del modo:
+   estuvo arriba un rato para apartarlo del zócalo, y con el zócalo ya hundido
+   y desenfocado eso dejó de hacer falta. */
+.publico__alto { display: block; }
 .publico__alto .ico { width: 100%; height: auto; display: block; }
 
 /* EL TEXTO VA A LA DERECHA (titular, 2026-09-16). El dibujo manda a la
