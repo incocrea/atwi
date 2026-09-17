@@ -131,7 +131,10 @@ window.ATWI = window.ATWI || {};
      juego con su logo —la copa es dorada— y con lo que el modo promete, que es
      ganar algo. El morado que quedaba reservado «para el modo que falta» no era
      de éste: su peana y su logo son azules. */
-  var TINTE_DE_MODO = { debate: 'coral', negociacion: 'menta', competencia: 'sol' };
+  /* QuiénGane pasó de `sol` a `azul` el 2026-09-17, en cuanto la plancha trajo
+     la bombilla azul: la dorada era un apaño —«azul no hay»— y su carta, su
+     peana y su logo siempre fueron azules. */
+  var TINTE_DE_MODO = { debate: 'coral', negociacion: 'menta', competencia: 'azul' };
 
   /** `ATWI.iconoDeModo('ayuda', 'debate')` -> el `ayuda-coral`. */
   window.ATWI.iconoDeModo = function (nombre, modo, tam) {

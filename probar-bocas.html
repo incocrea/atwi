@@ -831,7 +831,7 @@ function arranque(q) {
    emoción, las pausas y el énfasis los pone la voz leyendo el texto, y Azure
    ignora `<prosody>` y `express-as` en ellas. Enseñar los deslizadores sería
    prometer un ajuste que no hace nada. */
-function esHD(voz) { return /:DragonHD/.test(voz || ''); }
+function esHD(voz) { return /:DragonHD|:MAI-Voice-2/.test(voz || ''); }
 /* La temperatura es el único ajuste de una voz HD: 0 a 1, y Azure arranca en
    1.0. Baja = más estable entre tomas, alta = más expresiva. */
 function temperaturaDe(v) { var t = Number(v && v.temperatura); return (!t || isNaN(t)) ? 1 : t; }
@@ -897,7 +897,8 @@ function probarAsi(q) {
 }
 
 function corto(v) {
-  return (v || '—').replace(/^es-[A-Z]{2}-/, '').replace(':DragonHDLatestNeural', ' HD').replace('Neural', '');
+  return (v || '—').replace(/^es-[A-Z]{2}-/, '').replace(':DragonHDLatestNeural', ' HD')
+                   .replace(':MAI-Voice-2', ' MAI').replace('Neural', '');
 }
 
 /* ¿Este personaje se movio de lo que hay desplegado? Es lo que decide si sale
@@ -983,9 +984,12 @@ function pintarVoces() {
               elegida.ritmo + '" min="-25" max="40" step="1" style="width:150px">' +
               '<output data-eco="ritmo-' + q + '">' + (elegida.ritmo >= 0 ? '+' : '') +
               elegida.ritmo + '%</output></label>' +
+            /* MAI-Voice-2 trae estilos y los obedece (medido); DragonHD no tiene
+               ninguno, así que `estiloHTML` no pinta nada ahí. */
+            estiloHTML(q, elegida) +
             '<span class="chico">✦ voz HD: la emoción, las pausas y el énfasis los pone la voz ' +
-            'leyendo el texto. Se ajustan la temperatura (baja, más estable; alta, más expresiva) ' +
-            'y el ritmo. El tono no: medido, la voz lo ignora.</span>'
+            'leyendo el texto. Se ajustan la temperatura (baja, más estable; alta, más expresiva), ' +
+            'el ritmo y, si la voz los trae, el estilo. El tono no: medido, la voz lo ignora.</span>'
           : '<label>tono <input type="range" data-tono="' + q + '" value="' +
               elegida.tono + '" min="-30" max="60" step="1" style="width:150px">' +
               '<output data-eco="tono-' + q + '">' + (elegida.tono >= 0 ? '+' : '') +

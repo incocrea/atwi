@@ -93,11 +93,12 @@ body.app {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--e-3);
+  gap: var(--e-2);
   padding: calc(env(safe-area-inset-top, 0px) + var(--e-4)) var(--borde-pantalla) var(--e-3);
   background: var(--ctx-fondo);
   transition: background var(--dur-media) var(--suave);
 }
+.cabecera > div:first-child { min-width: 0; }
 .cabecera__titulo { font-family: var(--display); font-size: var(--t-h2); font-weight: 800; }
 /* EL ESLOGAN. No describe el producto —«juego de debate» ya lo dice el
    logotipo— sino lo que promete: que se puede arreglar algo sin dejar de
@@ -108,11 +109,19 @@ body.app {
   /* A 13 px no cabía en los 186 px que deja la cabecera y partía en dos
      renglones, que en una cabecera se paga en todas las pantallas. */
   font-size: var(--t-mini); color: var(--tinta-suave); margin-top: 2px;
-  white-space: nowrap;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cabecera__sub b { color: var(--lavanda-oscuro); font-weight: 800; }
 
-.monedero { display: flex; gap: var(--e-2); align-items: center; }
+/* ⚠️ CON CUATRO PIEZAS LA CABECERA YA NO CABÍA A 375 (2026-09-17). Medido: el
+   eslogan ocupa 176 px y no puede partirse —lo dice su propia regla—, y cuatro
+   discos de 38 con 8 de hueco son otros 176; con los paddings, 400 en 375. El
+   avatar se salía 7 px del marco.
+   DE DÓNDE SALE EL ESPACIO: los discos bajan a 34 y el hueco a 6 (154), y el
+   hueco de la cabecera de 12 a 8. Quedan 177 para 176. Y el bloque del logotipo
+   lleva `min-width: 0`, que es la red: si en algún teléfono la fuente mide un
+   pelo más, lo que se recorta es el ESLOGAN y no un control. */
+.monedero { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
 /* Los contadores de la cabecera son premio: van en cálido. */
 .monedero__dato {
   display: inline-flex;
@@ -136,15 +145,26 @@ body.app {
    LA INSIGNIA VA EN LAVANDA Y NO EN CORAL: el coral es el del buzón, que avisa
    de algo que hay que mirar, y aquí no hay nada que mirar —es un saldo—. Con
    los dos en rojo, la cabecera tendría dos alarmas en vez de una. */
-.vidas {
+.vidas, .ayuda-cabecera {
   position: relative;
-  width: 38px; height: 38px;
+  width: 34px; height: 34px;
   display: grid; place-items: center;
   border-radius: var(--radio-pastilla);
   background: var(--superficie);
   box-shadow: var(--sombra-1);
 }
-.vidas .ico { width: 24px; height: 24px; }
+.vidas .ico { width: 22px; height: 22px; }
+
+/* EL SIGNO DE AYUDA, TAMBIÉN EN LA CABECERA (titular, 2026-09-17) y el primero
+   de los tres. Es un BOTÓN —los otros dos son indicadores— así que lo único que
+   añade sobre el disco común es que se pueda pulsar. El globo sale de aquí sin
+   tocar nada: se cuelga del botón y, como está arriba del todo, baja solo. */
+.ayuda-cabecera {
+  border: 0; padding: 0; cursor: pointer; font: inherit;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.ayuda-cabecera .ico { width: 24px; height: 24px; }
+.ayuda-cabecera:active { transform: scale(.9); }
 .vidas__cuenta {
   position: absolute; top: -3px; right: -3px;
   min-width: 18px; height: 18px; padding: 0 4px;
@@ -430,7 +450,8 @@ body.app {
    lado: dos botones juntos que no miden lo mismo se leen como dos cosas de
    distinta importancia, y aquí son lo mismo. */
 .avatar--cabecera {
-  width: 38px; height: 38px; font-size: 1.1rem; border: 0; padding: 0; cursor: pointer;
+  /* 34 como sus tres vecinos: son una fila y si uno mide distinto se ve. */
+  width: 34px; height: 34px; font-size: 1.1rem; border: 0; padding: 0; cursor: pointer;
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55), var(--sombra-1);
 }
 .avatar--cabecera[hidden] { display: none; }
@@ -1914,7 +1935,7 @@ body.app {
 /* --- El buzón ------------------------------------------------------------------ */
 .buzon-boton {
   position: relative;
-  width: 38px; height: 38px;
+  width: 34px; height: 34px;
   display: grid; place-items: center;
   border: 0; cursor: pointer;
   border-radius: var(--radio-pastilla);
@@ -4416,20 +4437,3 @@ body.app {
    estaba la suya. No se oculta del todo: el hueco vacío se nota más. */
 [data-globo-abierto] { opacity: .2; transition: opacity var(--dur-corta) var(--suave); }
 
-/* --- El signo suelto que lo abre --------------------------------------------
-   Centrado en su propio renglón bajo las cartas. Es más grande que el de las
-   cartas (56 contra 48) porque allí acompaña a un rótulo dibujado y aquí está
-   solo: al mismo tamaño se leería como un resto de la carta de arriba. */
-.ayuda-suelta { display: flex; justify-content: center; margin-top: var(--e-5); }
-.ayuda-suelta__signo {
-  border: 0; background: none; padding: 4px; cursor: pointer; line-height: 0;
-  transition: transform var(--dur-corta) var(--suave);
-}
-.ayuda-suelta__signo .ico { width: 56px; height: 56px; }
-.ayuda-suelta__signo:active { transform: scale(.9); }
-/* Puesto, se queda un punto más grande: el globo está abierto por él. */
-.ayuda-suelta__signo[aria-expanded="true"] { transform: scale(1.06); }
-@media (prefers-reduced-motion: reduce) {
-  .ayuda-suelta__signo, .ayuda-suelta__signo:active,
-  .ayuda-suelta__signo[aria-expanded="true"] { transition: none; transform: none; }
-}

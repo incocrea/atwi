@@ -11,11 +11,11 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo como adulto, Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=f2c13c7">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=f2c13c7">
-<link rel="stylesheet" href="../assets/css/base.css?v=f2c13c7">
-<link rel="stylesheet" href="../assets/css/app.css?v=f2c13c7">
-<link rel="stylesheet" href="../assets/css/modal.css?v=f2c13c7">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=c79b7a8">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=c79b7a8">
+<link rel="stylesheet" href="../assets/css/base.css?v=c79b7a8">
+<link rel="stylesheet" href="../assets/css/app.css?v=c79b7a8">
+<link rel="stylesheet" href="../assets/css/modal.css?v=c79b7a8">
 </head>
 
 <body class="app">
@@ -28,6 +28,17 @@
       <div class="cabecera__sub">¡Resuélvelo como adulto, <b>Jugando!</b></div>
     </div>
     <div class="monedero">
+      <!-- EL AVISO DE IA VIVE AQUÍ (titular, 2026-09-17), y es el PRIMERO. Bajo
+           las cartas era un signo suelto en mitad de la portada; arriba está
+           con los otros dos indicadores, con el mismo disco, y el globo sale
+           igual: se cuelga de este botón y baja. Se queda en el HTML y no en
+           `pintarJugar` porque la cabecera es fija y no se repinta con la
+           vista. -->
+      <button class="ayuda-cabecera" data-globo="descargo" aria-expanded="false"
+              aria-label="Qué hace la IA en ATWI" title="Qué hace la IA en ATWI">
+        <span data-icono="ayuda-morado" data-tam="26"></span>
+      </button>
+
       <!-- VIDAS, NO ENERGÍA (titular, 2026-09-17). Era una pastilla con el rayo
            y un contador de «puntos de razón» que nadie actualizaba nunca. Ahora
            es un corazón con el número de vidas, y se presenta COMO EL BUZÓN
@@ -309,18 +320,18 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=f2c13c7"></script>
-<script src="../assets/js/precarga.js?v=f2c13c7"></script>
-<script src="../assets/js/iconos.js?v=f2c13c7"></script>
-<script src="../assets/js/personajes.js?v=f2c13c7"></script>
-<script src="../assets/js/datos.js?v=f2c13c7"></script>
-<script src="../assets/js/sonido.js?v=f2c13c7"></script>
-<script src="../assets/js/veredicto.js?v=f2c13c7"></script>
-<script src="../assets/js/grabadora.js?v=f2c13c7"></script>
-<script src="../assets/js/partida.js?v=f2c13c7"></script>
-<script src="../assets/js/auth.js?v=f2c13c7"></script>
-<script src="../assets/js/entrada.js?v=f2c13c7"></script>
-<script src="../assets/js/nube.js?v=f2c13c7"></script>
-<script src="../assets/js/app.js?v=f2c13c7"></script>
+<script src="../assets/js/config.js?v=c79b7a8"></script>
+<script src="../assets/js/precarga.js?v=c79b7a8"></script>
+<script src="../assets/js/iconos.js?v=c79b7a8"></script>
+<script src="../assets/js/personajes.js?v=c79b7a8"></script>
+<script src="../assets/js/datos.js?v=c79b7a8"></script>
+<script src="../assets/js/sonido.js?v=c79b7a8"></script>
+<script src="../assets/js/veredicto.js?v=c79b7a8"></script>
+<script src="../assets/js/grabadora.js?v=c79b7a8"></script>
+<script src="../assets/js/partida.js?v=c79b7a8"></script>
+<script src="../assets/js/auth.js?v=c79b7a8"></script>
+<script src="../assets/js/entrada.js?v=c79b7a8"></script>
+<script src="../assets/js/nube.js?v=c79b7a8"></script>
+<script src="../assets/js/app.js?v=c79b7a8"></script>
 </body>
 </html>

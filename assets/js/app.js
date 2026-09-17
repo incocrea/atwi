@@ -314,26 +314,6 @@
         cartaModo('competencia') +
       '</div>' +
 
-      /* EL AVISO DE IA PASA A UN SIGNO (titular, 2026-09-17), y es la primera
-         prueba del GLOBO. Eran cuatro renglones de letra pequeña al pie de la
-         portada: ocupaban el sitio de la tercera carta y, por estar siempre,
-         se leían una vez y nunca más. Ahora es la bombilla morada —el lavanda
-         de la marca, el color de esta pantalla— centrada bajo las cartas, y lo
-         que dice sale en un globo que nace de ella.
-         ⚠️ ESTO LO DEJA A UN TOQUE Y NO A LA VISTA: `config.js` dice que el
-         descargo «protege y hay que tenerlo siempre a la vista». La decisión es
-         del titular y está anotada; si el descargo tiene que verse sin tocar
-         nada, este es el sitio donde volver.
-         UN POCO MÁS GRANDE QUE EL DE LAS CARTAS (56 contra 48): allí la
-         bombilla acompaña a un rótulo dibujado y aquí está sola en su renglón;
-         al mismo tamaño se leería como un resto de la carta de arriba. */
-      '<div class="ayuda-suelta">' +
-        '<button class="ayuda-suelta__signo" data-globo="descargo" ' +
-                'aria-expanded="false" aria-label="Qué hace la IA en ATWI" ' +
-                'title="Qué hace la IA en ATWI">' +
-          window.ATWI.icono('ayuda-morado', 56) +
-        '</button>' +
-      '</div>' +
 
       /* EL PROBADOR, Y SOLO PARA QUIEN PUEDE VERLO. Aquí había cinco botones
          sueltos, uno por caso, con todo lo demás cerrado: el juez salía por
