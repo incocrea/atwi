@@ -466,10 +466,11 @@ body.app {
    mide 70 px de alto, así que con 108 al contenido le quedaban 38 y el rótulo
    dibujado del modo ya mide 54. Lo que se mantiene es lo que se pidió: que las
    seis midan lo mismo. */
-/* Y DE 132 A 172 px, un 30 % más (titular, 2026-09-17). Sube solo el alto de
-   la carta: el rótulo, el icono de la mesa y la peana conservan su tamaño y el
-   centrado vertical reparte el aire nuevo por arriba y por abajo. */
-:root { --alto-carta: 172px; }
+/* Y DE 132 A 172 px, un 30 % más (titular, 2026-09-17), y después A 155, un
+   10 % menos sobre eso (titular, el mismo día, al verlas puestas). Sube solo el
+   alto de la carta: el rótulo, el icono de la mesa y la peana conservan su
+   tamaño y el centrado vertical reparte el aire por arriba y por abajo. */
+:root { --alto-carta: 155px; }
 /* EL HUECO ENTRE CARTAS, AL DOBLE (titular, 2026-09-16): de 8 a 16 px. Con las
    peanas desenfocadas asomando por el pie de cada una, 8 px dejaban el zócalo
    de una casi tocando el techo de la siguiente y la columna se leía como un
