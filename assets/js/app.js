@@ -1035,6 +1035,14 @@
      no hay que ir a buscarlas.
      Se decide por `propuesta.modo` y no por un parámetro, porque las cuatro
      salen de la misma pantalla y esa pantalla ya sabe a qué se está jugando. */
+  /* LA VARIANTE DE COLOR DEL BOTÓN, según el modo que se está jugando. El
+     respaldo NO es cadena vacía: `boton--` a secas es una clase que no existe y
+     el botón saldría en el lavanda de fábrica sin que nada avisara. */
+  function claseDeModo() {
+    var m = propuesta.modo;
+    return m === 'negociacion' || m === 'competencia' ? m : 'debate';
+  }
+
   function palabras() {
     var premio = propuesta.modo === 'competencia';
     return premio ? {
@@ -1150,7 +1158,13 @@
             '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
           '</div>' +
 
-          '<button class="boton boton--bloque" data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
+          /* EN EL COLOR DEL MODO (titular, 2026-09-17), no en el lavanda de
+             marca. Es el único botón sólido de esta pantalla, y la pantalla
+             entera ya es del modo —el fondo, la cinta de arriba, los chips de
+             filtro y el borde de «Mis propios temas»—: en lavanda era lo único
+             que venía de otro sitio. */
+          '<button class="boton boton--bloque boton--' + claseDeModo() + '" ' +
+            'data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
             icono('mas', 20) + esc(palabras().escribir) + '</button>' +
 
           (temas.length
