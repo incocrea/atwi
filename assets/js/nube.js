@@ -431,7 +431,65 @@ window.ATWI = window.ATWI || {};
    * veredicto y no cuesta nada la segunda. Asi que se puede pedir en cuanto
    * entra el ultimo turno, sin esperar a que la persona toque nada.
    */
+  /**
+   * EL VEREDICTO SE ENCOLA Y SE SONDEA; YA NO SE LLAMA AL JUEZ Y SE ESPERA
+   * (migración 0046, 2026-09-17). Dos motivos, los dos medidos en el banco:
+   * si la persona cierra la app en «deliberando» no quedaba nadie pidiendo, y
+   * una ronda pareja hace razonar al juez más de lo que cabe en una petición
+   * —cuatro 504 sobre el mismo material—. Ahora el trabajo vive en la base:
+   * `pedir_veredicto()` asegura la fila en la cola (es idempotente: pulsarlo
+   * diez veces no gasta diez veces) y esto pregunta cada pocos segundos hasta
+   * `listo` o `fallido`. Devuelve la MISMA forma que antes —`{resultado}`—
+   * para que `partida.js` no cambie ni una línea.
+   */
   function arbitrar(debate, variante) {
+    if (!hayNube()) return Promise.resolve(apuntar('sin servidor ni sesión'));
+    var desde = Date.now();
+    var cab = { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(),
+                'Content-Type': 'application/json' };
+    function mal(clave, que) {
+      apuntar(que);
+      anotar(clave, { debate: debate, datos: { ms: Date.now() - desde } });
+      return null;
+    }
+    function consultar() {
+      return fetch(cfg.supabaseUrl + '/rest/v1/cola_veredictos?debate=eq.' + debate +
+                   '&select=estado,paso,error', { headers: cab })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (f) { return f && f[0] || null; });
+    }
+    function resultado() {
+      return fetch(cfg.supabaseUrl + '/rest/v1/resultados?debate=eq.' + debate + '&select=*',
+                   { headers: cab })
+        .then(function (r) { return r.ok ? r.json() : []; })
+        .then(function (f) { return f && f[0] ? { resultado: f[0] } : mal('veredicto_sin_fila', 'la cola dice listo y no hay fila'); });
+    }
+    /* Hasta veinte minutos: tres pasos de hasta cuatro minutos más el recogedor,
+       que vuelve a empujar a los siete. Más que eso es un fallo, y se dice. */
+    var tope = Date.now() + 20 * 60 * 1000;
+    function esperar() {
+      return consultar().then(function (c) {
+        if (!c) return mal('veredicto_sin_cola', 'la partida no está en la cola');
+        if (c.estado === 'listo') return resultado();
+        if (c.estado === 'fallido') return mal('veredicto_fallido', c.error || 'el juez no terminó');
+        if (Date.now() > tope) return mal('veredicto_tarda', 'el juez lleva más de veinte minutos');
+        return new Promise(function (ok) { setTimeout(ok, 4000); }).then(esperar);
+      });
+    }
+    return fetch(cfg.supabaseUrl + '/rest/v1/rpc/pedir_veredicto', {
+      method: 'POST', headers: cab,
+      body: JSON.stringify({ p_debate: debate, p_variante: variante || null })
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { return mal('veredicto_http_' + r.status, 'no se pudo encolar: ' + t.slice(0, 200)); });
+      return esperar();
+    }, function (e) {
+      return mal('veredicto_red', 'sin red al encolar: ' + String(e && e.message || e));
+    });
+  }
+
+  /* El camino viejo: llamar al juez y esperar la respuesta. Se queda para el
+     tablero y las herramientas, y como testigo de por qué se cambió. */
+  function arbitrarDirecto(debate, variante) {
     if (!hayNube()) return Promise.resolve(apuntar('sin servidor ni sesión'));
     /* CADA CAMINO DE FALLO SE ANOTA, Y CON SU NOMBRE. Un solo
        `veredicto_fallo` para los cuatro obligaría a leer el texto libre para
