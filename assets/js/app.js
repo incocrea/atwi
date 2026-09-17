@@ -3932,7 +3932,42 @@
     vigilarLaVersion();
   }
 
+  /* EL VISOR DE LA LANDING (titular, 2026-09-17). Con `?demo=1` la app no es la
+     app: es una partida de ejemplo corriendo sola dentro del marco de teléfono
+     de la landing, que la embebe en un iframe. Se entra por aquí y no por una
+     página aparte porque lo que hay que enseñar —el sorteo, el reproductor, el
+     veredicto— es código del juego, y una copia se habría desincronizado a la
+     primera semana.
+
+     ⚠️ NO PASA POR LA PUERTA Y NO PUEDE HACERLO: la landing la ve alguien que
+     todavía no tiene cuenta, que es justamente a quien hay que convencer. Es
+     seguro porque el demo no escribe NADA —ni en la base, ni en el perfil, ni
+     en el catálogo de jugados— y no lee nada de la red: los datos están
+     congelados en `demo.js` y los audios en `assets/audio/demo/`.
+     Y no se puede activar por accidente: hace falta escribir el parámetro.
+
+     LA BARRA Y LA CABECERA NO SALEN. Son la navegación del juego —perfil,
+     historial, buzón— y aquí no llevan a ninguna parte: lo que se enseña es una
+     partida, no una app que se pueda recorrer. */
+  function modoDemo() {
+    return /[?&]demo=1/.test(location.search) && window.ATWI.demo;
+  }
+
+  function arrancarDemo() {
+    document.body.dataset.demo = '1';
+    var p = $('#puerta');
+    if (p) p.hidden = true;
+    $$('[data-icono]').forEach(function (el) {
+      el.innerHTML = icono(el.dataset.icono, Number(el.dataset.tam) || 22);
+    });
+    /* Salir de cualquiera de las tres escenas vuelve a empezar, que es lo que
+       pidió el titular: «con el botón salir se reinicia el demo». */
+    window.ATWI.alTerminarEnsayo = function () { window.ATWI.partida.demoDeLanding(); };
+    window.ATWI.partida.demoDeLanding();
+  }
+
   function abrir() {
+    if (modoDemo()) return arrancarDemo();
     // Nadie entra al juego sin pasar por la puerta. En modo local basta el nombre.
     window.ATWI.entrada.exigir(arrancar);
   }

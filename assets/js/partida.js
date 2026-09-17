@@ -529,7 +529,12 @@ window.ATWI = window.ATWI || {};
       return votar();
     }
 
-    if (P.repaso) return cerrar();
+    if (P.repaso) {
+      /* En la demo, salir no es irse: es volver a empezar. */
+      cerrar();
+      if (P.demo && window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
+      return;
+    }
     if (P.ensayo) {
       cerrar();
       if (window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
@@ -2789,7 +2794,7 @@ window.ATWI = window.ATWI || {};
     var a = b.dataset.accion;
     if (a === 'p-cerrar-detalle') { var d = $('#p-detalle'); if (d) d.remove(); return; }
     if (a === 'p-oir-todo') { oir('i0'); return; }
-    if (a === 'p-listo') pintarTurno();
+    if (a === 'p-listo') { if (P.demo) demoLaRonda(); else pintarTurno(); }
     else if (a === 'p-grabar') empezarAGrabar(false);
     else if (a === 'p-agregar') empezarAGrabar(true);
     else if (a === 'p-parar') pausarGrabacion();
@@ -3039,7 +3044,60 @@ window.ATWI = window.ATWI || {};
     };
   }
 
+  /* ==========================================================================
+     EL VISOR DE LA LANDING (peticion del titular, 2026-09-17)
+
+     Ensena una partida de verdad a quien todavia no ha entrado: el sorteo, la
+     ronda ya jugada con su reproductor y el veredicto con su ceremonia. Tres
+     escenas que el juego YA SABE HACER, asi que aqui no se dibuja nada nuevo:
+     se encadenan `ensayarLaEntrada` -> `repasar` -> `revelar`, que son las
+     mismas funciones que corren en una partida real. Lo que se ve en la landing
+     no se parece al juego: ES el juego.
+
+     ⚠️ Y NO CONSULTA NADA, que es la pregunta que hizo el titular —«¿como
+     logramos que si se elimina esa partida no se rompa la landing?»—. Los datos
+     estan congelados en `demo.js` y los audios en `assets/audio/demo/`, los dos
+     escritos una sola vez por `tools/demo_landing.py`. Las intervenciones
+     llegan con su `url` ya puesta, y eso es lo que evita la unica llamada que
+     quedaba: `oirDelAlmacen` solo se pide cuando la url viene vacia.
+
+     EL SORTEO ES DE VERDAD, sin el resultado puesto: la ficha cae donde caiga,
+     como en una partida. Lo que viene detras es la ronda que se jugo, y esa si
+     tiene su orden fijo —lo dice `abre_lado`—, asi que las dos cosas no se
+     contradicen: el sorteo de la escena 1 decide quien ABRE la ceremonia, y el
+     repaso de la escena 2 se monta con el orden real de la partida. */
+  function demoDeLanding() {
+    var d = window.ATWI.demo;
+    if (!d) return;
+    ensayarLaEntrada({
+      modo: d.modo,
+      juez: d.juez,
+      publico: 'pareja',
+      tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+      quien: [
+        { nombre: d.propone_nombre, avatar: d.propone_avatar,
+          color: d.propone_color, abogado: d.abogado_propone },
+        { nombre: d.invitado_nombre, avatar: d.invitado_avatar,
+          color: d.invitado_color, abogado: d.abogado_invitado }
+      ]
+    });
+    /* Marca las DOS escenas. `ensayo` ya viene de `mesaDeEnsayo` y sirve para
+       que nada se anote; `demo` es lo que decide que al pulsar «Empezar» se
+       vaya al repaso en vez de a la grabadora, y que al salir se reinicie. */
+    P.demo = true;
+  }
+
+  /* La segunda escena: la ronda ya jugada. Se entra por `repasar`, el mismo
+     camino que una partida del historial, con el debate congelado como si
+     viniera del servidor. */
+  function demoLaRonda() {
+    repasar(window.ATWI.demo, {});
+    P.demo = true;
+    P.ensayo = true;   /* que no cuente ni sello ni contadores al cerrarse */
+  }
+
   window.ATWI.partida = { empezar: empezar, repasar: repasar, reanudar: reanudar,
                           cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal,
-                          ensayarLaEntrada: ensayarLaEntrada };
+                          ensayarLaEntrada: ensayarLaEntrada,
+                          demoDeLanding: demoDeLanding };
 })();
