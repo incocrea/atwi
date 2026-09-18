@@ -946,12 +946,18 @@
      La frase de cada una dice DE QUÉ SE DISCUTE ahí, no quién es quién: al
      abrirla lo que se ve es una lista de temas, y esto tiene que dejar claro
      cuál de las tres listas va a salir. */
+  /* UNA PALABRA Y NO TRES (titular, 2026-09-18): «Pareja», «Amigos», «Familia».
+     El «Con mi…» venía de cuando esto era una PREGUNTA a pantalla completa
+     —«¿Con quién juegas?»— y cada carta contestaba con una frase. Desde que es
+     un selector con las tres a la vista, el «con» lo pone el propio gesto y lo
+     que hace falta ahí es el sustantivo: además, tres títulos que empiezan
+     igual obligan a leer hasta la tercera palabra para saber cuál está puesto. */
   var PUBLICOS = [
-    ['pareja', 'Con mi pareja', 'Convivencia, dinero del día a día, horarios y pantallas.',
+    ['pareja', 'Pareja', 'Convivencia, dinero del día a día, horarios y pantallas.',
       ['Convivencia', 'Dinero', 'Horarios']],
-    ['amigos', 'Con amigos', 'La cuenta, los planes, el grupo y los viajes juntos.',
+    ['amigos', 'Amigos', 'La cuenta, los planes, el grupo y los viajes juntos.',
       ['Planes', 'Viajes', 'La cuenta']],
-    ['familia', 'Con familia', 'Hermanos, primos y tíos: comidas, fiestas y costumbres.',
+    ['familia', 'Familia', 'Hermanos, primos y tíos: comidas, fiestas y costumbres.',
       ['Comidas', 'Fiestas', 'Costumbres']]
   ];
 
@@ -959,14 +965,15 @@
      color al pie. La peana es un PNG y no un degradado de CSS porque tiene
      forma —corazones, estrellas, nubes— y es lo que le da el aire de carta de
      juego a una pantalla que si no sería una lista de tres botones. */
-  /* El nombre de la mesa para una cabecera de una sola línea. Sale de la misma
-     tabla que las cartas —un solo sitio— quitándole el corte de renglón, que
-     ahí sirve para que «Con mi pareja» quepa en una carta de 108 px. */
+  /* El nombre de la mesa, de la misma tabla y en un solo sitio. Sigue quitando
+     un `<br>` que ya no trae ninguna: lo ponían las cartas del paso 0 para que
+     «Con mi pareja» cupiera en 108 px, y cuesta una línea dejarlo por si vuelve
+     un sitio estrecho. */
   function nombrePublico(clave) {
     for (var i = 0; i < PUBLICOS.length; i++) {
       if (PUBLICOS[i][0] === clave) return PUBLICOS[i][1].replace('<br>', ' ');
     }
-    return 'Con mi pareja';
+    return PUBLICOS[0][1];
   }
 
   /* LA CARTA DE MESA, TAMBIÉN EN FILA (mismo mockup). El dibujo a la izquierda,
