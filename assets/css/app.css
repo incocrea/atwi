@@ -3790,6 +3790,23 @@ body.app {
    scrolleaba hasta en el marco de escritorio. */
 #p-error:empty { margin: 0; }
 
+/* LO QUE DIJO EL REVISOR DEL TEMA (2026-09-18), dentro del editor: el porqué con
+   el signo de aviso y, debajo, la reescritura que propone en una tarjeta con su
+   botón. Va en el color de aviso y no en rojo: no es un error de la persona, es
+   una puerta con su explicación. */
+.tema-revision { margin-top: var(--e-2); }
+.tema-revision__que {
+  display: flex; gap: 8px; align-items: flex-start; margin: 0;
+  font-size: var(--t-chico); color: var(--gancho, #A8431F); font-weight: 700;
+}
+.tema-revision__que svg { flex: none; margin-top: 2px; }
+.tema-revision__sugerencia {
+  display: grid; gap: 6px; margin-top: var(--e-2); padding: var(--e-3);
+  border-radius: var(--radio-tarjeta); background: var(--carta-velo); box-shadow: var(--sombra-1);
+  font-size: var(--t-chico); color: var(--tinta);
+}
+.tema-revision__sugerencia .boton { margin-top: 4px; }
+
 /* LA PRUEBA DEL MICRÓFONO, debajo del formulario y encima del pie: sale al
    tocar «Sortear», con la barra de nivel de siempre. En fallo el texto va en el
    color de aviso, que aquí es información para actuar y no una alarma. */

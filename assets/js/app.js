@@ -2713,7 +2713,7 @@
     enunciado: { titulo: 'La pregunta', minimo: 15, max: 240,
                  pista: 'Una pregunta de opinión, con las dos salidas dentro y sin ' +
                         'inclinarse por ninguna.',
-                 corto: 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.' }
+                 corto: 'Escribe la pregunta.' }
   };
   var retocando = null;
 
@@ -2742,8 +2742,28 @@
   function guardarRetoque() {
     var s = SECCIONES[retocando];
     var valor = ($('#r-texto').value || '').trim();
-    if (valor.length < s.minimo) { $('#r-error').textContent = s.corto; return; }
+    if (!valor) { $('#r-error').textContent = s.corto; return; }
+    /* EL RETOQUE TAMBIÉN PASA POR EL REVISOR: es el mismo criterio que al
+       guardar un tema entero, porque lo que cambia es lo que se juega. */
+    var t0 = datos.tema(propuesta.temaId) || {};
+    var b = $('#m-retocar .modal__pie button');
+    if (b) { b.disabled = true; b.textContent = 'Revisando…'; }
+    window.ATWI.nube.revisarTema({
+      titulo: retocando === 'titulo' ? valor : t0.titulo,
+      enunciado: retocando === 'enunciado' ? valor : t0.enunciado,
+      modo: propuesta.modo
+    }).then(function (r) {
+      if (b) { b.disabled = false; b.textContent = 'Guardar'; }
+      if (r && r.valido === false) {
+        $('#r-error').textContent = (r.explicacion || 'Así no se puede jugar.') +
+          (r.sugerencia && r.sugerencia.enunciado ? ' Podría ser: «' + r.sugerencia.enunciado + '».' : '');
+        return;
+      }
+      guardarRetoqueDeVerdad(valor);
+    });
+  }
 
+  function guardarRetoqueDeVerdad(valor) {
     var campos = {};
     campos[retocando] = valor;
     var guardado = datos.retocarTema(propuesta.temaId, campos);
@@ -2835,6 +2855,9 @@
                        'terminar de comer o pueden esperar a la mañana?».', 240) +
 
         '<p class="chico" id="e-error" style="color:var(--peligro)"></p>' +
+        /* LO QUE DIJO EL REVISOR, si el tema no pasó: por qué, y la reescritura
+           que propone con su botón. Vacío no ocupa. */
+        '<div class="tema-revision" id="e-revision" hidden></div>' +
       '</div>' +
 
       /* LA PRUEBA QUE ANTES HACÍAN LAS POSTURAS. Se pedían dos y si una era
@@ -2889,38 +2912,89 @@
       '</label>';
   }
 
+  /* GUARDAR UN TEMA: LOS CAMPOS LLENOS Y NADA MÁS POR CÓDIGO (titular,
+     2026-09-18: «permite que el usuario guarde o edite temas como quiera, eso
+     sí, mínimo ingresar los datos de campo»). Aquí había condicionales —un
+     largo mínimo, un «o» obligatorio, «quien gane» en los premios— y
+     rechazaban temas válidos escritos de otra manera.
+
+     LO QUE SÍ SE MIRA ES SI SE PUEDE JUGAR, y eso lo mira el revisor
+     (`revisar_tema`, una llamada de un centavo): que sea una pregunta de opinión
+     con dos salidas defendibles, que no sea un galimatías ni una prueba, que no
+     toque lo que el juego no puede tocar. Se hace AQUÍ, al guardar, y no al
+     lanzar la partida (decisión del titular): así no se toca el ritmo de armar
+     una partida y todo lo que hay en la lista ya es jugable. Si no pasa, se
+     dice por qué y se ofrece la reescritura en el mismo editor, sin guardar; si
+     el revisor no contesta, se guarda igual. */
+  var revisandoTema = false;
   function guardarTema() {
+    if (revisandoTema) return;
     var v = function (id) { return ($('#' + id).value || '').trim(); };
     var titulo = v('e-titulo'), enunciado = v('e-enunciado');
-    /* CADA CLASE SE VALIDA CONTRA LO QUE ES. A un tema se le exige que ofrezca
-       dos salidas —sin eso no hay nada que discutir—; a un premio eso no se le
-       puede pedir, porque no es una disyuntiva sino una sola cosa que alguien
-       se lleva. Lo que sí se le pide es que se sepa DE QUIÉN es: sin eso, «las
-       próximas tres películas» no dice quién las elige. */
     var esPremio = propuesta.modo === 'competencia';
-    var fallo = titulo.length < 3 ? 'El título necesita al menos tres letras.' : esPremio
-      ? (enunciado.length < 12
-          ? 'El premio se queda corto: di qué se lleva quien gane.'
-          /* SE ESCRIBE DESDE EL QUE GANA. «Quien pierda lava los platos» dice
-             lo mismo y se lee como un castigo; el modo celebra al que gana. */
-          : /pierda|perdedor|pierde/i.test(enunciado)
-            ? 'Dilo por el lado bueno: qué se lleva quien gane, no qué le toca al otro.'
-          : !/gane|ganador/i.test(enunciado)
-            ? 'Falta de quién es: escríbelo como «Quien gane…».' : '')
-      : (enunciado.length < 15
-          ? 'La pregunta se queda corta: tiene que plantear el desacuerdo entero.'
-          /* No se exige el signo de interrogación —hay preguntas sin él— pero sí
-             que ofrezca dos salidas, que es lo que hace que haya qué discutir. */
-          : !/\bo\b/i.test(enunciado)
-            ? 'Falta la otra salida: la pregunta tiene que ofrecer dos.' : '');
-    if (fallo) { $('#e-error').textContent = fallo; return; }
+    var fallo = !titulo ? 'Ponle un título.' : !enunciado
+      ? (esPremio ? 'Escribe el premio.' : 'Escribe la pregunta.') : '';
+    $('#e-error').textContent = fallo;
+    if (fallo) return;
 
+    var caja = $('#e-revision');
+    if (caja) { caja.hidden = true; caja.innerHTML = ''; }
+    var b = $('#e-guardar');
+    revisandoTema = true;
+    if (b) { b.disabled = true; b.textContent = 'Revisando…'; }
+    window.ATWI.nube.revisarTema({ titulo: titulo, enunciado: enunciado, modo: propuesta.modo })
+      .then(function (r) {
+        revisandoTema = false;
+        if (b) { b.disabled = false; b.textContent = esPremio ? 'Guardar el premio' : 'Guardar el tema'; }
+        if (r && r.valido === false) return pintarRevision(r, esPremio);
+        guardarTemaDeVerdad(titulo, enunciado);
+      });
+  }
+
+  /* El veredicto del revisor, en el editor: la explicación y, si la hay, la
+     reescritura con su botón para usarla. La persona decide: puede tocar la
+     sugerencia, escribir otra cosa o cerrar. Lo que no puede es guardar lo que
+     el juego no podría juzgar. */
+  function pintarRevision(r, esPremio) {
+    var caja = $('#e-revision');
+    if (!caja) return;
+    var s = r.sugerencia;
+    caja.innerHTML =
+      '<p class="tema-revision__que">' + iconoSVG('aviso', 18) + '<span>' +
+        esc(r.explicacion || 'Así no se puede jugar.') + '</span></p>' +
+      (s && s.enunciado
+        ? '<div class="tema-revision__sugerencia">' +
+            '<span class="chico tenue">Podría ser:</span>' +
+            (s.titulo ? '<strong>' + esc(s.titulo) + '</strong>' : '') +
+            '<span>' + esc(s.enunciado) + '</span>' +
+            '<button type="button" class="boton boton--suave boton--bloque" data-accion="usar-sugerencia">' +
+              'Usar esta versión</button>' +
+          '</div>'
+        : (r.motivo === 'no_es_para_juego'
+            ? '<p class="chico tenue" style="margin:6px 0 0">Este ' + (esPremio ? 'premio' : 'tema') +
+              ' no es para el juego, así que no hay una versión que proponer.</p>'
+            : ''));
+    caja.dataset.titulo = (s && s.titulo) || '';
+    caja.dataset.enunciado = (s && s.enunciado) || '';
+    caja.hidden = false;
+    caja.scrollIntoView({ block: 'nearest' });
+  }
+
+  function usarSugerencia() {
+    var caja = $('#e-revision');
+    if (!caja) return;
+    if (caja.dataset.titulo) $('#e-titulo').value = caja.dataset.titulo;
+    if (caja.dataset.enunciado) $('#e-enunciado').value = caja.dataset.enunciado;
+    caja.hidden = true;
+    caja.innerHTML = '';
+  }
+
+  function guardarTemaDeVerdad(titulo, enunciado) {
     var t = datos.tema(escribiendo.id);
     var campos = { titulo: titulo, enunciado: enunciado,
                    intensidad: (t && t.intensidad) || intensidadElegida };
-    var guardado = escribiendo.propio
-      ? datos.guardarTemaPropio(Object.assign({ id: escribiendo.id }, campos))
-      : datos.reescribir(escribiendo.id, campos);
+    if (escribiendo.propio) datos.guardarTemaPropio(Object.assign({ id: escribiendo.id }, campos));
+    else datos.reescribir(escribiendo.id, campos);
 
     cerrarModal('m-escribir');
     /* SE VUELVE AL CATALOGO Y NADA MAS. Aquí se reabría el detalle del tema con
@@ -4157,6 +4231,7 @@
     else if (a === 'editar-ficha') { abrirFicha('yo', acc); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
     else if (a === 'tema-nuevo') { abrirEscribir(null); }
+    else if (a === 'usar-sugerencia') { usarSugerencia(); }
     else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId); }
     else if (a === 'guardar-tema') { guardarTema(); }
     else if (a === 'guardar-retoque') { guardarRetoque(); }

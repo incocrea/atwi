@@ -761,7 +761,41 @@ window.ATWI = window.ATWI || {};
     return t && t.perfil && d && t.perfil === d.propone ? 'propone' : 'invitado';
   }
 
+  /**
+   * ¿ESTE TEMA SE PUEDE JUGAR? (titular, 2026-09-18). Se pregunta AL GUARDAR
+   * un tema propio o una reescritura, y no al lanzar la partida: así el ritmo
+   * de armar una partida no se toca y lo que hay en la lista ya es jugable.
+   * Devuelve {valido, motivo, explicacion, sugerencia} o, si el servidor no
+   * contesta, {valido: true, sin_revisar: true}: una puerta que se cae no puede
+   * dejar a nadie sin guardar su tema.
+   */
+  function revisarTema(op) {
+    if (!hayNube()) return Promise.resolve({ valido: true, sin_revisar: true });
+    return fetch(cfg.supabaseUrl + '/functions/v1/revisar_tema', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ titulo: op.titulo, enunciado: op.enunciado, modo: op.modo })
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (r.status === 429) return { valido: false, motivo: 'tope', explicacion: d.error, sugerencia: null };
+        if (!r.ok || !d || (d.error && d.valido === undefined)) {
+          apuntar('no se pudo revisar el tema: ' + ((d && d.error) || r.status));
+          return { valido: true, sin_revisar: true };
+        }
+        return d;
+      }, function () { return { valido: true, sin_revisar: true }; });
+    }).catch(function (e) {
+      apuntar('no se pudo revisar el tema: ' + e.message);
+      return { valido: true, sin_revisar: true };
+    });
+  }
+
   window.ATWI.nube = {
+    revisarTema: revisarTema,
     ladoDeTurno: ladoDeTurno,
     historial: historial,
     oirDelAlmacen: oirDelAlmacen,
