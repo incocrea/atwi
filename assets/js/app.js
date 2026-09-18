@@ -974,7 +974,51 @@
     r.style.rowGap = hueco + 'px';
     r.style.height = altura + 'px';
     r.style.marginTop = Math.max(0, Math.round((libre - altura) / 2)) + 'px';
-    sonarRuleta(r, alto + hueco);
+    darLaVuelta(r, alto + hueco, n);
+    girarRuleta(r, alto + hueco);
+  }
+
+  /* ======================================================================
+     LA RULETA NO SE ACABA (titular, 2026-09-18: *«haz que la ruleta sea
+     infinita, es decir, en vez de terminar de scrollear vuelves a mostrar los
+     elementos iniciales»*)
+     La lista se REPITE y, cuando el dedo para, el scroll salta un bloque entero
+     hacia atrás. El salto es invisible porque lo que hay en el sitio nuevo es
+     exactamente lo mismo que había en el viejo: es el truco de toda la vida de
+     los carruseles, y la única parte delicada es CUÁNDO se hace.
+     ⚠️ SE REPOSICIONA AL PARAR Y NUNCA DURANTE EL GESTO. Tocar `scrollTop`
+     mientras corre la inercia la CORTA en seco —y la inercia es la otra mitad
+     de lo que se pidió—, así que el salto espera a que la lista esté quieta. Lo
+     que hace que eso baste es tener bloque de sobra: con tres copias y un
+     mínimo de 60 tarjetas, ningún lanzón llega al final antes de que pare.
+     ⚠️ Y CON POCOS TEMAS SE VEN REPETIDOS, que es lo que una ruleta hace: con
+     cinco temas y cuatro a la vista no hay manera de dar la vuelta sin que el
+     primero vuelva a salir. Por debajo de `n + 2` no se repite nada: ahí la
+     lista es tan corta que el bucle solo confundiría.
+     ====================================================================== */
+  var VUELTAS_MIN = 3, TARJETAS_MIN = 60;
+
+  function darLaVuelta(r, paso, n) {
+    if (r.dataset.vuelta) return;            /* ya montada en este pintado */
+    var cuantas = r.children.length;
+    if (cuantas < n + 2) return;
+    var copias = Math.max(VUELTAS_MIN, Math.ceil(TARJETAS_MIN / cuantas));
+    var molde = r.innerHTML;
+    var trozos = [];
+    for (var i = 1; i < copias; i++) trozos.push(molde);
+    r.insertAdjacentHTML('beforeend', trozos.join(''));
+    r.dataset.vuelta = String(cuantas * paso);
+    /* Se arranca en el segundo bloque para que la primera vez que alguien tire
+       hacia ARRIBA también haya lista detrás. */
+    r.scrollTop = cuantas * paso;
+  }
+
+  /** Devuelve el scroll al bloque de en medio, sin que se note. */
+  function recolocarVuelta(r) {
+    var bloque = parseFloat(r.dataset.vuelta || 0);
+    if (!bloque) return;
+    if (r.scrollTop >= bloque * 2) r.scrollTop -= bloque;
+    else if (r.scrollTop < bloque) r.scrollTop += bloque;
   }
 
   /* LA CUENTA SE REHACE CUANDO CAMBIA EL SITIO. Girar el teléfono, abrir el
@@ -1005,31 +1049,111 @@
      no sonaría y no avisaría de por qué.
      Los dos oyentes se van con el elemento: la lista se repinta entera en cada
      búsqueda y cada filtro, así que no hay que quitarlos a mano. */
-  function sonarRuleta(r, paso) {
-    var son = window.ATWI.sonido;
-    if (!son || !son.hay() || !paso) return;
-    r.addEventListener('pointerdown', function () { son.despertar(); }, { passive: true });
+  /* ======================================================================
+     EL GIRO: el clac, el empujón de más y la vuelta, en un solo oyente
+     Las tres cosas cuelgan del mismo dato —cada cuánto pasa una tarjeta— así
+     que separarlas sería medir tres veces lo mismo.
+     ====================================================================== */
+  /* Cuánto se alarga el viaje por cada unidad de velocidad. 1 px/ms es un
+     arrastre vivo; el empujón que se le suma ahí son ~2 tarjetas. */
+  var EMPUJE = 260, EMPUJE_MAX = 6, FRENO = 0.93, QUIETO = 90;
 
+  function girarRuleta(r, paso) {
+    if (r.dataset.girando) return;
+    r.dataset.girando = '1';
+    var son = window.ATWI.sonido;
+    var haySon = son && son.hay();
     var reloj = function () { return (window.performance && performance.now()) || 0; };
+
+    if (haySon) {
+      r.addEventListener('pointerdown', function () { son.despertar(); }, { passive: true });
+    }
+    /* Mientras el dedo esté puesto no hay ni empujón ni salto: los dos son cosas
+       que pasan DESPUÉS de soltar. */
+    var dedo = false, fueDedo = false;
+    r.addEventListener('pointerdown', function (e) {
+      dedo = true;
+      /* ⚠️ EL EMPUJÓN ES COSA DEL DEDO, NO DE LA RUEDA (titular, 2026-09-18:
+         «se frena como esperando cargar más… el user quiere fluidez siempre»).
+         Con el ratón, la rueda manda eventos mientras mi animación corre y las
+         dos se pelean por el mismo `scrollTop`: eso es exactamente un tirón. Y
+         además no hace falta —la rueda no tiene inercia que continuar—. En
+         táctil sí, que es donde se pidió. */
+      fueDedo = e.pointerType !== 'mouse';
+    }, { passive: true });
+    ['pointerup', 'pointercancel'].forEach(function (e) {
+      r.addEventListener(e, function () { dedo = false; }, { passive: true });
+    });
+    /* Un giro de rueda cancela lo que estuviera corriendo: manda el usuario. */
+    r.addEventListener('wheel', function () { fueDedo = false; cancelAnimationFrame(raf); },
+      { passive: true });
+
     var ultimo = Math.round(r.scrollTop / paso);
     var cuando = reloj();
+    var vel = 0;                 /* tarjetas por milisegundo, con signo */
+    var espera = 0, raf = 0;
+
     r.addEventListener('scroll', function () {
       var i = Math.round(r.scrollTop / paso);
-      if (i === ultimo) return;
-      /* ⚠️ LA VELOCIDAD SE MIDE ENTRE TARJETAS, NO ENTRE EVENTOS DE `scroll`.
-         Con lo segundo salía siempre el mínimo: el navegador dispara varios
-         eventos por gesto y el que cruza el diente puede traer un salto de dos
-         píxeles, así que lo medido era el ruido del muestreo y no el gesto. Lo
-         que hace la ruleta es sonar UNA vez por diente, y lo que dice cuán
-         fuerte es **cada cuánto pasa un diente**: es la misma cuenta que hace
-         una rueda de verdad. */
-      var ahora = reloj();
-      var dt = Math.max(1, ahora - cuando) / Math.max(1, Math.abs(i - ultimo));
-      cuando = ahora; ultimo = i;
-      /* Una tarjeta cada 160 ms o menos es un lanzón; cada 800, arrastrar con
-         el dedo. El suelo de 0,2 deja que el clac del asentado se oiga. */
-      son.clac(Math.max(0.2, Math.min(1, 160 / dt)));
+      if (i !== ultimo) {
+        /* ⚠️ LA VELOCIDAD SE MIDE ENTRE TARJETAS, NO ENTRE EVENTOS DE `scroll`.
+           Con lo segundo salía siempre el mínimo: el navegador dispara varios
+           eventos por gesto y el que cruza el diente puede traer un salto de dos
+           píxeles, así que lo medido era el ruido del muestreo y no el gesto. Lo
+           que hace la ruleta es sonar UNA vez por diente, y lo que dice cuán
+           fuerte es **cada cuánto pasa un diente**: es la misma cuenta que hace
+           una rueda de verdad. */
+        var ahora = reloj();
+        var saltos = Math.abs(i - ultimo);
+        var dt = Math.max(1, ahora - cuando) / Math.max(1, saltos);
+        vel = (i > ultimo ? 1 : -1) / dt;
+        cuando = ahora; ultimo = i;
+        /* Una tarjeta cada 160 ms o menos es un lanzón; cada 800, arrastrar con
+           el dedo. El suelo de 0,2 deja que el clac del asentado se oiga. */
+        if (haySon) son.clac(Math.max(0.2, Math.min(1, 160 / dt)));
+      }
+      /* La lista se da por quieta cuando pasa un rato sin eventos: no hay un
+         «fin de scroll» en el navegador, y `pointerup` no vale porque después
+         de soltar todavía corre la inercia del sistema. */
+      clearTimeout(espera);
+      espera = setTimeout(function () {
+        if (dedo) return;
+        if (fueDedo) empujar(vel);
+        else asentar();
+      }, QUIETO);
     }, { passive: true });
+
+    /* EL EMPUJÓN DE MÁS (titular: «más impulso por empuje y distancia
+       lograda»). La inercia del sistema la decide el sistema y desde la web no
+       se sube; lo que sí se puede es **seguir donde ella lo dejó**. Cuando el
+       momentum nativo se agota, si el gesto venía rápido la rueda sigue girando
+       un trecho y se va frenando, que es lo que hace una ruleta de verdad: el
+       viaje sale del impulso, no de un número fijo.
+       Va con `scrollTop` a pelo y no con `scrollBy({behavior:'smooth'})`
+       porque eso último dura lo que el navegador quiera y aquí la curva del
+       frenado es justo lo que se está buscando. */
+    function empujar(v) {
+      var tarjetas = Math.min(EMPUJE_MAX, Math.abs(v) * EMPUJE);
+      if (tarjetas < 0.8) { asentar(); return; }
+      var queda = tarjetas * paso * (v < 0 ? -1 : 1);
+      cancelAnimationFrame(raf);
+      (function paso1() {
+        if (dedo) { queda = 0; asentar(); return; }
+        var tramo = queda * (1 - FRENO);
+        if (Math.abs(queda) < 1) { asentar(); return; }
+        r.scrollTop += tramo;
+        queda -= tramo;
+        raf = requestAnimationFrame(paso1);
+      })();
+    }
+
+    /* Y al final, la rueda encaja: el snap deja la tarjeta cuadrada y el bloque
+       vuelve a su sitio para que la vuelta siguiente tenga lista por delante y
+       por detrás. */
+    function asentar() {
+      cancelAnimationFrame(raf);
+      recolocarVuelta(r);
+    }
   }
 
   function tarjetaTema(t) {
@@ -1052,9 +1176,19 @@
         '</button>' +
         /* Directo al editor, sin pasar por el detalle: quien ve un tema que
            no encaja con su discusión quiere arreglarlo ahí mismo. */
+        /* ⚠️ EL LÁPIZ NO VA DIFERIDO (titular, 2026-09-18: *«a veces estoy
+           dando scroll con el mouse y se frena como esperando cargar más»*).
+           `icono()` escribe `loading="lazy"` para todo el juego, que es lo
+           correcto en una pantalla normal y lo peor posible en una ruleta: cada
+           tarjeta que entra pide su imagen, y aunque sea la MISMA de las otras
+           cien —una sola petición, ya en caché— el navegador se guarda el
+           trabajo para el momento en que aparece, que es justo el momento en
+           que se está deslizando. Aquí se piden todas de una: es un icono
+           repetido, así que cargarlas todas cuesta lo mismo que cargar una. */
         '<button class="tema__editar" data-editar-tema="' + esc(t.id) + '" ' +
           'aria-label="' + que + ' este ' + (t.clase === 'premio' ? 'premio' : 'tema') +
-          '" title="' + que + '">' + icono('lapiz', 24) + '</button>' +
+          '" title="' + que + '">' +
+          icono('lapiz', 24).replace('loading="lazy"', 'loading="eager"') + '</button>' +
       '</div>';
   }
 
