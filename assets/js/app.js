@@ -1502,8 +1502,10 @@
 
     abrirGlobo(disparador,
       { titulo: 'Borrar esta partida', texto: texto, clave: 'No se puede deshacer.' },
-      { tinte: d.modo || 'debate', signo: 'papelera', etiqueta: 'Borrar esta partida',
-        acciones: acciones });
+      /* 83 y no 96: es lo que deja el dibujo de la papelera del tamaño del de la
+         bombilla —96 × 73/84—, medido sobre los dos PNG. */
+      { tinte: d.modo || 'debate', signo: 'papelera', signoTam: 83,
+        etiqueta: 'Borrar esta partida', acciones: acciones });
   }
 
   function olvidarPartida(id, boton) {
@@ -1904,11 +1906,15 @@
         'servirles lo vuelven a hablar.</p>' +
       /* MISMA TARJETA QUE EL HISTORIAL (titular, 2026-09-15): `.tarjeta` con
          `.partida` dentro, la cabecera de estado y fecha, y el enunciado de
-         cuerpo. Lo que no lleva es lo que aquí no dice nada: el rótulo del modo
-         --todas son de Pacto, marcarlo en todas no distingue ninguna-- ni la
-         papelera, porque un acta no se borra por su cuenta: se va con su
-         partida, y esa se borra desde el historial.
-         Y SE TOCA: lleva a la partida de la que salió. */
+         cuerpo. Lo que no lleva es la papelera, porque un acta no se borra por
+         su cuenta: se va con su partida, y esa se borra desde el historial.
+         Y SE TOCA: lleva a la partida de la que salió.
+         ⚠️ Y LLEVA SU PEANA, que faltaba (titular, 2026-09-18). Desde que las
+         tarjetas del historial son cartas, el hueco de la onda lo hace el
+         relleno de abajo —48 px—, así que una tarjeta sin peana no se veía
+         igual: se veía con un vacío al pie. Aquí decía además que el modo no
+         hacía falta «porque todas son de Pacto», y eso lo dice el DIBUJO sin
+         gastar un renglón; el día que haya actas de otro modo, sale sola. */
       actas.map(function (a) {
         var d = a.debate || {};
         var hubo = a.tipo === 'acuerdo';
@@ -1924,6 +1930,9 @@
               '<span class="partida__tema">' + esc(d.enunciado || 'Sin tema') + '</span>' +
               '<span class="acta-fila__texto">' + esc(a.texto) + '</span>' +
             '</button>' +
+            '<img class="partida__base" src="../assets/img/iconos/base-' +
+              esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'negociacion') + '.png" ' +
+              'alt="" aria-hidden="true">' +
           '</div>';
       }).join('');
   }
@@ -3445,9 +3454,10 @@
 
   /** Abre un globo colgado de `disparador`.
       `dicho` es {titulo, texto, ojo, clave} y `opciones` {tinte, etiqueta,
-      jugar, signo, acciones}.
+      jugar, signo, signoTam, acciones}.
       `signo` cambia la pegatina que asoma —la bombilla es de las ayudas, y un
-      globo que pregunta si se borra algo lleva la papelera— y `acciones` es el
+      globo que pregunta si se borra algo lleva la papelera—, `signoTam` la baja
+      cuando ese dibujo llena más su cuadro que la bombilla, y `acciones` es el
       HTML de los botones que van al pie. */
   function abrirGlobo(disparador, dicho, opciones) {
     var marco = document.querySelector('.marco');
@@ -3474,6 +3484,13 @@
     var nodo = document.createElement('div');
     nodo.className = 'globo';
     nodo.dataset.tinte = tinte;
+    /* ⚠️ CADA PEGATINA LLENA SU CUADRO DISTINTO, y con el mismo tamaño se ven de
+       tamaños distintos: es la lección de siempre —lo que iguala a dos iconos es
+       el CUERPO y no la caja— por un sitio nuevo. Medido el dibujo macizo de los
+       dos PNG, la bombilla ocupa el 73 % de su cuadro y la papelera el 84 %, así
+       que a 96 px la papelera pinta 81 de dibujo contra 70 —un 15 % más grande—
+       y el globo de borrado salía encabezado por un iconazo. */
+    if (o.signoTam) nodo.style.setProperty('--globo-signo', o.signoTam + 'px');
     nodo.setAttribute('role', 'dialog');
     nodo.setAttribute('aria-label', o.etiqueta || dicho.titulo || 'Información');
     nodo.tabIndex = -1;
@@ -3497,7 +3514,12 @@
         '<span class="globo__recorte" aria-hidden="true">' +
           '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="">' +
         '</span>' +
-        window.ATWI.icono(o.signo || t.signo, 82).replace('class="ico"', 'class="ico globo__signo"') +
+        /* ⚠️ EL TAMAÑO DE ESTE SIGNO LO PONE EL CSS —96 px— Y NO ESTE NÚMERO:
+           la regla `.globo__signo` pisa el `width` que escribe `icono()`. El 82
+           que había aquí no pintaba nada desde que la bombilla subió a 96. Lo
+           que manda es `--globo-signo`, y lo declara `o.signoTam`. */
+        window.ATWI.icono(o.signo || t.signo, 96)
+          .replace('class="ico"', 'class="ico globo__signo"') +
         '<div class="globo__dicho">' +
           (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
           '<p class="globo__texto">' + esc(dicho.texto || '') +

@@ -4680,10 +4680,15 @@ body.app {
 /* LA BOMBILLA ASOMA POR EL BORDE, que es lo que lo convierte en una pegatina
    pegada al globo y no en un icono metido dentro de una caja. Va sobre el pico
    y el borde, así que necesita quedar por encima de los dos. */
+/* ⚠️ EL TAMAÑO LO MANDA EL CSS, NO EL ATRIBUTO DEL ICONO, y por eso va en una
+   variable: `icono(nombre, 82)` escribe `width`/`height` en el HTML y esta regla
+   los pisa sin decir nada —se cambió el número en el JS y en pantalla no se
+   movió nada—. Quien quiera otro tamaño declara `--globo-signo` en el globo. */
 .globo__signo {
   position: absolute;
   top: -20px; left: -22px;
-  width: 96px; height: 96px;   /* 66 → 82 → 96: el titular la fue subiendo */
+  /* 66 → 82 → 96: el titular la fue subiendo */
+  width: var(--globo-signo, 96px); height: var(--globo-signo, 96px);
   z-index: 3;
   filter: drop-shadow(0 3px 6px rgba(46, 42, 63, .18));
 }
