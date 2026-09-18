@@ -879,6 +879,10 @@ body.app {
    turno se apretaban en el centro: dos rejillas distintas para lo mismo.
    `--fila-opciones` es ese ancho común, centrado, y dentro cada fila reparte lo
    suyo con `space-between`. */
+/* ⚠️ `.jueces-fila` SE QUEDÓ SIN USO el 2026-09-18, cuando el juez pasó a
+   sortearse: era la fila de seis para elegir. No se borra todavía porque el
+   ancho compartido con la fila de turnos sigue haciendo falta, y porque el día
+   que alguien quiera volver a elegir juez está aquí entera. */
 .jueces-fila, .turnos-linea .turnos-fila {
   width: min(100%, var(--fila-opciones, 272px));
   margin-inline: auto;
@@ -899,6 +903,30 @@ body.app {
 .jueces-fila__juez[aria-pressed="true"] {
   opacity: 1; transform: scale(1.12);
   box-shadow: 0 0 0 3px var(--del-modo, var(--lavanda)), var(--sombra-2);
+}
+
+/* EL JUEZ DE LA MESA (titular, 2026-09-18): uno solo y del tamaño de los dos de
+   arriba, para que la pantalla enseñe a los TRES con el mismo peso —quien
+   propone, quien juega enfrente y quien los juzga—. Misma estructura que
+   `.perfil-duo` y sin `--suyo`: el juez no es de nadie, así que su halo va en el
+   color del modo y no en el de una ficha.
+   No es un botón: desde hoy el juez lo echa la suerte. */
+.juez-mesa {
+  display: grid; justify-items: center; gap: 2px;
+  color: var(--tinta);
+}
+.juez-mesa__retrato {
+  display: grid; place-items: center; padding: 12px; border-radius: 50%;
+  background: radial-gradient(closest-side,
+              color-mix(in srgb, var(--del-modo, var(--lavanda)) 30%, transparent) 62%,
+              transparent 100%);
+}
+.juez-mesa__quien {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-base);
+}
+.juez-mesa__que {
+  font-size: var(--t-mini); color: var(--tinta); font-weight: 700;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
 
 /* La rejilla de los seis jueces, con nombre: hoy solo la usa el probador. */

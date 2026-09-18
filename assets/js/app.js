@@ -3682,11 +3682,11 @@
     /* «JUEZ» Y LOS SEIS DISCOS A LA VISTA (titular, 2026-09-18): la tarjeta
        con el juez puesto y un «Cambiar» que abría otra pantalla se va; se toca
        el que se quiera y queda puesto. Igual en las dos vías. */
-    var bloqueJuez =
-      '<div class="prep__bloque">' +
-        '<h3 class="centrado" style="margin:0 0 var(--e-2)">Juez</h3>' +
-        pintarJuez() +
-      '</div>';
+    /* SIN EL RÓTULO «Juez» ENCIMA (2026-09-18): con el retrato grande, el juez
+       se presenta como los otros dos —nombre y una línea de qué hace—, y
+       «Juzga esta partida» debajo del nombre dice lo mismo que el rótulo sin
+       gastar un renglón ni romper la simetría de los tres. */
+    var bloqueJuez = '<div class="prep__bloque">' + pintarJuez() + '</div>';
 
     $('#m-preparar .modal__cuerpo').innerHTML =
       /* ⚠️ EL INTERRUPTOR VA FUERA DEL ENVOLTORIO, y esto no es un detalle: el
@@ -3845,13 +3845,43 @@
      modo. Sin nombre debajo —el titular pidió solo el círculo con la miniatura—;
      el nombre va en `aria-label` y en `title`. Sin veto: el juez es UNO para
      toda la partida y no se enfrenta a nadie. */
-  /** Un juez al azar, distinto del que salió la vez anterior si se puede: dos
-      partidas seguidas con el mismo no se leen como un sorteo. */
+  /* ======================================================================
+     LOS JUECES SE TURNAN (titular, 2026-09-18: «se van rotando, es decir no se
+     repite juez para quien crea la partida hasta que todos los otros hayan
+     salido»)
+     No es lo mismo que «al azar»: al azar puro, con seis jueces, uno se repite
+     dos veces seguidas una de cada seis partidas y hay quien no sale en diez.
+     Con la vuelta cerrada, en seis partidas salen los seis y el orden sigue
+     siendo distinto cada vez. Es el mismo trato que reciben los temas del
+     catálogo: barajados, pero sin repetir hasta agotar.
+     ⚠️ SE GUARDA POR TELÉFONO Y NO POR PARTIDA: la lista de los que ya salieron
+     vive en `localStorage`, porque la vuelta solo significa algo entre partidas
+     distintas. Si el almacenamiento falla, cada sorteo es independiente y lo
+     único que se pierde es la garantía de la vuelta.
+     ====================================================================== */
+  var JUECES_VISTOS = 'atwi.jueces.vistos.v1';
+
+  function juecesVistos() {
+    try { return JSON.parse(localStorage.getItem(JUECES_VISTOS) || '[]') || []; }
+    catch (e) { return []; }
+  }
+
   function sortearJuez() {
-    var todos = window.ATWI.jueces();
-    var otros = todos.filter(function (q) { return q.clave !== propuesta.juez; });
-    var lista = otros.length ? otros : todos;
-    return lista[Math.floor(Math.random() * lista.length)].clave;
+    var todos = window.ATWI.jueces().map(function (q) { return q.clave; });
+    var vistos = juecesVistos().filter(function (c) { return todos.indexOf(c) !== -1; });
+    var faltan = todos.filter(function (c) { return vistos.indexOf(c) === -1; });
+    /* Vuelta cerrada: se empieza otra, y el último de la anterior no abre la
+       siguiente —sería el único que se repetiría dos veces seguidas—. */
+    if (!faltan.length) {
+      var ultimo = vistos[vistos.length - 1];
+      vistos = [];
+      faltan = todos.filter(function (c) { return c !== ultimo; });
+      if (!faltan.length) faltan = todos.slice();
+    }
+    var elegido = faltan[Math.floor(Math.random() * faltan.length)];
+    vistos.push(elegido);
+    try { localStorage.setItem(JUECES_VISTOS, JSON.stringify(vistos)); } catch (e) {}
+    return elegido;
   }
 
   /* ======================================================================
@@ -3877,13 +3907,11 @@
 
   function rodarJueces() {
     pararRuleta();
-    var fila = $('#m-preparar .jueces-fila');
-    if (!fila) return;
-    var btns = [].slice.call(fila.querySelectorAll('[data-juez-es]'));
-    var n = btns.length;
+    if (!$('#m-preparar .juez-mesa')) return;
+    var claves = window.ATWI.jueces().map(function (q) { return q.clave; });
+    var n = claves.length;
     if (n < 2) return;
 
-    var claves = btns.map(function (b) { return b.dataset.juezEs; });
     var destino = claves.indexOf(propuesta.juez);
     if (destino < 0) destino = 0;
 
@@ -3894,7 +3922,10 @@
       return;
     }
 
-    var desde = 0;
+    /* Se arranca en el siguiente al que salió, para que el primer salto se vea
+       moverse; empezando en el propio destino, la primera vuelta entera
+       parecería que no pasa nada. */
+    var desde = (destino + 1) % n;
     var total = VUELTAS_JUEZ * n + ((destino - desde + n) % n);
     var son = window.ATWI.sonido;
     var haySon = son && son.hay();
@@ -3944,18 +3975,41 @@
     });
   }
 
+  /* EL JUEZ SALE COMO LOS JUGADORES (titular, 2026-09-18: «el juez aparece del
+     mismo tamaño de los jugadores, ya no aparecen los 6 para escoger… el juez
+     pasa a ser aleatorio, ya no lo decide el user»). Eran seis discos de 31 px
+     donde había que elegir; ahora es UN retrato del tamaño de los de arriba, y
+     con eso la pantalla enseña **los tres de la mesa** con el mismo peso: quien
+     propone, quien juega enfrente y quien los juzga. Lo que se quita no es solo
+     una fila: es una decisión que no aporta —da igual quién juzgue, la rúbrica
+     es la misma— y que hacía elegir para poder seguir. */
+  /** La ficha de un juez por su clave. `ATWI` expone la lista, no el buscador. */
+  function datosDelJuez(clave) {
+    var todos = window.ATWI.jueces();
+    for (var i = 0; i < todos.length; i++) if (todos[i].clave === clave) return todos[i];
+    return todos[0] || {};
+  }
+
   function pintarJuez() {
-    return '<div class="jueces-fila" role="group" aria-label="Juez">' +
-      window.ATWI.jueces().map(function (q) {
-        var puesto = propuesta.juez === q.clave;
-        return '<button type="button" class="jueces-fila__juez"' +
-            ' data-juez-es="' + q.clave + '"' +
-            ' aria-pressed="' + puesto + '" aria-label="' + esc(q.nombre) + '"' +
-            ' title="' + esc(q.nombre) + '">' +
-            window.ATWI.fichaJuezHTML(q.clave) +
-          '</button>';
-      }).join('') +
-    '</div>';
+    var j = datosDelJuez(propuesta.juez);
+    return '<div class="juez-mesa" aria-live="polite">' +
+        '<span class="juez-mesa__retrato">' +
+          window.ATWI.fichaJuezHTML(propuesta.juez, 'avatar--duelo') +
+        '</span>' +
+        '<span class="juez-mesa__quien">' + esc(j.nombre || '') + '</span>' +
+        '<span class="juez-mesa__que">Juzga esta partida</span>' +
+      '</div>';
+  }
+
+  /** Cambia el juez que se ve, sin repintar la pantalla. */
+  function marcarJuez(clave) {
+    propuesta.juez = clave;
+    var caja = $('#m-preparar .juez-mesa');
+    if (!caja) return;
+    var j = datosDelJuez(clave);
+    caja.querySelector('.juez-mesa__retrato').innerHTML =
+      window.ATWI.fichaJuezHTML(clave, 'avatar--duelo');
+    caja.querySelector('.juez-mesa__quien').textContent = j.nombre || '';
   }
 
   /* MI PERSONAJE SE REPINTA SOLO al guardar la ficha del perfil con «Antes de
@@ -4832,14 +4886,10 @@
     /* Elegir juez: se toca el disco y queda puesto (2026-09-18). Se marca en
        el sitio, sin repintar la pantalla, que se llevaría el nombre del
        invitado a medio escribir. */
-    var jzEs = e.target.closest('[data-juez-es]');
-    if (jzEs) {
-      /* Tocar corta la ruleta: quien ya sabe a cuál quiere no espera. */
-      pararRuleta();
-      recordarJuez(jzEs.dataset.juezEs);
-      marcarJuez(jzEs.dataset.juezEs);
-      return;
-    }
+/* ⚠️ AQUÍ SE ATENDÍA EL TOQUE EN UN JUEZ, y se va con la fila: el juez lo echa
+       la suerte y no se elige (titular, 2026-09-18). `recordarJuez` y
+       `juezPorDefecto` se quedan sin usar por el mismo motivo —lo que ahora
+       decide es la vuelta de `sortearJuez()`—. */
 
     /* AQUÍ SE ATENDÍA EL TOQUE EN UN ATAJO DE INVITADO. Los atajos se quitaron
        el 2026-09-14, así que este manejador ya no puede dispararse: ningún
