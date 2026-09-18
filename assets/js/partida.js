@@ -2144,7 +2144,7 @@ window.ATWI = window.ATWI || {};
      resultado sorteado; ahora la partida se queda en `deliberar()` y se ofrece
      volver a pedirlo. `veredictoMotivo` se guarda para poder decir POR QUÉ
      falló: no es lo mismo «no hay servidor» que «el juez no devolvió nada». */
-  function pedirVeredicto() {
+  function pedirVeredicto(reintento) {
     P.veredicto = null;
     P.veredictoListo = false;
     P.veredictoMotivo = '';
@@ -2157,7 +2157,7 @@ window.ATWI = window.ATWI || {};
     };
     if (P.modo !== 'debate') return Promise.resolve(listo(null, 'en Negociación no hay árbitro'));
     if (!n || !n.hay() || !P.debate) return Promise.resolve(listo(null, 'partida sin servidor'));
-    return n.arbitrar(P.debate).then(function (d) {
+    return n.arbitrar(P.debate, null, { reintentar: !!reintento }).then(function (d) {
       if (d && d.resultado) return listo(d.resultado, '');
       return listo(null, n.ultimoFallo() || 'el juez no devolvió nada');
     }, function (e) {
@@ -2383,7 +2383,7 @@ window.ATWI = window.ATWI || {};
     if (P.modo === 'negociacion') {
       P.juicio = pedirPropuestas();
     } else {
-      P.juicio = pedirVeredicto();
+      P.juicio = pedirVeredicto(true);
     }
     deliberar();
   }

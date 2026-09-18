@@ -442,7 +442,7 @@ window.ATWI = window.ATWI || {};
    * `listo` o `fallido`. Devuelve la MISMA forma que antes —`{resultado}`—
    * para que `partida.js` no cambie ni una línea.
    */
-  function arbitrar(debate, variante) {
+  function arbitrar(debate, variante, opciones) {
     if (!hayNube()) return Promise.resolve(apuntar('sin servidor ni sesión'));
     var desde = Date.now();
     var cab = { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(),
@@ -478,7 +478,12 @@ window.ATWI = window.ATWI || {};
     }
     return fetch(cfg.supabaseUrl + '/rest/v1/rpc/pedir_veredicto', {
       method: 'POST', headers: cab,
-      body: JSON.stringify({ p_debate: debate, p_variante: variante || null })
+      /* `p_reintentar` (H12, migración 0051): SOLO desde el botón de volver a
+         pedirlo. Una fila `fallido` arranca de cero cuando la persona lo pide,
+         no cada vez que abre la partida: una ronda que falla siempre gastaría
+         en cada visita. */
+      body: JSON.stringify({ p_debate: debate, p_variante: variante || null,
+                             p_reintentar: !!(opciones && opciones.reintentar) })
     }).then(function (r) {
       if (!r.ok) return r.text().then(function (t) { return mal('veredicto_http_' + r.status, 'no se pudo encolar: ' + t.slice(0, 200)); });
       return esperar();
