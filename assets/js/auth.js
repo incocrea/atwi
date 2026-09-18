@@ -204,6 +204,17 @@ window.ATWI = window.ATWI || {};
     },
 
     /** Crea el perfil la primera vez. Solo nombre y avatar. */
+    /* EL APODO ES ÚNICO (migración 0053). Se pregunta ANTES de guardar --al
+       registrarse todavía no hay sesión, por eso `apodo_libre` admite anon-- y
+       el índice de la base es la red si dos lo piden a la vez. */
+    apodoLibre: function (apodo) {
+      return pedir('/rest/v1/rpc/apodo_libre', {
+        method: 'POST',
+        headers: cabeceras(Boolean(sesion() && sesion().access_token)),
+        body: JSON.stringify({ p_apodo: apodo })
+      }).then(function (r) { return r === true; })
+        .catch(function () { return true; });   // sin red no se bloquea aquí: la base decide al guardar
+    },
     crearPerfil: function (nombre, avatar) {
       return this.conUsuario().then(function (s) {
         if (!s || !s.user) throw new Error('Sin sesión');

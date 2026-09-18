@@ -537,7 +537,10 @@ window.ATWI = window.ATWI || {};
    * viajes para pintar una lista.
    */
   /** @param uno  si viene, trae SOLO ese debate. Lo usa `partida()`. */
-  function historial(cuantas, uno) {
+  /** Las partidas de quien está dentro. `desde` es cuántas saltarse: la lista
+   *  se trae de diez en diez y el botón «Cargar más» pide la tanda siguiente,
+   *  así que la primera pantalla no espera por partidas que nadie va a mirar. */
+  function historial(cuantas, uno, desde) {
     if (!hayNube()) return Promise.resolve([]);
     /* Y EL RESULTADO ANIDADO, que hasta el 2026-09-15 no se traía: el historial
        enseñaba las partidas sin saber si habían llegado a tener veredicto, así
@@ -566,8 +569,19 @@ window.ATWI = window.ATWI || {};
          por la paridad de `orden`, que es justo donde se falló dos veces. Es la
          misma columna con la que el árbitro decide el lado (`ladoDe`): nulo es
          el invitado de una partida local, y lo demás se compara con `propone`. */
+      /* ⚠️ SIN `transcripcion` NI `guion`, y no los usaba nadie (2026-09-18, al
+         mirar por qué tarda la lista). Son los dos textos largos de cada turno
+         —lo que el STT oyó y lo que se locuta—, o sea ~800 caracteres por
+         intervención y hasta seis por partida: con veinte partidas son decenas
+         de KB que el servidor lee, serializa y manda para pintar una lista que
+         solo necesita CUÁNTAS intervenciones hay. `partida.js` los copiaba a
+         `intervenciones` y no los leía ni una vez —comprobado con una búsqueda
+         en los cinco archivos—: lo que se oye es el audio, y el texto solo vive
+         en el momento de grabar, donde llega en la respuesta de `turno`.
+         El día que una pantalla quiera enseñar el literal, se pide para ESA
+         partida, no para las veinte de la lista. */
       'turnos_grabados:turnos(orden,numero,perfil,nombre,avatar,color,abogado,segundos,' +
-      'voz_ruta,audio_ruta,transcripcion,guion,creado),' +
+      'voz_ruta,audio_ruta,creado),' +
       'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,' +
       'desglose,lo_mejor,lo_que_dijo,visto,creado),' +
       /* Y LAS ACTAS (2026-09-18): sin ellas el historial no sabia si una
@@ -598,6 +612,13 @@ window.ATWI = window.ATWI || {};
     if (!yo || !yo.id) return Promise.resolve([]);
     var mias = 'or=(propone.eq.' + yo.id + ',aceptado_por.eq.' + yo.id + ')';
 
+    /* CUÁNTO CUESTA ESTA LISTA, en el registro del navegador. Se puso al
+       preguntar el titular por qué tarda en refrescar (2026-09-18): sin un
+       número, «va lento» solo se puede contestar con teorías. Es un
+       `console.debug`, así que no se ve salvo que alguien abra la consola con el
+       nivel de detalle puesto. */
+    var arranque = Date.now();
+
     return fetch(cfg.supabaseUrl + '/rest/v1/debates' +
         '?select=' + encodeURIComponent(campos) + '&' + mias +
         /* AQUÍ HABÍA UN `&cerrado=not.is.null` Y SE FUE (decisión del titular,
@@ -616,7 +637,8 @@ window.ATWI = window.ATWI || {};
            más de una hora-- borraba justo lo que ahora hay que conservar. Se
            cambió en la misma tanda. */
         (uno ? '&id=eq.' + uno : '') +
-        '&order=creado.desc&limit=' + (cuantas || 20), {
+        '&order=creado.desc&limit=' + (cuantas || 20) +
+        (desde ? '&offset=' + desde : ''), {
       headers: {
         'apikey': cfg.supabaseAnon,
         'Authorization': 'Bearer ' + conSesion(),
@@ -626,7 +648,15 @@ window.ATWI = window.ATWI || {};
       if (!r.ok) return r.text().then(function (t) {
         throw new Error('historial (' + r.status + '): ' + t.slice(0, 160));
       });
-      return r.json();
+      /* Se lee el texto para poder PESARLO. `r.json()` hace lo mismo por dentro
+         —lee el cuerpo entero y lo parsea— así que esto no añade trabajo. */
+      return r.text().then(function (txt) {
+        try {
+          console.debug('ATWI · historial: %s KB en %s ms',
+            Math.round(txt.length / 1024), Date.now() - arranque);
+        } catch (e) {}
+        return JSON.parse(txt);
+      });
     }).then(function (filas) {
       return (filas || []).map(function (d) {
         /* PostgREST no promete el orden de la tabla anidada. Se ordena aqui:

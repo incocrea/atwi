@@ -1285,6 +1285,16 @@
      Y se puede volver a oir, que es para lo que existe: la voz del personaje se
      guarda sin plazo, asi que una partida de hace meses se escucha igual. */
   var historial = null;
+  /* DE DIEZ EN DIEZ (titular, 2026-09-18). La lista traía las veinte últimas de
+     una vez, con sus turnos anidados, y hasta que llegaban no se pintaba nada.
+     Diez es lo que cabe de sobra en la primera pantalla; el resto se pide
+     tocando, que es cuando se sabe que hace falta. */
+  var POR_TANDA = 10;
+  /* Si la última tanda vino LLENA, puede haber más. Es lo único que se puede
+     saber sin pedir la cuenta entera al servidor, y pedirla sería otra consulta
+     para decidir si enseñar un botón. */
+  var hayMasHistorial = true;
+  var trayendoMas = false;
 
   function pintarHistorial() {
     var caja = $('#v-historial');
@@ -1299,8 +1309,9 @@
 
     if (!historial) {
       caja.innerHTML = titulo + '<p class="chico tenue">Buscando tus partidas…</p>';
-      window.ATWI.nube.historial().then(function (l) {
-        historial = l;
+      window.ATWI.nube.historial(POR_TANDA).then(function (l) {
+        historial = l || [];
+        hayMasHistorial = historial.length >= POR_TANDA;
         if (vistaActual === 'historial') pintarHistorial();
       });
       /* LAS ACTAS VIENEN EN LA MISMA VISITA, en paralelo y sin esperarlas. Las
@@ -1456,7 +1467,51 @@
           '<img class="partida__base" src="../assets/img/iconos/base-' +
             esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'debate') + '.png" alt="" aria-hidden="true">' +
         '</div>';
-      }).join('');
+      }).join('') +
+
+      /* «CARGAR MÁS» AL FINAL, y solo si la última tanda vino llena. No dice
+         cuántas quedan porque no se sabe: saberlo costaría una consulta de
+         cuenta entera cada vez que se abre el historial, y eso es justo lo que
+         esta pantalla viene a dejar de hacer.
+         ⚠️ SE CUENTA CONTRA LO TRAÍDO, NO CONTRA LO QUE SE VE: el filtro de
+         local / en línea es del cliente, así que en la pestaña de en línea el
+         botón puede salir con la lista vacía. Es correcto —hay más partidas que
+         mirar, solo que las diez primeras eran de la otra pestaña— y se nota
+         ahí porque hoy no existe la partida remota. */
+      (hayMasHistorial
+        ? '<button class="boton boton--bloque boton--suave boton--punteado" ' +
+            'data-accion="mas-historial"' + (trayendoMas ? ' disabled' : '') + '>' +
+            (trayendoMas ? 'Trayendo…' : 'Cargar más') +
+          '</button>'
+        : '');
+  }
+
+  /* LA TANDA SIGUIENTE. Se pide saltándose las que ya están, y se añaden al
+     final: el orden del servidor es por fecha y el de la pantalla lo decide
+     `pintarHistorial` cada vez que pinta.
+     ⚠️ Y LO QUE ESPERA SOLO SUBE DENTRO DE LO CARGADO. Una partida que me espera
+     y está en la tanda 3 no puede saltar a la primera pantalla sin traerla, y
+     traerla es justamente lo que esto viene a no hacer de golpe. */
+  function masHistorial() {
+    if (trayendoMas || !hayMasHistorial || !historial) return;
+    trayendoMas = true;
+    pintarHistorial();
+    window.ATWI.nube.historial(POR_TANDA, null, historial.length).then(function (l) {
+      trayendoMas = false;
+      var nuevas = l || [];
+      hayMasHistorial = nuevas.length >= POR_TANDA;
+      /* Sin repetidas: entre una tanda y otra puede haberse terminado una
+         partida, y entonces el `offset` deja pasar dos veces la misma. */
+      var yaEstan = {};
+      (historial || []).forEach(function (d) { yaEstan[d.id] = 1; });
+      historial = (historial || []).concat(nuevas.filter(function (d) {
+        return !yaEstan[d.id];
+      }));
+      if (vistaActual === 'historial') pintarHistorial();
+    }).catch(function () {
+      trayendoMas = false;
+      if (vistaActual === 'historial') pintarHistorial();
+    });
   }
 
   /* QUE PEANAS HAY. Se mira antes de componer el nombre del archivo porque una
@@ -1881,9 +1936,11 @@
      esto siempre abría el repaso, que era lo único que había. */
   function abrirPartida(id) {
     var d = (historial || []).filter(function (x) { return x.id === id; })[0];
-    /* SI NO ESTÁ EN LA LISTA, SE PIDE. El historial trae las 20 últimas y las
+    /* SI NO ESTÁ EN LA LISTA, SE PIDE. El historial trae DIEZ por tanda y las
        actas llegan hasta 50: una partida vieja puede tener acta y no estar
-       cargada, y tocarla no puede no hacer nada. */
+       cargada, y tocarla no puede no hacer nada. Desde el paginado esto pasa
+       más a menudo —antes hacían falta más de veinte partidas— y por eso el
+       camino ya estaba y no hubo que inventarlo. */
     if (!d) {
       if (!window.ATWI.nube || !window.ATWI.nube.partida) return;
       window.ATWI.nube.partida(id).then(function (traida) {
@@ -2015,6 +2072,7 @@
      aparecía hasta recargar. */
   window.ATWI.alTerminarPartida = function () {
     historial = null;
+    hayMasHistorial = true;
     irA(volverTrasLaPartida);
   };
 
@@ -2228,17 +2286,17 @@
                 'historial. Se recuerda en este teléfono.</span>' +
             '</div>'
           : '<label style="display:block">' +
-              '<span class="chico" style="font-weight:700">¿Cómo te llamamos?</span>' +
+              '<span class="chico" style="font-weight:700">Tu apodo en el juego</span>' +
               '<span class="con-ficha" style="margin-top:6px">' +
                 muestraFicha() +
                 '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-                  'autocomplete="given-name" placeholder="Tu nombre" value="' + esc(p.nombre) + '">' +
+                  'autocomplete="nickname" placeholder="Tu apodo" value="' + esc(p.nombre) + '">' +
               '</span>' +
               /* Se dice ANTES de escribir, no al rechazar: la razón del límite
                  —el rótulo de la sala— se explica sola con «así te ve». */
               '<span class="chico tenue" style="display:block;margin-top:6px">' +
-                'Tu primer nombre o un apodo, una sola palabra: así te ve la otra ' +
-                'persona en la sala y en el resultado.</span>' +
+                'Una sola palabra y única en el juego: así te ve la otra persona en la ' +
+                'sala y en el resultado. Si lo cambias, tus partidas siguen siendo tuyas.</span>' +
             '</label>') +
 
         /* CADA PERSONAJE APARECE UNA VEZ, no cuatro. Decisión del titular: la
@@ -2318,7 +2376,19 @@
     var nombre = datos.limpiarNombre($('#f-nombre').value);
     var mal = datos.errorDeNombre(nombre);
     if (mal) { $('#f-error').textContent = mal; return; }
-
+    /* EL APODO ES ÚNICO (migración 0053): si cambió, se pregunta antes de
+       guardar; el viejo se libera solo al guardar el nuevo, y el historial no se
+       entera porque cuelga del id, no del apodo. */
+    if (window.ATWI.auth && window.ATWI.auth.dentro() && nombre !== datos.perfil().nombre) {
+      window.ATWI.auth.apodoLibre(nombre).then(function (libre) {
+        if (!libre) { $('#f-error').textContent = 'Ese apodo ya está en uso. Prueba otro.'; return; }
+        guardarFichaDeVerdad(nombre);
+      });
+      return;
+    }
+    guardarFichaDeVerdad(nombre);
+  }
+  function guardarFichaDeVerdad(nombre) {
     var fichaElegida = personajeElegido;
     datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarBorde: colorElegido });
     cerrarModal('m-perfil');
@@ -3761,7 +3831,7 @@
 
   /* Al terminar una partida el historial que hay en memoria ya no es el de
      ahora: se tira para que se vuelva a pedir. */
-  window.ATWI.olvidarHistorial = function () { historial = null; };
+  window.ATWI.olvidarHistorial = function () { historial = null; hayMasHistorial = true; };
   /* Para quien abra algo a pantalla completa desde fuera de este archivo —el
      veredicto— y necesite que el atrás del teléfono lo cierre a él y no la app. */
   window.ATWI.pasoAtras = apilarPaso;
@@ -4060,6 +4130,7 @@
       propuesta.modo = modos[(modos.indexOf(propuesta.modo) + 1) % modos.length];
       pintarCatalogo();
     }
+    else if (a === 'mas-historial') { masHistorial(); }
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { sortearYJugar(); }

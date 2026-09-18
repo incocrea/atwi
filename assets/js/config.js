@@ -102,7 +102,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'fd7cd83',
+  version: 'bf38e55',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -451,9 +451,18 @@ window.ATWI.config = {
          las dos paradas: nombrar el patrón está prohibido. */
       diceBlanda: 'Leí la ronda entera y la decisión es mía: esta no la puntúo. No ' +
                   'siempre hay un veredicto que dar, y forzarlo sería peor que no darlo.',
-      diceDura: 'ATWI es un juego y hay conversaciones que no son para un juego. Esta ' +
-                'partida la detiene el juego a propósito, no es que algo fallara: no hay ' +
-                'puntuación, no hay ganador y no queda registrada.',
+      /* LO QUE SE DICE EN LA PARADA DURA, Y LO QUE NO (decisión del titular,
+         2026-09-18): la app solo dice que este tema no lo puede juzgar ni
+         negociar, y que lo hablen. NO da números de líneas de ayuda, NO
+         direcciona a buscar ayuda y NO recomienda nada más: eso es asumir una
+         responsabilidad que no se quiere asumir. `docs/01` §327 y §735 pedían
+         la pantalla de recursos por país; esa pantalla NO se construye. La
+         partida queda detenida en el historial, no permite hacer nada más y se
+         puede borrar. Y el mensaje es el mismo para los dos: la app no decide
+         quién amenaza. */
+      diceDura: 'ATWI es un juego y hay conversaciones que no son para un juego. Este ' +
+                'tema no lo puedo juzgar ni negociar. La partida queda detenida: sin ' +
+                'puntuación, sin ganador y sin propuestas.',
 
       /* EL REPORTE DE LA PARADA, que `docs/02` §594 llama obligatorio: «lo que
          dijo cada uno», con la misma maquetación y el mismo peso visual que la
@@ -465,8 +474,8 @@ window.ATWI.config = {
          país que `docs/01` §327 y §735 exigen. Hasta que los números estén
          verificados, la pantalla dice lo único que se puede sostener sin
          ellos. */
-      recursosPendiente: 'Si algo de esto está pasando de verdad, hablarlo con alguien ' +
-                         'fuera del juego ayuda más que cualquier partida.',
+      duraCierre: 'Este tema háblenlo fuera del juego. Aquí queda guardada la partida, ' +
+                  'detenida, y la pueden borrar cuando quieran.',
 
       /* QUÉ PASA CON LA RONDA Y PARA QUÉ SIRVE LO QUE QUEDA. Esto faltaba
          entero y era la mitad de la queja del titular (2026-09-15): la pantalla

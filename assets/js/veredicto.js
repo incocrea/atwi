@@ -185,7 +185,16 @@ window.ATWI = window.ATWI || {};
         { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(' + k + ')' }
       ], { duration: MS_VUELO, easing: 'cubic-bezier(.2,.7,.2,1)', fill: 'forwards' });
 
-      return vuelo.finished.catch(function () {}).then(function () {
+      /* CON RELOJ, NO CON EL FOTOGRAMA (S29, decisión del titular, 2026-09-18).
+         `vuelo.finished` solo se cumple cuando el navegador pinta el último
+         cuadro, y un teléfono con la pantalla apagada --o el navegador
+         integrado con el panel detrás-- no pinta ninguno: la secuencia se
+         quedaba en «And The» hasta que alguien volvía a mirar. El reloj gana
+         siempre: pase lo que pase con los cuadros, cada palabra se coloca a los
+         `MS_VUELO` ms y la revelación llega al final sola. */
+      var reloj = esperar(MS_VUELO + 40);
+      return Promise.race([vuelo.finished.catch(function () {}), reloj]).then(function () {
+        try { vuelo.finish(); } catch (e) {}
         tramo.style.visibility = '';
         clon.remove();
       });
@@ -922,14 +931,13 @@ window.ATWI = window.ATWI || {};
                : '') +
              (!dura && sr0.paraQue
                ? '<p class="dice__linea">' + esc(sr0.paraQue) + '</p>' : '') +
-             /* LA PANTALLA DE RECURSOS VA AQUÍ Y NO ESTÁ. `docs/01` §327 y §735
-                la exigen --016 en España, líneas locales en LATAM-- y esos
-                números hay que traerlos verificados y por país: inventarlos o
-                copiarlos de memoria en la única pantalla del producto que
-                alguien puede necesitar de verdad sería el peor sitio donde
-                equivocarse. Queda anotado en CLAUDE.md como lo que falta. */
-             (dura ? '<p class="dice__linea dice__linea--pendiente">' +
-                     esc(sr0.recursosPendiente || '') + '</p>' : '');
+             /* SIN PANTALLA DE RECURSOS, Y NO ES QUE FALTE (decisión del titular,
+                2026-09-18). `docs/01` §327 y §735 pedían líneas de ayuda por
+                país; el titular decidió que la app no da números ni direcciona
+                a buscar ayuda --eso es asumir una responsabilidad que no se
+                quiere-- y solo dice que el tema no se juzga ni se negocia aquí
+                y que lo hablen. Ver `cfg.veredicto.sinResultado.duraCierre`. */
+             (dura ? '<p class="dice__linea">' + esc(sr0.duraCierre || '') + '</p>' : '');
     } else if (r.modo === 'negociacion') {
       var n = v.juezNegociacion || {};
       /* El acuerdo se lee con SUS palabras, entrecomillado: lo escribieron

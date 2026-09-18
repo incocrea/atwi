@@ -234,10 +234,10 @@ window.ATWI = window.ATWI || {};
              flota sobre la figura en la sala, y los dos rótulos van uno al
              lado del otro: con nombre y apellido se salen de la pantalla. La
              regla y el porqué están en datos.js. */
-          campo('c-nombre', '¿Cómo te llamamos?',
-                'type="text" data-nombre autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
-                'placeholder="Tu nombre" value="' + esc(estado.nombre) + '"',
-                'Tu primer nombre o un apodo: una sola palabra.') +
+          campo('c-nombre', 'Tu apodo en el juego',
+                'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
+                'Una sola palabra, y tiene que estar libre: no hay dos apodos iguales.') +
           campo('c-correo', 'Tu correo',
                 'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"',
                 'Te mandamos un enlace para entrar. La contraseña la eliges después.') +
@@ -269,10 +269,10 @@ window.ATWI = window.ATWI || {};
         cabeza('🔑', 'Ya estás dentro',
                'Elige una contraseña para la próxima vez. El navegador te la va a guardar.') +
         '<div class="apilado-5">' +
-          campo('c-nombre2', 'Tu nombre',
-                'type="text" data-nombre autocomplete="given-name" maxlength="' + datos.NOMBRE_MAX + '" ' +
-                'placeholder="Tu nombre" value="' + esc(estado.nombre) + '"',
-                'Tu primer nombre o un apodo: una sola palabra.') +
+          campo('c-nombre2', 'Tu apodo en el juego',
+                'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
+                'Una sola palabra, y tiene que estar libre: no hay dos apodos iguales.') +
           campo('c-clave', 'Contraseña',
                 'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
                 'Que puedas recordar. No hace falta que sea rara.') +
@@ -438,6 +438,18 @@ window.ATWI = window.ATWI || {};
     }
 
     ocupado(true);
+    /* El apodo tiene que estar libre (migración 0053). Se pregunta antes de
+       mandar el correo, que es cuando todavía se puede cambiar sin volver a
+       empezar. */
+    return auth.apodoLibre(nombre).then(function (libre) {
+      if (!libre) {
+        ocupado(false, 'Mandarme el enlace');
+        return error('Ese apodo ya está en uso. Prueba otro.');
+      }
+      return mandarElCorreo(nombre, correo);
+    });
+  }
+  function mandarElCorreo(nombre, correo) {
     /* La vuelta es esta misma pantalla. Tiene que estar dada de alta en el panel
        de Supabase, en Authentication -> URL Configuration -> Redirect URLs. */
     var vuelta = location.origin + location.pathname;
@@ -466,9 +478,20 @@ window.ATWI = window.ATWI || {};
     error('');
     ocupado(true);
 
-    auth.ponerContrasena(clave)
+    auth.apodoLibre(nombre)
+      .then(function (libre) {
+        if (!libre) throw new Error('Ese apodo ya está en uso. Prueba otro.');
+        return auth.ponerContrasena(clave);
+      })
       .then(function () { return auth.miPerfil(); })
-      .then(function (perfil) { return perfil || auth.crearPerfil(nombre, '🙂'); })
+      /* EL APODO ESCRITO AQUÍ SE GUARDA (2026-09-18). El perfil ya existe --lo
+         crea el alta al registrarse, con el correo como apodo provisional-- y
+         antes lo que se escribía en este campo se ignoraba si había perfil. */
+      .then(function (perfil) {
+        if (!perfil) return auth.crearPerfil(nombre, '🙂');
+        if (perfil.nombre !== nombre) return auth.guardarPerfil({ nombre: nombre }).then(function (p) { return p || perfil; });
+        return perfil;
+      })
       .then(function (perfil) {
         datos.actualizar({ nombre: (perfil && perfil.nombre) || nombre });
         try { localStorage.removeItem(CLAVE_NOMBRE); } catch (e) {}

@@ -130,13 +130,16 @@ window.ATWI = window.ATWI || {};
       tal cual, así que dice qué hacer y no solo qué está mal. */
   function errorDeNombre(s) {
     var n = limpiarNombre(s);
-    if (!n) return 'Escribe tu nombre.';
-    if (n.length < NOMBRE_MIN) return 'Escribe un nombre de al menos dos letras.';
+    /* APODO, NO NOMBRE (decisión del titular, 2026-09-18): nadie se identifica
+       con su nombre real en la plataforma; se juega con un apodo, y el apodo es
+       único (migración 0053). Los textos lo dicen así en los cuatro sitios. */
+    if (!n) return 'Escribe tu apodo.';
+    if (n.length < NOMBRE_MIN) return 'Escribe un apodo de al menos dos letras.';
     if (n.indexOf(' ') !== -1) {
-      return 'Va una sola palabra: tu primer nombre o un apodo.';
+      return 'Va una sola palabra: un apodo para el juego.';
     }
     if (n.length > NOMBRE_MAX) {
-      return 'Máximo ' + NOMBRE_MAX + ' letras. Usa tu primer nombre o un apodo.';
+      return 'Máximo ' + NOMBRE_MAX + ' letras para el apodo.';
     }
     return '';
   }

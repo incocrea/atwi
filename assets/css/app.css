@@ -3957,16 +3957,27 @@ body.app {
    llama la atención no señala nada, así que una partida remota que espera al
    OTRO se queda sin campana aunque esté a medias.
 
-   RESPIRA, NO PARPADEA. Dos segundos por ciclo y el brillo no llega a apagarse
-   del todo: quien baja la lista con el pulgar cruza la tarjeta en cualquier
-   punto del ciclo, así que tiene que verse distinta en todos. Un parpadeo rápido
-   en una lista de veinte es un error de accesibilidad además de ser feo.
+   APARECE Y DESAPARECE, Y EL BRILLO NO SE MUEVE (titular, 2026-09-18). Antes lo
+   que latía era el propio brillo, abriéndose de 3 a 9 px con la campana, y eso
+   se veía sucio: un `drop-shadow` que crece sobre un dibujo con contorno oscuro
+   ensancha ESE contorno, así que el halo se leía rojizo y turbio en vez de
+   dorado. Ahora el brillo es **uno y fijo** —dorado limpio— y lo que se anima es
+   la OPACIDAD del signo entero: se va y vuelve, sin pasar por ningún color
+   intermedio.
+   DOS SEGUNDOS POR CICLO, y el desvanecido es suave a propósito: un parpadeo
+   rápido en una lista de veinte tarjetas es un error de accesibilidad además de
+   ser feo.
    VA DORADO, que es el color de premio: el único del juego que no significa ni
    modo ni mesa. Con el color de cada familia, la lista se leía como dos avisos
    distintos; con uno, como una sola llamada.
    ⚠️ Y EL BRILLO VA EN `drop-shadow` Y NO EN `box-shadow`: el icono es una
    pegatina recortada, así que una sombra de caja dibujaría un cuadrado de luz
-   alrededor de una campana. `drop-shadow` sigue la silueta. */
+   alrededor de una campana. `drop-shadow` sigue la silueta.
+   ⚠️ Y EL COLOR VA ENTERO, sin `color-mix` contra transparente: rebajado se
+   mezcla con el contorno del dibujo y deja de ser dorado. Lo que gradúa la
+   fuerza es el radio, no la transparencia del color.
+   ESTO NO TOCA LA CAMPANA DEL BUZÓN de la cabecera, que es otra pieza y se
+   queda como estaba: late con `scale`, sin brillo. */
 .partida-fila .partida__espera {
   position: absolute;
   /* En la misma columna que la papelera y justo encima: es la esquina que la
@@ -3978,21 +3989,17 @@ body.app {
      derecha sus centros quedaban a 5 px uno del otro. Medido. */
   width: 38px; height: 38px;
   display: grid; place-items: center;
+  filter: drop-shadow(0 0 6px var(--premio));
   animation: espera-late 2s ease-in-out infinite;
 }
 @keyframes espera-late {
-  0%, 100% { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--premio) 70%, transparent));
-             transform: scale(1); }
-  50%      { filter: drop-shadow(0 0 9px var(--premio));
-             transform: scale(1.09); }
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
 }
 /* Sin movimiento se queda el brillo puesto y quieto: la tarjeta sigue diciendo
    que espera algo, que es la información; lo que se va es la animación. */
 @media (prefers-reduced-motion: reduce) {
-  .partida-fila .partida__espera {
-    animation: none;
-    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--premio) 80%, transparent));
-  }
+  .partida-fila .partida__espera { animation: none; opacity: 1; }
 }
 
 /* LAS DOS SEÑAS DE LA PARTIDA --cuando fue y a que se jugo-- en la misma linea
