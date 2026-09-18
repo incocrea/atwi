@@ -1449,15 +1449,20 @@
            no se saben nombrar pero se ven. Puestos en la misma fila se alinean
            solos y además se leen como lo que son: las dos señas de la partida
            --cuándo fue y a qué se jugó--. */
+        /* EL MODO VA EN LA TARJETA, para que el CSS pueda teñir con él. Lo pide
+           el rótulo de estado, que desde el 2026-09-18 lleva el color del modo
+           de ESA partida y no el de su estado. */
         return '<div class="tarjeta partida-fila" data-familia="' +
-            (FAMILIA[e] || 'hecha') + '">' +
+            (FAMILIA[e] || 'hecha') + '" data-modo="' +
+            esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'debate') + '">' +
           '<button class="partida" ' +
             (rot ? 'data-tono="' + rot[1] + '" ' : '') +
             'data-partida="' + esc(d.id) + '">' +
             /* Fila 1: en qué estado está y por dónde va · cuándo y a qué. */
             '<span class="partida__alto">' +
-              '<span class="partida__estado' +
-                  (rot ? '' : ' partida__estado--hecha') + '">' +
+              /* Sin clase por estado: el color lo pone el MODO desde la
+                 tarjeta, así que aquí ya no se distingue lo terminado. */
+              '<span class="partida__estado">' +
                 esc(rot ? rot[0] : 'Terminada') +
                 '<span class="partida__avance">' + esc(avance) + '</span>' +
               '</span>' +
@@ -2058,11 +2063,11 @@
         /* «Detenida» para la parada del mediador (S27): no es que no acordaran,
            es que el mediador leyó la ronda y no propuso. El texto del acta en
            ese caso es su cierre. */
-        return '<div class="tarjeta partida-fila" data-tipo="' + esc(a.tipo) + '">' +
+        return '<div class="tarjeta partida-fila" data-tipo="' + esc(a.tipo) + '" ' +
+            'data-modo="' + esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'negociacion') + '">' +
             '<button class="partida" data-acta-de="' + esc(d.id || '') + '">' +
               '<span class="partida__alto">' +
-                '<span class="partida__estado' +
-                    (hubo ? '' : ' partida__estado--hecha') + '">' +
+                '<span class="partida__estado">' +
                   (hubo ? 'Acuerdo' : a.tipo === 'parada' ? 'Detenida' : 'Sin acuerdo') +
                 '</span>' +
                 '<span class="partida__cuando">' + esc(cuando(a.creado)) + '</span>' +

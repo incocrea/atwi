@@ -4070,14 +4070,26 @@ body.app {
    Marcaba la fila cuando el fondo de la tarjeta era blanco para todas; desde
    que la tarjeta lleva su propio tinte por familia, la barra dice lo mismo dos
    veces y ademas parte la tarjeta en dos. */
+/* EL ROTULO DE ESTADO VA EN EL COLOR DEL MODO DE ESA PARTIDA (titular,
+   2026-09-18), y no en el de su estado. Antes eran tres colores por estado
+   —dorado lo que espera, lavanda lo que está a medias, gris lo terminado— y
+   eso repartía la lista en tres familias de color que el ojo lee como tres
+   avisos distintos; ahora **el color dice a qué se jugó**, que es lo mismo que
+   dicen la peana del pie y el fondo de la tarjeta, y lo que hay que hacer lo
+   dice la campana. Una lista, un eje de color.
+   VAN LOS TONOS `-oscuro`, como los chips: el rótulo es letra pequeña en
+   mayúsculas sobre un velo claro, y el coral base (#F07F55) ahí se lava. */
 .partida__estado {
   font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
-  color: var(--premio); text-transform: uppercase;
+  color: var(--modo-fuerte, var(--tinta-suave)); text-transform: uppercase;
 }
-.partida[data-tono="curso"] .partida__estado { color: var(--lavanda-oscuro); }
-/* La terminada tambien lleva su palabra, en tono apagado: sin ella las filas
-   sin estado se leian como si les faltara algo. */
-.partida__estado--hecha { color: var(--tinta-tenue); }
+.partida-fila[data-modo="debate"]      { --modo-fuerte: var(--debate-oscuro); }
+.partida-fila[data-modo="negociacion"] { --modo-fuerte: var(--negociacion-oscuro); }
+.partida-fila[data-modo="competencia"] { --modo-fuerte: var(--competencia-oscuro); }
+/* ⚠️ AQUI ESTABAN LOS COLORES POR ESTADO --`[data-tono="curso"]` en lavanda y
+   `--hecha` en gris-- y se fueron con el cambio de arriba: el rótulo ya no dice
+   de qué tipo es, dice de qué modo. `data-tono` sigue puesto en el botón porque
+   lo lee el aviso de la portada, que sí distingue por estado. */
 
 /* LAS DOS FILAS DE CABECERA. Todo lo que identifica la partida va arriba y la
    pregunta queda sola debajo: el estado y la fecha en la primera, quienes
