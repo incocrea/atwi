@@ -1046,14 +1046,17 @@
      y una decoracion repetida a mano se queda a medias a la primera que
      alguien toque uno.
 
-     EL TEXTO VA EN UN `span` Y NO SUELTO, y no es un envoltorio de adorno: el
-     degradado se pinta con `background-clip: text`, que recorta el FONDO del
-     elemento a la forma de su texto. Con el `h1` convertido en caja flexible
-     para colocar los destellos, el texto suelto queda en una caja anonima que
-     no se puede pintar; el `span` es lo que se puede recortar. */
+     ⚠️ Y EL TEXTO VA SUELTO, SIN `span`. Lo llevo un rato, porque con el `h1`
+     hecho caja flexible el texto quedaba en una caja anonima que
+     `background-clip: text` no puede pintar. Se cayo al llevar la misma
+     decoracion a los titulos de MODAL: alli el texto lo fija el JS con
+     `textContent`, que borraria cualquier envoltorio. Asi que los destellos
+     dejaron de ser cajas flexibles y pasaron a `inline-block`, y con eso el
+     titulo vuelve a ser un elemento normal con su texto dentro —que es lo que
+     `background-clip` sabe recortar— y los dos sitios comparten UNA regla. */
   function tituloVista(html, estilo) {
     return '<h1 class="vista__titulo"' + (estilo ? ' style="' + estilo + '"' : '') + '>' +
-        '<span class="vista__titulo__t">' + html + '</span></h1>';
+        html + '</h1>';
   }
 
   function palabras() {
