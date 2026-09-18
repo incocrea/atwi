@@ -1396,10 +1396,12 @@
                 esc(rot ? rot[0] : 'Terminada') +
                 '<span class="partida__avance">' + esc(avance) + '</span>' +
               '</span>' +
+              /* ⚠️ AQUI IBA EL ROTULO DEL MODO Y SE FUE (titular, 2026-09-18):
+                 lo dice la PEANA del pie, que lleva su color y su dibujo. Con
+                 las dos cosas, cada tarjeta decía dos veces de qué modo era —y
+                 el rótulo, además, en la esquina donde menos se mira—. */
               '<span class="partida__senas">' +
                 '<span class="partida__cuando">' + esc(cuando(d.creado)) + '</span>' +
-                window.ATWI.rotuloModo(d.modo === 'debate' ? 'debate' : 'negociacion',
-                                       'partida__modo') +
               '</span>' +
             '</span>' +
             /* Fila 2: quiénes jugaron. */
@@ -1413,9 +1415,21 @@
           '<button class="partida__borrar" data-borrar="' + esc(d.id) + '"' +
             ' aria-label="Borrar esta partida">' +
             icono('papelera', 22) + '</button>' +
+          /* EL ZOCALO DIBUJADO, el mismo de las cartas de selección (titular,
+             2026-09-18). Es lo que dice de qué modo fue la partida —por eso el
+             rótulo de arriba sobra— y lo que convierte la fila en una carta de
+             juego. Va al final del HTML y detrás de todo por `z-index`: no
+             ocupa sitio, el hueco se lo hace el relleno de la tarjeta. */
+          '<img class="partida__base" src="../assets/img/iconos/base-' +
+            esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'debate') + '.png" alt="" aria-hidden="true">' +
         '</div>';
       }).join('');
   }
+
+  /* QUE PEANAS HAY. Se mira antes de componer el nombre del archivo porque una
+     partida vieja puede traer un modo que ya no exista, y un `src` a un PNG que
+     no está deja un hueco roto en mitad de la lista. */
+  var MODOS_CON_PEANA = { debate: 1, negociacion: 1, competencia: 1 };
 
   /* --- Borrar una partida ------------------------------------------------------
      SE PREGUNTA ANTES, Y SE DICE QUE SE LLEVA. Quien no usa abogado suena con su
@@ -1766,7 +1780,14 @@
     if (hayNegociaciones()) op.push(['actas', 'Acuerdos']);
     return '<div class="filtros filtros--donde">' +
       op.map(function (x) {
-        return '<button class="chip chip--filtro" data-donde="' + x[0] + '"' +
+        /* `data-lista` Y NO `data-donde` (2026-09-18): los chips llevaban el
+           mismo atributo que el interruptor «en este movil / por invitacion»
+           de preparar partida, y el listener global atiende ese primero, asi
+           que tocar «Acuerdos» o «En linea» aqui llamaba a `recordarDonde()` y
+           `abrirPreparar()` y nunca llegaba a cambiar la vista. Se vio en la
+           pasada de navegador de las actas: el chip estaba muerto desde que se
+           escribio. */
+        return '<button class="chip chip--filtro" data-lista="' + x[0] + '"' +
           (vistaHistorial === x[0] ? ' aria-pressed="true"' : '') + '>' + esc(x[1]) + '</button>';
       }).join('') +
     '</div>';
@@ -3770,8 +3791,8 @@
        boton de abrir, porque un boton dentro de otro el navegador lo desarma--
        asi que no se pisan; se deja antes igual para que el dia que la papelera
        vuelva a entrar en la tarjeta no abra la partida al tocarla. */
-    var donde = e.target.closest('[data-donde]');
-    if (donde) { vistaHistorial = donde.dataset.donde; pintarHistorial(); return; }
+    var lista = e.target.closest('[data-lista]');
+    if (lista) { vistaHistorial = lista.dataset.lista; pintarHistorial(); return; }
 
     /* Desde un acta se va a su partida. Ya no hay modal que cerrar antes: la
        lista vive en el historial. */

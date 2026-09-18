@@ -124,6 +124,11 @@
      y doce `.6` escritos a mano se desincronizan en cuanto alguien retoque
      uno. `--superficie` sigue viva para lo que NO es una card --campos,
      modales, discos de la cabecera, el reproductor--, que necesitan tapar. */
+  /* EL VELO DE LAS CARTAS DE JUEGO: blanco al 20 %, el de las cartas de modo y
+     de mesa. Es MÁS transparente que `--carta-velo` (60 %), que es el de las
+     tarjetas normales: una carta deja ver el dibujo de detrás y una tarjeta de
+     lectura no. Se nombra aquí para que las del historial no lo copien a mano. */
+  --velo-carta: rgba(255, 255, 255, .2);
   --carta-velo: rgba(255, 255, 255, .6);
   --tinta: #2E2A3F;           /* texto principal: ciruela muy oscuro, no negro */
   --tinta-suave: #6D6683;     /* texto secundario (AA sobre crema y superficie) */

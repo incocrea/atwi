@@ -678,7 +678,7 @@ body.app {
      Y NO ES «SIN FONDO», ES UN VELO (titular, 2026-09-17): blanco al 20 %, que
      deja pasar el dibujo de la pantalla y a la vez levanta la carta un punto
      sobre él. Sin nada, el texto se leía directamente sobre el fondo. */
-  background: rgba(255, 255, 255, .2);
+  background: var(--velo-carta);
   box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10);
   cursor: pointer; transition: transform var(--dur-corta) var(--suave);
 }
@@ -773,7 +773,7 @@ body.app {
    carta y no como una pegatina puesta encima.
    Va centrada con `left: 50%` y `translateX` para que el recorte sea igual por
    los dos lados: anclándola a un lado, el dibujo se descentraría. */
-.carta-modo__base, .publico__base {
+.carta-modo__base, .publico__base, .partida__base {
   position: absolute; left: 50%; z-index: 0;
   width: 118%; transform: translateX(-50%);
   height: auto; display: block; pointer-events: none;
@@ -3882,13 +3882,46 @@ body.app {
    papelera-- y las tres cosas quedan en la misma vertical.
    NO PUEDE IR DENTRO DEL BOTON: un boton dentro de otro el navegador lo
    desarma, y ya estaba escrito arriba. */
+/* LAS TARJETAS DEL HISTORIAL SON CARTAS DE JUEGO (titular, 2026-09-18). Tres
+   cosas de las cartas de selección de modo, y las tres por el mismo motivo —que
+   se lean como piezas y no como filas de una lista—:
+
+   EL VELO EN VEZ DEL BLANCO. Blanco al 20 %, que deja pasar el fondo dibujado de
+   la pantalla y a la vez levanta la tarjeta un punto sobre él. El tinte de
+   familia no se pierde: se mezcla CONTRA el velo en vez de contra el blanco, así
+   que sigue agrupando de un vistazo sin tapar el dibujo.
+
+   EL HALO EN VEZ DE LA SOMBRA PROYECTADA: `spread` de 5 px reparte mancha por
+   los cuatro lados y el blur corto la deja ceñida al canto.
+
+   Y LA PEANA DEL MODO AL PIE, desenfocada como en las cartas. Es lo que dice a
+   qué se jugó —por eso el rótulo de la esquina se fue— y lo que obliga a que la
+   tarjeta sea más alta: el hueco se lo hace el relleno de abajo, porque la pieza
+   va fuera del flujo. */
 .partida-fila {
   position: relative;
   margin-bottom: var(--e-3);
+  overflow: hidden;            /* recorta la peana por el radio de la tarjeta */
+  background: var(--velo-carta);
+  box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10);
+  /* EL SITIO DE LA ONDA, medido: a lo ancho de una tarjeta de 390 px la peana
+     pinta 76 de alto y se hunde 20, así que asoman 56. Se le dejan 48 y los 8
+     que faltan los cubre el aire que el enunciado ya trae debajo. */
+  padding-bottom: 48px;
 }
+/* MAS HUNDIDA QUE EN LAS CARTAS, y por una razon de proporcion: la carta de
+   modo mide 132 px y esta 155, pero la onda se pinta a lo ANCHO —y la tarjeta
+   del historial es mas ancha que la carta—, asi que con los mismos 20 px de
+   hundido asomaba 42 y el enunciado le quedaba a 6. Con 26 asoman 36 y quedan
+   12 de aire. */
+.partida__base { bottom: -26px; }
+
+/* LA PAPELERA SUBE POR ENCIMA DE LA ONDA. Estaba pegada al canto de abajo, que
+   ahora es dibujo: ahí el icono se leía sobre los corazones y las estrellas. */
 .partida-fila .partida__borrar {
   position: absolute;
-  right: var(--e-4); bottom: var(--e-4);
+  right: var(--e-4); bottom: 44px;
+  z-index: 1;
 }
 /* Y el enunciado se aparta de ella, o el renglon de abajo le pasaria por
    debajo. Solo el enunciado: las dos filas de cabecera terminan mucho antes. */
@@ -3902,8 +3935,8 @@ body.app {
    asi que un color fuerte aqui leeria como alarma sobre una partida que
    simplemente esta a medias. Quien dice exactamente cual es sigue siendo el
    rotulo de arriba. */
-.partida-fila[data-familia="curso"]     { background: color-mix(in srgb, var(--lavanda) 6%, var(--superficie)); }
-.partida-fila[data-familia="veredicto"] { background: color-mix(in srgb, var(--premio) 9%, var(--superficie)); }
+.partida-fila[data-familia="curso"]     { background: color-mix(in srgb, var(--lavanda) 14%, var(--velo-carta)); }
+.partida-fila[data-familia="veredicto"] { background: color-mix(in srgb, var(--premio) 18%, var(--velo-carta)); }
 /* `hecha` se queda con el blanco de la tarjeta: lo terminado es el estado
    normal de un historial y no necesita anunciarse. */
 
@@ -3995,7 +4028,10 @@ body.app {
   overflow-wrap: anywhere; margin-top: 4px;
 }
 .partida__pie { display: flex; align-items: center; gap: var(--e-2); margin-top: 4px; }
-.partida__modo { height: 18px; width: auto; flex: none; }
+/* ⚠️ AQUI ESTABA `.partida__modo`, el rótulo dibujado de la esquina, y se fue
+   con él (titular, 2026-09-18): de qué modo es cada partida lo dice ahora la
+   peana del pie. Una regla que no pinta nada se queda ahí pareciendo que manda
+   algo, igual que un PNG que nadie usa. */
 
 /* LAS PARTIDAS QUE PIDEN ALGO. Se marca la fila entera y no solo una etiqueta:
    la lista se recorre de un vistazo y una palabra mas entre otras cuatro no se
@@ -4390,7 +4426,7 @@ body.app {
      de tema —`--mesa-fuerte` y `--mesa-claro`—: lo que se va es solo el relleno
      de la carta, que desde el 2026-09-17 es el mismo velo blanco al 20 % que
      llevan las de modo: las seis son hermanas y el velo va en las seis. */
-  background: rgba(255, 255, 255, .2);
+  background: var(--velo-carta);
   box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10); cursor: pointer;
   transition: transform var(--dur-corta) var(--suave);
 }
