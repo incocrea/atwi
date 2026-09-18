@@ -34,11 +34,11 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=4a4a62c">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=4a4a62c">
-<link rel="stylesheet" href="../assets/css/base.css?v=4a4a62c">
-<link rel="stylesheet" href="../assets/css/app.css?v=4a4a62c">
-<link rel="stylesheet" href="../assets/css/modal.css?v=4a4a62c">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=277c530">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=277c530">
+<link rel="stylesheet" href="../assets/css/base.css?v=277c530">
+<link rel="stylesheet" href="../assets/css/app.css?v=277c530">
+<link rel="stylesheet" href="../assets/css/modal.css?v=277c530">
 </head>
 
 <body class="app">
@@ -215,17 +215,11 @@
     <img class="modal__peana" id="t-tema-peana" alt="" aria-hidden="true">
   </div>
 
-  <!-- Tu ficha: el nombre con el que te ven y el dibujo que te representa -->
-  <div class="modal" id="m-perfil" hidden role="dialog" aria-modal="true" aria-labelledby="t-perfil">
-    <div class="modal__cabecera">
-      <button class="boton-icono" data-cerrar="m-perfil" aria-label="Volver" data-icono="atras"></button>
-      <span class="modal__titulo" id="t-perfil">Tu ficha</span>
-    </div>
-    <div class="modal__cuerpo"></div>
-    <div class="modal__pie">
-      <button class="boton boton--bloque boton--grande" data-accion="guardar-ficha">Guardar</button>
-    </div>
-  </div>
+  <!-- AQUI ESTABA `m-perfil`, EL EDITOR DE LA FICHA, Y SE FUE (titular,
+       2026-09-18): ahora se edita en un GLOBO colgado del círculo que se tocó
+       —en Perfil, y en «Antes de empezar» tanto el mío como el del invitado—.
+       Era un modal a pantalla completa con tres bloques y tres párrafos para
+       decidir dos cosas: qué cara y de qué color. -->
 
   <!-- Escribir un tema: uno propio, o reescribir uno del catálogo -->
   <div class="modal" id="m-escribir" hidden role="dialog" aria-modal="true" aria-labelledby="t-escribir">
@@ -348,23 +342,23 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=4a4a62c"></script>
-<script src="../assets/js/precarga.js?v=4a4a62c"></script>
-<script src="../assets/js/iconos.js?v=4a4a62c"></script>
-<script src="../assets/js/personajes.js?v=4a4a62c"></script>
-<script src="../assets/js/datos.js?v=4a4a62c"></script>
-<script src="../assets/js/sonido.js?v=4a4a62c"></script>
-<script src="../assets/js/veredicto.js?v=4a4a62c"></script>
-<script src="../assets/js/grabadora.js?v=4a4a62c"></script>
-<script src="../assets/js/partida.js?v=4a4a62c"></script>
-<script src="../assets/js/auth.js?v=4a4a62c"></script>
-<script src="../assets/js/entrada.js?v=4a4a62c"></script>
-<script src="../assets/js/nube.js?v=4a4a62c"></script>
+<script src="../assets/js/config.js?v=277c530"></script>
+<script src="../assets/js/precarga.js?v=277c530"></script>
+<script src="../assets/js/iconos.js?v=277c530"></script>
+<script src="../assets/js/personajes.js?v=277c530"></script>
+<script src="../assets/js/datos.js?v=277c530"></script>
+<script src="../assets/js/sonido.js?v=277c530"></script>
+<script src="../assets/js/veredicto.js?v=277c530"></script>
+<script src="../assets/js/grabadora.js?v=277c530"></script>
+<script src="../assets/js/partida.js?v=277c530"></script>
+<script src="../assets/js/auth.js?v=277c530"></script>
+<script src="../assets/js/entrada.js?v=277c530"></script>
+<script src="../assets/js/nube.js?v=277c530"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=4a4a62c"></script>
-<script src="../assets/js/app.js?v=4a4a62c"></script>
+<script src="../assets/js/demo.js?v=277c530"></script>
+<script src="../assets/js/app.js?v=277c530"></script>
 </body>
 </html>

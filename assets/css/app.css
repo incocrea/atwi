@@ -953,6 +953,28 @@ body.app {
 }
 .personaje[aria-pressed="true"] { border-color: var(--pj); box-shadow: var(--sombra-2); }
 .personaje__cara { width: 88px; height: 88px; }
+
+/* --- La ficha, dentro del globo -------------------------------------------
+   (titular, 2026-09-18). Las mismas piezas que tenía el modal, en un globo de
+   330 px: la rejilla de tres columnas estaba medida para el ancho del modal
+   —374 menos su relleno— y aquí se salía por la derecha, con «Dante» y «Maya»
+   cortados por el canto. Lo que cede es la CARA, no la rejilla: tres columnas
+   son tres columnas, y bajarlas a dos partiría en dos una decisión que se toma
+   de una mirada.
+   ⚠️ Y LLEVA TOPE DE ALTO CON SCROLL. El globo se acota contra el marco, así que
+   sin esto en un teléfono bajo quedaría recortado por arriba o por abajo y
+   habría caras que no se podrían tocar. Medido en el marco de escritorio: la
+   ficha entera mide 552 px y deja 2 de aire, o sea que un teléfono de 667 ya no
+   la aguanta sin esto. */
+.ficha-editor { display: grid; gap: var(--e-3); max-height: 56vh; overflow-y: auto; }
+.ficha-editor .personajes { gap: 6px; }
+.ficha-editor .personaje { padding: 6px 2px; gap: 2px; }
+.ficha-editor .personaje__cara { width: 100%; height: auto; aspect-ratio: 1; max-width: 72px; }
+.ficha-editor .personaje__nombre { font-size: var(--t-mini); }
+.ficha-editor .colores { justify-content: center; }
+.ficha-editor .campo { margin: 0; }
+/* El renglón de error no gasta alto mientras no diga nada. */
+.ficha-editor #f-error:empty { display: none; }
 .personaje__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-chico); }
 
 /* --- La explicación de un modo ------------------------------------------------
@@ -3189,10 +3211,18 @@ body.app {
    vez de repartidas. Con `grid-auto-flow: column` la fila vale para las que
    haya, y `config.reglas.turnosMax` deja de tener un segundo sitio donde
    quedarse desincronizado. */
-/* La etiqueta y los círculos comparten renglón: los círculos se van a la
-   derecha con `margin-left: auto` y la etiqueta se queda donde estaba. */
-.turnos-linea { display: flex; align-items: center; gap: var(--e-3); }
-.turnos-linea .turnos-fila { margin-left: auto; flex: 0 1 auto; }
+/* EL TITULO ARRIBA Y LAS FICHAS DEBAJO, LOS DOS CENTRADOS (titular,
+   2026-09-18). Compartían renglón —la etiqueta a la izquierda y los círculos
+   empujados a la derecha con `margin-left: auto`— y eso dejaba a esta pantalla
+   con dos ejes: los otros dos rótulos centrados y éste pegado al canto.
+   El bloque de fichas se centra con `width: max-content` y `margin: auto`: sin
+   acotar el ancho, un grid de columnas `1fr` ocupa la fila entera y centrarlo no
+   se nota. */
+.turnos-linea { text-align: center; }
+.turnos-linea .turnos-fila {
+  width: max-content; max-width: 100%;
+  margin: var(--e-2) auto 0;
+}
 .turnos-linea .turno-ficha { width: auto; }
 
 /* De qué color va lo que lleva el color del modo dentro de esta pantalla. Se

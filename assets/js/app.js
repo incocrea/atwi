@@ -2290,24 +2290,39 @@
     return window.ATWI.fichaHTML(p.avatar, clase, p.avatarBorde);
   }
 
-  /** La muestra en vivo de la ficha que se está editando. */
-  function muestraFicha() {
-    return window.ATWI.fichaHTML(personajeElegido, 'avatar--retrato', colorElegido)
-      .replace('class="avatar', 'id="f-muestra" class="avatar');
-  }
-
   /* La misma pantalla sirve para mi ficha y para la del invitado. Lo único que
      cambia es de dónde salen los valores, si se pide el nombre, y que al
      invitado no se le deja mi color: dos fichas iguales no se distinguen en
      la sala, que es justo para lo que sirven. */
   var editandoFicha = 'yo';    // 'yo' | 'invitado'
 
-  function abrirFicha(quien) {
-    editandoFicha = quien === 'invitado' ? 'invitado' : 'yo';
-    var deInvitado = editandoFicha === 'invitado';
-    var p = datos.perfil();
-    var g = deInvitado ? fichaDelInvitado(($('#p-otro') && $('#p-otro').value || '').trim()) : null;
+  /* LA FICHA SE EDITA EN UN GLOBO, NO EN UNA PANTALLA (titular, 2026-09-18:
+     «adapta y simplifica la edición de tu ficha a globo flotante y aplícalo en
+     perfil y selección de personaje para partida, tanto para la ficha del host
+     como del invitado»).
 
+     POR QUÉ CABE AQUI. Esto era un modal a pantalla completa con tres bloques y
+     sus tres párrafos de explicación, y lo que de verdad se decide son dos
+     cosas: qué cara y de qué color. El globo sale DEL círculo que se tocó y deja
+     ver debajo la pantalla a la que vuelve —el perfil o «Antes de empezar»— así
+     que no hace falta repetir de quién es la ficha: se está viendo.
+
+     LO QUE SE SIMPLIFICA, y lo que no. Se van los tres párrafos: quién habla por
+     ti lo dice la propia línea de la pantalla de atrás, y lo del color —que es
+     la ropa y no el borde— se ve al tocarlo. Se queda el aviso de personaje
+     apartado, que no se ve solo: explica por qué una cara está en gris.
+     EL APODO SOLO EN LA MIA, y por lo mismo de siempre: el invitado no tiene
+     cuenta, su nombre se escribe en el campo de «Antes de empezar» y aquí sería
+     un segundo sitio donde cambiarlo.
+
+     TRES DISPARADORES Y UN SOLO GLOBO: `editar-ficha` (Perfil), `ficha-mia` y
+     `ficha-invitado` (Antes de empezar). Los tres pasan por aquí con el botón
+     que se tocó, que es de donde cuelga el pico. */
+  function abrirFicha(quien, disparador) {
+    var deInvitado = quien === 'invitado';
+    editandoFicha = deInvitado ? 'invitado' : 'yo';
+    var p = datos.perfil();
+    var g = deInvitado ? fichaDelInvitado(propuesta.otro) : null;
     personajeElegido = deInvitado ? g.avatar : p.avatar;
     colorElegido = window.ATWI.elColor(deInvitado ? g.color : p.avatarBorde);
 
@@ -2321,111 +2336,62 @@
     var chocaba = deInvitado && personajeElegido === vetado;
     if (chocaba) personajeElegido = window.ATWI.otroPersonaje(vetado);
 
-    $('#m-perfil .modal__titulo').textContent = deInvitado
-      ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
-      : 'Tu ficha';
-
-    /* El retrato va AL LADO del nombre, no centrado encima: centrado se comía
-       unos 120 px de alto y obligaba a hacer scroll en una pantalla que se
-       decide de un vistazo. Es además el mismo patrón que la ficha del
-       invitado, donde el círculo ya vive junto a su campo. */
-    $('#m-perfil .modal__cuerpo').innerHTML =
-      '<div class="apilado-5" style="padding-top:var(--e-3)">' +
-
+    var cuerpo =
+      '<div class="ficha-editor">' +
         (deInvitado
-          /* También en fila, por lo mismo: centrado y con tres renglones de
-             explicación debajo, esta pantalla pedía scroll. */
-          ? '<div class="con-ficha">' +
-              muestraFicha() +
-              '<span class="chico suave">Solo para jugar aquí: no es una cuenta ni tiene ' +
-                'historial. Se recuerda en este teléfono.</span>' +
-            '</div>'
-          : '<label style="display:block">' +
-              '<span class="chico" style="font-weight:700">Tu apodo en el juego</span>' +
-              '<span class="con-ficha" style="margin-top:6px">' +
-                muestraFicha() +
-                '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-                  'autocomplete="nickname" placeholder="Tu apodo" value="' + esc(p.nombre) + '">' +
-              '</span>' +
-              /* Se dice ANTES de escribir, no al rechazar: la razón del límite
-                 —el rótulo de la sala— se explica sola con «así te ve». */
-              '<span class="chico tenue" style="display:block;margin-top:6px">' +
-                'Una sola palabra y única en el juego: así te ve la otra persona en la ' +
-                'sala y en el resultado. Si lo cambias, tus partidas siguen siendo tuyas.</span>' +
-            '</label>') +
+          ? ''
+          : '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' +
+              datos.NOMBRE_MAX + '" autocomplete="nickname" placeholder="Tu apodo" ' +
+              'value="' + esc(p.nombre) + '">') +
 
-        /* CADA PERSONAJE APARECE UNA VEZ, no cuatro. Decisión del titular: la
-           cara se elige aquí y el color aparte, y al tocar una cara se carga su
-           variante del color que esté puesto. Poner las veinticuatro fichas
-           sería la misma decisión partida en dos pantallas. */
-        '<div>' +
-          /* «QUIÉN HABLA POR TI» y no «con quién juegas» (2026-09-18): desde
-             que el abogado es obligatorio, el personaje de la ficha es el que
-             pone la voz en la sala. Lo que decía el panel de abogados —que dice
-             tu idea mejor dicha, que no argumenta por ti, que puede
-             malinterpretarte— se dice aquí, que es donde ahora se elige. */
-          '<span class="chico" style="font-weight:700">' +
-            (deInvitado
-              ? '¿Quién habla por ' + esc(g.nombre || 'tu invitado') + '?'
-              : '¿Quién habla por ti?') + '</span>' +
-          '<span class="chico tenue" style="display:block;margin-top:2px">' +
-            (deInvitado
-              ? 'Dice su idea con su voz y mejor dicha, sin argumentar en su lugar. ' +
-                'Puede malinterpretar lo que dijo, como un abogado de verdad.'
-              : 'Dice tu idea con su voz y mejor dicha, sin argumentar por ti. ' +
-                'Puede malinterpretarte, como un abogado de verdad.') + '</span>' +
-          '<div class="personajes" style="margin-top:var(--e-2)">' +
-            window.ATWI.quienes().map(function (q) {
-              var suyo = q.clave === vetado;
-              return '<button class="personaje' + (suyo ? ' personaje--tomado' : '') + '"' +
-                ' data-personaje="' + q.clave + '"' + (suyo ? ' disabled' : '') +
-                (q.clave === personajeElegido ? ' aria-pressed="true"' : '') +
-                ' style="--pj:' + window.ATWI.colorPersonaje(colorElegido) + '">' +
-                window.ATWI.fichaHTML(q.clave, 'personaje__cara', colorElegido) +
-                '<span class="personaje__nombre">' + esc(q.nombre) + '</span>' +
-              '</button>';
-            }).join('') +
-          '</div>' +
-          (deInvitado
-            ? '<p class="chico' + (chocaba ? ' aviso-aro' : ' tenue') + '" style="margin-top:6px">' +
-              (chocaba
-                ? 'Ese personaje ya es el tuyo, así que le pusimos otro.'
-                : 'El tuyo está apartado: dos figuras iguales no se distinguen en ' +
-                  'la sala.') + '</p>'
-            : '') +
+        /* CADA PERSONAJE APARECE UNA VEZ, no cuatro: la cara se elige aquí y el
+           color aparte, y al tocar un color se recargan las seis. Poner las
+           veinticuatro fichas sería la misma decisión partida en dos pantallas. */
+        '<div class="personajes">' +
+          window.ATWI.quienes().map(function (q) {
+            var suyo = q.clave === vetado;
+            return '<button class="personaje' + (suyo ? ' personaje--tomado' : '') + '"' +
+              ' data-personaje="' + q.clave + '"' + (suyo ? ' disabled' : '') +
+              (q.clave === personajeElegido ? ' aria-pressed="true"' : '') +
+              ' style="--pj:' + window.ATWI.colorPersonaje(colorElegido) + '">' +
+              window.ATWI.fichaHTML(q.clave, 'personaje__cara', colorElegido) +
+              '<span class="personaje__nombre">' + esc(q.nombre) + '</span>' +
+            '</button>';
+          }).join('') +
         '</div>' +
 
-        /* EL COLOR NO ES UN ADORNO: es la ropa del dibujo. Al tocarlo se
-           recargan las seis caras de arriba, porque lo que se está eligiendo es
-           con qué versión se juega. */
-        '<div>' +
-          '<span class="chico" style="font-weight:700">' +
-            (deInvitado ? 'Su color' : 'Tu color') + '</span>' +
-          '<div class="colores" style="margin-top:var(--e-2)">' +
-            window.ATWI.colores().map(function (c) {
-              return '<button class="color" data-color="' + c.clave + '"' +
-                (c.clave === colorElegido ? ' aria-pressed="true"' : '') +
-                ' aria-label="' + esc(c.nombre) + '">' +
-                '<i style="background:' + c.tono + '"></i></button>';
-            }).join('') +
-          '</div>' +
-          '<p class="chico tenue" style="margin-top:6px">' +
-            'Cambia la ropa del personaje, no solo el borde. Los dos pueden ' +
-            'llevar el mismo.</p>' +
+        '<div class="colores">' +
+          window.ATWI.colores().map(function (c) {
+            return '<button class="color" data-color="' + c.clave + '"' +
+              (c.clave === colorElegido ? ' aria-pressed="true"' : '') +
+              ' aria-label="' + esc(c.nombre) + '">' +
+              '<i style="background:' + c.tono + '"></i></button>';
+          }).join('') +
         '</div>' +
 
+        /* El único texto que se queda: sin él, una cara en gris no se explica. */
+        (chocaba
+          ? '<p class="chico aviso-aro">Ese personaje ya es el tuyo, así que le pusimos otro.</p>'
+          : '') +
         '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
       '</div>';
 
-    $('#m-perfil .modal__pie button').textContent = deInvitado ? 'Listo' : 'Guardar';
-    abrirModal('m-perfil');
+    abrirGlobo(disparador,
+      { titulo: deInvitado
+          ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
+          : 'Tu ficha' },
+      { /* EL TINTE ES EL DEL MODO cuando se edita dentro de una partida, y el
+           lavanda de la marca en Perfil, que es donde no hay modo. */
+        tinte: (!$('#m-preparar').hidden && propuesta.modo) || 'lavanda',
+        signo: 'lapiz', signoTam: 64,
+        etiqueta: deInvitado ? 'Ficha del invitado' : 'Tu ficha',
+        cuerpo: cuerpo,
+        acciones: '<button class="boton boton--bloque" data-accion="guardar-ficha">' +
+                    (deInvitado ? 'Listo' : 'Guardar') + '</button>' });
+
     setTimeout(function () { var n = $('#f-nombre'); if (n && !p.nombre) n.focus(); }, 60);
   }
 
-  function refrescarMuestra() {
-    var m = $('#f-muestra');
-    if (m) m.outerHTML = muestraFicha();
-  }
 
   function guardarFicha() {
     /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
@@ -2433,7 +2399,7 @@
     if (editandoFicha === 'invitado') {
       propuesta.otroAvatar = personajeElegido;
       propuesta.otroColor = colorElegido;
-      cerrarModal('m-perfil');
+      cerrarGlobo();
       var bf0 = $('#p-ficha-otro');
       if (bf0) bf0.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', colorElegido)
         .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
@@ -2460,7 +2426,7 @@
   function guardarFichaDeVerdad(nombre) {
     var fichaElegida = personajeElegido;
     datos.actualizar({ nombre: nombre, avatar: fichaElegida, avatarBorde: colorElegido });
-    cerrarModal('m-perfil');
+    cerrarGlobo();
     pintarPerfil();
     refrescarFichaCabecera();
     if (vistaActual === 'jugar') pintarJugar();
@@ -3051,7 +3017,13 @@
         /* «Invitado» a secas: que la partida es local se sabe desde que se
            eligió «En este móvil», y repetirlo aquí contesta una pregunta que
            nadie se estaba haciendo. */
-        '<h3 style="margin:0">Invitado</h3>' +
+        /* CON EL MISMO AIRE Y EL MISMO CENTRADO QUE «¿A quién invitas?» de la
+           otra vía: los dos rótulos ocupan el mismo sitio del formulario, así
+           que si uno lleva margen y el otro no, cambiar de vía da un salto.
+           El `flex: 1` es lo que lo centra de verdad: en una fila flexible, un
+           `text-align: center` sobre una caja que solo mide lo que su texto no
+           mueve nada. */
+        '<h3 class="centrado" style="margin:var(--e-3) 0 6px;flex:1 0 100%">Invitado</h3>' +
       '</div>' +
       '<div class="con-ficha" style="margin-top:6px">' +
         '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
@@ -3086,7 +3058,7 @@
        se escribió una vez es una agenda, no unos contactos. Con ellos, reinvitar
        no pide volver a escribir el correo. */
     var bloqueCorreo =
-      '<h3 style="margin:var(--e-3) 0 6px">¿A quién invitas?</h3>' +
+      '<h3 class="centrado" style="margin:var(--e-3) 0 6px">¿A quién invitas?</h3>' +
       '<input class="campo" id="p-correo" type="email" inputmode="email" ' +
         'autocomplete="email" spellcheck="false" maxlength="254" ' +
         'placeholder="mona@correo.com" value="' + esc(propuesta.correo || '') + '">' +
@@ -3107,7 +3079,7 @@
        con el juez puesto y un «Cambiar» que abría otra pantalla se va; se toca
        el que se quiera y queda puesto. Igual en las dos vías. */
     var bloqueJuez =
-      '<h3 style="margin:var(--e-3) 0 var(--e-2)">Juez</h3>' +
+      '<h3 class="centrado" style="margin:var(--e-3) 0 var(--e-2)">Juez</h3>' +
       pintarJuez();
 
     $('#m-preparar .modal__cuerpo').innerHTML =
@@ -3138,7 +3110,7 @@
         /* «Turnos» a secas (titular, 2026-09-18): el «por persona» que se le
            puso el 2026-09-14 se fue; las cifras de minutos de debajo ya dicen
            cuánto dura la partida entera. */
-        '<h3 style="margin:0">Turnos</h3>' +
+        '<h3 class="centrado" style="margin:0">Turnos</h3>' +
         '<div class="turnos-fila">' +
         /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
            `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
@@ -3188,9 +3160,14 @@
          juez y al final a quién se invita**, porque ahí el correo es lo último
          que se hace antes de mandar, y debajo de él va a ir la lista de
          contactos. Mi personaje va arriba en las dos. */
-      (enLinea
-        ? bloqueJuez + bloqueCorreo
-        : bloqueInvitado + bloqueJuez) +
+      /* EL MISMO ORDEN EN LAS DOS VIAS (titular, 2026-09-18): turnos, juez y al
+         final a quién se juega. En local el invitado iba antes que el juez
+         —porque está sentado al lado— y eso dejaba las dos vías con el
+         formulario barajado: quien cambia el interruptor veía moverse las
+         piezas. Con el juez fijo en medio, lo único que cambia entre una y otra
+         es el último bloque, que es exactamente lo que el interruptor decide. */
+      bloqueJuez +
+      (enLinea ? bloqueCorreo : bloqueInvitado) +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
@@ -3487,7 +3464,7 @@
 
   /** Abre un globo colgado de `disparador`.
       `dicho` es {titulo, texto, ojo, clave} y `opciones` {tinte, etiqueta,
-      jugar, signo, signoTam, acciones}.
+      jugar, signo, signoTam, acciones, cuerpo}.
       `signo` cambia la pegatina que asoma —la bombilla es de las ayudas, y un
       globo que pregunta si se borra algo lleva la papelera—, `signoTam` la baja
       cuando ese dibujo llena más su cuadro que la bombilla, y `acciones` es el
@@ -3555,7 +3532,12 @@
           .replace('class="ico"', 'class="ico globo__signo"') +
         '<div class="globo__dicho">' +
           (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
-          '<p class="globo__texto">' + esc(dicho.texto || '') +
+          /* UN CUERPO PROPIO, para los globos que no explican sino que dejan
+             TOCAR algo —el primero es el editor de la ficha—. Va antes del
+             texto y lo sustituye: quien manda HTML ya escribió lo que quería
+             decir. */
+          (o.cuerpo ? o.cuerpo : '') +
+          (dicho.texto ? '<p class="globo__texto">' + esc(dicho.texto) +
             /* LA FRASE QUE PROTEGE, dentro del mismo párrafo y no aparte: es el
                final de la misma oración, y sacarla a un bloque propio la
                convertiría en una nota al margen —que es justo lo que se lee
@@ -3564,7 +3546,7 @@
             /* Sin espacio: `descargoBase` ya acaba en uno, que es lo que hace
                que el texto compuesto se lea bien donde va de una pieza. */
             (dicho.ojo ? '<b class="globo__ojo">' + esc(dicho.ojo) + '</b>' : '') +
-          '</p>' +
+          '</p>' : '') +
           /* La frase que importa, aparte y entrecomillada: es lo mismo que hacía
              el modal —leída de corrido se perdía entre lo demás, y es lo único
              que hay que llevarse—. */
@@ -3904,34 +3886,32 @@
        Lo que hacía sigue pasando por otro lado: al ESCRIBIR un nombre ya
        recordado, el manejador de `#p-otro` devuelve su ficha. */
 
-    var col = e.target.closest('#m-perfil .colores [data-color]');
+    var col = e.target.closest('.ficha-editor .colores [data-color]');
     if (col) {
       colorElegido = col.dataset.color;
-      $$('#m-perfil [data-color]').forEach(function (x) {
+      $$('.ficha-editor [data-color]').forEach(function (x) {
         if (x.dataset.color === colorElegido) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
       /* LAS SEIS CARAS SE REPINTAN, que antes no hacía falta. El color ya no es
          un aro alrededor de una cara que no cambia: es la ropa del dibujo, así
          que al tocarlo todas las fichas de arriba pasan a ser otra imagen. */
-      $$('#m-perfil [data-personaje]').forEach(function (b) {
+      $$('.ficha-editor [data-personaje]').forEach(function (b) {
         var q = b.dataset.personaje;
         b.style.setProperty('--pj', window.ATWI.colorPersonaje(colorElegido));
         var cara = b.querySelector('.avatar');
         if (cara) cara.outerHTML = window.ATWI.fichaHTML(q, 'personaje__cara', colorElegido);
       });
-      refrescarMuestra();
       return;
     }
 
     var pj = e.target.closest('[data-personaje]');
     if (pj && !pj.disabled) {
       personajeElegido = pj.dataset.personaje;
-      $$('#m-perfil [data-personaje]').forEach(function (x) {
+      $$('.ficha-editor [data-personaje]').forEach(function (x) {
         if (x.dataset.personaje === personajeElegido) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
-      refrescarMuestra();
       return;
     }
 
@@ -4015,10 +3995,10 @@
       cerrarModal('m-explicar');
       irA('catalogo');
     }
-    else if (a === 'ficha-invitado') { abrirFicha('invitado'); }
+    else if (a === 'ficha-invitado') { abrirFicha('invitado', acc); }
     /* Mi personaje desde «Antes de empezar»: la misma ficha del perfil, y al
        guardar queda para el juego entero, no solo para esta partida. */
-    else if (a === 'ficha-mia') { abrirFicha('yo'); }
+    else if (a === 'ficha-mia') { abrirFicha('yo', acc); }
     else if (a === 'cambiar-modo') {
       /* ROTA ENTRE LOS MODOS QUE HAYA, y ya no alterna entre dos. Esto se
          escribió cuando eran dos —«cambiar» era alternar— y con QuiénGane
@@ -4035,7 +4015,7 @@
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { sortearYJugar(); }
-    else if (a === 'editar-ficha') { abrirFicha('yo'); }
+    else if (a === 'editar-ficha') { abrirFicha('yo', acc); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
     else if (a === 'tema-nuevo') { abrirEscribir(null); }
     else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId); }
