@@ -958,7 +958,15 @@ window.ATWI = window.ATWI || {};
          primera, antes de lo mejor de cada uno, porque es la respuesta a la
          pregunta con la que se llega a esta pantalla. */
       var e = v.empate || {};
-      dice = (r.empate ? '<p class="dice__linea">' +
+      /* S8 (2026-09-18): LA FORMA DEL DESACUERDO SE DICE. `forma_del_desacuerdo`
+         se creó en la v2.0 «para que la pantalla elija qué decir» y la pantalla
+         no lo leía: con `de_acuerdo` la pareja solo se enteraba de que
+         coincidían si la justificación lo decía, y tres veredictos seguidos
+         traían «sin ceder su postura». Va primero: es lo que cambia la lectura
+         de todo lo demás. */
+      var forma = (v.forma || {})[r.forma] || '';
+      dice = (forma ? '<p class="dice__linea dice__linea--forma">' + esc(forma) + '</p>' : '') +
+      (r.empate ? '<p class="dice__linea">' +
                          esc(e[r.motivoEmpate] || e.generico || '') + '</p>' : '') +
       (r.loMejor || []).map(function (q) {
         return '<p class="dice__linea"><b>' + esc(q.nombre) + '</b> ' + esc(q.texto) + '</p>';

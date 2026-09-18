@@ -2829,6 +2829,10 @@ window.ATWI = window.ATWI || {};
       sinResultado: tipo === 'sin_resultado_blando' ? 'blanda'
                   : tipo === 'sin_resultado_duro' ? 'dura' : null,
       justificacion: res.justificacion || '',
+      /* S8: la FORMA del desacuerdo (v2.0) llega a la pantalla, que la lee en
+         `veredicto.js`: con `de_acuerdo` dice que los dos defendieron lo mismo;
+         con `sin_postura`, que alguien no llegó a sostener nada. */
+      forma: res.forma_del_desacuerdo || null,
       loMejor: res.lo_mejor ? ['propone', 'invitado'].map(function (l) {
         return { nombre: persona(l).nombre, texto: (res.lo_mejor || {})[l] || '' };
       }).filter(function (q) { return q.texto; }) : null,

@@ -102,7 +102,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'ddf335d',
+  version: '72b4ed1',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -357,6 +357,17 @@ window.ATWI.config = {
        Felicitar por un empate que fue un desierto es de las pocas maneras de
        que un veredicto se lea como burla.
        La clave la manda el árbitro; `parejo` es la única que celebra. */
+    /* LA FORMA DEL DESACUERDO, dicha por la pantalla (S8, 2026-09-18). El juez
+       la clasifica en tres (v2.0) y la pantalla la lee: con `opuestas` no hace
+       falta decir nada --es lo que se espera de un debate--; con `de_acuerdo`
+       hay que decirlo antes que nada, porque cambia la lectura de todo el
+       veredicto: gana quien lo sustentó mejor, no quien tenía otra idea. */
+    forma: {
+      de_acuerdo: 'Los dos respondieron lo mismo con palabras distintas. No es un fallo: ' +
+                  'el juez puntuó quién sostuvo mejor esa idea.',
+      sin_postura: 'Alguien no llegó a fijar una posición sobre el tema. El juez puntuó ' +
+                   'solo lo que sí se sostuvo.'
+    },
     empate: {
       /* LOS 8 PUNTOS LOS DICE LA PANTALLA, NO EL JUEZ (v2.3, S16): la regla de
          los 8 la aplica el codigo con los totales, asi que el modelo escribe la

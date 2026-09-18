@@ -582,7 +582,7 @@ window.ATWI = window.ATWI || {};
          partida, no para las veinte de la lista. */
       'turnos_grabados:turnos(orden,numero,perfil,nombre,avatar,color,abogado,segundos,' +
       'voz_ruta,audio_ruta,creado),' +
-      'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,' +
+      'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,forma_del_desacuerdo,' +
       'desglose,lo_mejor,lo_que_dijo,visto,creado),' +
       /* Y LAS ACTAS (2026-09-18): sin ellas el historial no sabia si una
          Negociacion terminada estaba cerrada --firmada, «Ninguna» o parada-- o
