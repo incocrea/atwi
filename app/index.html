@@ -11,11 +11,11 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=50dbad8">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=50dbad8">
-<link rel="stylesheet" href="../assets/css/base.css?v=50dbad8">
-<link rel="stylesheet" href="../assets/css/app.css?v=50dbad8">
-<link rel="stylesheet" href="../assets/css/modal.css?v=50dbad8">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=4ff82c4">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=4ff82c4">
+<link rel="stylesheet" href="../assets/css/base.css?v=4ff82c4">
+<link rel="stylesheet" href="../assets/css/app.css?v=4ff82c4">
+<link rel="stylesheet" href="../assets/css/modal.css?v=4ff82c4">
 </head>
 
 <body class="app">
@@ -165,6 +165,14 @@
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-tema" aria-label="Volver" data-icono="atras"></button>
       <span class="modal__titulo" id="t-tema"></span>
+      <!-- LA TERCERA COLUMNA DE LA CABECERA, QUE AQUI SE USA. La rejilla la
+           reserva siempre para que el titulo quede centrado contra el modal y
+           no contra el hueco que deja la flecha; en la sala lleva el turno y en
+           los demas va vacia. Aqui lleva el icono de la MESA —la casa de
+           familia, los corazones de la pareja, el estallido de amigos—, que es
+           el dato que no dice ninguna otra cosa de esta pantalla: de que lista
+           salio este tema. Lo rellena `pintarTema()`. -->
+      <span class="modal__mesa" id="t-tema-mesa" aria-hidden="true"></span>
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
@@ -334,23 +342,23 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=50dbad8"></script>
-<script src="../assets/js/precarga.js?v=50dbad8"></script>
-<script src="../assets/js/iconos.js?v=50dbad8"></script>
-<script src="../assets/js/personajes.js?v=50dbad8"></script>
-<script src="../assets/js/datos.js?v=50dbad8"></script>
-<script src="../assets/js/sonido.js?v=50dbad8"></script>
-<script src="../assets/js/veredicto.js?v=50dbad8"></script>
-<script src="../assets/js/grabadora.js?v=50dbad8"></script>
-<script src="../assets/js/partida.js?v=50dbad8"></script>
-<script src="../assets/js/auth.js?v=50dbad8"></script>
-<script src="../assets/js/entrada.js?v=50dbad8"></script>
-<script src="../assets/js/nube.js?v=50dbad8"></script>
+<script src="../assets/js/config.js?v=4ff82c4"></script>
+<script src="../assets/js/precarga.js?v=4ff82c4"></script>
+<script src="../assets/js/iconos.js?v=4ff82c4"></script>
+<script src="../assets/js/personajes.js?v=4ff82c4"></script>
+<script src="../assets/js/datos.js?v=4ff82c4"></script>
+<script src="../assets/js/sonido.js?v=4ff82c4"></script>
+<script src="../assets/js/veredicto.js?v=4ff82c4"></script>
+<script src="../assets/js/grabadora.js?v=4ff82c4"></script>
+<script src="../assets/js/partida.js?v=4ff82c4"></script>
+<script src="../assets/js/auth.js?v=4ff82c4"></script>
+<script src="../assets/js/entrada.js?v=4ff82c4"></script>
+<script src="../assets/js/nube.js?v=4ff82c4"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=50dbad8"></script>
-<script src="../assets/js/app.js?v=50dbad8"></script>
+<script src="../assets/js/demo.js?v=4ff82c4"></script>
+<script src="../assets/js/app.js?v=4ff82c4"></script>
 </body>
 </html>

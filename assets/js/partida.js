@@ -3129,5 +3129,10 @@ window.ATWI = window.ATWI || {};
   window.ATWI.partida = { empezar: empezar, repasar: repasar, reanudar: reanudar,
                           cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal,
                           ensayarLaEntrada: ensayarLaEntrada,
-                          demoDeLanding: demoDeLanding };
+                          demoDeLanding: demoDeLanding,
+                          /* La usa tambien el detalle del tema, para ensenar la
+                             escena de lo que va a pasar. Se exporta en vez de
+                             copiar `TINTE_DE_MESA` a `app.js`: dos tablas del
+                             mismo dato se desincronizan a la primera mesa nueva. */
+                          piezaDelEncuentro: piezaDelEncuentro };
 })();

@@ -2400,8 +2400,27 @@
     $('#m-tema .modal__pie button').className =
       'boton boton--bloque boton--grande boton--' + propuesta.modo;
     $('#m-tema .modal__titulo').textContent = t.titulo;
+    /* EL ICONO DE LA MESA, en la tercera columna de la cabecera. Es el unico
+       dato que esta pantalla no dice por ningun otro sitio —el modo lo dicen el
+       fondo y el boton; la mesa, nada—. */
+    var hm = $('#t-tema-mesa');
+    if (hm) hm.innerHTML = modoPublico ? icono(modoPublico, 30) : '';
 
-    /* CADA TROZO SE RETOCA POR SEPARADO. El enunciado y las dos posturas se
+    /* El bloque ilustrado del detalle: el estallido sobre su peana, las dos
+     piezas que ya visten las cartas de modo. */
+  function escenaDelTema() {
+    var pa = window.ATWI.partida;
+    if (!pa || !pa.piezaDelEncuentro) return '';
+    return '<div class="escena">' +
+        '<img class="escena__pieza" src="' +
+          pa.piezaDelEncuentro(propuesta.modo, modoPublico || 'pareja') +
+          '" alt="" width="180" height="176">' +
+        '<img class="escena__base" src="../assets/img/iconos/base-' +
+          propuesta.modo + '.png" alt="" width="512" height="100">' +
+      '</div>';
+  }
+
+  /* CADA TROZO SE RETOCA POR SEPARADO. El enunciado y las dos posturas se
        tocan y se editan solos, sin abrir el editor entero. Es el último
        momento antes de empezar y lo que se quiere ahí es afinar una frase, no
        reescribir el tema; obligar a pasar por el formulario completo para
@@ -2428,7 +2447,23 @@
         '<span>Hablen libre: no hay lados asignados. Si el enunciado no se parece a la ' +
         'discusión de ustedes, tócalo y reescríbelo — el tema es una plantilla, no una ' +
         'sentencia.</span>' +
-      '</div>';
+      '</div>' +
+
+      /* LA ESCENA DE LO QUE VA A PASAR (mockup del titular, 2026-09-17).
+         Medido antes de ponerla: entre el aviso y los dos botones quedaban 368
+         px vacios a 375, o sea el 43 % del alto del modal. Esta pantalla es la
+         ultima antes de jugar y no ensenaba nada de lo que viene.
+
+         ES LA MISMA PIEZA DE LA CORTINILLA, no un dibujo nuevo: el estallido
+         con el VS en Controversia y el del corazon en los otros dos, del color
+         de la mesa. Ya existe, ya la decide `piezaDelEncuentro(modo, publico)` y
+         ya dice exactamente lo que el mockup queria decir —que esto es un duelo
+         o un encuentro—.
+         ⚠️ Y SE VUELVE A VER treinta segundos despues, entrando desde abajo con
+         sus rebotes. Es una repeticion a proposito: aqui quieta y pequena, alli
+         en movimiento y grande. Si algun dia molesta, el sitio donde cambiarla
+         es esta linea. */
+      escenaDelTema();
 
     abrirModal('m-tema');
   }
