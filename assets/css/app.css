@@ -229,6 +229,11 @@ body.app {
    quedaria en blanco. Se le deja el del home, que es donde se elige. */
 .marco:has(#v-catalogo[data-activa]) { --fondo: url(../img/fondos/home.webp); }
 
+/* EL HISTORIAL TIENE EL SUYO (lámina del titular, 2026-09-18). Hasta hoy se
+   quedaba sin fondo —`--fondo: none`— y era la única de las cuatro pantallas de
+   la barra que se veía sobre el crema pelado. */
+.marco:has(#v-historial[data-activa]) { --fondo: url(../img/fondos/historial.webp); }
+
 /* EL DIBUJO TERMINA DONDE EMPIEZA LA BARRA (titular, 2026-09-16). Iba a `inset:
    0`, o sea que se extendía por debajo de la barra inferior y ésta —que es
    opaca— le comía la franja de abajo. No era solo desperdicio: con `cover` el
@@ -4212,7 +4217,18 @@ body.app {
   margin-bottom: var(--e-3);
   overflow: hidden;            /* recorta la peana por el radio de la tarjeta */
   background: var(--velo-carta);
-  box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10);
+  /* ⚠️ LA SOMBRA LLEGABA A LA TARJETA DE ABAJO Y LAS UNÍA (titular, 2026-09-18:
+     «reduce la sombra inferior unos 5 px, que está alcanzando a quedar bajo la
+     siguiente card»). Eran 10 px de caída, 5 de desenfoque y **5 de
+     extensión**: la mancha empezaba 5 px por fuera de la tarjeta por los cuatro
+     lados y caía otros 10, o sea 15 contra los 12 que las separan. Lo que
+     sobraba era la extensión —el `spread`—, que engorda la sombra sin darle
+     dirección. Sin ella cae 5 y se difumina 6: el canto sigue levantado y ya no
+     toca a la de abajo.
+     Se cambia SOLO aquí: las cartas de modo y de mesa llevan la misma sombra y
+     no están apiladas, así que lo que en una lista es un borrón, en ellas es el
+     relieve que el titular aprobó. */
+  box-shadow: 0 5px 6px rgba(46, 42, 63, .10);
   /* EL SITIO DE LA ONDA, medido: a lo ancho de una tarjeta de 390 px la peana
      pinta 76 de alto y se hunde 20, así que asoman 56. Se le dejan 48 y los 8
      que faltan los cubre el aire que el enunciado ya trae debajo. */
@@ -4244,10 +4260,15 @@ body.app {
    asi que un color fuerte aqui leeria como alarma sobre una partida que
    simplemente esta a medias. Quien dice exactamente cual es sigue siendo el
    rotulo de arriba. */
-.partida-fila[data-familia="curso"]     { background: color-mix(in srgb, var(--lavanda) 14%, var(--velo-carta)); }
-.partida-fila[data-familia="veredicto"] { background: color-mix(in srgb, var(--premio) 18%, var(--velo-carta)); }
-/* `hecha` se queda con el blanco de la tarjeta: lo terminado es el estado
-   normal de un historial y no necesita anunciarse. */
+/* ⚠️ Y SE VA ENTERO (titular, 2026-09-18: «las cards de partida en el historial
+   no deben tener fondo de ningún color, solo mantener la transparencia; el
+   resalte de pendiente se lo da el icono de campana solamente»). Es la misma
+   decisión que ya se tomó con el halo, aplicada al color: **una sola cosa
+   señala**. El tinte decía «esta te espera» a la vez que la campana, y sobre el
+   fondo dibujado —que desde hoy el historial tiene— dos avisos suaves se leen
+   como suciedad del dibujo, no como información.
+   Lo que queda es el velo, que no es un color de la tarjeta sino su
+   transparencia: blanco al 20 %, el mismo de las cartas de modo. */
 
 /* LA QUE ME ESPERA LLEVA UNA CAMPANA QUE LATE, Y LA TARJETA SE QUEDA QUIETA
    (titular, 2026-09-18; revoca el halo de la tarjeta entera del 2026-09-16).
@@ -4655,6 +4676,34 @@ body.app {
   font-weight: 800; color: var(--tinta); line-height: 1.35;
   overflow-wrap: anywhere;
 }
+
+/* LA INVITACION EN EL BUZON (modo en linea, 0055). Es la misma tarjeta que el
+   aviso de arriba, con una pregunta dentro: dos botones del mismo tamano, el
+   blanco punteado, como manda la regla de los pares. Lleva el tinte del MODO
+   al que invitan, que es lo primero que se decide al leerla. */
+.invitacion {
+  display: grid; gap: var(--e-2); width: 100%; text-align: left;
+  border: 1px solid rgba(122, 106, 216, .3);
+  background: var(--lavanda-tinte);
+}
+.invitacion[data-modo="debate"]      { border-color: rgba(255, 122, 89, .4); background: var(--coral-tinte, #FFF1EC); }
+.invitacion[data-modo="negociacion"] { border-color: rgba(52, 199, 128, .4); background: var(--menta-tinte, #EAF9F1); }
+.invitacion[data-modo="competencia"] { border-color: rgba(0, 126, 248, .35); background: #EAF3FF; }
+.invitacion__eti {
+  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
+  color: var(--lavanda-oscuro); text-transform: uppercase;
+}
+.invitacion__quien {
+  display: flex; align-items: center; gap: 6px; min-width: 0;
+  font-size: var(--t-chico); color: var(--tinta-suave);
+}
+.invitacion__quien b { color: var(--tinta); }
+.invitacion__tema { font-weight: 800; color: var(--tinta); line-height: 1.35; overflow-wrap: anywhere; }
+.invitacion__botones {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--e-2);
+  margin-top: var(--e-1);
+}
+.invitacion__botones .boton { min-height: 44px; padding-inline: var(--e-2); }
 
 
 

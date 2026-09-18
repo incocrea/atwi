@@ -358,6 +358,10 @@ window.ATWI = window.ATWI || {};
          `visto`—, no si hay datos. Confundir las dos cosas convirtió «ver el
          resultado otra vez» en una pantalla que no dice nada. */
       veredicto: d.resultado || null,
+      /* En línea puedo ser el invitado: sin esto el resultado se leería desde
+         el lado de quien propuso, con los nombres al revés para mí. */
+      enLinea: Boolean(d.en_linea),
+      miLado: miLadoEn(d),
       debate: d.id
     };
     /* EN NEGOCIACIÓN EL RESULTADO ES EL ACTA (2026-09-18). El repaso de una
@@ -497,8 +501,152 @@ window.ATWI = window.ATWI || {};
   /* CUÁL DE LOS DOS TIENE CUENTA. En la partida local juega quien abrió la app
      --el índice 0 de `jugadores`, que sale de su propia ficha-- contra alguien
      que agarró el teléfono. El de enfrente no tiene perfil en ninguna parte, y
-     eso decide qué se guarda en `turnos.perfil`: el suyo va NULO. */
-  function indiceDeLaCuenta() { return 0; }
+     eso decide qué se guarda en `turnos.perfil`: el suyo va NULO.
+     EN LÍNEA (0055) los dos tienen cuenta y esta puede ser la del INVITADO:
+     `jugadores[0]` sigue siendo quien propuso --es lo que `delArbitro()` da
+     por hecho-- y lo que cambia es cuál de los dos soy yo. */
+  function indiceDeLaCuenta() { return P && P.miLado === 'invitado' ? 1 : 0; }
+
+  /* ==========================================================================
+     LA PARTIDA EN LÍNEA (decisiones del titular, 2026-09-18; migración 0055)
+     Dos cuentas, dos teléfonos, un turno cada 24 horas como mucho. Lo que
+     cambia respecto a la local cabe en cuatro cosas:
+       · quién soy yo lo dice la partida (`miLado`), no el índice 0;
+       · el sorteo LO DECIDIÓ EL SERVIDOR al aceptar (`abre_lado`) y aquí solo
+         se REVELA, una vez por lado (`intro_visto_*`): los dos ven la misma
+         ruleta caer en el mismo sitio, cada uno en su teléfono;
+       · después de mandar lo mío no viene el turno del otro, viene ESPERAR:
+         una pantalla que dice a quién le toca y hasta cuándo, y que se
+         actualiza sola cuando la app pregunta por novedades;
+       · y grabar solo se ofrece cuando me toca. La función `turno` lo vuelve a
+         comprobar del otro lado, por si acaso.
+     ========================================================================== */
+  /** De qué lado de esta partida está la cuenta que la abrió. */
+  function miLadoEn(d) {
+    var yo = window.ATWI.auth && window.ATWI.auth.sesion();
+    yo = yo && yo.user && yo.user.id;
+    return d.aceptado_por && d.aceptado_por === yo ? 'invitado' : 'propone';
+  }
+
+  function enLinea(d) {
+    var miLado = miLadoEn(d);
+    var t = turnosDe(d);
+    var mesa = mesaDelDebate(d, t);
+    P = {
+      juez: (d.juez && window.ATWI.esJuez(d.juez)) ? d.juez : 'bruno',
+      tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+      modo: d.modo,
+      turnos: d.turnos,
+      publico: 'pareja',
+      jugadores: mesa.jugadores,
+      orden: mesa.orden,
+      intervenciones: mesa.intervenciones,
+      i: t.length,
+      borrador: null,
+      estado: 'turno',
+      repaso: false,
+      reanudada: t.length > 0,
+      enLinea: true,
+      miLado: miLado,
+      plazo: d.plazo || null,
+      debate: d.id
+    };
+    separarFichas();
+    abrir();
+    precargarElFinal();
+    P.poses = Promise.all([
+      window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
+        [P.modo === 'debate' ? 'plante' : 'puno'],
+        P.jugadores.map(function (j) { return j.color; })),
+      window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
+    ]);
+    window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
+                               ['hablando'],
+                               P.jugadores.map(function (j) { return j.color; }));
+    /* La revelación del sorteo, una vez por lado. Con cero intervenciones y
+       sin haberla visto, se ve; si ya hay algo grabado o ya se vio, se entra
+       derecho a lo que toque. */
+    var vista = miLado === 'invitado' ? d.intro_visto_invitado : d.intro_visto_propone;
+    if (!vista && !t.length) {
+      P.estado = 'aviso';
+      if (window.ATWI.nube && window.ATWI.nube.marcarIntroVista) window.ATWI.nube.marcarIntroVista(d.id);
+      return pintarAviso();
+    }
+    loQueToca();
+  }
+
+  /** En línea, después de la revelación o de un refresco: grabar, esperar o el resultado. */
+  function loQueToca() {
+    var total = P.turnos * 2;
+    if (P.intervenciones.length >= total) {
+      if (P.cerrando && P.juicio) return;   // ya se pidió al mandar el último
+      P.cerrando = true;
+      if (P.modo === 'negociacion') { P.juicio = pedirPropuestas(); return deliberar(); }
+      return deliberar(true);
+    }
+    P.i = P.intervenciones.length;
+    var j = P.orden[P.i % 2];
+    if (j === indiceDeLaCuenta()) return pintarTurno();
+    pintarEspera();
+  }
+
+  /** Le toca al otro: se dice a quién, hasta cuándo, y se sale sin perder nada. */
+  function pintarEspera() {
+    P.estado = 'espera';
+    var cab = $('#t-partida');
+    if (cab) cab.textContent = 'La sala';
+    if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
+    var otro = P.jugadores[P.orden[P.i % 2]];
+    var hasta = P.plazo ? ' Tiene hasta ' + cuandoVence(P.plazo) + '.' : '';
+    pintarSala({
+      dice: 'Le toca a ' + otro.nombre + '.' + hasta + ' Te avisamos cuando conteste.',
+      pie: '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
+             'data-accion="p-espera-volver">Volver al inicio</button>' +
+           '<p class="chico centrado pie-nota">Puedes cerrar la app: la partida sigue en el Historial.</p>'
+    });
+  }
+
+  /* El plazo, en palabras que se leen de un vistazo: la hora si vence hoy, el
+     día y la hora si no. Sin segundos. */
+  function cuandoVence(iso) {
+    var f = new Date(iso);
+    if (isNaN(f.getTime())) return '';
+    var hoy = new Date();
+    var hh = ('0' + f.getHours()).slice(-2) + ':' + ('0' + f.getMinutes()).slice(-2);
+    if (f.toDateString() === hoy.toDateString()) return 'las ' + hh;
+    var man = new Date(hoy.getTime() + 86400000);
+    if (f.toDateString() === man.toDateString()) return 'mañana a las ' + hh;
+    return 'el ' + f.getDate() + '/' + (f.getMonth() + 1) + ' a las ' + hh;
+  }
+
+  /**
+   * La app preguntó por novedades y ESTA partida tiene algo nuevo. Si estoy
+   * esperando, se vuelve a pedir y se sigue donde toque: mi turno, o el
+   * resultado si el otro mandó el último.
+   */
+  function tocada(id) {
+    if (!P || !P.enLinea || P.debate !== id) return;
+    if (P.estado !== 'espera') return;
+    var n = window.ATWI.nube;
+    if (!n || !n.partida) return;
+    n.partida(id).then(function (d) {
+      if (!P || !P.enLinea || P.debate !== id || P.estado !== 'espera' || !d) return;
+      var t = turnosDe(d);
+      if (t.length <= P.intervenciones.length && !d.cerrado) return;
+      var mesa = mesaDelDebate(d, t);
+      P.intervenciones = mesa.intervenciones;
+      P.plazo = d.plazo || null;
+      if (d.cerrado && d.abandono) {
+        /* Se cerró por abandono mientras esperaba: la tarjeta del historial lo
+           dice; aquí se sale sin ceremonia. */
+        cerrar();
+        if (window.ATWI.aviso) window.ATWI.aviso('La partida se cerró: la otra parte no contestó a tiempo.');
+        if (window.ATWI.refrescarHistorial) window.ATWI.refrescarHistorial();
+        return;
+      }
+      loQueToca();
+    });
+  }
 
   /* Cada jugador llega con su ficha —nombre, dibujo y color—. Se admite también
      un nombre suelto por si alguna llamada vieja lo pasa así. */
@@ -1663,10 +1811,13 @@ window.ATWI = window.ATWI || {};
        queda debajo de los turnos hasta el final de la partida. */
     if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
 
+    /* En línea, hasta cuándo: es el reloj de las 24 horas, y quien lo pierde
+       pierde la partida. */
+    var hasta = P.enLinea && P.plazo && !t.regrabando ? ' Tienes hasta ' + cuandoVence(P.plazo) + '.' : '';
     pintarSala({
       dice: t.regrabando
         ? 'Tu turno ' + t.numero + ' no se entendió. Grábalo otra vez: te escucho.'
-        : t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.',
+        : (t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.') + hasta,
       pie: botonDeGrabar('grabar') +
         '<p class="chico centrado pie-nota">Tocas para empezar y tocas para parar. ' +
           'Podrás escucharlo antes de mandarlo.</p>'
@@ -2260,6 +2411,9 @@ window.ATWI = window.ATWI || {};
        que esperar a que el otro mande lo suyo; en un solo teléfono no hay nada
        que esperar. */
     P.i++;
+    /* EN LÍNEA ESO ES EXACTAMENTE LO QUE HAY: el otro está en su teléfono. Se
+       pasa a esperar, y el juez no le habla a quien no está delante. */
+    if (P.enLinea) return pintarEspera();
     pintarTurno();
     juezDice(f.texto, f.archivo);
   }
@@ -2994,7 +3148,8 @@ window.ATWI = window.ATWI || {};
     if (a === 'p-regrabar') { regrabar(Number(b.dataset.orden)); return; }
     if (a === 'p-remandar') { remandar(Number(b.dataset.orden)); return; }
     if (a === 'p-oir-todo') { oir('i0'); return; }
-    if (a === 'p-listo') { if (P.demo) demoLaRonda(); else pintarTurno(); }
+    if (a === 'p-listo') { if (P.demo) demoLaRonda(); else if (P.enLinea) loQueToca(); else pintarTurno(); }
+    if (a === 'p-espera-volver') { cerrar(); }
     else if (a === 'p-grabar') empezarAGrabar(false);
     else if (a === 'p-agregar') empezarAGrabar(true);
     else if (a === 'p-parar') pausarGrabacion();
@@ -3307,6 +3462,9 @@ window.ATWI = window.ATWI || {};
   }
 
   window.ATWI.partida = { empezar: empezar, repasar: repasar, reanudar: reanudar,
+                          /* La partida en línea (0055): entrar, y enterarse de que
+                             hay algo nuevo mientras se espera. */
+                          enLinea: enLinea, tocada: tocada,
                           cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal,
                           ensayarLaEntrada: ensayarLaEntrada,
                           demoDeLanding: demoDeLanding,

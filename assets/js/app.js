@@ -270,9 +270,231 @@
     var lista = historial || [];
     var fuera = [];
     ['sin-ver', 'falta-veredicto', 'falta-acuerdo', 'en-curso'].forEach(function (e) {
-      lista.forEach(function (d) { if (estadoDe(d) === e) fuera.push(d); });
+      /* Solo las que me esperan A MÍ: una en línea donde le toca al otro no
+         pide nada de mí, y contarla enseñaría a ignorar la campana. */
+      lista.forEach(function (d) { if (estadoDe(d) === e && meEspera(d)) fuera.push(d); });
     });
     return fuera;
+  }
+
+  /* ======================================================================
+     EL MODO EN LÍNEA (decisiones del titular, 2026-09-18; migración 0055)
+     ======================================================================
+     Lo que la app hace de más cuando la partida es de dos teléfonos:
+       · la INVITACIÓN sale desde «Antes de empezar» y es una propuesta que
+         espera en el servidor con el correo del otro;
+       · el BUZÓN enseña las invitaciones que me esperan, y aceptar es elegir
+         con qué ficha —la del perfil, salvo que choque con la del host—;
+       · la app PREGUNTA por novedades cada medio minuto y al volver a primer
+         plano (`novedades()`: una llamada barata), y con eso refresca el
+         historial, la campana, las vidas y la sala si estoy esperando. Sin
+         push: no hay servidor de notificaciones y el titular pidió que el
+         aviso empiece dentro de la app.
+     ---------------------------------------------------------------------- */
+  var invitaciones = [];          // lo último que trajo el buzón o el sondeo
+  var ultimaNovedad = null;       // marca `ahora` del último sondeo
+  var aceptando = null;           // {debate, host} mientras se elige ficha para aceptar
+
+  function pintarVidas(n) {
+    var e = $('#dato-vidas');
+    if (e && n != null) e.textContent = String(n);
+  }
+
+  /** «¿Hay algo nuevo para mí?» Una llamada; lo que traiga decide qué repintar. */
+  function sondear() {
+    var n = window.ATWI.nube;
+    if (!n || !n.hay || !n.hay() || !n.novedades) return;
+    n.novedades(ultimaNovedad).then(function (r) {
+      if (!r) return;
+      var primera = !ultimaNovedad;
+      ultimaNovedad = r.ahora || ultimaNovedad;
+      pintarVidas(r.vidas);
+      var tocadas = r.partidas_tocadas || [];
+      var cambioInv = Number(r.invitaciones || 0) !== invitaciones.length;
+      if (!primera && (tocadas.length || cambioInv || Number(r.avisos_nuevos || 0) > 0)) {
+        /* El historial caduca —se repinta con lo viejo mientras llega lo
+           nuevo— y la sala, si está esperando, se entera por su cuenta. */
+        historialCaducado = true;
+        if (vistaActual === 'historial') pintarHistorial();
+        tocadas.forEach(function (id) {
+          if (window.ATWI.partida && window.ATWI.partida.tocada) window.ATWI.partida.tocada(id);
+        });
+      }
+      if (cambioInv) {
+        n.invitaciones().then(function (l) { invitaciones = l || []; refrescarPunto(); });
+      } else if (Number(r.avisos_nuevos || 0) > 0) {
+        refrescarPunto();
+      }
+    });
+  }
+
+  function arrancarSondeo() {
+    if (!window.ATWI.nube || !window.ATWI.nube.hay || !window.ATWI.nube.hay()) return;
+    sondear();
+    window.ATWI.nube.invitaciones().then(function (l) { invitaciones = l || []; refrescarPunto(); });
+    setInterval(function () { if (!document.hidden) sondear(); }, 30000);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) sondear(); });
+  }
+
+  /* --- La propuesta que espera: se mira y, si hace falta, se retira --------- */
+  function abrirPropuesta(d) {
+    var tarjeta = $('#v-historial [data-partida="' + d.id + '"]');
+    var caduca = d.invitacion_caduca ? new Date(d.invitacion_caduca) : null;
+    var texto = 'Le propusiste a <b>' + esc(d.invitado_correo || 'alguien') + '</b> jugar ' +
+      '<b>«' + esc(d.enunciado) + '»</b>. Lo verá en su buzón al entrar con ese correo' +
+      (caduca && !isNaN(caduca.getTime())
+        ? ', y la invitación vale hasta ' + esc(cuandoCaduca(caduca)) + '.'
+        : '.') +
+      (d.modo === 'competencia' ? '' : ' Si la retiras, tu vida vuelve.');
+    abrirGlobo(tarjeta || $('#v-historial'),
+      { titulo: 'Esperando respuesta' },
+      { tinte: d.modo, signo: 'buzon', signoTam: 64, etiqueta: 'Invitación pendiente',
+        cuerpo: '<p class="globo__texto">' + texto + '</p>',
+        acciones:
+          '<button class="boton boton--suave boton--bloque boton--punteado" data-cerrar-globo>Dejarla</button>' +
+          '<button class="boton boton--suave boton--bloque boton--borrar" data-retirar-inv="' + esc(d.id) + '">Retirar invitación</button>' });
+  }
+
+  function cuandoCaduca(f) {
+    var hh = ('0' + f.getHours()).slice(-2) + ':' + ('0' + f.getMinutes()).slice(-2);
+    var hoy = new Date();
+    if (f.toDateString() === hoy.toDateString()) return 'hoy a las ' + hh;
+    var man = new Date(hoy.getTime() + 86400000);
+    if (f.toDateString() === man.toDateString()) return 'mañana a las ' + hh;
+    return 'el ' + f.getDate() + '/' + (f.getMonth() + 1) + ' a las ' + hh;
+  }
+
+  function retirarInvitacion(id) {
+    cerrarGlobo();
+    window.ATWI.nube.rechazarInvitacion(id).then(function () {
+      historial = (historial || []).filter(function (x) { return x.id !== id; });
+      historialCaducado = true;
+      if (vistaActual === 'historial') pintarHistorial();
+      sondear();
+      if (window.ATWI.aviso) window.ATWI.aviso('Invitación retirada.');
+    }).catch(function (e) {
+      if (window.ATWI.aviso) window.ATWI.aviso('No se pudo retirar: ' + (e.message || e));
+    });
+  }
+
+  /* --- Las invitaciones que me esperan, en el buzón --------------------------- */
+  function tarjetaDeInvitacion(d) {
+    var m = cfg.modos[d.modo] || {};
+    var turnos = d.turnos || cfg.reglas.turnosPorDefecto;
+    return '<div class="tarjeta invitacion" data-modo="' + esc(d.modo) + '">' +
+        '<span class="invitacion__eti">Te invitan a jugar</span>' +
+        '<span class="invitacion__quien">' +
+          window.ATWI.fichaHTML(d.propone_avatar || 'kai', 'jugaron__cara', d.propone_color) +
+          '<b>' + esc(d.propone_nombre || 'Alguien') + '</b> · ' + esc(m.nombre || d.modo) +
+          ' · ' + turnos + (turnos === 1 ? ' turno' : ' turnos') + ' cada uno' +
+        '</span>' +
+        '<span class="invitacion__tema">' + esc(d.enunciado || '') + '</span>' +
+        '<span class="invitacion__botones">' +
+          '<button class="boton boton--suave boton--punteado" data-rechazar-inv="' + esc(d.id) + '">No, gracias</button>' +
+          '<button class="boton boton--' + esc(d.modo) + '" data-aceptar-inv="' + esc(d.id) + '">Aceptar</button>' +
+        '</span>' +
+      '</div>';
+  }
+
+  /**
+   * Aceptar es entrar con MI ficha. La base aplica la regla del personaje
+   * —distinto del host; en QuiénGane el mismo vale y lo que no puede coincidir
+   * es el color— y si choca contesta `mismo_personaje` o `mismo_color`: ahí se
+   * abre la ficha, con lo del host apartado, SOLO PARA ESTA PARTIDA; el perfil
+   * no cambia.
+   */
+  function aceptarInvitacion(id, avatar, color) {
+    var d = invitaciones.filter(function (x) { return x.id === id; })[0];
+    if (!d) return;
+    var p = datos.perfil();
+    var n = window.ATWI.nube;
+    n.aceptarInvitacion(id, avatar || p.avatar, color || p.avatarBorde).then(function (fila) {
+      invitaciones = invitaciones.filter(function (x) { return x.id !== id; });
+      cerrarGlobo();
+      cerrarModales(['m-buzon']);
+      historialCaducado = true;
+      refrescarPunto();
+      sondear();
+      /* Derecho a la sala: el sorteo se revela y, si abro yo, se graba. */
+      if (fila && fila.id) {
+        historial = (historial || []).filter(function (x) { return x.id !== fila.id; }).concat([fila]);
+        fila.turnos_grabados = fila.turnos_grabados || [];
+        volverTrasLaPartida = vistaActual;
+        window.ATWI.partida.enLinea(fila);
+      }
+    }).catch(function (e) {
+      var clave = String(e && e.message || '');
+      if (clave === 'mismo_personaje' || clave === 'mismo_color') {
+        aceptando = { debate: id, host: d.propone_avatar, hostColor: d.propone_color,
+                      soloColor: clave === 'mismo_color' };
+        return abrirFichaParaAceptar($('[data-aceptar-inv="' + id + '"]'));
+      }
+      if (window.ATWI.aviso) {
+        window.ATWI.aviso(clave === 'invitacion_caducada'
+          ? 'Esa invitación ya caducó.'
+          : 'No se pudo aceptar: ' + (e.pista || clave || 'inténtalo otra vez'));
+      }
+    });
+  }
+
+  function rechazarInvitacion(id) {
+    window.ATWI.nube.rechazarInvitacion(id).then(function () {
+      invitaciones = invitaciones.filter(function (x) { return x.id !== id; });
+      refrescarPunto();
+      abrirBuzon();
+    }).catch(function (e) {
+      if (window.ATWI.aviso) window.ATWI.aviso('No se pudo rechazar: ' + (e.message || e));
+    });
+  }
+
+  /* La ficha para ESTA partida: la de siempre, con lo del host en gris. */
+  function abrirFichaParaAceptar(disparador) {
+    var p = datos.perfil();
+    editandoFicha = 'aceptar';
+    var soloColor = aceptando.soloColor;
+    personajeElegido = p.avatar;
+    colorElegido = window.ATWI.elColor(p.avatarBorde);
+    if (!soloColor && personajeElegido === aceptando.host) personajeElegido = window.ATWI.otroPersonaje(aceptando.host);
+    if (soloColor && colorElegido === window.ATWI.elColor(aceptando.hostColor)) {
+      var libres = window.ATWI.colores().filter(function (c) { return c.clave !== colorElegido; });
+      if (libres.length) colorElegido = libres[0].clave;
+    }
+    var cuerpo =
+      '<div class="ficha-editor">' +
+        '<div class="ficha-editor__cara" id="f-cara">' + caraGrande() + '</div>' +
+        '<div class="caras-fila" role="group" aria-label="Personaje">' +
+          window.ATWI.quienes().map(function (q) {
+            var tomada = !soloColor && q.clave === aceptando.host;
+            return '<button type="button" class="caras-fila__cara' +
+              (tomada ? ' caras-fila__cara--tomada' : '') + '"' +
+              ' data-personaje="' + q.clave + '"' + (tomada ? ' disabled' : '') +
+              ' aria-pressed="' + (q.clave === personajeElegido) + '"' +
+              ' aria-label="' + esc(q.nombre) + '" title="' + esc(q.nombre) + '"' +
+              ' style="--pj:' + window.ATWI.colorPersonaje(colorElegido) + '">' +
+              window.ATWI.fichaHTML(q.clave, 'caras-fila__f', colorElegido) +
+            '</button>';
+          }).join('') +
+        '</div>' +
+        '<div class="colores">' +
+          window.ATWI.colores().map(function (c) {
+            return '<button class="color" data-color="' + c.clave + '"' +
+              (c.clave === colorElegido ? ' aria-pressed="true"' : '') +
+              ' aria-label="' + esc(c.nombre) + '">' +
+              '<i style="background:' + c.tono + '"></i></button>';
+          }).join('') +
+        '</div>' +
+        '<p class="chico aviso-aro">' + (soloColor
+          ? 'Los dos van con el mismo personaje y el mismo color. Elige otro color solo para esta partida.'
+          : 'Ese personaje ya lo lleva quien te invita. Elige otro solo para esta partida: tu ficha no cambia.') +
+        '</p>' +
+        '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
+      '</div>';
+    var dInv = invitaciones.filter(function (x) { return x.id === aceptando.debate; })[0];
+    var tinte = dInv && dInv.modo || 'lavanda';
+    abrirGlobo(disparador || $('#m-buzon .modal__cuerpo'), { titulo: 'Para esta partida' },
+      { tinte: tinte, signo: 'lapiz', signoTam: 64, etiqueta: 'Tu ficha en esta partida', cuerpo: cuerpo,
+        acciones: '<button class="boton boton--bloque' + (tinte === 'lavanda' ? '' : ' boton--' + tinte) +
+                  '" data-accion="guardar-ficha">Aceptar y entrar</button>' });
   }
 
   function filaQueEspera(d) {
@@ -1739,10 +1961,10 @@
 
     caja.innerHTML = titulo + barraDondeJuego() +
       (lista.length ? '' : (vistaHistorial === 'linea'
-        ? estadoVacio('🌐', 'Todavía no hay partidas en línea',
-            'Jugar cada quien desde su teléfono —mandar lo tuyo y que te avise ' +
-            'cuando conteste la otra parte— es lo que sigue. Por ahora las ' +
-            'partidas son las de este teléfono, y están en la otra pestaña.')
+        ? estadoVacio(icono('buzon', 76), 'Todavía no hay partidas en línea',
+            'Cada quien juega desde su teléfono: mandas lo tuyo y te avisamos ' +
+            'cuando conteste la otra parte. Se invita desde «Antes de empezar», ' +
+            'eligiendo «Con invitación».')
         : estadoVacio(icono('historial', 76), 'Ninguna partida en este teléfono',
             'Aquí van las que juegan los dos sentados en el mismo móvil.'))) +
       lista.map(function (d) {
@@ -2078,6 +2300,13 @@
   function estadoDe(d) {
     var hechos = (d.turnos_grabados || []).length;
     var total = (d.turnos || 3) * 2;
+    /* EN LÍNEA HAY DOS ESTADOS MÁS (0055): la PROPUESTA que espera a que la otra
+       persona acepte —todavía no hay invitado ni sorteo— y la ABANDONADA, que
+       se cerró porque alguien no contestó en 24 horas. La segunda en Controversia
+       trae resultado (victoria técnica) y sigue el camino normal; en Negociación
+       no hay acta y se queda así. */
+    if (d.en_linea && d.estado === 'propuesto') return 'propuesta';
+    if (d.en_linea && d.abandono && d.modo === 'negociacion') return 'abandonada';
     if (!hechos) return 'sin-empezar';
     if (hechos < total) return 'en-curso';
     /* UNA NEGOCIACION CON LAS INTERVENCIONES Y SIN ACTA NO ESTA TERMINADA
@@ -2089,7 +2318,16 @@
        el historial hasta hoy. */
     if (d.modo === 'negociacion') return (d.acuerdos || []).length ? 'terminada' : 'falta-acuerdo';
     if (!d.resultado) return 'falta-veredicto';
-    return d.resultado.visto ? 'terminada' : 'sin-ver';
+    /* Cada quien estrena el suyo: el invitado con cuenta lleva su propia marca. */
+    var visto = miLadoEn(d) === 'invitado' ? d.resultado.visto_invitado : d.resultado.visto;
+    return visto ? 'terminada' : 'sin-ver';
+  }
+
+  /** De qué lado de una partida está esta cuenta: quien propuso, o el invitado con cuenta. */
+  function miLadoEn(d) {
+    var yo = window.ATWI.auth && window.ATWI.auth.sesion();
+    yo = yo && yo.user && yo.user.id;
+    return d && d.aceptado_por && d.aceptado_por === yo ? 'invitado' : 'propone';
   }
 
   /* QUIÉNES JUGARON, con su cara (petición del titular, 2026-09-15). La lista
@@ -2119,6 +2357,12 @@
       var nombre = d[cual + '_nombre'] || (x && x.nombre) || (mio && mio.nombre);
       var avatar = d[cual + '_avatar'] || (x && x.avatar) || (mio && mio.avatar);
       var color = d[cual + '_color'] || (x && x.color) || (mio && mio.color);
+      /* Una propuesta en línea todavía no tiene invitado: se enseña a quién se
+         invitó, sin cara, que es lo único que se sabe. */
+      if (cual === 'invitado' && !nombre && d.en_linea && d.invitado_correo) {
+        return '<span class="jugaron__uno"><span class="jugaron__nombre">' +
+          esc(d.invitado_correo) + '</span></span>';
+      }
       if (!nombre && !avatar) return null;
       return '<span class="jugaron__uno">' +
           window.ATWI.fichaHTML(avatar || (i ? 'luna' : 'kai'), 'jugaron__cara', color) +
@@ -2159,6 +2403,8 @@
      y aquí ninguna de las tres es un problema. El rótulo de arriba sigue siendo
      quien dice exactamente cuál es. */
   var FAMILIA = {
+    'propuesta': 'curso',
+    'abandonada': 'hecha',
     'sin-empezar': 'curso',
     'en-curso': 'curso',
     'falta-veredicto': 'veredicto',
@@ -2174,7 +2420,9 @@
      línea sale vacía diciéndolo. No es un filtro de adorno: el día que exista,
      mezclar las dos en una sola lista sería mezclar dos maneras de jugar que
      esperan cosas distintas de vos. */
-  function esEnLinea(d) { return Boolean(d && d.aceptado_por); }
+  /* Desde la 0055 la marca es `en_linea`: una propuesta todavía sin aceptar
+     también es de en línea, y `aceptado_por` no la vería. */
+  function esEnLinea(d) { return Boolean(d && (d.en_linea || d.aceptado_por)); }
 
   /* ¿ESTA PARTIDA ME ESTÁ ESPERANDO A MÍ? (regla del titular, 2026-09-16).
      Las que sí brillan en la lista; las demás, no.
@@ -2263,6 +2511,8 @@
      algo; `terminada` no lleva nada, que una lista donde todo grita no señala
      nada. */
   var ROTULO_ESTADO = {
+    'propuesta': ['Esperando respuesta', 'curso'],
+    'abandonada': ['Abandonada', 'curso'],
     'sin-empezar': ['Sin empezar', 'curso'],
     'en-curso': ['Sin terminar', 'curso'],
     'falta-veredicto': ['Falta el resultado', 'curso'],
@@ -2328,6 +2578,14 @@
     }
     volverTrasLaPartida = vistaActual === 'jugar' ? 'jugar' : 'historial';
     var e = estadoDe(d);
+    /* EN LÍNEA (0055): la propuesta se puede retirar y nada más; la aceptada
+       entra por su propia puerta, que sabe de qué lado estoy, revela el sorteo
+       una vez y espera al otro cuando no me toca. */
+    if (e === 'propuesta') return abrirPropuesta(d);
+    if (e === 'abandonada') return;
+    if (esEnLinea(d) && (e === 'sin-empezar' || e === 'en-curso' || e === 'falta-veredicto' || e === 'falta-acuerdo')) {
+      return window.ATWI.partida.enLinea(d);
+    }
     /* Empezarla, seguirla o pedir el resultado que falta: las tres son retomar
        la misma partida, y `reanudar()` decide dónde deja a la persona. */
     if (e === 'sin-empezar' || e === 'en-curso' || e === 'falta-veredicto' || e === 'falta-acuerdo') {
@@ -2830,6 +3088,13 @@
   }
 
   function guardarFicha() {
+    /* La ficha SOLO PARA ESTA PARTIDA en línea (0055): no toca el perfil, va
+       derecha a aceptar la invitación con lo elegido. */
+    if (editandoFicha === 'aceptar' && aceptando) {
+      var ac = aceptando;
+      aceptando = null;
+      return aceptarInvitacion(ac.debate, personajeElegido, colorElegido);
+    }
     /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
        se recuerda al empezar la partida, cuando ya se sabe su nombre. */
     if (editandoFicha === 'invitado') {
@@ -2947,7 +3212,10 @@
   function refrescarPunto() {
     datos.avisos().then(function (lista) {
       var sinLeer = lista.filter(function (a) { return !a.leido; }).length +
-                    partidasQueEsperan().length;
+                    partidasQueEsperan().length +
+                    /* Y las invitaciones que me esperan (0055): son lo más
+                       urgente del buzón, porque caducan. */
+                    invitaciones.length;
       var p = $('#buzon-punto');
       var b = $('.buzon-boton');
       if (!p) return;
@@ -2968,7 +3236,12 @@
     caja.innerHTML = '<p class="chico tenue centrado" style="padding:var(--e-6) 0">Un momento…</p>';
     abrirModal('m-buzon');
 
-    datos.avisos().then(function (lista) {
+    /* Las invitaciones se piden aquí mismo, frescas: es donde se aceptan. */
+    var n = window.ATWI.nube;
+    var conInv = n && n.hay && n.hay() && n.invitaciones ? n.invitaciones() : Promise.resolve([]);
+    Promise.all([datos.avisos(), conInv]).then(function (par) {
+      var lista = par[0] || [];
+      invitaciones = par[1] || [];
       /* LO QUE ESPERA VA ARRIBA, antes que el buzón. Estas son las partidas que
          piden algo —un resultado sin recoger, una ronda a medias— y son la razón
          por la que la campana late. Van primero porque se resuelven tocándolas:
@@ -2976,12 +3249,18 @@
          No salen de la tabla `avisos`: se calculan del historial, y por eso
          antes vivían en una tarjeta de la portada. */
       var esperan = partidasQueEsperan();
-      if (!lista.length && !esperan.length) {
+      if (!lista.length && !esperan.length && !invitaciones.length) {
         caja.innerHTML = estadoVacio(icono('buzon', 76), 'Buzón vacío',
           'Aquí llegan las invitaciones a debatir, los avisos de que te toca grabar y los resultados.');
         return;
       }
       caja.innerHTML =
+        /* LAS INVITACIONES PRIMERO (0055): son una pregunta que caduca, y se
+           contesta aquí mismo con dos botones. */
+        (invitaciones.length
+          ? '<div class="apilado" style="margin-bottom:var(--e-4)">' +
+            invitaciones.map(tarjetaDeInvitacion).join('') + '</div>'
+          : '') +
         (esperan.length
           ? '<div class="apilado" style="margin-bottom:var(--e-4)">' +
             esperan.map(filaQueEspera).join('') + '</div>'
@@ -4272,30 +4551,66 @@
       if (err) err.textContent = 'Ese correo no parece válido.';
       return;
     }
+    var yoMismo = window.ATWI.auth && window.ATWI.auth.sesion();
+    yoMismo = yoMismo && yoMismo.user && yoMismo.user.email;
+    if (yoMismo && quien.toLowerCase() === String(yoMismo).toLowerCase()) {
+      var err2 = $('#p-error');
+      if (err2) err2.textContent = 'Ese es tu propio correo.';
+      return;
+    }
+    if (!window.ATWI.nube || !window.ATWI.nube.hay()) {
+      var err3 = $('#p-error');
+      if (err3) err3.textContent = 'Para invitar hace falta entrar con tu cuenta.';
+      return;
+    }
 
-    $('#m-invitar .modal__cuerpo').innerHTML =
-      '<div class="centrado" style="padding:var(--e-6) 0">' +
-        '<div style="margin-bottom:var(--e-3)">' + icono('buzon', 76) + '</div>' +
-        '<h2 style="margin-bottom:var(--e-2)">Propuesta lista</h2>' +
-        '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
-          /* El correo y el título, separados. Pegados —«a mona@correo.com Mi
-             rincón en zona común»— se leían como una sola cosa larga. */
-          'Le vas a proponer a <strong>' + esc(quien) + '</strong> jugar ' +
-          '<strong>«' + esc(t.titulo) + '»</strong> en modo <strong>' +
-          esc(m.nombre || propuesta.modo) + '</strong>, ' + turnos +
-          ' turno' + (turnos === 1 ? '' : 's') + ' cada uno. ' +
-          'Podrá aceptarlo o pedirte otro modo.' +
-        '</p>' +
-      '</div>' +
-      '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
-        '<p class="chico suave">' +
-          'Todavía no hay servidor conectado, así que la invitación no sale de este teléfono. ' +
-          'Cuando lo haya, aquí saldrá el enlace para mandar por WhatsApp.' +
-        '</p>' +
-      '</div>';
-
-    cerrarModales(['m-preparar', 'm-tema']);
-    abrirModal('m-invitar');
+    /* LA PROPUESTA SE ESCRIBE EN EL SERVIDOR (0055): con mi ficha y el correo,
+       sin invitado ni sorteo —eso lo pone la base cuando acepten—. Gasta una
+       vida, salvo en QuiénGane, y la recupera si no aceptan. */
+    var p = datos.perfil();
+    var b = $('#m-preparar [data-accion="proponer"]');
+    if (b) { b.disabled = true; b.textContent = 'Enviando…'; }
+    window.ATWI.nube.abrirPartida({
+      donde: 'linea', correo: quien,
+      tema: t, modo: propuesta.modo, turnos: turnos, juez: propuesta.juez || juezPorDefecto(),
+      yo: { nombre: datos.limpiarNombre(p.nombre), avatar: p.avatar, color: p.avatarBorde }
+    }).then(function (id) {
+      if (b) { b.disabled = false; b.textContent = 'Enviar invitación'; }
+      if (!id) {
+        var motivo = window.ATWI.nube.ultimoFallo() || '';
+        var err4 = $('#p-error');
+        if (err4) {
+          err4.textContent = /sin_vidas/.test(motivo)
+            ? 'No te quedan vidas para abrir una partida. Pídele a alguien que te mande, o juega QuiénGane, que es gratis.'
+            : 'No se pudo enviar la invitación. ' + motivo.slice(0, 120);
+        }
+        return;
+      }
+      historialCaducado = true;
+      sondear();
+      $('#m-invitar .modal__cuerpo').innerHTML =
+        '<div class="centrado" style="padding:var(--e-6) 0">' +
+          '<div style="margin-bottom:var(--e-3)">' + icono('buzon', 76) + '</div>' +
+          '<h2 style="margin-bottom:var(--e-2)">Invitación enviada</h2>' +
+          '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
+            /* El correo y el título, separados. Pegados —«a mona@correo.com Mi
+               rincón en zona común»— se leían como una sola cosa larga. */
+            'Le propusiste a <strong>' + esc(quien) + '</strong> jugar ' +
+            '<strong>«' + esc(t.titulo) + '»</strong> en modo <strong>' +
+            esc(m.nombre || propuesta.modo) + '</strong>, ' + turnos +
+            ' turno' + (turnos === 1 ? '' : 's') + ' cada uno.' +
+          '</p>' +
+        '</div>' +
+        '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
+          '<p class="chico suave">' +
+            'La verá en su buzón al entrar a ATWI con ese correo. Tiene 24 horas para ' +
+            'aceptar; si no, la partida se anula y tu vida vuelve. Te avisamos aquí ' +
+            'cuando conteste, y la partida espera en tu Historial.' +
+          '</p>' +
+        '</div>';
+      cerrarModales(['m-preparar', 'm-tema']);
+      abrirModal('m-invitar');
+    });
   }
 
   /* ======================================================================
@@ -4894,6 +5209,15 @@
     var pap = e.target.closest('[data-borrar]');
     if (pap) { abrirOlvidar(pap.dataset.borrar, pap); return; }
 
+    /* El modo en línea (0055): aceptar o rechazar una invitación del buzón, y
+       retirar una propuesta mía desde el historial. */
+    var acInv = e.target.closest('[data-aceptar-inv]');
+    if (acInv) { acInv.disabled = true; aceptarInvitacion(acInv.dataset.aceptarInv); return; }
+    var noInv = e.target.closest('[data-rechazar-inv]');
+    if (noInv) { noInv.disabled = true; rechazarInvitacion(noInv.dataset.rechazarInv); return; }
+    var retInv = e.target.closest('[data-retirar-inv]');
+    if (retInv) { retirarInvitacion(retInv.dataset.retirarInv); return; }
+
     /* «Dejarla donde está» es cerrar el globo: no hay modal que cerrar. */
     if (e.target.closest('[data-cerrar-globo]')) { cerrarGlobo(); return; }
 
@@ -5224,7 +5548,15 @@
       if (vistaActual === 'jugar') pintarJugar();
     }).catch(function () {});
     vigilarLaVersion();
+    /* Y la app pregunta por novedades (0055): invitaciones, turnos del otro,
+       resultados y vidas. Cada medio minuto en primer plano y al volver. */
+    arrancarSondeo();
   }
+  /* La sala la llama cuando una partida en línea se cerró debajo de ella. */
+  window.ATWI.refrescarHistorial = function () {
+    historialCaducado = true;
+    if (vistaActual === 'historial') pintarHistorial();
+  };
 
   /* EL VISOR DE LA LANDING (titular, 2026-09-17). Con `?demo=1` la app no es la
      app: es una partida de ejemplo corriendo sola dentro del marco de teléfono

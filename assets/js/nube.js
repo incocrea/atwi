@@ -713,7 +713,7 @@ window.ATWI = window.ATWI || {};
       'turnos_grabados:turnos(orden,numero,perfil,nombre,avatar,color,abogado,segundos,' +
       'voz_ruta,audio_ruta,creado),' +
       'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,forma_del_desacuerdo,' +
-      'desglose,lo_mejor,lo_que_dijo,visto,creado),' +
+      'desglose,lo_mejor,lo_que_dijo,visto,visto_invitado,creado),' +
       /* Y LAS ACTAS (2026-09-18): sin ellas el historial no sabia si una
          Negociacion terminada estaba cerrada --firmada, «Ninguna» o parada-- o
          si le faltaba justo eso, y las marcaba todas `terminada`. Solo los
