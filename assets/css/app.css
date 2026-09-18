@@ -3477,7 +3477,6 @@ body.app {
   box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .45), var(--sombra-2);
 }
 .turno-ficha--cupo { opacity: .55; }
-.turno-ficha__min { font-size: var(--t-mini); color: var(--tinta-tenue); }
 @media (prefers-reduced-motion: reduce) {
   .turno-ficha:active .turno-ficha__n { transform: none; }
 }
@@ -4108,9 +4107,16 @@ body.app {
    medir nada y sin números que mantener. Y cuando no sobra —una pantalla baja—
    no inventa hueco: el cuerpo scrollea, que es lo que debe pasar. */
 #m-preparar .modal__cuerpo { display: flex; flex-direction: column; }
+/* ⚠️ `space-evenly` Y NO `space-between` (titular, 2026-09-18: «el espacio
+   equitativo también incluye la parte superior e inferior, no solo entre
+   ellos»). Con `between`, el primer bloque quedaba pegado al interruptor y el
+   último al botón, y todo el aire se metía en los dos huecos de en medio: los
+   retratos arriba del todo y los turnos abajo del todo. Con `evenly` el mismo
+   hueco va delante, entre y detrás, así que los participantes bajan y los
+   turnos suben sin que haya que moverlos a mano. */
 #m-preparar .prep {
   flex: 1; min-height: 0;
-  display: flex; flex-direction: column; justify-content: space-between;
+  display: flex; flex-direction: column; justify-content: space-evenly;
 }
 
 /* EL AVISO DE QUE EL VEREDICTO ES DE MENTIRA. Discreto pero legible: no compite

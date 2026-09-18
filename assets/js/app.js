@@ -3600,7 +3600,14 @@
     /* El último con quien se jugó viene puesto: nombre, personaje y aro. En un
        teléfono compartido se repite casi siempre la misma pareja, y escribir el
        mismo nombre cada vez es trabajo que la app ya sabe hacer. */
-    propuesta.juez = propuesta.juez || juezPorDefecto();
+    /* ⚠️ EL JUEZ SE SORTEA EN CADA PARTIDA (titular, 2026-09-18: «una selección
+       random de juez, random cada partida, pero el user podrá cambiarlo con
+       clic»). Antes venía el último con el que se jugó —`juezPorDefecto()` leía
+       `localStorage`—, que es lo correcto para la ficha del invitado y lo
+       contrario de lo que se quiere aquí: el juez es del juego, no una
+       preferencia, y verlo salir distinto cada vez es parte de sentarse a
+       jugar. Quien quiera otro lo toca. */
+    propuesta.juez = sortearJuez();
     propuesta.otro = propuesta.otro || (invitadosPrevios()[0] || {}).nombre || INVITADO;
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
@@ -3741,8 +3748,11 @@
           var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
           return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
             'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
+            /* SIN LOS MINUTOS (titular, 2026-09-18). Eran una estimación —«3
+               min», «5 min»— debajo de cada número, y decían lo que ya dice el
+               número: más turnos, más rato. Lo que no decían es cuánto dura de
+               verdad una partida, que depende de lo que hable cada quien. */
             '<span class="turno-ficha__n">' + n + '</span>' +
-            '<span class="turno-ficha__min">' + MINUTOS[n] + ' min</span>' +
           '</button>';
         }).join('') +
         '</div>' +
@@ -3826,12 +3836,99 @@
       if (dd) { dd.dataset.suena = '0'; dd.style.setProperty('--nivel', '0'); }
     }
     if (!repintando) abrirModal('m-preparar');
+    /* La ruleta arranca con la pantalla ya montada; al repintar —cambiar de vía,
+       guardar una ficha— no se vuelve a sortear: el juez ya está echado. */
+    if (!repintando) setTimeout(rodarJueces, 260);
   }
 
   /* LA FILA DE JUECES: seis discos, solo la cara, y el puesto lleva el aro del
      modo. Sin nombre debajo —el titular pidió solo el círculo con la miniatura—;
      el nombre va en `aria-label` y en `title`. Sin veto: el juez es UNO para
      toda la partida y no se enfrenta a nadie. */
+  /** Un juez al azar, distinto del que salió la vez anterior si se puede: dos
+      partidas seguidas con el mismo no se leen como un sorteo. */
+  function sortearJuez() {
+    var todos = window.ATWI.jueces();
+    var otros = todos.filter(function (q) { return q.clave !== propuesta.juez; });
+    var lista = otros.length ? otros : todos;
+    return lista[Math.floor(Math.random() * lista.length)].clave;
+  }
+
+  /* ======================================================================
+     LA RULETA DEL JUEZ (titular, 2026-09-18)
+     Tres segundos recorriendo la fila y frenando, como la ficha del sorteo de
+     quién abre —mismo `clac` y misma idea—. Lo que se sortea ya está decidido
+     antes de arrancar: la animación no elige, ENSEÑA. Así el resultado no
+     depende de cuántos fotogramas dé el teléfono.
+     ⚠️ LOS TIEMPOS SE CALCULAN, NO SE ACUMULAN. Cada paso se programa contra el
+     reloj desde que empezó —`t0 + tiempoDe(k)`— y no sumando esperas: sumando,
+     cada retraso del navegador se añade al siguiente y tres segundos acaban
+     siendo cinco. Es lo mismo que hace el sorteo de la sala.
+     Y SE PUEDE CORTAR: tocar un juez mientras rueda lo elige y para. Quien ya
+     sabe a cuál quiere no tiene por qué esperar a que la rueda termine.
+     ====================================================================== */
+  var RULETA_JUEZ = 3000, VUELTAS_JUEZ = 3;
+  var rodando = 0;
+
+  function rodarJueces() {
+    pararRuleta();
+    var fila = $('#m-preparar .jueces-fila');
+    if (!fila) return;
+    var btns = [].slice.call(fila.querySelectorAll('[data-juez-es]'));
+    var n = btns.length;
+    if (n < 2) return;
+
+    var claves = btns.map(function (b) { return b.dataset.juezEs; });
+    var destino = claves.indexOf(propuesta.juez);
+    if (destino < 0) destino = 0;
+
+    /* Con el movimiento reducido no hay ruleta: el juez ya está elegido y lo
+       único que se pierde es verlo girar. */
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      marcarJuez(claves[destino]);
+      return;
+    }
+
+    var desde = 0;
+    var total = VUELTAS_JUEZ * n + ((destino - desde + n) % n);
+    var son = window.ATWI.sonido;
+    var haySon = son && son.hay();
+    var t0 = (window.performance && performance.now()) || 0;
+    /* Empieza rápido y frena: el cubo es lo que hace que los últimos pasos se
+       vean de uno en uno. */
+    var tiempoDe = function (k) {
+      var p = k / total;
+      return RULETA_JUEZ * (1 - Math.pow(1 - p, 3));
+    };
+
+    var k = 0;
+    marcarJuez(claves[desde]);
+    (function siguiente() {
+      k++;
+      if (k > total) { rodando = 0; marcarJuez(claves[destino]); return; }
+      var ahora = (window.performance && performance.now()) || 0;
+      var espera = Math.max(0, t0 + tiempoDe(k) - ahora);
+      rodando = setTimeout(function () {
+        if (!rodando) return;
+        marcarJuez(claves[(desde + k) % n]);
+        if (haySon) son.clac(Math.max(0.2, 1 - k / total));
+        siguiente();
+      }, espera);
+    })();
+  }
+
+  function pararRuleta() {
+    if (rodando) { clearTimeout(rodando); rodando = 0; }
+  }
+
+  /** Deja puesto un juez en la fila, sin repintar la pantalla. */
+  function marcarJuez(clave) {
+    propuesta.juez = clave;
+    $$('#m-preparar [data-juez-es]').forEach(function (x) {
+      x.setAttribute('aria-pressed', String(x.dataset.juezEs === clave));
+    });
+  }
+
   function pintarJuez() {
     return '<div class="jueces-fila" role="group" aria-label="Juez">' +
       window.ATWI.jueces().map(function (q) {
@@ -4722,11 +4819,10 @@
        invitado a medio escribir. */
     var jzEs = e.target.closest('[data-juez-es]');
     if (jzEs) {
-      propuesta.juez = jzEs.dataset.juezEs;
-      recordarJuez(propuesta.juez);
-      $$('#m-preparar [data-juez-es]').forEach(function (x) {
-        x.setAttribute('aria-pressed', String(x.dataset.juezEs === propuesta.juez));
-      });
+      /* Tocar corta la ruleta: quien ya sabe a cuál quiere no espera. */
+      pararRuleta();
+      recordarJuez(jzEs.dataset.juezEs);
+      marcarJuez(jzEs.dataset.juezEs);
       return;
     }
 
