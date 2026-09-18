@@ -4723,8 +4723,8 @@ body[data-demo] { background: var(--crema); }
    el 138 % escrito al lado. Cualquier peana que se quiera salir por los lados
    tiene que apagarlo. */
 .modal__peana {
-  position: absolute; left: 50%; bottom: -28px;
-  width: 138%; max-width: none; height: auto;
+  position: absolute; left: 50%; bottom: -15px;
+  width: 105%; max-width: none; height: auto;
   transform: translateX(-50%);
   pointer-events: none;
   z-index: 0;
@@ -4732,8 +4732,8 @@ body[data-demo] { background: var(--crema); }
 #m-tema .modal__pie {
   position: relative; z-index: 1;
   background: none; border-top: 0;
-  /* El sitio de la onda: al 138 % mide 94 px y, hundida, asoma 66; los botones
-     se suben esos 66 más cuatro de aire, para que la onda pase por DEBAJO del
-     de abajo y no por detrás. */
+  /* El sitio de la onda: al 105 % mide 72 px y, hundida, asoma 57; los botones
+     se suben por encima de eso, para que la onda pase por DEBAJO del de abajo
+     y no por detrás. */
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
 }
