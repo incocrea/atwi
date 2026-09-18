@@ -2201,10 +2201,17 @@ window.ATWI = window.ATWI || {};
          lo único compartible cuando no hubo partido; sin esto la pantalla del
          juez saldría con el titular y sin el reporte que `docs/02` §594 llama
          obligatorio. */
+      /* P1 ES QUIEN PROPONE Y P2 EL INVITADO, POR LADO Y NO POR ORDEN DE HABLA
+         (S5, 2026-09-17). El mediador etiqueta con `ladoDe()`: P1 = propone
+         siempre, abra quien abra. Aquí se leía `P.orden[0]` --quien habló
+         primero--, así que en una ronda abierta por el invitado (N2, N6) el
+         párrafo de cada uno habría salido con el nombre del otro. Es el mismo
+         fallo que `mesaDelDebate()` tuvo con el veredicto, por el otro lado. */
       if (d.lo_que_dijo) {
+        var yo = indiceDeLaCuenta();
         P.loQueDijoNegociacion = [
-          { nombre: P.jugadores[P.orden[0]].nombre, texto: d.lo_que_dijo.p1 || '' },
-          { nombre: P.jugadores[P.orden[1]].nombre, texto: d.lo_que_dijo.p2 || '' }
+          { nombre: P.jugadores[yo].nombre, texto: d.lo_que_dijo.p1 || '' },
+          { nombre: P.jugadores[1 - yo].nombre, texto: d.lo_que_dijo.p2 || '' }
         ].filter(function (q) { return q.texto; });
       }
       return null;
