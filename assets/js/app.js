@@ -1094,8 +1094,12 @@
       escribir: 'Escribir un tema',
       jugar: 'Jugar este tema',
       primero: 'Escribir el primer tema',
+      /* SIN «LAS DOS POSTURAS» (2026-09-18): se eliminaron del catálogo hace
+         semanas —el tema es una pregunta y nadie elige lado— y este renglón
+         seguía pidiéndolas. Es el mismo texto viejo que el titular señaló en el
+         editor, en la pantalla de al lado. */
       ninguno: 'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
-               'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.'
+               'Escribe la pregunta y se juega igual que las demás.'
     };
   }
 
@@ -1199,16 +1203,17 @@
             '<div class="centrado">' +
               tituloVista(esc(palabras().mis), 'font-size:var(--t-h2)') +
               '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
+            /* EL ICONO DE CREAR VA JUNTO AL TITULO (titular, 2026-09-18), en la
+               tercera columna de la cabecera —el mismo sitio donde el catalogo
+               lleva la lupa—. De el sale el globo de escribir, y por eso se fue
+               el boton grande que habia debajo: eran dos maneras de decir lo
+               mismo, y la de abajo empujaba la lista una fila entera hacia
+               abajo en la unica pantalla donde lo que se viene a ver es la
+               lista. */
+            '<button class="boton-icono" data-accion="tema-nuevo" ' +
+              'aria-label="' + esc(palabras().escribir) + '" ' +
+              'title="' + esc(palabras().escribir) + '">' + icono('mas', 26) + '</button>' +
           '</div>' +
-
-          /* EN EL COLOR DEL MODO (titular, 2026-09-17), no en el lavanda de
-             marca. Es el único botón sólido de esta pantalla, y la pantalla
-             entera ya es del modo —el fondo, la cinta de arriba, los chips de
-             filtro y el borde de «Mis propios temas»—: en lavanda era lo único
-             que venía de otro sitio. */
-          '<button class="boton boton--bloque boton--' + claseDeModo() + '" ' +
-            'data-accion="tema-nuevo" style="margin-bottom:var(--e-3)">' +
-            icono('mas', 20) + esc(palabras().escribir) + '</button>' +
 
           (temas.length
             ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
@@ -2790,62 +2795,74 @@
   }
 
   /* ======================================================================
-     Escribir un tema
-     Dos cosas con la misma pantalla, porque para quien escribe son la misma:
+     Escribir un tema · EN GLOBO, DESDE EL ICONO DE CREAR (titular, 2026-09-18)
+     Era un modal a pantalla completa, con su cabecera, su flecha de volver y su
+     pie. Se va por lo mismo que se fueron de ahí la confirmación de borrado y
+     la ficha: un modal a pantalla completa es la ceremonia de ENTRAR a algo, y
+     aquí no se entra a ningún sitio —se escriben dos renglones y se guarda—. El
+     globo sale del icono de crear que está junto al título «Mis propios temas»,
+     deja ver la lista debajo y se cierra tocando fuera.
+     Dos cosas con el mismo globo, porque para quien escribe son la misma:
        · REESCRIBIR uno del catálogo. El original no se toca y se puede volver.
        · CREAR uno propio, que cae en «Mis temas».
-     El enunciado y las dos posturas son el material con el que trabaja el
-     árbitro, así que son lo único obligatorio.
+
+     ⚠️ Y AQUÍ SE FUE EL AVISO DE «LAS DOS RESPUESTAS SE PUEDAN DEFENDER»
+     (titular, 2026-09-18: «eso ya no aplica»), que era un bloque de cuatro
+     renglones al pie. Y la razón es que el juego dejó de necesitarlo: desde que
+     `revisar_tema` lee lo escrito AL GUARDAR, esa prueba exacta es uno de sus
+     cuatro motivos de rechazo —`una_salida`— y la explica con las palabras del
+     tema que se escribió, no en abstracto y por adelantado. Lo mismo el aviso
+     del premio: «escrito desde el que gana», «concreto», «que no duela» y «no
+     de grupo» son las reglas que ese mismo revisor comprueba. El aviso era la
+     regla dicha dos veces, y la de arriba se leía antes de tener nada escrito,
+     que es cuando menos sirve. Lo único que queda es una línea diciendo que al
+     guardar se revisa, que es lo que explica el «Revisando…» del botón.
      ====================================================================== */
   var escribiendo = null;   // {id, propio} · id null = tema nuevo
 
-  function abrirEscribir(id) {
+  function abrirEscribir(id, disparador) {
     var t = id ? datos.tema(id) : null;
     var propio = Boolean(t && t.propio);
     var reescrito = Boolean(t && !propio && datos.estaReescrito(id));
     escribiendo = { id: id || null, propio: propio || !id };
 
+    /* El globo cuelga de quien lo abrió: el icono de crear de la cabecera o el
+       lápiz de la tarjeta. Si quien llama no lo dice, se cuelga del de crear,
+       que es el sitio donde vive esta pantalla. */
+    var d = disparador || $('[data-accion="tema-nuevo"]');
+    if (!d) return;
+
     /* EL FORMULARIO ES EL MISMO Y PIDE OTRA COSA. En QuiénGane no se escribe
-       una pregunta sino un premio, así que cambian el título, la ayuda, las
-       dos etiquetas, el ejemplo y el aviso de abajo —que en los temas explica
-       la prueba de las dos respuestas defendibles y aquí no viene a cuento—.
-       Lo que NO cambia es el mecanismo: mismo modal, mismo guardado, mismo
-       borrado. Duplicar la pantalla para cambiar seis frases habría dejado dos
-       sitios donde arreglar el mismo fallo. */
+       una pregunta sino un premio, así que cambian el título, la ayuda, las dos
+       etiquetas y los ejemplos. Lo que NO cambia es el mecanismo: mismo globo,
+       mismo guardado, mismo borrado. Duplicarlo para cambiar seis frases habría
+       dejado dos sitios donde arreglar el mismo fallo. */
     var esPremio = propuesta.modo === 'competencia';
 
-    $('#m-escribir .modal__titulo').textContent = !t
-      ? (esPremio ? 'Tu propio premio' : 'Tu propio tema')
-      : (esPremio ? 'Editar premio' : 'Editar tema');
+    var cuerpo =
+      '<div class="tema-editor globo__cede">' +
+        '<p class="globo__texto">' +
+          (t && !propio
+            ? (esPremio
+                ? 'Cámbialo para que se parezca a lo que ustedes se jugarían. ' +
+                  'El original del catálogo no se toca.'
+                : 'Cámbiala para que se parezca a la discusión de ustedes. ' +
+                  'El original del catálogo no se toca.')
+            : (esPremio
+                ? 'Qué se lleva quien gane. Concreto, entre ustedes dos y para esta semana.'
+                : 'Una pregunta de opinión, con las dos salidas dentro. Nadie elige lado.')) +
+        '</p>' +
 
-    $('#m-escribir .modal__cuerpo').innerHTML =
-      '<p class="chico suave" style="margin-bottom:var(--e-4)">' +
-        (t && !propio
-          ? (esPremio
-              ? 'Cambia el premio para que se parezca a lo que ustedes se jugarían. ' +
-                'El original del catálogo no se toca: puedes volver a él cuando quieras.'
-              : 'Cambia la pregunta para que se parezca a la discusión de ustedes. ' +
-                'El tema original del catálogo no se toca: puedes volver a él cuando quieras.')
-          : (esPremio
-              ? 'Escribe qué se lleva quien gane. Algo concreto, entre ustedes dos, ' +
-                'que se pueda cumplir esta semana.'
-              : 'Escríbelo como una pregunta de opinión, con las dos salidas dentro. ' +
-                'Nadie elige lado: cada quien dice lo suyo al hablar.')) +
-      '</p>' +
+        (reescrito
+          ? '<div class="reescrito">' + window.ATWI.iconoSVG('lapiz', 16) +
+              '<span>Reescrito por <strong>' + esc(t.editadoPor || 'alguien') + '</strong>' +
+              (t.editado ? ' · ' + haceCuanto(t.editado) : '') + '</span>' +
+            '</div>'
+          : '') +
 
-      (reescrito
-        ? '<div class="reescrito" style="margin-bottom:var(--e-4)">' +
-            window.ATWI.iconoSVG('lapiz', 16) +
-            '<span>Reescrito por <strong>' + esc(t.editadoPor || 'alguien') + '</strong>' +
-            (t.editado ? ' · ' + haceCuanto(t.editado) : '') + '</span>' +
-          '</div>'
-        : '') +
-
-      '<div class="apilado-5">' +
         campoTexto('e-titulo', 'Título corto', t ? t.titulo : '', 'input',
-                   esPremio
-                     ? 'Cómo lo van a ver en la lista. Por ejemplo: «El control remoto».'
-                     : 'Cómo lo van a ver en la lista. Por ejemplo: «El tubo de pasta».',
+                   esPremio ? 'En la lista: «El control remoto».'
+                            : 'En la lista: «El tubo de pasta».',
                    /* 30 Y NO 60 (titular, 2026-09-17): el titulo tiene que
                       caber en UNA linea de la tarjeta sin llegar al lapiz de
                       editar. Medido a 375, que es el ancho mas estrecho: le
@@ -2856,50 +2873,53 @@
         campoTexto('e-enunciado', esPremio ? 'El premio' : 'La pregunta',
                    t ? t.enunciado : '', 'textarea',
                    esPremio
-                     ? 'Por ejemplo: «Quien gane controla la tele todo el fin de semana» ' +
-                       'o «A quien gane le lavan los platos tres días».'
-                     : 'Una pregunta de opinión. Por ejemplo: «¿Los platos se lavan al ' +
-                       'terminar de comer o pueden esperar a la mañana?».', 240) +
+                     ? 'Por ejemplo: «Quien gane elige la película del viernes».'
+                     : 'Por ejemplo: «¿Los platos se lavan al terminar de comer o ' +
+                       'pueden esperar?».', 240) +
 
         '<p class="chico" id="e-error" style="color:var(--peligro)"></p>' +
         /* LO QUE DIJO EL REVISOR, si el tema no pasó: por qué, y la reescritura
            que propone con su botón. Vacío no ocupa. */
         '<div class="tema-revision" id="e-revision" hidden></div>' +
-      '</div>' +
+        '<p class="chico tenue tema-editor__nota">Al guardarlo se revisa que se pueda jugar.</p>' +
+      '</div>';
 
-      /* LA PRUEBA QUE ANTES HACÍAN LAS POSTURAS. Se pedían dos y si una era
-         indefendible el tema no valía. Sin ellas, la prueba se hace sobre la
-         propia pregunta, y por eso este aviso dice qué tiene que cumplir: si
-         solo admite una respuesta decente, no es un desacuerdo, es un acusado y
-         un fiscal, y el árbitro no tendría nada que arbitrar. */
-      '<div class="aviso-ia" style="margin-top:var(--e-4)">' + iconoSVG('aviso', 20) +
-        (esPremio
-          /* La misma idea que el aviso de los temas, por el otro lado: allí se
-             protege al que perdería un juicio injusto y aquí al que perdería
-             algo que no quería apostar. Lo dice también la línea `clave` del
-             modo, y es la regla que hace que este modo sea un juego. */
-          ? '<span>Escríbelo por el <strong>lado bueno</strong>: qué se lleva quien gane, ' +
-            'no qué le toca al otro. Que se pueda cumplir esta semana y no duela.</span>'
-          : '<span>Escríbelo como <strong>pregunta</strong>, y que las dos respuestas se ' +
-            'puedan defender. Si solo hay una respuesta decente, eso no es un desacuerdo: ' +
-            'es una acusación, y el resultado no valdría nada.</span>') +
-      '</div>' +
-
+    /* LOS BOTONES VAN AL PIE DEL GLOBO, con las mismas variantes que el globo
+       de borrado del historial: el que hace lo de esta pantalla en el color del
+       modo, y los de salida en blanco —el punteado para «vuelve al de antes» y
+       la tinta de peligro para el que borra—.
+       ⚠️ `boton--punteado` SOLO PONE EL BORDE: la cara blanca la pone
+       `boton--suave`. Con el punteado a secas los dos salían en el lavanda de
+       serie con la letra roja encima, que no se leía. */
+    var acciones =
+      '<button class="boton boton--bloque boton--' + claseDeModo() + '" id="e-guardar" ' +
+        'data-accion="guardar-tema">' +
+        (esPremio ? 'Guardar el premio' : 'Guardar el tema') + '</button>' +
       (reescrito
-        ? '<button class="boton boton--fantasma boton--bloque" data-accion="devolver-tema" ' +
-          'style="margin-top:var(--e-5)">' + icono('cambiar', 22) +
-          'Volver al tema del catálogo</button>'
+        ? '<button class="boton boton--suave boton--bloque boton--punteado" ' +
+          'data-accion="devolver-tema">' + icono('cambiar', 20) +
+          'Volver al del catálogo</button>'
         : '') +
       (propio
-        ? '<button class="boton boton--fantasma boton--bloque" data-accion="borrar-tema" ' +
-          'style="margin-top:var(--e-3);color:var(--peligro)">Borrar este ' +
+        ? '<button class="boton boton--suave boton--bloque boton--borrar" ' +
+          'data-accion="borrar-tema">Borrar este ' +
           (esPremio ? 'premio' : 'tema') + '</button>'
         : '');
 
-    var guardar = $('#e-guardar');
-    if (guardar) guardar.textContent = esPremio ? 'Guardar el premio' : 'Guardar el tema';
+    abrirGlobo(d,
+      { titulo: !t
+          ? (esPremio ? 'Tu propio premio' : 'Tu propio tema')
+          : (esPremio ? 'Editar premio' : 'Editar tema') },
+      /* EL TINTE ES EL DEL MODO que se está jugando, como toda esta pantalla. Y
+         el signo dice qué se hace: el «más» cuando se crea, el lápiz cuando se
+         edita, los dos a 64 como el de la ficha —la bombilla de las ayudas mide
+         96 y encabezaría el globo—. */
+      { tinte: claseDeModo(),
+        signo: t ? 'lapiz' : 'mas', signoTam: 64,
+        etiqueta: esPremio ? 'Escribir un premio' : 'Escribir un tema',
+        cuerpo: cuerpo,
+        acciones: acciones });
 
-    abrirModal('m-escribir');
     setTimeout(function () { var n = $('#e-titulo'); if (n && !t) n.focus(); }, 60);
   }
 
@@ -2984,7 +3004,11 @@
     caja.dataset.titulo = (s && s.titulo) || '';
     caja.dataset.enunciado = (s && s.enunciado) || '';
     caja.hidden = false;
-    caja.scrollIntoView({ block: 'nearest' });
+    /* EL GLOBO SE MIDE AL ABRIRSE, así que lo que crece dentro después hay que
+       recolocarlo a mano: sin esto, la explicación del revisor se sale por
+       abajo del marco —el globo se coloca contra su alto REAL, y ese alto
+       cambió—. */
+    recolocarGlobo();
   }
 
   function usarSugerencia() {
@@ -2994,6 +3018,7 @@
     if (caja.dataset.enunciado) $('#e-enunciado').value = caja.dataset.enunciado;
     caja.hidden = true;
     caja.innerHTML = '';
+    recolocarGlobo();
   }
 
   function guardarTemaDeVerdad(titulo, enunciado) {
@@ -3003,7 +3028,7 @@
     if (escribiendo.propio) datos.guardarTemaPropio(Object.assign({ id: escribiendo.id }, campos));
     else datos.reescribir(escribiendo.id, campos);
 
-    cerrarModal('m-escribir');
+    cerrarGlobo();
     /* SE VUELVE AL CATALOGO Y NADA MAS. Aquí se reabría el detalle del tema con
        lo recién escrito; desde que el detalle no está en el flujo, lo que hay
        detrás es la lista, y la lista ya enseña el enunciado nuevo al repintarse. */
@@ -3774,6 +3799,9 @@
       '<span class="globo__pico" aria-hidden="true"></span>';
     marco.appendChild(nodo);
 
+    /* La pieza que puede encoger, si el cuerpo trae una. */
+    var cede = nodo.querySelector('.globo__cede');
+
     var recolocar = function () {
       var m = marco.getBoundingClientRect();
       var d = disparador.getBoundingClientRect();
@@ -3806,6 +3834,25 @@
         2 * (oIzq + ALCANCE) - m.width));
       nodo.style.width = ancho + 'px';
       var alto = nodo.offsetHeight;
+
+      /* ⚠️ UN GLOBO MAS ALTO QUE LA PANTALLA DEJA SUS BOTONES FUERA, y no hay
+         forma de llegar a ellos: el globo no scrollea y el marco tampoco.
+         Pasaba en cuanto el editor de temas enseñaba la explicacion del revisor
+         con su reescritura —medido: 856 px de globo en un marco de 812, con el
+         «Guardar» 56 px por debajo del canto—. Lo que cede es el CUERPO y no la
+         caja entera: el titulo y los botones tienen que quedarse quietos, que
+         son la salida. Un globo que explica dos frases no tiene nada que ceda y
+         esto no le hace nada. */
+      if (cede) {
+        cede.style.maxHeight = '';
+        alto = nodo.offsetHeight;
+        var sitio = m.height - AIRE * 2 - PICO;
+        if (alto > sitio) {
+          cede.style.maxHeight =
+            Math.max(140, cede.offsetHeight - (alto - sitio)) + 'px';
+          alto = nodo.offsetHeight;
+        }
+      }
 
       /* ARRIBA SI CABE, y si no abajo. Se mide contra el alto de verdad del
          globo, no contra un número inventado: un texto largo cabe o no cabe
@@ -3881,7 +3928,14 @@
     if (e.key === 'Escape' && globoAbierto) { e.stopPropagation(); cerrarGlobo(); }
   }, true);
 
-  window.ATWI.globo = { abrir: abrirGlobo, cerrar: cerrarGlobo };
+  /* LO QUE CRECE DENTRO DE UN GLOBO NO SE COLOCA SOLO. El globo se mide y se
+     sitúa al abrirse —arriba o abajo según su alto de verdad—, así que un
+     cuerpo que cambia después (la explicación del revisor de temas) lo deja
+     mal puesto hasta que alguien gire el teléfono. Es la misma cuenta, pedida
+     otra vez. */
+  function recolocarGlobo() { if (globoAbierto) globoAbierto.recolocar(); }
+
+  window.ATWI.globo = { abrir: abrirGlobo, cerrar: cerrarGlobo, recolocar: recolocarGlobo };
 
   /* ======================================================================
      Pintado y eventos
@@ -4042,7 +4096,7 @@
     /* Antes que `[data-tema]`: el de personalizar vive dentro de la misma
        tarjeta y si se mirara después, el tema se abriría igualmente. */
     var edi = e.target.closest('[data-editar-tema]');
-    if (edi) { abrirEscribir(edi.dataset.editarTema); return; }
+    if (edi) { abrirEscribir(edi.dataset.editarTema, edi); return; }
 
     /* Antes que `[data-partida]`. Hoy son hermanos --la papelera esta FUERA del
        boton de abrir, porque un boton dentro de otro el navegador lo desarma--
@@ -4237,20 +4291,20 @@
     else if (a === 'sortear') { conMicrofono(sortearYJugar); }
     else if (a === 'editar-ficha') { abrirFicha('yo', acc); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
-    else if (a === 'tema-nuevo') { abrirEscribir(null); }
+    else if (a === 'tema-nuevo') { abrirEscribir(null, acc); }
     else if (a === 'usar-sugerencia') { usarSugerencia(); }
-    else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId); }
+    else if (a === 'editar-tema') { abrirEscribir(propuesta.temaId, acc); }
     else if (a === 'guardar-tema') { guardarTema(); }
     else if (a === 'guardar-retoque') { guardarRetoque(); }
     else if (a === 'devolver-tema') {
       datos.devolverAlOriginal(escribiendo.id);
-      cerrarModal('m-escribir');
+      cerrarGlobo();
       pintarCatalogo();
     }
     else if (a === 'borrar-tema') {
       if (confirm('Se borra este tema de la lista de ustedes. Lo ya debatido sigue en el historial.')) {
         datos.borrarTemaPropio(escribiendo.id);
-        cerrarModales(['m-escribir', 'm-tema']);
+        cerrarGlobo();
         pintarCatalogo();
       }
     }

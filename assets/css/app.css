@@ -4665,11 +4665,25 @@ body.app {
 /* EL HUECO DE LA IZQUIERDA ES EL SITIO DEL SIGNO, y el lápiz de la ficha mide
    64 px donde la bombilla mide 96: con los 90 de la bombilla, el contenido
    quedaba corrido a la derecha y las seis caritas se apretaban. */
-.globo:has(.ficha-editor) .globo__caja {
+.globo:has(.ficha-editor) .globo__caja,
+.globo:has(.tema-editor) .globo__caja {
   padding-left: 62px;
   box-shadow: var(--sombra-3);
   text-align: left;
 }
+/* EL EDITOR DE TEMAS DENTRO DEL GLOBO (titular, 2026-09-18). Una columna, con
+   el mismo aire entre piezas que el resto del juego. El renglón del error y la
+   nota de abajo no ocupan cuando no dicen nada: un hueco fijo reservado para un
+   aviso que casi nunca sale deja el botón separado del campo sin motivo. */
+.tema-editor { display: grid; gap: var(--e-3); text-align: left; }
+/* LO QUE CEDE CUANDO EL GLOBO NO CABE. El tope lo pone `abrirGlobo` midiendo
+   contra el marco: aquí solo está que, cuando lo tenga, se pueda bajar con el
+   dedo sin arrastrar la pantalla de detrás. */
+.globo__cede { overflow-y: auto; overscroll-behavior: contain; }
+.tema-editor #e-error:empty { display: none; }
+.tema-editor__nota { margin: 0; }
+.tema-editor .reescrito { margin: 0; }
+
 /* El cuerpo del globo: blanco translúcido, el mismo para los cuatro tintes.
    Lo que cambia con el modo es el color de la bombilla, la onda y la frase. */
 .globo { --globo-cuerpo: rgba(255, 255, 255, .6); }

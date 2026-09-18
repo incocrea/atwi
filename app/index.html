@@ -34,11 +34,11 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=cb94abe">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=cb94abe">
-<link rel="stylesheet" href="../assets/css/base.css?v=cb94abe">
-<link rel="stylesheet" href="../assets/css/app.css?v=cb94abe">
-<link rel="stylesheet" href="../assets/css/modal.css?v=cb94abe">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=aad3626">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=aad3626">
+<link rel="stylesheet" href="../assets/css/base.css?v=aad3626">
+<link rel="stylesheet" href="../assets/css/app.css?v=aad3626">
+<link rel="stylesheet" href="../assets/css/modal.css?v=aad3626">
 </head>
 
 <body class="app">
@@ -222,19 +222,9 @@
        decidir dos cosas: qué cara y de qué color. -->
 
   <!-- Escribir un tema: uno propio, o reescribir uno del catálogo -->
-  <div class="modal" id="m-escribir" hidden role="dialog" aria-modal="true" aria-labelledby="t-escribir">
-    <div class="modal__cabecera">
-      <button class="boton-icono" data-cerrar="m-escribir" aria-label="Volver" data-icono="atras"></button>
-      <span class="modal__titulo" id="t-escribir">Escribir un tema</span>
-    </div>
-    <div class="modal__cuerpo"></div>
-    <div class="modal__pie">
-      <!-- El texto lo pone `abrirEscribir()`: en QuiénGane lo que se guarda es un
-           premio, no un tema. Aqui queda el de respaldo, que es el caso comun. -->
-      <button class="boton boton--bloque boton--grande" data-accion="guardar-tema"
-              id="e-guardar">Guardar el tema</button>
-    </div>
-  </div>
+  <!-- AQUI VIVIA `m-escribir`, el editor de temas a pantalla completa. Desde el
+       2026-09-18 es un globo colgado del icono de crear que esta junto al titulo
+       «Mis propios temas» (`abrirEscribir()` en app.js). -->
 
   <!-- Explicación de un modo. Se abre desde su carta y lleva su color. -->
   <div class="modal" id="m-explicar" hidden role="dialog" aria-modal="true" aria-labelledby="t-explicar">
@@ -342,23 +332,23 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=cb94abe"></script>
-<script src="../assets/js/precarga.js?v=cb94abe"></script>
-<script src="../assets/js/iconos.js?v=cb94abe"></script>
-<script src="../assets/js/personajes.js?v=cb94abe"></script>
-<script src="../assets/js/datos.js?v=cb94abe"></script>
-<script src="../assets/js/sonido.js?v=cb94abe"></script>
-<script src="../assets/js/veredicto.js?v=cb94abe"></script>
-<script src="../assets/js/grabadora.js?v=cb94abe"></script>
-<script src="../assets/js/partida.js?v=cb94abe"></script>
-<script src="../assets/js/auth.js?v=cb94abe"></script>
-<script src="../assets/js/entrada.js?v=cb94abe"></script>
-<script src="../assets/js/nube.js?v=cb94abe"></script>
+<script src="../assets/js/config.js?v=aad3626"></script>
+<script src="../assets/js/precarga.js?v=aad3626"></script>
+<script src="../assets/js/iconos.js?v=aad3626"></script>
+<script src="../assets/js/personajes.js?v=aad3626"></script>
+<script src="../assets/js/datos.js?v=aad3626"></script>
+<script src="../assets/js/sonido.js?v=aad3626"></script>
+<script src="../assets/js/veredicto.js?v=aad3626"></script>
+<script src="../assets/js/grabadora.js?v=aad3626"></script>
+<script src="../assets/js/partida.js?v=aad3626"></script>
+<script src="../assets/js/auth.js?v=aad3626"></script>
+<script src="../assets/js/entrada.js?v=aad3626"></script>
+<script src="../assets/js/nube.js?v=aad3626"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=cb94abe"></script>
-<script src="../assets/js/app.js?v=cb94abe"></script>
+<script src="../assets/js/demo.js?v=aad3626"></script>
+<script src="../assets/js/app.js?v=aad3626"></script>
 </body>
 </html>
