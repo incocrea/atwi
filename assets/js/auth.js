@@ -63,6 +63,7 @@ window.ATWI = window.ATWI || {};
       if (s) localStorage.setItem(CLAVE_SESION, JSON.stringify(s));
       else localStorage.removeItem(CLAVE_SESION);
     } catch (e) { /* modo incógnito */ }
+    programarRefresco();
   }
 
   function caducada() {
@@ -70,6 +71,101 @@ window.ATWI = window.ATWI || {};
     if (!s || !s.expires_at) return false;
     return (s.expires_at * 1000) < Date.now() + 60000;   // un minuto de margen
   }
+
+  /* --- LA SESIÓN SE MANTIENE VIVA SOLA --------------------------------------
+     Pregunta del titular (2026-09-18): *«¿este token no se puede mantener vivo
+     una vez el usuario se autentica, para no tener que estarlo reviviendo?»*.
+
+     EL ACCESS TOKEN NO PUEDE SER ETERNO, y tampoco conviene: es un `bearer`, o
+     sea que quien lo tenga ES la persona mientras dure, y un JWT no se puede
+     revocar —solo caducar—. Por eso Supabase lo da para una hora. Subir ese
+     plazo en el panel es posible y es la palanca equivocada: alarga justo la
+     ventana en la que un token robado sigue valiendo.
+
+     LO QUE SÍ ES DURADERO ES LA SESIÓN. El refresh token no caduca por tiempo,
+     así que con él se pide un access token nuevo tantas veces como haga falta:
+     la persona no vuelve a escribir la contraseña nunca. Lo que faltaba aquí no
+     era hacer el token eterno, era **renovarlo antes de que nadie lo note** —lo
+     que `supabase-js` hace con `autoRefreshToken`, y este proyecto no usa la
+     librería (cuatro peticiones no valen un paquete de un CDN)—.
+
+     TRES RELOJES, PORQUE UNO SOLO NO BASTA:
+     · el temporizador renueva CINCO MINUTOS ANTES de caducar;
+     · al volver a primer plano, porque un móvil con la pantalla apagada congela
+       los `setTimeout` y el plazo puede haber pasado dormido;
+     · y al recuperar la red, que es cuando el refresco que falló puede salir.
+     La cuarta red ya estaba: `listo()` antes de consultar.
+
+     ⚠️ Y UN SOLO REFRESCO EN VUELO. Supabase ROTA el refresh token en cada uso,
+     así que dos refrescos a la vez hacen que el segundo llegue con uno ya
+     gastado: 400 y sesión cerrada. Con `enVuelo` los que coincidan esperan al
+     mismo. Entre PESTAÑAS distintas eso no se puede compartir, así que si una
+     falla se relee el almacenamiento antes de darse por perdida: puede que la
+     otra acabe de guardar una sesión nueva. */
+  var ANTES_DE_CADUCAR = 5 * 60 * 1000;
+  var temporizador = null;
+  var enVuelo = null;
+
+  function programarRefresco() {
+    if (temporizador) { clearTimeout(temporizador); temporizador = null; }
+    var s = sesion();
+    if (!s || !s.refresh_token || !s.expires_at) return;
+    /* Nunca menos de un segundo: si ya está vencido, se renueva enseguida pero
+       sin bloquear el hilo con un cero. */
+    var falta = Math.max(1000, (s.expires_at * 1000) - Date.now() - ANTES_DE_CADUCAR);
+    temporizador = setTimeout(function () { refrescarYa(); }, falta);
+  }
+
+  function refrescarYa() {
+    if (enVuelo) return enVuelo;
+    var s = sesion();
+    if (!s || !s.refresh_token) return Promise.resolve(null);
+    enVuelo = pedir('/auth/v1/token?grant_type=refresh_token', {
+      method: 'POST',
+      headers: cabeceras(false),
+      body: JSON.stringify({ refresh_token: s.refresh_token })
+    }).then(function (nueva) {
+      enVuelo = null;
+      guardarSesion(nueva);
+      return nueva;
+    }).catch(function () {
+      enVuelo = null;
+      /* ANTES DE DARLA POR PERDIDA, MIRAR SI OTRA PESTAÑA LA RENOVÓ. Con la
+         rotación, la pestaña que llega segunda recibe un 400 con un refresh
+         token que ya sirvió; borrar la sesión ahí dejaría fuera a alguien que
+         está dentro en la pestaña de al lado. */
+      _sesion = undefined;
+      var otra = sesion();
+      if (otra && otra.access_token && !caducada()) { programarRefresco(); return otra; }
+      guardarSesion(null);
+      return null;
+    });
+    return enVuelo;
+  }
+
+  /* Y SI OTRA PESTAÑA GUARDA UNA SESIÓN, ÉSTA SE ENTERA. `storage` solo salta
+     en las OTRAS pestañas, que es exactamente lo que hace falta: la que
+     escribió ya la tiene en memoria. */
+  window.addEventListener('storage', function (ev) {
+    if (ev.key !== CLAVE_SESION) return;
+    _sesion = undefined;
+    programarRefresco();
+  });
+
+  /* Al volver a mirar la app y al recuperar la red. `caducada()` lleva su
+     propio margen de un minuto, así que esto no pide refrescos de más. */
+  function refrescarSiHaceFalta() {
+    if (sesion() && caducada()) refrescarYa();
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) refrescarSiHaceFalta();
+  });
+  window.addEventListener('online', refrescarSiHaceFalta);
+
+  /* El primer reloj se pone al cargar el archivo, con la sesión que haya
+     guardada de la visita anterior: sin esto, quien abre la app con el token a
+     punto de vencer no tendría programado nada hasta la primera llamada. */
+  programarRefresco();
 
   window.ATWI.auth = {
     hayServidor: function () { return Boolean(cfg.supabaseUrl && cfg.supabaseAnon); },
@@ -162,23 +258,17 @@ window.ATWI = window.ATWI || {};
       }).then(function (s) { guardarSesion(s); return s; });
     },
 
-    /** Renueva la sesión si está a punto de caducar. */
-    refrescar: function () {
-      var s = sesion();
-      if (!s || !s.refresh_token) return Promise.resolve(null);
-      return pedir('/auth/v1/token?grant_type=refresh_token', {
-        method: 'POST',
-        headers: cabeceras(false),
-        body: JSON.stringify({ refresh_token: s.refresh_token })
-      }).then(function (nueva) { guardarSesion(nueva); return nueva; })
-        .catch(function () { guardarSesion(null); return null; });
-    },
+    /** Renueva la sesión ahora. Pasa por el mismo carril que el temporizador,
+     *  así que dos peticiones a la vez esperan al mismo refresco. */
+    refrescar: function () { return refrescarYa(); },
 
-    /** Asegura que hay sesión válida antes de una llamada. */
+    /** Asegura que hay sesión válida antes de una llamada. Con el refresco
+     *  programado esto casi nunca tiene trabajo: es la red de abajo, para el
+     *  caso en que el temporizador no llegara a correr. */
     listo: function () {
       if (!sesion()) return Promise.resolve(null);
       if (!caducada()) return Promise.resolve(sesion());
-      return this.refrescar();
+      return refrescarYa();
     },
 
     /**

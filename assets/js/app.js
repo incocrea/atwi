@@ -1587,15 +1587,11 @@
     var t = d.turnos_grabados || [];
     /* Cuantas se oyen con la voz de quien las dijo. Son las que de verdad
        desaparecen: las del abogado son un dibujo leyendo un texto. */
-    var propias = t.filter(function (x) { return !x.abogado; }).length;
-
+    /* Desde el 2026-09-18 no hay grabaciones propias: la original no se guarda
+       nunca y todo se oye con la voz del personaje. */
     var texto = t.length
       ? 'Se van las ' + t.length + ' intervenciones y el resultado. ' +
-        (propias
-          ? 'De esas, ' + propias + ' ' + (propias === 1 ? 'es' : 'son') +
-            ' tu grabación, así que también se borra' + (propias === 1 ? '' : 'n') +
-            ' del servidor.'
-          : 'Todas se oyen con la voz del personaje.')
+        'Todas se oyen con la voz del personaje; tu voz nunca se guardó.'
       : 'Esta partida no llegó a tener intervenciones.';
 
     /* Y EL ACTA SE VA CON ELLA, que es lo que nadie espera (lo señaló el
@@ -2961,6 +2957,18 @@
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
     propuesta.otroColor = g.color;
+    /* CADA UNO LLEVA UN PERSONAJE QUE HABLA POR ÉL, SIEMPRE (titular,
+       2026-09-18: «ya no será opcional seleccionar un abogado, sí o sí se debe
+       escoger uno; en cada partida se selecciona porque se mantiene la premisa
+       de que no sean el mismo»). Arranca con la ficha de cada quien y, si
+       coinciden, el segundo cambia: la regla de siempre --dos personajes
+       iguales no se distinguen en la sala-- ya no tiene la excepción de «quien
+       va con su voz no bloquea a nadie», porque nadie va con su voz. */
+    propuesta.repreYo = propuesta.repreYo || p.avatar || 'kai';
+    if (!propuesta.repreOtro || propuesta.repreOtro === propuesta.repreYo) {
+      propuesta.repreOtro = propuesta.otroAvatar && propuesta.otroAvatar !== propuesta.repreYo
+        ? propuesta.otroAvatar : window.ATWI.otroPersonaje(propuesta.repreYo);
+    }
 
     $('#m-preparar').className = 'modal modal--' + propuesta.modo;
     /* --- Las piezas del formulario, que se ordenan distinto en cada vía --- */
@@ -3034,7 +3042,7 @@
          repetidos, porque el modal lo vuelve a decir justo cuando hace falta
          leerlo —al elegir—. */
       '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
-        'Prendé la llave para que un personaje te haga de abogado.</p>' +
+        'Un personaje habla por cada uno, con su voz. Tocá la fila para cambiarlo; no pueden ser el mismo.</p>' +
       pintarRepresentantes();
 
     /* EL JUEZ, y en local va DEBAJO DE LOS DOS: arriba de ellos se leería como
@@ -3227,13 +3235,14 @@
                  masculino a quien está siendo defendido, y quien está siendo
                  defendido puede ser cualquiera. Sin él la frase es genérica y
                  además más corta, que en este renglón se agradece. */
-              (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' defiende'
-                          : 'Voz original, sin abogado') +
+              esc(window.ATWI.nombrePersonaje(x.repre)) + ' habla por ' +
+              (x.k === 'yo' ? esc(p.nombre || 'ti') : esc(propuesta.otro || 'el invitado')) +
             '</span>' +
           '</span>' +
-          '<button type="button" class="repre__llave" data-abogado="' + x.k + '"' +
-            (conAbogado ? ' aria-pressed="true"' : '') +
-            ' aria-label="Usar abogado"></button>' +
+          /* YA NO HAY LLAVE (2026-09-18): el personaje es obligatorio, así que
+             lo único que se hace en la fila es cambiarlo. */
+          '<button type="button" class="repre__cambiar juez-linea__cambiar" data-abogado="' + x.k + '"' +
+            ' aria-label="Cambiar el personaje">Cambiar</button>' +
         '</div>';
     }).join('') + '</div>';
   }
@@ -3443,10 +3452,11 @@
     var p = datos.perfil();
     /* EL AVATAR DEL DUELO, que no tiene por qué ser el del perfil. Con abogado
        manda el personaje elegido; sin abogado, el de la ficha de cada uno. */
+    /* Siempre con personaje (2026-09-18): `abogado` es true en los dos lados. */
     var fichaMia = { nombre: yo, avatar: propuesta.repreYo || p.avatar,
-                     color: p.avatarBorde, abogado: Boolean(propuesta.repreYo) };
+                     color: p.avatarBorde, abogado: true };
     var fichaSuya = { nombre: otro, avatar: propuesta.repreOtro || propuesta.otroAvatar,
-                      color: propuesta.otroColor, abogado: Boolean(propuesta.repreOtro) };
+                      color: propuesta.otroColor, abogado: true };
     /* DOS FIGURAS IGUALES NO SE PUEDEN LANZAR. El veto de arriba se aplica al
        abrir la ficha del invitado, y eso no basta: se puede llegar aquí con las
        dos iguales cambiando de personaje DESPUÉS, o eligiendo el mismo de
@@ -3997,10 +4007,8 @@
     /* La llave: encenderla abre el panel, apagarla devuelve a la voz propia. */
     var llave = e.target.closest('[data-abogado]');
     if (llave) {
-      var k = llave.dataset.abogado;
-      var campo = k === 'yo' ? 'repreYo' : 'repreOtro';
-      if (propuesta[campo]) { propuesta[campo] = null; refrescarRepresentantes(); }
-      else abrirAbogados(k);
+      /* Sin llave: siempre se elige, nunca se apaga (2026-09-18). */
+      abrirAbogados(llave.dataset.abogado);
       return;
     }
 

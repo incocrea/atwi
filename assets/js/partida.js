@@ -301,7 +301,9 @@ window.ATWI = window.ATWI || {};
           transcripcion: x.transcripcion, guion: x.guion,
           /* La ruta, todavia sin bajar. El audio se trae al tocarlo: bajar seis
              de golpe al abrir es gastar datos de alguien por si acaso. */
-          ruta: x.abogado ? x.voz_ruta : x.audio_ruta,
+          /* Siempre la voz del personaje (2026-09-18): el original no existe. Las
+             partidas anteriores sin abogado se quedaron sin audio a propósito. */
+          ruta: x.voz_ruta || null,
           /* SALVO QUE EL TURNO YA TRAIGA LA URL. De la base nunca viene —alli
              solo esta la ruta dentro del cubo— pero la demo de la landing llega
              con los audios ya servidos desde `assets/`, y esto es lo que hace
