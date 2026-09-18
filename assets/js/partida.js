@@ -2036,9 +2036,8 @@ window.ATWI = window.ATWI || {};
         return bajarLaVoz(r.voz).then(function (local) {
           if (!P) return;
           if (!local) {
-            v.falloLaNube = true;
-            v.motivo = 'la voz llegó pero no se pudo descargar';
-            return marcarRueda(orden);
+            return noSubio(v, orden, { clase: 'red', reintentar: true,
+              aviso: 'la voz llegó pero no se pudo descargar' });
           }
           if (v.url && v.url.indexOf('blob:') === 0) {
             try { URL.revokeObjectURL(v.url); } catch (e) {}
@@ -2056,8 +2055,11 @@ window.ATWI = window.ATWI || {};
            marcado en rojo. */
         v.conVoz = false;
       } else {
-        v.falloLaNube = true;
-        v.motivo = 'se transcribió pero no llegó la voz del personaje';
+        /* Desde el 2026-09-18 el servidor no contesta válido sin voz --si Azure
+           falla, rechaza con `clase: voz`--, así que esto es un servidor viejo
+           o una respuesta rara: se trata como fallo de voz, con reintento. */
+        return noSubio(v, orden, { clase: 'voz', reintentar: true,
+          aviso: 'se transcribió pero no llegó la voz del personaje' });
       }
       marcarRueda(orden);
     }, function (e) {
