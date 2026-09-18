@@ -955,6 +955,49 @@
       : HUECO_MIN;
     r.style.rowGap = Math.round(hueco) + 'px';
     r.style.height = Math.round(n * alto + (n - 1) * Math.round(hueco)) + 'px';
+    sonarRuleta(r, alto + Math.round(hueco));
+  }
+
+  /* EL CLAC DE LA RULETA (titular, 2026-09-18). El sonido ya existía y estaba
+     escrito para esto: `sonido.clac(fuerza)` nació para la ficha del sorteo y
+     su propio comentario dice que la fuerza «baja de 1 a 0 según se frena, que
+     es lo que hace que suene a rueda perdiendo impulso y no a metrónomo». Aquí
+     la fuerza no baja sola: **sale de la velocidad del dedo**, que es lo que
+     convierte un arrastre lento en un tic-tic y un lanzón en una carrera.
+     UNO POR TARJETA Y NO POR EVENTO: `scroll` se dispara decenas de veces por
+     gesto; lo que suena es el cambio de tarjeta, que es lo que la ruleta hace
+     al pasar un diente. Y el que suena al final, cuando el snap asienta, es el
+     de la rueda encajando: sale gratis y es el que corresponde.
+     ⚠️ EL CONTEXTO DE AUDIO SE DESBLOQUEA DENTRO DE UN GESTO (docs/01 §8.6), y
+     el primer toque sobre la lista es el sitio: sin eso el primer deslizamiento
+     no sonaría y no avisaría de por qué.
+     Los dos oyentes se van con el elemento: la lista se repinta entera en cada
+     búsqueda y cada filtro, así que no hay que quitarlos a mano. */
+  function sonarRuleta(r, paso) {
+    var son = window.ATWI.sonido;
+    if (!son || !son.hay() || !paso) return;
+    r.addEventListener('pointerdown', function () { son.despertar(); }, { passive: true });
+
+    var reloj = function () { return (window.performance && performance.now()) || 0; };
+    var ultimo = Math.round(r.scrollTop / paso);
+    var cuando = reloj();
+    r.addEventListener('scroll', function () {
+      var i = Math.round(r.scrollTop / paso);
+      if (i === ultimo) return;
+      /* ⚠️ LA VELOCIDAD SE MIDE ENTRE TARJETAS, NO ENTRE EVENTOS DE `scroll`.
+         Con lo segundo salía siempre el mínimo: el navegador dispara varios
+         eventos por gesto y el que cruza el diente puede traer un salto de dos
+         píxeles, así que lo medido era el ruido del muestreo y no el gesto. Lo
+         que hace la ruleta es sonar UNA vez por diente, y lo que dice cuán
+         fuerte es **cada cuánto pasa un diente**: es la misma cuenta que hace
+         una rueda de verdad. */
+      var ahora = reloj();
+      var dt = Math.max(1, ahora - cuando) / Math.max(1, Math.abs(i - ultimo));
+      cuando = ahora; ultimo = i;
+      /* Una tarjeta cada 160 ms o menos es un lanzón; cada 800, arrastrar con
+         el dedo. El suelo de 0,2 deja que el clac del asentado se oiga. */
+      son.clac(Math.max(0.2, Math.min(1, 160 / dt)));
+    }, { passive: true });
   }
 
   function tarjetaTema(t) {
