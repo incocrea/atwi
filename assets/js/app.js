@@ -2405,9 +2405,15 @@
        fondo y el boton; la mesa, nada—. */
     var hm = $('#t-tema-mesa');
     if (hm) hm.innerHTML = modoPublico ? icono(modoPublico, 30) : '';
+    var pe = $('#t-tema-peana');
+    if (pe) pe.src = '../assets/img/iconos/base-' + propuesta.modo + '.png';
 
-    /* El bloque ilustrado del detalle: el estallido sobre su peana, las dos
-     piezas que ya visten las cartas de modo. */
+    /* El bloque ilustrado del detalle: solo el estallido, suelto sobre el fondo
+     del modal. ⚠️ TENIA UNA CAJA BLANCA DETRAS y se fue (titular, 2026-09-17):
+     el modal ya viene tenido del modo y una tarjeta encima lo unico que hacia
+     era recortar ese fondo en un rectangulo. La peana ya no vive aqui: se fue
+     al pie del MODAL, que es donde el titular la queria —como el zocalo de las
+     cartas de seleccion, pero a lo ancho de la pantalla—. */
   function escenaDelTema() {
     var pa = window.ATWI.partida;
     if (!pa || !pa.piezaDelEncuentro) return '';
@@ -2415,8 +2421,6 @@
         '<img class="escena__pieza" src="' +
           pa.piezaDelEncuentro(propuesta.modo, modoPublico || 'pareja') +
           '" alt="" width="180" height="176">' +
-        '<img class="escena__base" src="../assets/img/iconos/base-' +
-          propuesta.modo + '.png" alt="" width="512" height="100">' +
       '</div>';
   }
 

@@ -4676,40 +4676,52 @@ body[data-demo] { background: var(--crema); }
 /* --- La escena del detalle del tema (mockup del titular, 2026-09-17) ---------
    Entre el aviso y los dos botones quedaban 368 px vacíos a 375 —el 43 % del
    alto del modal— en la última pantalla antes de jugar, que no enseñaba nada de
-   lo que viene. Aquí va el estallido del encuentro sobre su peana: las dos
-   piezas que ya visten las cartas de modo, sin dibujar nada nuevo.
+   lo que viene. Aquí va el estallido del encuentro, y al pie del modal la peana
+   del modo: las dos piezas que ya visten las cartas de selección.
+
+   ⚠️ SIN CAJA DETRÁS (titular, 2026-09-17). La escena tuvo un rato su tarjeta
+   blanca, y sobraba: el modal ya viene teñido del modo —`modal--<modo>` le pone
+   su fondo dibujado— así que una tarjeta encima lo único que hacía era recortar
+   ese fondo en un rectángulo. El estallido va suelto.
 
    SE COME EL SOBRANTE Y NO AL REVÉS. `flex: 1` sobre un cuerpo en columna: la
    escena ocupa lo que quede y se encoge sola en un teléfono bajo, en vez de
-   empujar los botones fuera de la pantalla. El suelo de 150 px es lo que
-   necesita el estallido para seguir leyéndose; por debajo de eso el cuerpo
-   scrollea, que es lo correcto. */
+   empujar los botones fuera de la pantalla. */
 #m-tema .modal__cuerpo { display: flex; flex-direction: column; }
 .escena {
-  position: relative;
   flex: 1 1 auto;
-  min-height: 150px;
-  margin-top: var(--e-3);
-  border-radius: var(--radio-carta);
-  overflow: hidden;
+  min-height: 120px;
   display: grid; place-items: center;
-  /* El mismo velo que las cards: deja pasar el fondo dibujado del modal, que ya
-     viene teñido del modo. */
-  background: var(--carta-velo);
+  padding: var(--e-3) 0;
 }
-/* El estallido, centrado y sin pasar de lo que la caja le deja. Sube un poco:
-   la peana ocupa el pie y con el centro exacto quedaba medio hundido, la misma
-   cuenta que en las cartas de modo. */
 .escena__pieza {
-  width: min(52%, 180px); height: auto;
-  transform: translateY(-12%);
+  width: min(52%, 190px); height: auto;
   filter: drop-shadow(0 8px 14px rgba(46, 42, 63, .18));
 }
-/* La peana a sangre por los tres lados y al 118 %, igual que en las cartas: al
-   100 % se ven sus dos extremos redondeados y se delata como un dibujo pegado
-   dentro; cortada por el canto se lee como el suelo de la escena. */
-.escena__base {
+
+/* LA PEANA DEL MODAL ENTERO, la misma idea que el zócalo de las cartas de
+   selección pero a lo ancho de la pantalla: es lo que convierte un modal con
+   dos botones en una pieza con suelo.
+
+   VA DETRÁS DE LOS BOTONES Y NO DEBAJO, que es la diferencia: con `position:
+   absolute` no ocupa sitio, así que los botones no se van de pantalla en un
+   teléfono bajo — lo único que hace falta es subirlos lo justo para que la onda
+   asome por debajo, y eso lo da el relleno del pie.
+
+   ⚠️ Y EL PIE TIENE QUE DEJARLA VER. `.modal__pie` lleva de serie el crema
+   opaco y una línea arriba —ahí hace falta, porque separa los botones de un
+   cuerpo que scrollea— y aquí las dos cosas taparían la peana entera. */
+.modal__peana {
   position: absolute; left: 50%; bottom: 0;
   width: 118%; height: auto;
   transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 0;
+}
+#m-tema .modal__pie {
+  position: relative; z-index: 1;
+  background: none; border-top: 0;
+  /* El sitio de la onda: la peana mide unos 70 px a este ancho y se le dejan
+     ver los de arriba, que es donde está el dibujo. */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 54px);
 }
