@@ -2892,7 +2892,6 @@
         /* LO QUE DIJO EL REVISOR, si el tema no pasó: por qué, y la reescritura
            que propone con su botón. Vacío no ocupa. */
         '<div class="tema-revision" id="e-revision" hidden></div>' +
-        '<p class="chico tenue tema-editor__nota">Al guardarlo se revisa que se pueda jugar.</p>' +
       '</div>';
 
     /* LOS BOTONES VAN AL PIE DEL GLOBO, con las mismas variantes que el globo
@@ -3822,8 +3821,23 @@
     var recolocar = function () {
       var m = marco.getBoundingClientRect();
       var d = disparador.getBoundingClientRect();
-      /* Todo en coordenadas DEL MARCO. */
-      var dIzq = d.left - m.left, dArriba = d.top - m.top;
+
+      /* ⚠️ «EL MARCO» SON DOS CAJAS DISTINTAS, Y EL GLOBO SE COLOCABA CONTRA LA
+         QUE NO ES (lo vio el titular, 2026-09-18: la peana cortada por el canto
+         del teléfono). En escritorio `.marco` lleva **10 px de borde** —el
+         chasis dibujado—, así que su caja exterior mide 430×872 y el hueco de
+         dentro **410×852**; y un hijo absoluto se coloca contra el de DENTRO,
+         mientras que `getBoundingClientRect()` devuelve el de fuera. Con los
+         dos mezclados, «12 px de aire contra el canto» dejaba el globo
+         terminando en 860 dentro de un hueco de 852: **8 px por debajo del
+         chasis, que los recorta**. En un móvil el marco no tiene borde y las dos
+         cajas coinciden, y por eso esto no se veía midiendo a 375.
+         `clientWidth`/`clientHeight` son el hueco, y `clientLeft`/`clientTop`
+         el grosor del borde: lo que hay que descontar para pasar una medida de
+         pantalla a coordenadas de colocación. */
+      var bIzq = marco.clientLeft, bArr = marco.clientTop;
+      var anchoM = marco.clientWidth, altoM = marco.clientHeight;
+      var dIzq = d.left - m.left - bIzq, dArriba = d.top - m.top - bArr;
       var centroD = dIzq + d.width / 2;
       var AIRE = 12;          /* lo que respira contra el borde del marco */
       var PICO = 10;          /* cuánto sobresale el pico */
@@ -3845,10 +3859,10 @@
          Las dos condiciones —que el pico no se pase del signo por la izquierda
          ni se quede corto por la derecha— despejadas en `w` con `x` centrado:
          no hace falta probar anchos, sale el número. */
-      var tope = m.width - AIRE * 2;
+      var tope = anchoM - AIRE * 2;
       var ancho = Math.min(tope, Math.max(330,
-        m.width - 2 * (oDer - ALCANCE),
-        2 * (oIzq + ALCANCE) - m.width));
+        anchoM - 2 * (oDer - ALCANCE),
+        2 * (oIzq + ALCANCE) - anchoM));
       nodo.style.width = ancho + 'px';
 
       /* ⚠️ EL SITIO NO ES EL MARCO ENTERO, ES LO QUE SE VE DE ÉL (titular,
@@ -3862,8 +3876,8 @@
       var vv = window.visualViewport;
       var vArriba = vv ? vv.offsetTop : 0;
       var vAlto = vv ? vv.height : window.innerHeight;
-      var techo = Math.max(0, vArriba - m.top) + AIRE;
-      var suelo = Math.min(m.height, vArriba + vAlto - m.top) - AIRE;
+      var techo = Math.max(0, vArriba - m.top - bArr) + AIRE;
+      var suelo = Math.min(altoM, vArriba + vAlto - m.top - bArr) - AIRE;
       var sitio = Math.max(160, suelo - techo - PICO);
 
       var alto = nodo.offsetHeight;
@@ -3937,10 +3951,10 @@
          alcanza —y eso, con el ancho ya estirado, solo pasa cuando el signo está
          pegado al borde del marco—, el globo se corre lo JUSTO para que la punta
          caiga encima de él. Centrado siempre que se pueda; apuntando siempre. */
-      var x = Math.round((m.width - ancho) / 2);
+      var x = Math.round((anchoM - ancho) / 2);
       x = Math.max(oIzq - (ancho - ALCANCE), Math.min(x, oDer - ALCANCE));
 
-      x = Math.max(AIRE, Math.min(x, m.width - ancho - AIRE));
+      x = Math.max(AIRE, Math.min(x, anchoM - ancho - AIRE));
       nodo.style.left = Math.round(x) + 'px';
       nodo.style.top = Math.round(y) + 'px';
       nodo.dataset.lado = arriba ? 'arriba' : 'abajo';

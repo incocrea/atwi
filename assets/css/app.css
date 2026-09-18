@@ -4687,7 +4687,6 @@ body.app {
    negativo lo devuelve, así que el ancho del formulario no cambia. */
 .globo__cede { overscroll-behavior: contain; padding-inline: 4px; margin-inline: -4px; }
 .tema-editor #e-error:empty { display: none; }
-.tema-editor__nota { margin: 0; }
 .tema-editor .reescrito { margin: 0; }
 
 /* El cuerpo del globo: blanco translúcido, el mismo para los cuatro tintes.
