@@ -3600,14 +3600,18 @@
     /* El último con quien se jugó viene puesto: nombre, personaje y aro. En un
        teléfono compartido se repite casi siempre la misma pareja, y escribir el
        mismo nombre cada vez es trabajo que la app ya sabe hacer. */
-    /* ⚠️ EL JUEZ SE SORTEA EN CADA PARTIDA (titular, 2026-09-18: «una selección
-       random de juez, random cada partida, pero el user podrá cambiarlo con
-       clic»). Antes venía el último con el que se jugó —`juezPorDefecto()` leía
-       `localStorage`—, que es lo correcto para la ficha del invitado y lo
-       contrario de lo que se quiere aquí: el juez es del juego, no una
-       preferencia, y verlo salir distinto cada vez es parte de sentarse a
-       jugar. Quien quiera otro lo toca. */
-    propuesta.juez = sortearJuez();
+    /* EL JUEZ SE SORTEA EN CADA PARTIDA (titular, 2026-09-18). Antes venía el
+       último con el que se jugó —`juezPorDefecto()` leía `localStorage`—, que
+       es lo correcto para la ficha del invitado y lo contrario de lo que se
+       quiere aquí: el juez es del juego, no una preferencia.
+       ⚠️ Y SE SORTEA AL ABRIR, NO AL REPINTAR (lo vio el titular, 2026-09-18:
+       «el juez está cambiando al cambiar de modo, esto no debe pasar»). El
+       formulario se vuelve a dibujar entero cada vez que se toca el interruptor
+       de vía, y con el sorteo aquí suelto **cada toque echaba un juez nuevo**:
+       la partida es la misma, así que el juez también. De paso, cada repintado
+       se comía un juez de la vuelta —cuatro toques y la vuelta de seis se había
+       gastado sin jugar una sola partida—. */
+    if (!repintando || !propuesta.juez) propuesta.juez = sortearJuez();
     propuesta.otro = propuesta.otro || (invitadosPrevios()[0] || {}).nombre || INVITADO;
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
