@@ -4664,6 +4664,21 @@ body.app {
   margin-top: var(--e-4);
 }
 
+/* LOS BOTONES DE UN GLOBO QUE PREGUNTA (titular, 2026-09-17: la confirmación de
+   borrado dejó de ser un modal). Por encima de la onda, como el de jugar, y los
+   dos del mismo tamaño con el blanco punteado, que es la regla de todos los
+   pares del juego. Sin `--grande`: dentro de un globo, dos botones de 60 px lo
+   convierten en un modal pequeño. */
+.globo__acciones {
+  position: relative;
+  z-index: 2;
+  margin-top: var(--e-4);
+  display: grid; gap: var(--e-2);
+}
+.globo__acciones .olvidar-fallo {
+  margin: 0; color: var(--peligro); line-height: 1.35;
+}
+
 /* EN NEGRITA (titular, 2026-09-17): es la frase que hay que llevarse de la
    explicación, y en cursiva fina se leía como una nota al pie de lo otro. */
 .globo__clave {

@@ -1426,60 +1426,69 @@
      Y ES LA PERSONA QUIEN DECIDE, no un plazo. Decision del titular
      (2026-09-13): si se guarda indefinidamente, tiene que poder quitarse cuando
      se quiera, y sin dar explicaciones ni esperar a que caduque. */
-  function abrirOlvidar(id) {
+  /* EN UN GLOBO Y NO EN UN MODAL (titular, 2026-09-17). Esto abría `m-olvidar`
+     a pantalla completa, con su cabecera, su flecha de volver y el enunciado de
+     la partida repetido dentro. Y el globo lo hace mejor por lo mismo que las
+     ayudas del home: SALE DE LA PAPELERA QUE SE TOCÓ y deja ver la tarjeta
+     debajo, así que no hay que repetir de qué partida se habla —se está viendo—.
+     Un modal a pantalla completa es la ceremonia de ENTRAR a algo, y aquí no se
+     entra a ningún sitio: se contesta que sí o que no.
+
+     EL TINTE ES EL DEL MODO DE ESA PARTIDA, no el de lo que se esté jugando:
+     puede ser de otro modo y de hace meses. Y el signo es la PAPELERA, no la
+     bombilla: la bombilla es de las ayudas y aquí no se explica nada.
+
+     SE PREGUNTA ANTES, Y SE DICE QUE SE LLEVA. Quien no usa abogado suena con su
+     propia voz, y esa grabacion se conserva para poder volver a oirla: es la
+     unica que hay. Borrar la partida la borra de verdad --el archivo, no solo la
+     fila-- y eso no se deshace. Un boton de papelera que actua al primer toque
+     seria perder una conversacion por rozar la pantalla.
+
+     Y ES LA PERSONA QUIEN DECIDE, no un plazo. Decision del titular
+     (2026-09-13): si se guarda indefinidamente, tiene que poder quitarse cuando
+     se quiera, y sin dar explicaciones ni esperar a que caduque. */
+  function abrirOlvidar(id, disparador) {
     var d = (historial || []).filter(function (x) { return x.id === id; })[0];
-    if (!d) return;
+    if (!d || !disparador) return;
     var t = d.turnos_grabados || [];
     /* Cuantas se oyen con la voz de quien las dijo. Son las que de verdad
        desaparecen: las del abogado son un dibujo leyendo un texto. */
     var propias = t.filter(function (x) { return !x.abogado; }).length;
 
-    $('#m-olvidar .modal__cuerpo').innerHTML =
-      '<p class="chico tenue" style="margin-bottom:var(--e-3)">' +
-        esc(cuando(d.creado)) + '</p>' +
-      '<p style="font-weight:800;margin-bottom:var(--e-4);line-height:1.35">' +
-        esc(d.enunciado || 'Sin tema') + '</p>' +
-      '<p class="chico" style="margin-bottom:var(--e-4)">' +
-        (t.length
-          ? 'Se van las <b>' + t.length + ' intervenciones</b> y el resultado. ' +
-            (propias
-              ? 'De esas, <b>' + propias + '</b> ' + (propias === 1 ? 'es' : 'son') +
-                ' tu grabación, así que también se borra' + (propias === 1 ? '' : 'n') +
-                ' del servidor.'
-              : 'Todas se oyen con la voz del personaje.')
-          : 'Esta partida no llegó a tener intervenciones.') +
-      '</p>' +
-      /* Y EL ACTA SE VA CON ELLA, que es lo que nadie espera (lo señaló el
-         titular, 2026-09-15). `acuerdos.debate` es `on delete cascade`, así que
-         borrar la partida se lleva el acuerdo que firmaron en ella --y eso se
-         consulta meses después, cuando ya nadie se acuerda de qué partida
-         salió--. Avisarlo aquí es la diferencia entre borrar una grabación y
-         perder sin querer lo que quedaron. */
-      (actaDe(id)
-        ? '<p class="chico" style="margin-bottom:var(--e-4)">' +
-            'Y se va <b>el acuerdo que firmaron en esta partida</b>, el que está en ' +
-            '«Lo que acordaron». Es lo único que queda de lo que quedaron.' +
-          '</p>'
-        : '') +
-      '<p class="chico tenue">No se puede deshacer.</p>';
+    var texto = t.length
+      ? 'Se van las ' + t.length + ' intervenciones y el resultado. ' +
+        (propias
+          ? 'De esas, ' + propias + ' ' + (propias === 1 ? 'es' : 'son') +
+            ' tu grabación, así que también se borra' + (propias === 1 ? '' : 'n') +
+            ' del servidor.'
+          : 'Todas se oyen con la voz del personaje.')
+      : 'Esta partida no llegó a tener intervenciones.';
 
-    /* EL PIE, CON LOS DOS DEL MISMO TAMAÑO. Suave y con el tono aparte, no un
-       bloque rojo: es el mismo criterio que el borrar de la sala --esto es un
-       juego, no un formulario-- y el mismo gesto, así que se ve igual. */
-    $('#m-olvidar .modal__pie').innerHTML =
+    /* Y EL ACTA SE VA CON ELLA, que es lo que nadie espera (lo señaló el
+       titular, 2026-09-15). `acuerdos.debate` es `on delete cascade`, así que
+       borrar la partida se lleva el acuerdo que firmaron en ella --y eso se
+       consulta meses después, cuando ya nadie se acuerda de qué partida
+       salió--. Avisarlo aquí es la diferencia entre borrar una grabación y
+       perder sin querer lo que quedaron. */
+    if (actaDe(id)) {
+      texto += ' Y se va el acuerdo que firmaron, el de «Lo que acordaron».';
+    }
+
+    /* LOS DOS DEL MISMO TAMAÑO Y EL BLANCO PUNTEADO, como todos los pares del
+       juego. El globo se cierra tocando fuera, así que «dejarla donde está»
+       podría no existir; se queda porque en un borrado que no se deshace la
+       salida tiene que verse, no deducirse. */
+    var acciones =
       '<p class="chico olvidar-fallo" hidden></p>' +
-      '<button class="boton boton--bloque boton--grande boton--suave boton--borrar"' +
+      '<button class="boton boton--bloque boton--suave boton--borrar"' +
         ' data-olvidar-ya="' + esc(id) + '">Borrarla</button>' +
-      '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
-        'data-cerrar="m-olvidar">Dejarla donde está</button>';
+      '<button class="boton boton--suave boton--bloque boton--punteado" ' +
+        'data-cerrar-globo>Dejarla donde está</button>';
 
-    abrirModal('m-olvidar');
-    /* EL COLOR VA DESPUÉS DE ABRIR, y solo aquí: `tintarModal()` no puede
-       adivinarlo porque no depende de qué se está jugando sino de QUÉ PARTIDA se
-       está por borrar, que puede ser de otro modo y de hace meses. */
-    var m = $('#m-olvidar');
-    m.classList.remove('modal--debate', 'modal--negociacion');
-    m.classList.add(d.modo === 'negociacion' ? 'modal--negociacion' : 'modal--debate');
+    abrirGlobo(disparador,
+      { titulo: 'Borrar esta partida', texto: texto, clave: 'No se puede deshacer.' },
+      { tinte: d.modo || 'debate', signo: 'papelera', etiqueta: 'Borrar esta partida',
+        acciones: acciones });
   }
 
   function olvidarPartida(id, boton) {
@@ -1493,7 +1502,7 @@
            debajo de «dejarla donde está» y se lee después de las dos salidas,
            cuando lo que dice es justo por qué una de ellas no funcionó. Vive en
            el pie, ya creado y escondido. */
-        var aviso = $('#m-olvidar .olvidar-fallo');
+        var aviso = document.querySelector('.globo .olvidar-fallo');
         if (!aviso) return;
         aviso.hidden = false;
         /* SE DICE QUE NO SE BORRO NADA, y es verdad: la funcion de borde no
@@ -1525,7 +1534,7 @@
       actas = (actas || []).filter(function (a) {
         return !a.debate || a.debate.id !== id;
       });
-      cerrarModal('m-olvidar');
+      cerrarGlobo();
       pintarHistorial();
     });
   }
@@ -3403,7 +3412,11 @@
   };
 
   /** Abre un globo colgado de `disparador`.
-      `dicho` es {titulo, texto} y `opciones` {tinte, etiqueta}. */
+      `dicho` es {titulo, texto, ojo, clave} y `opciones` {tinte, etiqueta,
+      jugar, signo, acciones}.
+      `signo` cambia la pegatina que asoma —la bombilla es de las ayudas, y un
+      globo que pregunta si se borra algo lleva la papelera— y `acciones` es el
+      HTML de los botones que van al pie. */
   function abrirGlobo(disparador, dicho, opciones) {
     var marco = document.querySelector('.marco');
     if (!marco || !disparador) return;
@@ -3452,7 +3465,7 @@
         '<span class="globo__recorte" aria-hidden="true">' +
           '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="">' +
         '</span>' +
-        window.ATWI.icono(t.signo, 82).replace('class="ico"', 'class="ico globo__signo"') +
+        window.ATWI.icono(o.signo || t.signo, 82).replace('class="ico"', 'class="ico globo__signo"') +
         '<div class="globo__dicho">' +
           (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
           '<p class="globo__texto">' + esc(dicho.texto || '') +
@@ -3475,6 +3488,10 @@
              mismo camino que la carta. */
           (o.jugar ? '<button class="boton boton--bloque globo__jugar boton--' + o.jugar +
                      '" data-crear="' + o.jugar + '">Jugar ahora</button>' : '') +
+          /* LOS BOTONES DE UN GLOBO QUE PREGUNTA. El de modo trae uno solo y
+             hecho aquí; este los recibe armados, porque quien pregunta es quien
+             sabe qué se responde. */
+          (o.acciones ? '<div class="globo__acciones">' + o.acciones + '</div>' : '') +
         '</div>' +
       '</div>' +
       '<span class="globo__pico" aria-hidden="true"></span>';
@@ -3751,7 +3768,10 @@
     if (acta && acta.dataset.actaDe) { abrirPartida(acta.dataset.actaDe); return; }
 
     var pap = e.target.closest('[data-borrar]');
-    if (pap) { abrirOlvidar(pap.dataset.borrar); return; }
+    if (pap) { abrirOlvidar(pap.dataset.borrar, pap); return; }
+
+    /* «Dejarla donde está» es cerrar el globo: no hay modal que cerrar. */
+    if (e.target.closest('[data-cerrar-globo]')) { cerrarGlobo(); return; }
 
     var yaOlvidar = e.target.closest('[data-olvidar-ya]');
     if (yaOlvidar) { olvidarPartida(yaOlvidar.dataset.olvidarYa, yaOlvidar); return; }
