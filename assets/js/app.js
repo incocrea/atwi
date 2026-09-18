@@ -1118,6 +1118,28 @@
       '</button>';
   }
 
+  /* EL INTERRUPTOR, debajo del titulo de la pantalla de mesas. Va DEBAJO y no
+     al lado: el titulo lleva sus destellos y esta centrado contra la pantalla,
+     asi que cualquier cosa a su derecha lo descentra —es la misma cuenta de
+     `--diana` en las cabeceras—.
+     Dos botones de verdad y no un `checkbox` disfrazado: son dos caminos con
+     nombre, y con `aria-pressed` un lector de pantalla dice cual esta puesto. */
+  var DONDES = [
+    ['local', 'En este móvil'],
+    ['linea', 'Con invitación']
+  ];
+  function selectorDeDonde() {
+    var puesto = dondeSeJuega();
+    return '<div class="donde" role="group" aria-label="Dónde se juega">' +
+      DONDES.map(function (d) {
+        return '<button class="donde__op' + (d[0] === puesto ? ' donde__op--puesto' : '') +
+               '" data-donde="' + d[0] + '" aria-pressed="' + (d[0] === puesto) + '">' +
+                 esc(d[1]) +
+               '</button>';
+      }).join('') +
+    '</div>';
+  }
+
   function pintarCatalogo() {
     var caja = $('#v-catalogo');
     var cinta = cintaModo();
@@ -1145,7 +1167,8 @@
          ahí. Una frase que anuncia lo que hay justo debajo gasta el alto que
          necesitan las cartas. */
       caja.innerHTML = cinta +
-        tituloVista('¿Con quién juegas?', 'margin-bottom:var(--e-4)') +
+        tituloVista('¿Con quién juegas?', 'margin-bottom:var(--e-3)') +
+        selectorDeDonde() +
         '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
       return;
     }
@@ -2354,7 +2377,32 @@
   /* ======================================================================
      Flujo: proponer un debate
      ====================================================================== */
-  var propuesta = { temaId: null, modo: null, turnos: null, juez: null };
+  var propuesta = { temaId: null, modo: null, turnos: null, juez: null, donde: null };
+
+  /* DONDE SE JUEGA: EN ESTE MOVIL O CON UNA INVITACION (titular, 2026-09-17).
+     ANTES ERA LA ULTIMA PANTALLA Y ERA EL SITIO EQUIVOCADO. Se preguntaba al
+     final, con dos botones del mismo tamano en el pie del detalle del tema, y
+     ahi la pregunta llega tarde y de sorpresa: quien ya eligio modo, mesa y
+     tema tiene la cabeza en jugar, no en decidir por que via. Ahora es un
+     interruptor de dos posiciones en «¿Con quien juegas?» --que es donde se
+     decide con quien, o sea la misma pregunta-- y lo que elige es la pantalla
+     que sale despues del tema.
+
+     SE RECUERDA, como el juez y como la ficha del invitado: quien juega en el
+     sofa lo hace casi siempre igual, y volver a elegirlo cada partida es
+     trabajo que la app ya sabe hacer. */
+  var DONDE = 'atwi-donde';
+  function dondeSeJuega() {
+    if (propuesta.donde) return propuesta.donde;
+    var d = null;
+    try { d = localStorage.getItem(DONDE); } catch (e) {}
+    propuesta.donde = (d === 'linea') ? 'linea' : 'local';
+    return propuesta.donde;
+  }
+  function recordarDonde(d) {
+    propuesta.donde = d;
+    try { localStorage.setItem(DONDE, d); } catch (e) {}
+  }
 
   /* EL ULTIMO JUEZ SE RECUERDA, igual que la ficha del invitado. Quien
      encontro uno que le gusta no tiene que volver a buscarlo cada partida, y
@@ -2397,8 +2445,15 @@
     /* El tema ya lleva el color del modo: desde que se elige, el flujo entero
        va teñido y no hay que recordarlo de memoria. */
     $('#m-tema').className = 'modal modal--' + propuesta.modo;
-    $('#m-tema .modal__pie button').className =
-      'boton boton--bloque boton--grande boton--' + propuesta.modo;
+    /* UN SOLO BOTON, Y LO QUE DICE LO DECIDIO EL INTERRUPTOR de «¿Con quién
+       juegas?». Aquí había un par apilado —«Jugar los dos en este móvil» y
+       «Enviar invitación»— y el titular lo descartó: preguntar la vía al final
+       es preguntarlo tarde. El que queda va al camino elegido. */
+    var enLinea = dondeSeJuega() === 'linea';
+    var bt = $('#m-tema .modal__pie button');
+    bt.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
+    bt.dataset.accion = enLinea ? 'proponer' : 'jugar-aqui';
+    bt.textContent = enLinea ? 'Enviar invitación' : 'Jugar los dos en este móvil';
     $('#m-tema .modal__titulo').textContent = t.titulo;
     /* EL ICONO DE LA MESA, en la tercera columna de la cabecera. Es el unico
        dato que esta pantalla no dice por ningun otro sitio —el modo lo dicen el
@@ -3573,6 +3628,9 @@
 
     var fil = e.target.closest('[data-filtro]');
     if (fil) { filtro = fil.dataset.filtro; pintarCatalogo(); return; }
+
+    var don = e.target.closest('[data-donde]');
+    if (don) { recordarDonde(don.dataset.donde); pintarCatalogo(); return; }
 
     var pub = e.target.closest('[data-publico]');
     if (pub) { modoPublico = pub.dataset.publico; categoriaAbierta = null; entrar(); pintarCatalogo(); return; }

@@ -11,11 +11,11 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=8169aeb">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=8169aeb">
-<link rel="stylesheet" href="../assets/css/base.css?v=8169aeb">
-<link rel="stylesheet" href="../assets/css/app.css?v=8169aeb">
-<link rel="stylesheet" href="../assets/css/modal.css?v=8169aeb">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=a5475c6">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=a5475c6">
+<link rel="stylesheet" href="../assets/css/base.css?v=a5475c6">
+<link rel="stylesheet" href="../assets/css/app.css?v=a5475c6">
+<link rel="stylesheet" href="../assets/css/modal.css?v=a5475c6">
 </head>
 
 <body class="app">
@@ -175,15 +175,14 @@
       <span class="modal__mesa" id="t-tema-mesa" aria-hidden="true"></span>
     </div>
     <div class="modal__cuerpo"></div>
+    <!-- UN SOLO BOTON (titular, 2026-09-17). Aquí había un par apilado —«Jugar
+         los dos en este móvil» y «Enviar invitación»—, o sea la pregunta de por
+         qué vía se juega hecha en la última pantalla, cuando ya se eligió modo,
+         mesa y tema. Ahora eso lo dice el interruptor de «¿Con quién juegas?» y
+         aquí solo queda el camino elegido: `pintarTema()` le pone el texto y la
+         acción que toquen. -->
     <div class="modal__pie">
       <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui">Jugar los dos en este móvil</button>
-      <!-- Los dos del mismo tamaño. Son las DOS MANERAS DE JUGAR, no una opción
-           y su alternativa menor: jugar aquí y jugar invitando valen lo mismo, y
-           uno más bajo que el otro dice lo contrario.
-           Y EL QUE QUEDA EN BLANCO VA PUNTEADO: regla del titular para todos los
-           pares de botones del juego. Sin el punteado, el blanco se lee como un
-           botón apagado; con él se lee como la otra puerta. -->
-      <button class="boton boton--suave boton--bloque boton--grande boton--punteado" data-accion="proponer">Enviar invitación</button>
     </div>
     <!-- LA PEANA DEL MODAL ENTERO (titular, 2026-09-17), la misma idea que el
          zocalo de las cartas de seleccion pero a lo ancho de la pantalla. Va
@@ -348,23 +347,23 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=8169aeb"></script>
-<script src="../assets/js/precarga.js?v=8169aeb"></script>
-<script src="../assets/js/iconos.js?v=8169aeb"></script>
-<script src="../assets/js/personajes.js?v=8169aeb"></script>
-<script src="../assets/js/datos.js?v=8169aeb"></script>
-<script src="../assets/js/sonido.js?v=8169aeb"></script>
-<script src="../assets/js/veredicto.js?v=8169aeb"></script>
-<script src="../assets/js/grabadora.js?v=8169aeb"></script>
-<script src="../assets/js/partida.js?v=8169aeb"></script>
-<script src="../assets/js/auth.js?v=8169aeb"></script>
-<script src="../assets/js/entrada.js?v=8169aeb"></script>
-<script src="../assets/js/nube.js?v=8169aeb"></script>
+<script src="../assets/js/config.js?v=a5475c6"></script>
+<script src="../assets/js/precarga.js?v=a5475c6"></script>
+<script src="../assets/js/iconos.js?v=a5475c6"></script>
+<script src="../assets/js/personajes.js?v=a5475c6"></script>
+<script src="../assets/js/datos.js?v=a5475c6"></script>
+<script src="../assets/js/sonido.js?v=a5475c6"></script>
+<script src="../assets/js/veredicto.js?v=a5475c6"></script>
+<script src="../assets/js/grabadora.js?v=a5475c6"></script>
+<script src="../assets/js/partida.js?v=a5475c6"></script>
+<script src="../assets/js/auth.js?v=a5475c6"></script>
+<script src="../assets/js/entrada.js?v=a5475c6"></script>
+<script src="../assets/js/nube.js?v=a5475c6"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=8169aeb"></script>
-<script src="../assets/js/app.js?v=8169aeb"></script>
+<script src="../assets/js/demo.js?v=a5475c6"></script>
+<script src="../assets/js/app.js?v=a5475c6"></script>
 </body>
 </html>
