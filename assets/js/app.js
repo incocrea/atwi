@@ -2411,7 +2411,20 @@
     return l;
   }
 
-  function abrirTema(id) {
+  /* DEL CATALOGO SE PASA DERECHO A «ANTES DE EMPEZAR» (titular, 2026-09-17).
+     Aquí se abría el DETALLE DEL TEMA —el enunciado en su tarjeta retocable, la
+     ilustración del modo y un botón— y el titular lo sacó del flujo: la tarjeta
+     del catálogo ya trae el título Y el enunciado, y su lápiz lleva al editor
+     sin pasar por aquí, así que el detalle enseñaba por segunda vez lo que se
+     acababa de leer y metía un toque entre elegir tema y preparar la partida.
+
+     ⚠️ LO QUE QUEDA SIN PANTALLA, y hay que decidirlo: el modal `m-tema` sigue
+     en el HTML —con su peana y su cabecera— pero **ya no lo abre nadie**, y con
+     él quedan huérfanas las tres ilustraciones por modo (`escena-*`), que son de
+     hoy. Están fuera del manifiesto para que no se bajen a cada teléfono
+     mientras tanto. O se reubican o se borran las dos cosas; dejarlo así es
+     tener una pantalla que nadie ve pareciendo que sirve. */
+  function elegirTema(id) {
     var t = datos.tema(id);
     if (!t) return;
     propuesta.temaId = id;
@@ -2420,89 +2433,7 @@
        llegar por un camino que ya no existe, pero se cubre por si acaso. */
     if (!propuesta.modo) propuesta.modo = 'debate';
     if (!propuesta.turnos) propuesta.turnos = cfg.reglas.turnosPorDefecto;
-
-    /* El tema ya lleva el color del modo: desde que se elige, el flujo entero
-       va teñido y no hay que recordarlo de memoria. */
-    $('#m-tema').className = 'modal modal--' + propuesta.modo;
-    /* UN SOLO BOTON, Y NO PREGUNTA POR QUE VIA SE JUEGA (titular, 2026-09-17).
-       Aquí había un par apilado —«Jugar los dos en este móvil» y «Enviar
-       invitación»— y esa pantalla se descartó entera: la vía se elige ahora en
-       «Antes de empezar», que es donde ya se decide todo lo demás de la partida.
-       Este botón solo lleva allí. */
-    var bt = $('#m-tema .modal__pie button');
-    bt.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
-    bt.textContent = palabras().jugar;
-    $('#m-tema .modal__titulo').textContent = t.titulo;
-    /* EL ICONO DE LA MESA, en la tercera columna de la cabecera. Es el unico
-       dato que esta pantalla no dice por ningun otro sitio —el modo lo dicen el
-       fondo y el boton; la mesa, nada—. */
-    var hm = $('#t-tema-mesa');
-    if (hm) hm.innerHTML = modoPublico ? icono(modoPublico, 30) : '';
-    var pe = $('#t-tema-peana');
-    if (pe) pe.src = '../assets/img/iconos/base-' + propuesta.modo + '.png';
-
-    /* El bloque ilustrado del detalle: la pieza suelta sobre el fondo del modal.
-     ⚠️ TENIA UNA CAJA BLANCA DETRAS y se fue (titular, 2026-09-17): el modal ya
-     viene tenido del modo y una tarjeta encima lo unico que hacia era recortar
-     ese fondo en un rectangulo. La peana ya no vive aqui: se fue al pie del
-     MODAL, que es donde el titular la queria —como el zocalo de las cartas de
-     seleccion, pero a lo ancho de la pantalla—.
-
-     CADA MODO TIENE SU DIBUJO, Y SON PROPIOS (plancha del titular, 2026-09-17).
-     Hasta hoy salia aqui la pieza de la CORTINILLA —`piezaDelEncuentro`—, y eso
-     traia dos problemas de una vez: se repetia treinta segundos despues entrando
-     con sus rebotes, y QuienGane salia con el CORAZON de Pacto, porque esa
-     funcion se escribio cuando habia dos modos y reparte «VS o corazon». Los
-     tres nuevos dicen lo que pasa en su modo: los bocadillos con el VS son
-     Controversia, las dos piezas de puzzle encajando son Pacto y el mando es
-     QuienGane, donde lo decide un minijuego.
-     El color ya no es el de la MESA: es el del dibujo. La mesa se sigue diciendo
-     en el icono de la cabecera, que es donde no se repite con nada. */
-  function escenaDelTema() {
-    return '<div class="escena">' +
-        '<img class="escena__pieza" src="../assets/img/iconos/escena-' +
-          propuesta.modo + '.png" alt="" width="448" height="448">' +
-      '</div>';
-  }
-
-  /* CADA TROZO SE RETOCA POR SEPARADO. El enunciado y las dos posturas se
-       tocan y se editan solos, sin abrir el editor entero. Es el último
-       momento antes de empezar y lo que se quiere ahí es afinar una frase, no
-       reescribir el tema; obligar a pasar por el formulario completo para
-       cambiar media línea hacía que nadie la cambiara. */
-    $('#m-tema .modal__cuerpo').innerHTML =
-      '<button class="tarjeta tarjeta--aire retocable" data-retocar="enunciado" ' +
-              'style="margin-bottom:var(--e-3)">' +
-        '<span class="retocable__texto" style="font-family:var(--display);font-weight:800;' +
-          'font-size:var(--t-h3);line-height:1.25">' + esc(t.enunciado) + '</span>' +
-        '<span class="retocable__lapiz">' + icono('lapiz', 22) + '</span>' +
-      '</button>' +
-
-      /* Aquí iban «las dos posturas», una debajo de otra, y se fueron con el
-         reparto: el tema es lo que se discute, no dos lados entre los que
-         elegir. Siguen existiendo en el catálogo y se editan desde
-         «Personalizar», porque son el material del filtro de seguridad —un tema
-         que no admite dos posturas defendibles no es un desacuerdo— pero ya no
-         se enseñan antes de jugar.
-
-         Ya no hay boton de «Editar tema»: cada trozo se toca y se edita solo,
-         asi que abrir el formulario entero sobra y ademas competia con los
-         lapices que tiene al lado.
-
-         Y SE FUE TAMBIEN EL AVISO DE «HABLEN LIBRE» (titular, 2026-09-17), que
-         decia que no hay lados asignados y que el enunciado se puede reescribir.
-         Lo segundo ya lo dice el lapiz que el enunciado lleva al lado —y lo dice
-         mejor, porque se toca—; lo primero es la regla del juego entero y no de
-         este tema. Eran cuatro renglones de letra chica justo encima de la
-         ilustracion, en la ultima pantalla antes de jugar. */
-
-      /* LA ESCENA DE LO QUE VA A PASAR (mockup del titular, 2026-09-17).
-         Medido antes de ponerla: entre el aviso y los dos botones quedaban 368
-         px vacios a 375, o sea el 43 % del alto del modal. Esta pantalla es la
-         ultima antes de jugar y no ensenaba nada de lo que viene. */
-      escenaDelTema();
-
-    abrirModal('m-tema');
+    abrirPreparar();
   }
 
   /* ======================================================================
@@ -2559,8 +2490,6 @@
     if (!$('#m-preparar').hidden) {
       abrirPreparar(true);
       revisarPreparar();
-    } else if (!$('#m-tema').hidden) {
-      abrirTema(guardado.id);
     }
   }
 
@@ -2725,9 +2654,10 @@
       : datos.reescribir(escribiendo.id, campos);
 
     cerrarModal('m-escribir');
+    /* SE VUELVE AL CATALOGO Y NADA MAS. Aquí se reabría el detalle del tema con
+       lo recién escrito; desde que el detalle no está en el flujo, lo que hay
+       detrás es la lista, y la lista ya enseña el enunciado nuevo al repintarse. */
     pintarCatalogo();
-    /* Si se estaba mirando ese tema, se vuelve a abrir ya con lo nuevo. */
-    if (propuesta.temaId === guardado.id || !$('#m-tema').hidden) abrirTema(guardado.id);
   }
 
   /* ======================================================================
@@ -2882,7 +2812,7 @@
       (cfg.reglas.turnosConCupo.length
         ? '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">' +
             cfg.reglas.turnosConCupo.join(' y ') + ' turnos necesitan cupo.</p>'
-        : '<div style="height:var(--e-2)"></div>') +
+        : '<div style="height:4px"></div>') +
 
       /* AQUÍ NO SE ENSEÑA NINGUNA POSTURA. Ni para elegir ni como ejemplo: se
          probó a dejarlas de pista y siguen siendo punteros —leerlas antes de
@@ -2957,7 +2887,7 @@
            Iban centrados, y un título centrado sobre una lista alineada a la
            izquierda parte la pantalla en dos ejes. El rótulo y su línea de
            ayuda van juntos, como un solo bloque. */
-        '<h3 style="margin:var(--e-4) 0 2px">¿Quién los representa?</h3>' +
+        '<h3 style="margin:var(--e-3) 0 2px">¿Quién los representa?</h3>' +
         /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
            explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
            para una decisión que la mayoría va a dejar como viene, y encima
@@ -2979,7 +2909,7 @@
          proposito: el abogado cambia lo que el juez va a OIR --es media
          partida-- mientras que el juez, por ahora, solo cambia quien lo cuenta
          al final. Darle el mismo peso en pantalla diria que pesa lo mismo. */
-      '<h3 style="margin:var(--e-4) 0 var(--e-2)">¿Quién juzga?</h3>' +
+      '<h3 style="margin:var(--e-3) 0 var(--e-2)">¿Quién juzga?</h3>' +
       pintarJuez() +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
@@ -3027,10 +2957,6 @@
         color: propuesta.otroColor }
     ];
     return '<div class="repres">' + lados.map(function (x) {
-      /* La ficha que se ve es la del DUELO: el abogado si lo hay, el avatar de
-         perfil si no. Se ve de un vistazo con quién se va a jugar, sin abrir
-         nada. */
-      var suyo = x.repre || x.ficha;
       var conAbogado = Boolean(x.repre);
       /* EL COLOR DE LA PIEZA ES EL DE SU FICHA, no el del modo. Cuando hay
          abogado, el aro y el tinte salen del color que eligió quien juega
@@ -3057,8 +2983,25 @@
              aro ajeno confundía. Ahora el color es la ropa y la regla del
              titular es al revés: el abogado sale en el color de perfil de quien
              lo contrata, que es lo que lo hace reconociblemente suyo. */
+          /* ⚠️ LA CARA ES LA DE LA PERSONA, Y EL ABOGADO VA DE INSIGNIA (lo vio
+             el titular, 2026-09-17: «la ficha de invitado se ve que es Maya
+             pero…»). Aquí se pintaba `x.repre || x.ficha`, o sea la cara del
+             DUELO: con abogado, la fila de Mona enseñaba a Luna. Eso venía de
+             cuando esto eran dos retratos grandes y la pieza hacía de vista
+             previa del choque de puños; en una fila de 60 px la cara ya no
+             adelanta nada, IDENTIFICA de quién es la llave — y a dos dedos de
+             distancia estaba el avatar del campo «Invitado», con la cara de
+             verdad de esa persona. Dos caras distintas para el mismo nombre en
+             la misma pantalla.
+             Ahora la fila enseña a la persona y el abogado sale encima, chico:
+             se sigue viendo a quién se eligió, y de quién es. */
           '<div class="repre__retrato">' +
-            window.ATWI.fichaHTML(suyo, 'avatar--chico', x.color) +
+            window.ATWI.fichaHTML(x.ficha, 'avatar--chico', x.color) +
+            (conAbogado
+              ? '<span class="repre__abogado">' +
+                  window.ATWI.fichaHTML(x.repre, 'avatar--insignia', x.color) +
+                '</span>'
+              : '') +
           '</div>' +
           '<span class="repre__texto">' +
             '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
@@ -3778,7 +3721,7 @@
     if (partida && !partida.disabled) { abrirPartida(partida.dataset.partida); return; }
 
     var tema = e.target.closest('[data-tema]');
-    if (tema) { abrirTema(tema.dataset.tema); return; }
+    if (tema) { elegirTema(tema.dataset.tema); return; }
 
     var tn = e.target.closest('[data-turnos]');
     if (tn) {
@@ -3973,7 +3916,6 @@
       datos.devolverAlOriginal(escribiendo.id);
       cerrarModal('m-escribir');
       pintarCatalogo();
-      abrirTema(escribiendo.id);
     }
     else if (a === 'borrar-tema') {
       if (confirm('Se borra este tema de la lista de ustedes. Lo ya debatido sigue en el historial.')) {

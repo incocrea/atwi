@@ -343,6 +343,13 @@ body.app {
    `#v-catalogo[data-modo]`, así que aquí hay que darlo otra vez. El respaldo es
    el lavanda de la marca, que es lo que se ve si algún día esto sale fuera de un
    modal teñido. */
+/* LOS ULTIMOS 16 px. Esta pantalla es la más cargada del juego —cuatro
+   decisiones y un botón— y el objetivo es que quepa entera en un teléfono de
+   667 px de alto, que es donde el cuerpo se queda en 515. El relleno de abajo
+   del cuerpo lo pone `modal.css` para todos por igual; aquí sobra, porque
+   debajo va el pie con su propio aire. */
+#m-preparar .modal__cuerpo { padding-bottom: var(--e-2); }
+
 #m-preparar.modal--debate      { --modo-fuerte: var(--debate-oscuro); }
 #m-preparar.modal--negociacion { --modo-fuerte: var(--negociacion-oscuro); }
 #m-preparar.modal--competencia { --modo-fuerte: var(--competencia-oscuro); }
@@ -350,7 +357,7 @@ body.app {
 .donde {
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 4px; padding: 4px;
-  margin: 0 auto var(--e-4);
+  margin: 0 auto var(--e-3);
   max-width: 320px;
   border-radius: var(--radio-pastilla);
   /* El mismo velo blanco de las tarjetas: sobre el fondo dibujado del modal un
@@ -359,7 +366,7 @@ body.app {
 }
 .donde__op {
   border: 0; cursor: pointer;
-  padding: 10px 6px;
+  padding: 8px 6px;
   border-radius: var(--radio-pastilla);
   background: none;
   color: var(--tinta-suave);
@@ -869,7 +876,11 @@ body.app {
   box-shadow: var(--sombra-1);
 }
 .juez-linea:active { transform: scale(.99); }
-.juez-linea .avatar--juez { width: 52px; height: 52px; }
+/* ⚠️ 44 Y NO 52 (2026-09-17). Bajó con la lista de representantes: las dos
+   filas de arriba llevan la cara a 44, y el juez a 52 hacía que la única fila
+   que no decide nada fuera la más alta de la pantalla. Y son 8 px de los 35 que
+   le faltaban a esta pantalla para no scrollear en un teléfono bajo. */
+.juez-linea .avatar--juez { width: 44px; height: 44px; }
 .juez-linea__texto { flex: 1; min-width: 0; }
 .juez-linea__n {
   display: block; font-family: var(--display); font-weight: 800; color: var(--tinta);
@@ -3183,9 +3194,17 @@ body.app {
 .turnos-linea .turno-ficha { width: auto; }
 
 /* De qué color va lo que lleva el color del modo dentro de esta pantalla. Se
-   declara una vez en el modal, que es quien sabe de qué modo es. */
-#m-preparar.modal--debate, #m-abogados.modal--debate { --del-modo: var(--debate); }
+   declara una vez en el modal, que es quien sabe de qué modo es.
+   ⚠️ FALTABA COMPETENCIA, y se veía (lo vio el titular, 2026-09-17): en
+   QuiénGane la ficha del turno elegido salía LAVANDA —el respaldo— en vez de
+   azul, y con ella la llave del abogado y el halo del retrato, que leen la misma
+   variable. Estaba escrito cuando había dos modos, que es el mismo fallo latente
+   del botón de cambiar modo, de `.boton--competencia` y de `piezaDelEncuentro`:
+   **cualquier lista de modos escrita a mano se queda coja al entrar el tercero**.
+   Van los tres juntos y en el mismo orden que `cfg.modos`. */
+#m-preparar.modal--debate,      #m-abogados.modal--debate      { --del-modo: var(--debate); }
 #m-preparar.modal--negociacion, #m-abogados.modal--negociacion { --del-modo: var(--negociacion); }
+#m-preparar.modal--competencia, #m-abogados.modal--competencia { --del-modo: var(--competencia); }
 
 .turnos-fila {
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
@@ -3696,6 +3715,16 @@ body.app {
               background var(--dur-corta) var(--suave);
 }
 .repre__texto { display: grid; gap: 1px; min-width: 0; text-align: left; }
+/* LA INSIGNIA DEL ABOGADO, pegada a la cara de su cliente. Es el mismo recurso
+   que el buzón usa para sus avisos: una pieza chica montada en la esquina, con
+   un anillo del color del fondo para que se despegue de la cara de debajo. */
+.repre__abogado {
+  position: absolute; right: -2px; bottom: -2px;
+  border-radius: 50%; background: var(--superficie);
+  box-shadow: 0 0 0 2px var(--superficie), var(--sombra-1);
+  line-height: 0;
+}
+.avatar--insignia { width: 22px; height: 22px; border: 0; padding: 0; }
 /* El halo del color del modo detrás del retrato: es lo que lo hace una pieza
    del juego y no una foto de perfil. Va en el contenedor y no en la ficha para
    no tocar el recurso, que se usa en otras seis pantallas. */
@@ -3707,6 +3736,7 @@ body.app {
    44 la fila se iba a 76 px de alto y el halo se comía el ancho del texto: ese
    número estaba medido para el retrato grande de las tarjetas. */
 .repre__retrato {
+  position: relative;
   display: grid; place-items: center; padding: 5px; border-radius: 50%;
   background: radial-gradient(closest-side,
               color-mix(in srgb, var(--suyo, var(--del-modo, var(--lavanda))) 34%, transparent) 62%,
