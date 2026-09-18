@@ -3961,6 +3961,22 @@
     var cede = nodo.querySelector('.globo__cede');
     var dicho = nodo.querySelector('.globo__dicho');
 
+    /* ⚠️ EL GLOBO NO ACABA EN SU CAJA: EL SIGNO ASOMA POR FUERA (lo vio el
+       titular, 2026-09-18: el lápiz mordido por el canto del teléfono). Es lo
+       que lo hace una pegatina pegada al globo y no un icono metido dentro, y
+       por eso vive en `top: -20; left: -22`. El cálculo medía la CAJA, así que
+       colocaba el globo con sus 12 px de aire y el signo se salía por encima de
+       ellos. Se mide lo que sobresale en vez de escribir los números aquí: el
+       CSS los puede cambiar —ya pasó con `--globo-signo`— y dos sitios con el
+       mismo número se desincronizan. */
+    var sg = nodo.querySelector('.globo__signo');
+    var asomaArriba = 0, asomaIzq = 0;
+    if (sg) {
+      var rs = sg.getBoundingClientRect(), rn = nodo.getBoundingClientRect();
+      asomaArriba = Math.max(0, Math.round(rn.top - rs.top));
+      asomaIzq = Math.max(0, Math.round(rn.left - rs.left));
+    }
+
     var recolocar = function () {
       var m = marco.getBoundingClientRect();
       var d = disparador.getBoundingClientRect();
@@ -4019,7 +4035,9 @@
       var vv = window.visualViewport;
       var vArriba = vv ? vv.offsetTop : 0;
       var vAlto = vv ? vv.height : window.innerHeight;
-      var techo = Math.max(0, vArriba - m.top - bArr) + AIRE;
+      /* El techo baja lo que el signo sube, así que lo que se acota es el
+         globo ENTERO —caja y pegatina— y no solo su caja. */
+      var techo = Math.max(0, vArriba - m.top - bArr) + AIRE + asomaArriba;
       var suelo = Math.min(altoM, vArriba + vAlto - m.top - bArr) - AIRE;
       var sitio = Math.max(160, suelo - techo - PICO);
 
@@ -4097,7 +4115,7 @@
       var x = Math.round((anchoM - ancho) / 2);
       x = Math.max(oIzq - (ancho - ALCANCE), Math.min(x, oDer - ALCANCE));
 
-      x = Math.max(AIRE, Math.min(x, anchoM - ancho - AIRE));
+      x = Math.max(AIRE + asomaIzq, Math.min(x, anchoM - ancho - AIRE));
       nodo.style.left = Math.round(x) + 'px';
       nodo.style.top = Math.round(y) + 'px';
       nodo.dataset.lado = arriba ? 'arriba' : 'abajo';

@@ -69,7 +69,7 @@
 }());
 
 /* LAS HOJAS DE INFORMACIÓN (titular, 2026-09-18): `<dialog>` nativos que se abren
-   desde un enlace con `data-hoja` y desde el `#` de la dirección, para que el
+   desde un enlace con `data-pliego` y desde el `#` de la dirección, para que el
    juego pueda enlazar `../#privacidad`. Se cierran con el aspa, con Escape (lo
    da el navegador) y tocando el fondo. */
 (function () {
@@ -78,17 +78,17 @@
     var h = document.getElementById(id);
     if (!h || typeof h.showModal !== 'function' || h.open) return;
     h.showModal();
-    h.querySelector('.hoja__caja').scrollTop = 0;
+    h.querySelector('.pliego__caja').scrollTop = 0;
   }
   document.addEventListener('click', function (e) {
-    var a = e.target.closest('[data-hoja]');
-    if (a) { e.preventDefault(); abrir(a.dataset.hoja); return; }
-    var x = e.target.closest('[data-cerrar-hoja]');
+    var a = e.target.closest('[data-pliego]');
+    if (a) { e.preventDefault(); abrir(a.dataset.pliego); return; }
+    var x = e.target.closest('[data-cerrar-pliego]');
     if (x) { x.closest('dialog').close(); return; }
     /* Tocar el fondo: el click cae en el propio <dialog>, no en su caja. */
-    if (e.target.classList && e.target.classList.contains('hoja')) e.target.close();
+    if (e.target.classList && e.target.classList.contains('pliego')) e.target.close();
   });
-  var porHash = { '#privacidad': 'hoja-privacidad' };
+  var porHash = { '#privacidad': 'pliego-privacidad' };
   function delHash() { if (porHash[location.hash]) abrir(porHash[location.hash]); }
   window.addEventListener('hashchange', delHash);
   delHash();

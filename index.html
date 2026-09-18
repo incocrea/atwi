@@ -15,11 +15,11 @@
 <title>ATWI · El juego de debate para parejas, amigos y familia</title>
 <meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<link rel="stylesheet" href="assets/css/fuentes.css?v=484e931">
-<link rel="stylesheet" href="assets/css/tokens.css?v=484e931">
-<link rel="stylesheet" href="assets/css/base.css?v=484e931">
-<link rel="stylesheet" href="assets/css/landing.css?v=484e931">
-<link rel="stylesheet" href="assets/css/modal.css?v=484e931">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=34ff617">
+<link rel="stylesheet" href="assets/css/tokens.css?v=34ff617">
+<link rel="stylesheet" href="assets/css/base.css?v=34ff617">
+<link rel="stylesheet" href="assets/css/landing.css?v=34ff617">
+<link rel="stylesheet" href="assets/css/modal.css?v=34ff617">
 </head>
 
 <body class="landing">
@@ -206,7 +206,7 @@
     <div class="pie__enlaces">
       <a href="#modos">Los tres modos</a>
       <a href="app/">Jugar</a>
-      <a href="#privacidad" data-hoja="hoja-privacidad">Privacidad y datos</a>
+      <a href="#privacidad" data-pliego="pliego-privacidad">Privacidad y datos</a>
     </div>
     <!-- LA MISMA REDACCIÓN QUE `config.descargo`, y hay que mantenerlas iguales a
          mano: la landing no carga config.js. El comentario de allí dice «en un
@@ -224,17 +224,17 @@
 <!-- LA INFORMACIÓN DE LA LANDING VA EN LA LANDING, EN HOJAS (titular, 2026-09-18:
      «no hagas la página de privacidad como link aparte: crea un modal elegante en
      el mismo landing; el único link aparte es el juego»). Es un `<dialog>` nativo
-     —foco atrapado, Escape y fondo gratis— vestido como hoja: en el teléfono sube
+     —foco atrapado, Escape y fondo gratis— vestido como pliego: tarjeta centrada con las esquinas redondeadas y el fondo esmerilado; en el teléfono
      desde abajo, en escritorio es una tarjeta centrada. Se abre desde el pie y
      desde `#privacidad` en la dirección, para poder enlazarla desde el juego.
      Lo que dice sale del código y hay que mantenerlo verdad: qué se guarda, qué no
      se guarda nunca, quién procesa qué, la IA, cuánto tiempo y los derechos.
      ⚠️ EL CORREO DE CONTACTO ESTÁ PENDIENTE DEL TITULAR. -->
-<dialog class="hoja" id="hoja-privacidad" aria-labelledby="t-privacidad">
-  <div class="hoja__caja">
-    <button class="hoja__cerrar" type="button" data-cerrar-hoja aria-label="Cerrar">✕</button>
-      <div class="hoja__cuerpo legal">
-    <h2 class="hoja__titulo" id="t-privacidad">Privacidad y datos</h2>
+<dialog class="pliego" id="pliego-privacidad" aria-labelledby="t-privacidad">
+  <div class="pliego__caja">
+    <button class="pliego__cerrar" type="button" data-cerrar-pliego aria-label="Cerrar">✕</button>
+      <div class="pliego__cuerpo legal">
+    <h2 class="pliego__titulo" id="t-privacidad">Privacidad y datos</h2>
     <p class="fecha">Última revisión: 18 de septiembre de 2026 · ATWI está en construcción y esto cambia con el juego.</p>
 
     <div class="clave" style="margin-top:var(--e-4)">
@@ -326,6 +326,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=484e931"></script>
+<script src="assets/js/landing.js?v=34ff617"></script>
 </body>
 </html>

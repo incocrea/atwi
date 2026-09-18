@@ -239,33 +239,40 @@ body.landing {
 /* --- La barra inferior NO existe en la landing ------------------------------- */
 body.landing .barra { display: none; }
 
-/* --- LAS HOJAS: la información de la landing, sin salir de ella -------------
+/* --- LOS PLIEGOS: la información de la landing, sin salir de ella ------------
    Titular, 2026-09-18: el único enlace fuera es el juego. Un `<dialog>` nativo
-   vestido: en el teléfono sube desde abajo y ocupa casi todo el alto; en
-   escritorio es una tarjeta centrada de 46rem. El fondo es el cristal de los
-   globos del juego —blanco tenue más desenfoque—, no un velo oscuro. */
-.hoja {
-  border: 0; padding: 0; background: transparent; max-width: none; max-height: none;
-  width: 100%; height: 100%; margin: 0; inset: 0; position: fixed;
-  display: none; align-items: flex-end; justify-content: center;
+   vestido: tarjeta centrada, con las cuatro esquinas redondeadas también en el
+   teléfono, y el fondo de cristal de los globos del juego —blanco tenue más
+   desenfoque—, no un velo oscuro. La barra de scroll no se ve: la tarjeta se
+   desliza y ya.
+   ⚠️ SE LLAMA `pliego` Y NO `hoja` porque `.hoja` YA EXISTE en `modal.css` —la
+   hoja vieja de la landing, sin uso pero cargada— con `display: grid` y fondo
+   oscuro, y pisaba a esta: salía abierta por defecto, sin fondo y sin poder
+   cerrarse. Es la misma colisión de nombres que `.opcion`/`repre__opcion`. */
+.pliego {
+  border: 0; padding: var(--e-4); background: transparent; max-width: none; max-height: none;
+  width: 100%; height: 100%; margin: 0; inset: 0; position: fixed; box-sizing: border-box;
+  display: none; align-items: center; justify-content: center;
 }
-.hoja[open] { display: flex; }
-.hoja::backdrop { background: rgba(255, 255, 255, .45); backdrop-filter: blur(6px); }
-.hoja__caja {
-  position: relative; width: 100%; max-height: 92vh; overflow-y: auto;
-  background: var(--crema); border-radius: var(--radio-carta) var(--radio-carta) 0 0;
-  box-shadow: 0 -8px 40px rgba(46, 42, 54, .18);
-  padding: var(--e-5) var(--e-5) calc(env(safe-area-inset-bottom, 0px) + var(--e-6));
-  animation: hoja-sube var(--dur-media) var(--suave);
+.pliego[open] { display: flex; }
+.pliego::backdrop { background: rgba(255, 255, 255, .45); backdrop-filter: blur(6px); }
+.pliego__caja {
+  position: relative; width: min(46rem, 100%); max-height: 100%; overflow-y: auto;
+  background: var(--crema); border-radius: var(--radio-carta);
+  box-shadow: 0 12px 40px rgba(46, 42, 54, .18);
+  padding: var(--e-5) var(--e-5) var(--e-6);
+  animation: pliego-sube var(--dur-media) var(--suave);
+  scrollbar-width: none;
 }
-@keyframes hoja-sube { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
-.hoja__cerrar {
+.pliego__caja::-webkit-scrollbar { display: none; }
+@keyframes pliego-sube { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+.pliego__cerrar {
   position: absolute; top: var(--e-3); right: var(--e-3);
   width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer;
   background: var(--carta-velo); color: var(--tinta); font-size: 1.1rem; font-weight: 800;
   box-shadow: var(--sombra-1);
 }
-.hoja__titulo { font-family: var(--display); font-size: var(--t-h2); margin: 0 var(--e-7) var(--e-2) 0; }
+.pliego__titulo { font-family: var(--display); font-size: var(--t-h2); margin: 0 var(--e-7) var(--e-2) 0; }
 .legal h3 { font-family: var(--display); font-size: var(--t-h3); margin: var(--e-5) 0 var(--e-2); }
 .legal p, .legal li { line-height: 1.55; }
 .legal ul { padding-left: 1.2rem; }
@@ -273,9 +280,4 @@ body.landing .barra { display: none; }
 .legal .fecha { color: var(--tinta-tenue); font-size: var(--t-chico); }
 .legal .clave { background: var(--carta-velo); border-radius: var(--radio-tarjeta);
                 padding: var(--e-3) var(--e-4); box-shadow: var(--sombra-1); }
-@media (min-width: 720px) {
-  .hoja { align-items: center; }
-  .hoja__caja { width: min(46rem, calc(100% - 2 * var(--e-5))); max-height: 86vh;
-                border-radius: var(--radio-carta); }
-}
-@media (prefers-reduced-motion: reduce) { .hoja__caja { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .pliego__caja { animation: none; } }
