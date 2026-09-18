@@ -155,7 +155,16 @@
     var revelacion = $('.revelacion:not([hidden])');
     var sala = $('#m-partida');
 
-    if (revelacion) {
+    /* ⚠️ EL GLOBO SE CIERRA ANTES QUE NADA (titular, 2026-09-18: «si hay un
+       globo informativo abierto, el back del navegador debe cerrarlo, es decir
+       cuenta como history para el browser»). Va el primero porque es lo último
+       que se abrió: con el atrás cerrando la pantalla de debajo, el globo se
+       quedaba flotando sobre otra cosa —vive fuera de la vista, así que un
+       cambio de pantalla no se lo lleva—. */
+    if (globoAbierto) {
+      globoEnHistoria = false;
+      quitarGlobo();
+    } else if (revelacion) {
       /* Atrás hace lo mismo que «Salir»: la partida ya está guardada. */
       window.ATWI.veredicto.alAtras();
     } else if (sala && !sala.hidden) {
@@ -4319,8 +4328,22 @@
      ---------------------------------------------------------------------- */
 
   var globoAbierto = null;
+  /* Si el globo abierto tiene su entrada en el historial del navegador. Lo que
+     la gasta es el atrás; lo que la pone, abrirlo. */
+  var globoEnHistoria = false;
 
+  /* ⚠️ CERRAR UN GLOBO ES RETROCEDER, no quitarlo a mano: es el mismo trato que
+     reciben los modales (`cerrarModal`). Si se quitara aquí, la entrada que
+     apiló al abrirse se quedaría puesta y el siguiente atrás se lo tragaría sin
+     hacer nada visible. Quien quita el nodo es `quitarGlobo`, y a él llega el
+     `popstate`. */
   function cerrarGlobo() {
+    if (!globoAbierto) return;
+    if (globoEnHistoria) { globoEnHistoria = false; history.back(); return; }
+    quitarGlobo();
+  }
+
+  function quitarGlobo() {
     if (!globoAbierto) return;
     var g = globoAbierto;
     globoAbierto = null;
@@ -4373,8 +4396,16 @@
     if (!marco || !disparador) return;
     /* Tocar el mismo signo lo cierra: es un interruptor, no un botón de abrir. */
     var eraEste = globoAbierto && globoAbierto.disparador === disparador;
-    cerrarGlobo();
-    if (eraEste) return;
+    if (globoAbierto) {
+      /* Cerrando el de antes SIN tocar el historial: si se abre otro, su
+         entrada se reutiliza —dos globos seguidos no son dos pasos atrás— y si
+         era el mismo, se consume. */
+      quitarGlobo();
+      if (eraEste) { globoEnHistoria = false; history.back(); return; }
+    } else {
+      apilarPaso();
+      globoEnHistoria = true;
+    }
 
     var o = opciones || {};
     var tinte = TINTES[o.tinte] ? o.tinte : 'lavanda';
