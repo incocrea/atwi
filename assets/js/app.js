@@ -3103,8 +3103,11 @@
     /* EL JUEZ, y en local va DEBAJO DE LOS DOS: arriba de ellos se leería como
        el título de la sección; al lado, como un tercer duelista. Debajo se lee
        en el orden correcto: estos dos discuten, y este los juzga. */
+    /* «JUEZ» Y LOS SEIS DISCOS A LA VISTA (titular, 2026-09-18): la tarjeta
+       con el juez puesto y un «Cambiar» que abría otra pantalla se va; se toca
+       el que se quiera y queda puesto. Igual en las dos vías. */
     var bloqueJuez =
-      '<h3 style="margin:var(--e-3) 0 var(--e-2)">¿Quién juzga?</h3>' +
+      '<h3 style="margin:var(--e-3) 0 var(--e-2)">Juez</h3>' +
       pintarJuez();
 
     $('#m-preparar .modal__cuerpo').innerHTML =
@@ -3132,7 +3135,10 @@
            de cada uno, o sea seis intervenciones. Quien leía la pregunta podía
            entender que eran tres en total y elegir pensando en la mitad de
            partida de la que iba a jugar. */
-        '<h3 style="margin:0">Turnos por persona</h3>' +
+        /* «Turnos» a secas (titular, 2026-09-18): el «por persona» que se le
+           puso el 2026-09-14 se fue; las cifras de minutos de debajo ya dicen
+           cuánto dura la partida entera. */
+        '<h3 style="margin:0">Turnos</h3>' +
         '<div class="turnos-fila">' +
         /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
            `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
@@ -3209,37 +3215,22 @@
     if (!repintando) abrirModal('m-preparar');
   }
 
+  /* LA FILA DE JUECES: seis discos, solo la cara, y el puesto lleva el aro del
+     modo. Sin nombre debajo —el titular pidió solo el círculo con la miniatura—;
+     el nombre va en `aria-label` y en `title`. Sin veto: el juez es UNO para
+     toda la partida y no se enfrenta a nadie. */
   function pintarJuez() {
-    var j = propuesta.juez;
-    return '<button type="button" class="juez-linea" data-accion="elegir-juez">' +
-      window.ATWI.fichaJuezHTML(j) +
-      '<span class="juez-linea__texto">' +
-        '<span class="juez-linea__n">' + esc(window.ATWI.nombrePersonaje(j)) + '</span>' +
-        '<span class="juez-linea__que">Escucha la ronda y da el veredicto</span>' +
-      '</span>' +
-      '<span class="juez-linea__cambiar">Cambiar</span>' +
-    '</button>';
-  }
-
-  /* EL SELECTOR DE JUEZ. Como el de abogados pero sin veto: el juez es UNO para
-     toda la partida y no se enfrenta a nadie, asi que ninguno queda ocupado. */
-  function abrirJueces() {
-    $('#m-jueces .modal__cuerpo').innerHTML =
-      '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
-        'Está presente toda la ronda y es quien presenta el resultado. ' +
-        'Cambia la cara y la voz; no cambia cómo se puntúa.</p>' +
-      '<div class="jueces-rejilla">' +
-        window.ATWI.jueces().map(function (q) {
-          return '<button type="button" class="juez-ficha' +
-              (propuesta.juez === q.clave ? ' juez-ficha--puesta' : '') + '"' +
-              ' data-juez-es="' + q.clave + '">' +
-              window.ATWI.fichaJuezHTML(q.clave) +
-              '<span class="juez-ficha__n">' + esc(q.nombre) + '</span>' +
-            '</button>';
-        }).join('') +
-      '</div>';
-    $('#m-jueces').className = 'modal modal--' + propuesta.modo;
-    abrirModal('m-jueces');
+    return '<div class="jueces-fila" role="group" aria-label="Juez">' +
+      window.ATWI.jueces().map(function (q) {
+        var puesto = propuesta.juez === q.clave;
+        return '<button type="button" class="jueces-fila__juez"' +
+            ' data-juez-es="' + q.clave + '"' +
+            ' aria-pressed="' + puesto + '" aria-label="' + esc(q.nombre) + '"' +
+            ' title="' + esc(q.nombre) + '">' +
+            window.ATWI.fichaJuezHTML(q.clave) +
+          '</button>';
+      }).join('') +
+    '</div>';
   }
 
   /* MI PERSONAJE SE REPINTA SOLO al guardar la ficha del perfil con «Antes de
@@ -3892,20 +3883,16 @@
 
     /* El abogado se enciende y se apaga tocándolo. No se repinta la pantalla
        entera: hacerlo perdería los dos nombres a medio escribir. */
-    /* Elegir juez. El renglón entero abre el selector. */
-    var jz = e.target.closest('[data-accion="elegir-juez"]');
-    if (jz) { abrirJueces(); return; }
-
+    /* Elegir juez: se toca el disco y queda puesto (2026-09-18). Se marca en
+       el sitio, sin repintar la pantalla, que se llevaría el nombre del
+       invitado a medio escribir. */
     var jzEs = e.target.closest('[data-juez-es]');
     if (jzEs) {
       propuesta.juez = jzEs.dataset.juezEs;
       recordarJuez(propuesta.juez);
-      cerrarModal('m-jueces');
-      /* Se repinta SOLO el renglón, no la pantalla: repintarla se llevaría el
-         nombre del invitado a medio escribir. Es la misma razón por la que
-         `refrescarMiPersonaje` existe. */
-      var hueco = $('#m-preparar .juez-linea');
-      if (hueco) hueco.outerHTML = pintarJuez();
+      $$('#m-preparar [data-juez-es]').forEach(function (x) {
+        x.setAttribute('aria-pressed', String(x.dataset.juezEs === propuesta.juez));
+      });
       return;
     }
 

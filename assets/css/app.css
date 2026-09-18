@@ -862,33 +862,28 @@ body.app {
   transform: scale(1.7); transform-origin: 50% 32%;
 }
 
-/* EL RENGLÓN DEL JUEZ, debajo de los dos duelistas. Una fila: ficha, nombre y
-   una pista de que se toca. Va como botón entero y no con un botón dentro,
-   porque lo que se toca es «cambiar de juez» y no una parte del renglón. */
-.juez-linea {
-  display: flex; align-items: center; gap: var(--e-3);
-  width: 100%; text-align: left; cursor: pointer; font: inherit;
-  background: rgba(255, 255, 255, .72); border: 0;
-  border-radius: var(--radio-carta); padding: var(--e-2) var(--e-3);
-  box-shadow: var(--sombra-1);
+/* LA FILA DE JUECES en «Antes de empezar» (titular, 2026-09-18): los seis
+   discos a la vista y se elige al toque; se fue la tarjeta con el juez puesto y
+   su «Cambiar», que abría otra pantalla para una decisión de un toque.
+   `space-between` los reparte a lo ancho: seis de 44 con el aire que sobre, y
+   en 343 px de columna queda ~16 entre disco y disco. El puesto lleva el aro
+   del color del modo y sube un pelo; los demás van un punto apagados para que
+   se lea cuál está. */
+.jueces-fila { display: flex; justify-content: space-between; align-items: center; }
+.jueces-fila__juez {
+  padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
+  border-radius: 50%; opacity: .72;
+  transition: transform var(--dur-corta) var(--rebote), opacity var(--dur-corta) var(--suave),
+              box-shadow var(--dur-corta) var(--suave);
 }
-.juez-linea:active { transform: scale(.99); }
-/* ⚠️ 44 Y NO 52 (2026-09-17). Bajó con la lista de representantes: las dos
-   filas de arriba llevan la cara a 44, y el juez a 52 hacía que la única fila
-   que no decide nada fuera la más alta de la pantalla. Y son 8 px de los 35 que
-   le faltaban a esta pantalla para no scrollear en un teléfono bajo. */
-.juez-linea .avatar--juez { width: 44px; height: 44px; }
-.juez-linea__texto { flex: 1; min-width: 0; }
-.juez-linea__n {
-  display: block; font-family: var(--display); font-weight: 800; color: var(--tinta);
-}
-.juez-linea__que { display: block; font-size: var(--t-mini); color: var(--tinta-suave); }
-.juez-linea__cambiar {
-  font-size: var(--t-mini); font-family: var(--display); font-weight: 800;
-  color: var(--lavanda-oscuro); white-space: nowrap;
+.jueces-fila__juez .avatar--juez { width: 44px; height: 44px; }
+.jueces-fila__juez:active { transform: scale(.94); }
+.jueces-fila__juez[aria-pressed="true"] {
+  opacity: 1; transform: scale(1.12);
+  box-shadow: 0 0 0 3px var(--del-modo, var(--lavanda)), var(--sombra-2);
 }
 
-/* La rejilla de los seis jueces, igual que la de abogados. */
+/* La rejilla de los seis jueces, con nombre: hoy solo la usa el probador. */
 .jueces-rejilla {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--e-3); margin-top: var(--e-3);
