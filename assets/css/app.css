@@ -505,21 +505,10 @@ body.app {
 .avatar-boton { border: 0; background: none; padding: 0; cursor: pointer; font: inherit; }
 .avatar-boton:active .avatar { transform: scale(.95); }
 
-.nivel-barra {
-  height: 10px;
-  border-radius: var(--radio-pastilla);
-  background: var(--crema-hondo);
-  overflow: hidden;
-  margin-top: 6px;
-}
-/* La barra de nivel va de dorado a coral: es avance, no identidad. */
-.nivel-barra > i {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, var(--premio), var(--premio-calido));
-  box-shadow: 0 0 10px rgba(245, 194, 67, .5);
-}
+/* AQUÍ ESTABA `.nivel-barra`, la barra de progreso dorada, y se fue el
+   2026-09-18: su último uso era la prueba del micrófono, que ahora enseña el
+   propio micrófono encendiéndose. Una regla que no pinta nadie se baja a cada
+   teléfono para nada. */
 
 /* --- LAS DOS CARTAS DE MODO -------------------------------------------------
    El botón de empezar y la explicación del modo eran dos cosas separadas: un
