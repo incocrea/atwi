@@ -2880,6 +2880,16 @@ body.app {
    línea y gana por especificidad al color del modo. */
 .boton[style*="--suyo"] { --cara: var(--suyo); }
 
+/* Y LA LETRA EN TINTA CUANDO LA CARA ES CLARA (titular, 2026-09-18). Quién lo
+   lleva lo decide `ATWI.letraSobre` midiendo el contraste; aquí solo se pinta.
+   ⚠️ LA SOMBRA DEL TEXTO TAMBIEN CAMBIA DE LADO: la de serie es oscura y va
+   debajo de la letra para despegarla de una cara de color; con letra oscura eso
+   la emborrona en vez de despegarla, así que pasa a ser un filo claro. */
+.boton--letra-oscura {
+  color: var(--tinta);
+  text-shadow: 0 1px 0 color-mix(in srgb, #fff 60%, transparent);
+}
+
 /* EL TURNO GRABADO Y SIN MANDAR. Está en su casilla como los demás, pero late y
    lleva un halo del color de quien lo grabó: dice «esto es nuevo y está aquí»
    sin sacarlo a una tarjeta aparte. El halo va en `box-shadow` y no en un borde,

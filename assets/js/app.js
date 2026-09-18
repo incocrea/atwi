@@ -254,6 +254,7 @@
   var LO_QUE_ESPERA = {
     'sin-ver':         ['Tu resultado está listo', 'premio', 'Tocá para verlo'],
     'falta-veredicto': ['Falta el resultado', 'curso', 'Tocá para pedirlo otra vez'],
+    'falta-acuerdo':   ['Falta cerrar la negociación', 'curso', 'Tocá para elegir y firmar'],
     'en-curso':        ['Partida sin terminar', 'curso', '']
   };
 
@@ -261,7 +262,7 @@
   function partidasQueEsperan() {
     var lista = historial || [];
     var fuera = [];
-    ['sin-ver', 'falta-veredicto', 'en-curso'].forEach(function (e) {
+    ['sin-ver', 'falta-veredicto', 'falta-acuerdo', 'en-curso'].forEach(function (e) {
       lista.forEach(function (d) { if (estadoDe(d) === e) fuera.push(d); });
     });
     return fuera;
@@ -1599,7 +1600,15 @@
     var total = (d.turnos || 3) * 2;
     if (!hechos) return 'sin-empezar';
     if (hechos < total) return 'en-curso';
-    if (!d.resultado) return d.modo === 'debate' ? 'falta-veredicto' : 'terminada';
+    /* UNA NEGOCIACION CON LAS INTERVENCIONES Y SIN ACTA NO ESTA TERMINADA
+       (2026-09-18): le falta cerrarse --elegir una propuesta y firmarla, marcar
+       «Ninguna», o que el mediador la haya parado--, y eso deja fila en
+       `acuerdos` en los tres casos. Aqui decia `terminada` porque el mediador
+       no existia y una ronda de Pacto nunca tenia nada que pedir; las seis
+       rondas del banco se jugaron por el corredor y ninguna pudo votarse desde
+       el historial hasta hoy. */
+    if (d.modo === 'negociacion') return (d.acuerdos || []).length ? 'terminada' : 'falta-acuerdo';
+    if (!d.resultado) return 'falta-veredicto';
     return d.resultado.visto ? 'terminada' : 'sin-ver';
   }
 
@@ -1673,6 +1682,7 @@
     'sin-empezar': 'curso',
     'en-curso': 'curso',
     'falta-veredicto': 'veredicto',
+    'falta-acuerdo': 'veredicto',
     'sin-ver': 'veredicto',
     'terminada': 'hecha'
   };
@@ -1709,7 +1719,7 @@
      es a ignorar el brillo. */
   function meEspera(d) {
     var e = estadoDe(d);
-    if (e === 'sin-ver' || e === 'falta-veredicto') return true;
+    if (e === 'sin-ver' || e === 'falta-veredicto' || e === 'falta-acuerdo') return true;
     if (e !== 'en-curso' && e !== 'sin-empezar') return false;
     if (!esEnLinea(d)) return true;
 
@@ -1769,6 +1779,7 @@
     'sin-empezar': ['Sin empezar', 'curso'],
     'en-curso': ['Sin terminar', 'curso'],
     'falta-veredicto': ['Falta el resultado', 'curso'],
+    'falta-acuerdo': ['Falta cerrar la negociación', 'curso'],
     'sin-ver': ['Tu resultado está listo', 'premio']
   };
 
@@ -1822,7 +1833,7 @@
     var e = estadoDe(d);
     /* Empezarla, seguirla o pedir el resultado que falta: las tres son retomar
        la misma partida, y `reanudar()` decide dónde deja a la persona. */
-    if (e === 'sin-empezar' || e === 'en-curso' || e === 'falta-veredicto') {
+    if (e === 'sin-empezar' || e === 'en-curso' || e === 'falta-veredicto' || e === 'falta-acuerdo') {
       return window.ATWI.partida.reanudar(d);
     }
     /* ESTRENO O REPASO, y la diferencia es toda la pantalla: un veredicto que

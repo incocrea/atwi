@@ -569,7 +569,13 @@ window.ATWI = window.ATWI || {};
       'turnos_grabados:turnos(orden,numero,perfil,nombre,avatar,color,abogado,segundos,' +
       'voz_ruta,audio_ruta,transcripcion,guion,creado),' +
       'resultado:resultados(tipo_resultado,ganador_lado,motivo_empate,justificacion,' +
-      'desglose,lo_mejor,lo_que_dijo,visto,creado)';
+      'desglose,lo_mejor,lo_que_dijo,visto,creado),' +
+      /* Y LAS ACTAS (2026-09-18): sin ellas el historial no sabia si una
+         Negociacion terminada estaba cerrada --firmada, «Ninguna» o parada-- o
+         si le faltaba justo eso, y las marcaba todas `terminada`. Solo los
+         campos que decide `estadoDe()`; el texto del acta lo trae el chip
+         «Acuerdos» por su cuenta. */
+      'acuerdos(tipo,version,lo_que_dijo,creado)';
     /* Y SE PIDEN LAS MÍAS, EXPLÍCITAMENTE. Esto no estaba y costó una tarde
        (2026-09-15): la consulta traía «los debates que RLS me deje ver» y se
        daba por hecho que eran los míos. Para casi todo el mundo lo son, pero la

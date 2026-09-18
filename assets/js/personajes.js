@@ -85,6 +85,49 @@ window.ATWI = window.ATWI || {};
     return COLORES[color] ? color : COLOR_DE_SERIE;
   }
 
+  /* QUE LETRA SE LEE SOBRE UN COLOR, Y NO A OJO (titular, 2026-09-18: «cuando el
+     botón de mandar mi turno sea amarillo, el texto en negro»).
+
+     El botón de mandar lleva el color de quien juega, y el texto iba SIEMPRE en
+     blanco. Medido el contraste de los cuatro tonos contra blanco y contra la
+     tinta del juego (#2E2A3F):
+
+         azul      blanco 4,16:1   tinta 3,33:1
+         verde     blanco 1,70:1   tinta 8,13:1
+         amarillo  blanco 1,27:1   tinta 10,92:1
+         morado    blanco 2,52:1   tinta 5,49:1
+
+     O sea que el amarillo era el caso extremo pero no el único: en tres de los
+     cuatro la letra blanca pierde, y el morado ni siquiera llega al 3:1 que se
+     le pide al texto grande. Por eso no se apunta el amarillo a mano —eso deja
+     el fallo puesto en los otros dos y se rompe otra vez el día que entre un
+     color nuevo—: se calcula, y gana la letra que más contraste da.
+
+     La fórmula es la de WCAG: luminancia relativa con la corrección de gamma. */
+  function luminancia(hex) {
+    var h = String(hex).replace('#', '');
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    if (isNaN(n) || h.length !== 6) return 1;
+    var canal = function (c) {
+      c = c / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * canal((n >> 16) & 255) +
+           0.7152 * canal((n >> 8) & 255) +
+           0.0722 * canal(n & 255);
+  }
+  function contraste(a, b) {
+    var x = luminancia(a), y = luminancia(b);
+    return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+  }
+  var TINTA = '#2E2A3F';   // el mismo `--tinta` de tokens.css
+
+  /** 'clara' u 'oscura': con cuál de las dos se lee mejor encima de `tono`. */
+  window.ATWI.letraSobre = function (tono) {
+    return contraste(tono, '#FFFFFF') >= contraste(tono, TINTA) ? 'clara' : 'oscura';
+  };
+
   var POSES = {
     frente: 'de frente',      // retrato: avatar del perfil y pantalla de versus
     plante: 'en guardia',     // cuerpo entero, listo para el turno

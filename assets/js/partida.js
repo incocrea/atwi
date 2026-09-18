@@ -437,6 +437,15 @@ window.ATWI = window.ATWI || {};
        veredicto entra en esa pantalla de inmediato, sin los minutos de grabar
        que en una partida nueva dan tiempo de sobra a bajar al juez. */
     precargarElFinal();
+    /* EN NEGOCIACION SE PIDE SIN PREGUNTAR: `mediar()` es idempotente --las
+       propuestas ya guardadas vuelven sin llamar al modelo, y la parada blanda
+       tambien desde la migracion 0052-- asi que retomar una Negociacion con las
+       intervenciones hechas lleva derecho a votar. En Controversia se pregunta
+       antes porque pedir el veredicto cuesta. */
+    if (faltaElVeredicto && P.modo === 'negociacion') {
+      P.juicio = pedirPropuestas();
+      return deliberar();
+    }
     if (faltaElVeredicto) return deliberar(true);
     window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
                                ['hablando'],
@@ -664,9 +673,16 @@ window.ATWI = window.ATWI || {};
   }
 
   function principal(accion, texto, ico, apagado, color) {
-    return '<button class="boton boton--bloque boton--grande boton--' + P.modo + '"' +
+    /* LA LETRA LA DECIDE EL COLOR, no el diseño. Sobre el amarillo y el verde de
+       los personajes el texto blanco casi no se ve --1,27:1 y 1,70:1 medidos--,
+       así que se pregunta cuál se lee mejor encima. Lo contesta
+       `ATWI.letraSobre`, que vive con la tabla de colores. */
+    var suyo = color ? tono(color) : null;
+    var oscura = suyo && window.ATWI.letraSobre(suyo) === 'oscura';
+    return '<button class="boton boton--bloque boton--grande boton--' + P.modo +
+      (oscura ? ' boton--letra-oscura' : '') + '"' +
       ' data-accion="' + accion + '"' + (apagado ? ' disabled' : '') +
-      (color ? ' style="--suyo:' + esc(tono(color)) + '"' : '') + '>' +
+      (suyo ? ' style="--suyo:' + esc(suyo) + '"' : '') + '>' +
       (ico || '') + esc(texto) + '</button>';
   }
 
