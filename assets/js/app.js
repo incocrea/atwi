@@ -1476,7 +1476,15 @@
              el buzón trae algo— y ninguna de las tres cosas que esperan aquí es
              un problema. Un rojo diría avería sobre una partida a medias. */
           (meEspera(d)
+            /* DOS CAMPANAS EN LA MISMA CASILLA (titular, 2026-09-18: «lo que
+               aparece y desaparece no es el icono, es el glow»). La de abajo
+               lleva el brillo y es la que se desvanece; la de arriba, sin
+               brillo, tapa el dibujo de la otra y se queda quieta. Un
+               `drop-shadow` no se puede desvanecer solo --va pegado a su
+               dibujo--, así que se desvanece un dibujo entero detrás de otro
+               idéntico: lo único que se ve ir y venir es el halo. */
             ? '<span class="partida__espera" aria-hidden="true">' +
+                '<span class="partida__espera-brillo">' + icono('buzon', 26) + '</span>' +
                 icono('buzon', 26) + '</span>'
             : '') +
           '<button class="partida__borrar" data-borrar="' + esc(d.id) + '"' +

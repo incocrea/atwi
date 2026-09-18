@@ -3957,13 +3957,15 @@ body.app {
    llama la atención no señala nada, así que una partida remota que espera al
    OTRO se queda sin campana aunque esté a medias.
 
-   APARECE Y DESAPARECE, Y EL BRILLO NO SE MUEVE (titular, 2026-09-18). Antes lo
-   que latía era el propio brillo, abriéndose de 3 a 9 px con la campana, y eso
-   se veía sucio: un `drop-shadow` que crece sobre un dibujo con contorno oscuro
-   ensancha ESE contorno, así que el halo se leía rojizo y turbio en vez de
-   dorado. Ahora el brillo es **uno y fijo** —dorado limpio— y lo que se anima es
-   la OPACIDAD del signo entero: se va y vuelve, sin pasar por ningún color
-   intermedio.
+   LA CAMPANA SE QUEDA Y EL BRILLO ES LO QUE APARECE Y DESAPARECE (titular,
+   2026-09-18: «lo que aparece y desaparece no es el icono, es el glow»; revoca
+   la versión de unas horas antes, donde se desvanecía el signo entero). El
+   brillo es un `drop-shadow` de radio FIJO —dorado limpio; el radio no se
+   anima porque al crecer ensancha el contorno oscuro del dibujo y el halo se
+   leía rojizo y turbio— y, como una sombra no se puede desvanecer sin su
+   dibujo, van DOS campanas en la misma casilla: la de abajo lleva el brillo y
+   es la que se desvanece; la de arriba, sin brillo, tapa el dibujo de la otra
+   y no se mueve. Lo único que se ve ir y venir es el halo.
    DOS SEGUNDOS POR CICLO, y el desvanecido es suave a propósito: un parpadeo
    rápido en una lista de veinte tarjetas es un error de accesibilidad además de
    ser feo.
@@ -3989,6 +3991,11 @@ body.app {
      derecha sus centros quedaban a 5 px uno del otro. Medido. */
   width: 38px; height: 38px;
   display: grid; place-items: center;
+}
+/* Las dos copias en la misma celda de la rejilla, una encima de otra. */
+.partida-fila .partida__espera > * { grid-area: 1 / 1; }
+.partida-fila .partida__espera-brillo {
+  display: grid; place-items: center;
   filter: drop-shadow(0 0 6px var(--premio));
   animation: espera-late 2s ease-in-out infinite;
 }
@@ -3999,7 +4006,7 @@ body.app {
 /* Sin movimiento se queda el brillo puesto y quieto: la tarjeta sigue diciendo
    que espera algo, que es la información; lo que se va es la animación. */
 @media (prefers-reduced-motion: reduce) {
-  .partida-fila .partida__espera { animation: none; opacity: 1; }
+  .partida-fila .partida__espera-brillo { animation: none; opacity: 1; }
 }
 
 /* LAS DOS SEÑAS DE LA PARTIDA --cuando fue y a que se jugo-- en la misma linea
