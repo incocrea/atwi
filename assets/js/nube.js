@@ -269,23 +269,163 @@ window.ATWI = window.ATWI || {};
   }
 
   /**
+   * Una función de la base (`/rpc/<nombre>`), con la sesión puesta. Resuelve
+   * con lo que devuelva; si la base contesta con error, RECHAZA con un Error
+   * cuyo `message` es el `message` de PostgREST --que en las funciones del
+   * modo en línea es una clave corta («sin_vidas», «mismo_personaje»)-- y con
+   * `hint` en `.pista`, que es la frase para la persona.
+   */
+  function rpc(nombre, args) {
+    return fetch(cfg.supabaseUrl + '/rest/v1/rpc/' + nombre, {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon,
+        'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(args || {})
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var dato = null;
+        try { dato = t ? JSON.parse(t) : null; } catch (e) { dato = t; }
+        if (!r.ok) {
+          var e2 = new Error((dato && dato.message) || ('la base contestó ' + r.status));
+          e2.pista = dato && dato.hint || '';
+          e2.estado = r.status;
+          throw e2;
+        }
+        return dato;
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* EL MODO EN LÍNEA (migración 0055)                                   */
+  /* ------------------------------------------------------------------ */
+
+  /** Las invitaciones que me esperan: las que llevan MI correo y siguen vivas. */
+  function invitaciones() {
+    if (!hayNube()) return Promise.resolve([]);
+    return rpc('invitaciones_pendientes').then(function (l) { return l || []; })
+      .catch(function (e) { apuntar('invitaciones: ' + e.message); return []; });
+  }
+
+  /**
+   * Acepto una invitación con la ficha que voy a llevar. La base aplica la
+   * regla del personaje --distinto del host, salvo QuiénGane, donde lo que no
+   * puede coincidir es el color-- y sortea quién abre. Rechaza con
+   * `mismo_personaje` / `mismo_color` / `invitacion_caducada`.
+   */
+  function aceptarInvitacion(debate, avatar, color) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('aceptar_invitacion', { p_debate: debate, p_avatar: avatar || null, p_color: color || null });
+  }
+
+  /** La rechazo (invitado) o la retiro (host): la propuesta se borra y la vida vuelve. */
+  function rechazarInvitacion(debate) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('rechazar_invitacion', { p_debate: debate });
+  }
+
+  /** Ya vi el sorteo de esta partida: que no se me vuelva a enseñar. */
+  function marcarIntroVista(debate) {
+    if (!debate || !hayNube()) return;
+    rpc('marcar_intro_visto', { p_debate: debate }).catch(function () {});
+  }
+
+  /** Cuántas vidas tengo. */
+  function vidas() {
+    if (!hayNube()) return Promise.resolve(null);
+    return rpc('mis_vidas').catch(function (e) { apuntar('vidas: ' + e.message); return null; });
+  }
+
+  /** «Si tengo 10 te mando 5»: por apodo. Devuelve las que me quedan. */
+  function enviarVidas(apodo, cuantas) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('enviar_vidas', { p_apodo: String(apodo || '').trim(), p_cuantas: Number(cuantas) || 0 });
+  }
+
+  /**
+   * «¿Hay algo nuevo para mí desde tal hora?»: una sola llamada barata con la
+   * que la app se refresca sola. Trae `avisos_nuevos`, `sin_leer`,
+   * `invitaciones`, `partidas_tocadas` (ids con algo nuevo desde `desde`) y
+   * `vidas`, más `ahora`, que es la marca para la siguiente pregunta.
+   */
+  function novedades(desde) {
+    if (!hayNube()) return Promise.resolve(null);
+    return rpc('novedades', { p_desde: desde || null }).catch(function () { return null; });
+  }
+
+  /* Los temas propios, ahora en la cuenta y no en el teléfono. La forma es la
+     misma que guardaba localStorage --`id`, `titulo`, `enunciado`, `publico`,
+     `clase`, `intensidad`-- para que `datos.js` no tenga que traducir. */
+  function temasPropios() {
+    if (!hayNube()) return Promise.resolve(null);
+    return fetch(cfg.supabaseUrl + '/rest/v1/temas_propios?select=*&order=creado.asc', {
+      headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(), 'Accept': 'application/json' }
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function (e) { apuntar('temas propios: ' + e.message); return null; });
+  }
+
+  function guardarTemaPropio(t) {
+    if (!hayNube()) return Promise.resolve(false);
+    var yo = auth.sesion().user;
+    var fila = {
+      id: String(t.id), perfil: yo.id,
+      titulo: String(t.titulo || '').slice(0, 60),
+      enunciado: String(t.enunciado || '').slice(0, 400),
+      publico: t.publico || 'pareja',
+      clase: t.clase === 'premio' ? 'premio' : 'tema',
+      intensidad: t.intensidad || null,
+      editado: new Date().toISOString()
+    };
+    return fetch(cfg.supabaseUrl + '/rest/v1/temas_propios?on_conflict=perfil,id', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(),
+        'Content-Type': 'application/json', 'Prefer': 'resolution=merge-duplicates'
+      },
+      body: JSON.stringify([fila])
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (x) { apuntar('tema propio: ' + x.slice(0, 160)); return false; });
+      return true;
+    }).catch(function (e) { apuntar('tema propio: ' + e.message); return false; });
+  }
+
+  function borrarTemaPropio(id) {
+    if (!hayNube()) return Promise.resolve(false);
+    return fetch(cfg.supabaseUrl + '/rest/v1/temas_propios?id=eq.' + encodeURIComponent(String(id)), {
+      method: 'DELETE',
+      headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion() }
+    }).then(function (r) { return r.ok; }).catch(function () { return false; });
+  }
+
+  /**
    * Abre la partida en la base y devuelve su id, o null si no se pudo.
    *
-   * La partida LOCAL no tiene relación: quien juega enfrente agarró este mismo
-   * teléfono y no tiene cuenta. Su ficha viaja en el propio debate (migración
+   * La partida LOCAL es una cuenta y un teléfono: quien juega enfrente lo
+   * agarró y no tiene cuenta. Su ficha viaja en el propio debate (migración
    * 0012), que es todo lo que hace falta para reconstruir después quién era.
+   *
+   * LA PARTIDA EN LÍNEA (0055) nace como PROPUESTA: `en_linea` con el correo
+   * del invitado y sin ficha de invitado ni sorteo --las dos cosas las pone la
+   * base cuando la otra persona acepta--. Gasta una vida al crearse (salvo
+   * QuiénGane) y la recupera si se rechaza o caduca; si no quedan vidas el
+   * INSERT falla con `sin_vidas` y aquí se devuelve null con ese fallo en
+   * `ultimoFallo()`.
    */
   function abrirPartida(p) {
     if (!hayNube()) return Promise.resolve(null);
     var yo = auth.sesion().user;
     if (!yo || !yo.id) return Promise.resolve(apuntar('la sesión no trae usuario'));
+    var enLinea = p.donde === 'linea' || Boolean(p.correo);
 
     var cuerpo = {
       propone: yo.id,
-      relacion: null,
       tema_catalogo: p.tema && p.tema.id ? String(p.tema.id) : null,
       enunciado: String(p.tema && p.tema.enunciado || '').slice(0, 400),
-      modo: p.modo === 'debate' ? 'debate' : 'negociacion',
+      modo: p.modo === 'debate' ? 'debate' : p.modo === 'competencia' ? 'competencia' : 'negociacion',
       turnos: p.turnos,
       /* `estado` nace en 'propuesto' y la partida local ya está aceptada por los
          dos —están sentados juntos—, pero la restricción `aceptacion_coherente`
@@ -301,9 +441,6 @@ window.ATWI = window.ATWI || {};
          la partida. Sin esto, una partida abierta desde el historial no sabria
          quien la juzgo y habria que inventarle uno. */
       juez: p.juez || null,
-      invitado_nombre: String(p.invitado && p.invitado.nombre || '').slice(0, 16),
-      invitado_avatar: p.invitado && p.invitado.avatar || null,
-      invitado_color: p.invitado && p.invitado.color || null,
       /* LAS TRES COSAS QUE HACEN FALTA PARA VOLVER A SENTARLOS (migración 0031),
          y ninguna estaba. La ficha del invitado ya viajaba aquí desde la 0012
          «para reconstruir después quién era»; la de quien propone vivía en el
@@ -311,11 +448,20 @@ window.ATWI = window.ATWI || {};
          retoma como Kai, que el personaje es del turno--. Y quién abrió no se
          guardaba en ninguna parte: `abre` es un uuid a perfiles y el invitado
          de una partida local no tiene cuenta. */
-      abre_lado: p.abreLado === 'invitado' ? 'invitado' : 'propone',
       propone_nombre: String(p.yo && p.yo.nombre || '').slice(0, 16),
       propone_avatar: p.yo && p.yo.avatar || null,
       propone_color: p.yo && p.yo.color || null
     };
+    if (enLinea) {
+      cuerpo.en_linea = true;
+      cuerpo.invitado_correo = String(p.correo || '').trim().toLowerCase();
+      cuerpo.invitacion_caduca = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+    } else {
+      cuerpo.invitado_nombre = String(p.invitado && p.invitado.nombre || '').slice(0, 16);
+      cuerpo.invitado_avatar = p.invitado && p.invitado.avatar || null;
+      cuerpo.invitado_color = p.invitado && p.invitado.color || null;
+      cuerpo.abre_lado = p.abreLado === 'invitado' ? 'invitado' : 'propone';
+    }
 
     return fetch(cfg.supabaseUrl + '/rest/v1/debates', {
       method: 'POST',
@@ -328,6 +474,9 @@ window.ATWI = window.ATWI || {};
       body: JSON.stringify(cuerpo)
     }).then(function (r) {
       if (!r.ok) return r.text().then(function (t) {
+        /* El disparador de las vidas contesta con la clave a secas: se deja
+           llegar tal cual para que la pantalla la reconozca. */
+        if (/sin_vidas/.test(t)) throw new Error('sin_vidas');
         throw new Error('no se abrió la partida (' + r.status + '): ' + t.slice(0, 200));
       });
       return r.json();
@@ -340,29 +489,6 @@ window.ATWI = window.ATWI || {};
       if (!id) apuntar('la partida se creó pero el servidor no la devolvió');
       return id;
     }).catch(function (e) { return apuntar(e.message); });
-  }
-
-  /** Deja constancia de con quien jugo cada lado. `lado` 0 es quien propone. */
-  function apuntarRepresentacion(debate, p) {
-    var yo = auth.sesion().user;
-    var filas = [
-      { debate: debate, lado: 0, perfil: yo.id,
-        abogado: Boolean(p.abogadoYo), personaje: p.personajeYo },
-      { debate: debate, lado: 1, perfil: null,
-        abogado: Boolean(p.abogadoOtro), personaje: p.personajeOtro }
-    ];
-    return fetch(cfg.supabaseUrl + '/rest/v1/representacion', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': cfg.supabaseAnon,
-        'Authorization': 'Bearer ' + conSesion(),
-        'Prefer': 'resolution=merge-duplicates'
-      },
-      body: JSON.stringify(filas)
-    }).then(function (r) {
-      if (!r.ok) return r.text().then(function (t) { apuntar('representacion: ' + t.slice(0, 160)); });
-    }).catch(function (e) { apuntar('representacion: ' + e.message); });
   }
 
   /**
@@ -562,6 +688,10 @@ window.ATWI = window.ATWI || {};
        Estaban `propone_nombre/avatar/color` pero no la columna que dice de
        quién es la partida, porque hasta ahora nadie la miraba desde el cliente. */
     var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,juez,propone,' +
+      /* Lo del modo en línea (0055): con quién, si aceptaron, hasta cuándo, si
+         ya vi el sorteo y quién abandonó. `estado` dice si sigue propuesta. */
+      'estado,en_linea,aceptado_por,invitado_correo,invitacion_caduca,plazo,' +
+      'intro_visto_propone,intro_visto_invitado,abandono,' +
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
       'invitado_nombre,invitado_avatar,invitado_color,' +
@@ -813,6 +943,17 @@ window.ATWI = window.ATWI || {};
 
   window.ATWI.nube = {
     revisarTema: conTokenVivo(revisarTema),
+    /* El modo en línea (0055). */
+    invitaciones: conTokenVivo(invitaciones),
+    aceptarInvitacion: conTokenVivo(aceptarInvitacion),
+    rechazarInvitacion: conTokenVivo(rechazarInvitacion),
+    marcarIntroVista: conTokenVivo(marcarIntroVista),
+    vidas: conTokenVivo(vidas),
+    enviarVidas: conTokenVivo(enviarVidas),
+    novedades: conTokenVivo(novedades),
+    temasPropios: conTokenVivo(temasPropios),
+    guardarTemaPropio: conTokenVivo(guardarTemaPropio),
+    borrarTemaPropio: conTokenVivo(borrarTemaPropio),
     ladoDeTurno: ladoDeTurno,
     historial: historial,
     oirDelAlmacen: conTokenVivo(oirDelAlmacen),
