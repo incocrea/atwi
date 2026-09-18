@@ -307,15 +307,13 @@ body.app {
    el pie trae su propio color y deja una raya cruzando la pantalla. */
 #m-tema.modal--debate,
 #m-explicar.modal--debate,
-#m-preparar.modal--debate,
-#m-abogados.modal--debate {
+#m-preparar.modal--debate {
   background: url(../img/fondos/debate.webp) center top / cover no-repeat,
               var(--debate-tinte);
 }
 #m-tema.modal--negociacion,
 #m-explicar.modal--negociacion,
-#m-preparar.modal--negociacion,
-#m-abogados.modal--negociacion {
+#m-preparar.modal--negociacion {
   background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
               var(--negociacion-tinte);
 }
@@ -324,8 +322,7 @@ body.app {
    exista no haya una pantalla suya en blanco. */
 #m-tema.modal--competencia,
 #m-explicar.modal--competencia,
-#m-preparar.modal--competencia,
-#m-abogados.modal--competencia {
+#m-preparar.modal--competencia {
   background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
               var(--competencia-tinte);
 }
@@ -3212,9 +3209,9 @@ body.app {
    del botón de cambiar modo, de `.boton--competencia` y de `piezaDelEncuentro`:
    **cualquier lista de modos escrita a mano se queda coja al entrar el tercero**.
    Van los tres juntos y en el mismo orden que `cfg.modos`. */
-#m-preparar.modal--debate,      #m-abogados.modal--debate      { --del-modo: var(--debate); }
-#m-preparar.modal--negociacion, #m-abogados.modal--negociacion { --del-modo: var(--negociacion); }
-#m-preparar.modal--competencia, #m-abogados.modal--competencia { --del-modo: var(--competencia); }
+#m-preparar.modal--debate      { --del-modo: var(--debate); }
+#m-preparar.modal--negociacion { --del-modo: var(--negociacion); }
+#m-preparar.modal--competencia { --del-modo: var(--competencia); }
 
 .turnos-fila {
   display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
@@ -3670,173 +3667,48 @@ body.app {
 
 
 /* ==========================================================================
-   QUIÉN REPRESENTA A CADA UNO EN EL DUELO
-   Una fila por persona: su voz, o uno de los personajes de abogado. No es un
-   interruptor de sí/no porque ya no lo es: hay que elegir A QUIÉN, y con cuatro
-   personajes en camino un interruptor no daría más de sí.
-
-   SE LLAMA `repre__opcion` Y NO `opcion` porque `.opcion` YA EXISTE en este
-   proyecto --son las opciones de postura-- y `modal.css` carga despues de
-   `app.css`, asi que su regla ganaba: esto salia en `display: grid` con la cara
-   al lado del nombre, en vez de encima. No era falta de especificidad, era una
-   colision de nombres, y subir la especificidad solo la habria tapado.
+   MI PERSONAJE, ARRIBA DE «ANTES DE EMPEZAR» (titular, 2026-09-18)
+   Es lo primero de la pantalla y va centrado: el retrato con el halo de su
+   color, el apodo y quién habla por mí. El bloque entero es un botón que abre
+   la ficha del perfil —la misma de la pestaña Perfil—, así que lo que se elige
+   aquí queda guardado para el juego. Sustituye a «¿Quién los representa?»: con
+   el abogado obligatorio, el personaje de cada quien es su ficha y elegirlo
+   dos veces era la misma decisión partida en dos filas.
    ========================================================================== */
-/* POR DEFECTO NO SE VE NADA MAS QUE EL INTERRUPTOR. Una fila por persona con
-   su ficha y una llave; las opciones de abogado no estan en esta pantalla, sino
-   detras de la llave, en su propio modal.
-
-   Se probo al reves --las tres opciones desplegadas por persona, seis botones a
-   la vista-- y llenaba media pantalla para una decision que la mayoria va a
-   dejar como viene. Con cuatro personajes mas serian dieciocho botones. */
-/* DOS RETRATOS, UNO AL LADO DEL OTRO. Eran dos tarjetas de ancho completo con
-   la ficha diminuta a un costado: media pantalla para enseñar dos dibujos de
-   26 px, y la decisión —quién habla con su voz y quién con la de un personaje—
-   se leía en vez de verse. Ahora se ven como se van a ver en el choque de
-   puños, y debajo van el nombre y la llave.
-
-   Las dos columnas son iguales pase lo que pase: `minmax(0, 1fr)` y no `1fr`,
-   porque `1fr` es `minmax(auto, 1fr)` y un nombre largo ensancharía su columna
-   dejando los dos retratos de distinto tamaño. */
-/* UNA LISTA DE DOS FILAS, no dos tarjetas lado a lado (mockup del titular,
-   2026-09-17). Ver el porqué en `pintarRepresentantes()`: las dos tarjetas
-   costaban 226 px y hacían scrollear esta pantalla hasta en el marco de
-   escritorio. */
-.repres { display: grid; gap: var(--e-2); }
-/* CARTA TRANSPARENTE CON SOMBRA, como las del home. Sin abogado la pieza se
-   perdía contra el fondo dibujado: el nombre, la llave y el renglón de debajo
-   flotaban sin nada que dijera dónde empieza y acaba cada lado. La sombra
-   delimita sin llenar, que es exactamente lo que se decidió para las cartas de
-   modo. Fondo, ninguno. */
-/* TRES COLUMNAS: la ficha, lo que se lee y la llave. El `minmax(0, 1fr)` del
-   medio es el de siempre —con `1fr` a secas, un nombre largo ensancha la fila y
-   la pantalla scrollea de lado—. */
-.repre {
-  display: grid; grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center; gap: var(--e-2);
-  padding: 4px var(--e-3) 4px 4px;
-  border-radius: var(--radio-tarjeta);
-  border: 2px solid transparent;
-  /* CON VELO, que antes era transparente: en dos tarjetas grandes la sombra
-     bastaba para decir dónde empieza cada lado, pero una fila de 60 px sobre el
-     fondo dibujado se lee como texto suelto. */
-  background: var(--carta-velo);
-  box-shadow: var(--sombra-2);
-  transition: border-color var(--dur-corta) var(--suave),
-              background var(--dur-corta) var(--suave);
+.mi-personaje {
+  display: grid; justify-items: center; gap: 2px;
+  width: 100%; margin: var(--e-2) 0 var(--e-1);
+  padding: 0; border: 0; background: none; font: inherit; color: var(--tinta);
+  cursor: pointer;
 }
-.repre__texto { display: grid; gap: 1px; min-width: 0; text-align: left; }
-/* LA INSIGNIA DEL ABOGADO, pegada a la cara de su cliente. Es el mismo recurso
-   que el buzón usa para sus avisos: una pieza chica montada en la esquina, con
-   un anillo del color del fondo para que se despegue de la cara de debajo. */
-.repre__abogado {
-  position: absolute; right: -2px; bottom: -2px;
-  border-radius: 50%; background: var(--superficie);
-  box-shadow: 0 0 0 2px var(--superficie), var(--sombra-1);
-  line-height: 0;
-}
-.avatar--insignia { width: 22px; height: 22px; border: 0; padding: 0; }
-/* El halo del color del modo detrás del retrato: es lo que lo hace una pieza
-   del juego y no una foto de perfil. Va en el contenedor y no en la ficha para
-   no tocar el recurso, que se usa en otras seis pantallas. */
-/* EL HALO NECESITA SITIO O NO SE VE. Iba con 6 px de aire, así que el degradado
-   solo tenía ese anillo para dibujarse y quedaba tapado por el perfil blanco de
-   la propia ficha: estaba puesto y no se notaba. Con 16 el halo empieza donde
-   acaba el dibujo y se lee como el resplandor que rodea a la figura. */
-/* ⚠️ EL AIRE DEL HALO BAJA CON LA FICHA. Con 16 px alrededor de una ficha de
-   44 la fila se iba a 76 px de alto y el halo se comía el ancho del texto: ese
-   número estaba medido para el retrato grande de las tarjetas. */
-.repre__retrato {
-  position: relative;
-  display: grid; place-items: center; padding: 5px; border-radius: 50%;
+.mi-personaje:active .avatar { transform: scale(.96); }
+/* EL HALO DEL COLOR DE LA FICHA, el mismo recurso de la fila de antes: es lo
+   que lo hace una pieza del juego y no una foto de perfil. Con 16 px de aire
+   alrededor de un retrato de 84 el resplandor empieza donde acaba el dibujo. */
+.mi-personaje__retrato {
+  display: grid; place-items: center; padding: 12px; border-radius: 50%;
   background: radial-gradient(closest-side,
               color-mix(in srgb, var(--suyo, var(--del-modo, var(--lavanda))) 34%, transparent) 62%,
               transparent 100%);
 }
-.repre__quien {
-  font-weight: 800; font-size: var(--t-chico); color: var(--tinta);
+.mi-personaje__quien {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-base);
   max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-/* EN TINTA Y EN NEGRITA, con abogado y sin él (decisión del titular,
-   2026-09-14). Iba en gris tenue sin abogado y en el color de la ficha con él:
-   el gris se perdía contra el fondo dibujado, y el color de la ficha sobre su
-   propio tinte tampoco levantaba —verde sobre verde—. En tinta hay contraste
-   contra cualquiera de los cuatro colores y contra el fondo, y el color de cada
-   lado ya lo dicen el aro, el tinte, la llave y el halo: no hacía falta que lo
-   dijera también la letra. */
-.repre__como {
-  font-size: var(--t-mini); color: var(--tinta); font-weight: 800;
-  /* SIN CENTRAR Y SIN PARTIR: en la fila va debajo del nombre y alineado con
-     él, y `balance` solo tiene sentido cuando el texto ocupa varios renglones.
-     Con el ancho de la fila cabe entero, y si no cabe se recorta. */
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  /* SOMBRA BLANCA. Este renglón va sobre el fondo dibujado y, con abogado,
-     además en el color del modo: coral sobre rosa y menta sobre verde se leen
-     mal. La sombra va en cuatro direcciones y no de caída, para que haga de
-     halo y despegue la letra sin dejarla flotando. */
+/* Sombra blanca, como el renglón de la fila de antes: va sobre el fondo
+   dibujado y sin ella la letra chica flota. El «Cambiar» en el color de
+   enlace de la pantalla dice que se puede tocar. */
+.mi-personaje__como {
+  font-size: var(--t-mini); color: var(--tinta); font-weight: 700;
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
-/* CON ABOGADO SE ENCIENDE EN EL COLOR DE SU FICHA, que `--suyo` trae en línea
-   desde el color que eligió quien juega. No en el del modo: con el del modo las
-   dos piezas se encendían del mismo color y dejaban de ser de nadie, cuando lo
-   que dice la regla del dibujo es que el abogado sale en el color de quien lo
-   contrata, que es lo que lo hace reconociblemente suyo. */
-.repre--conabogado {
-  border-color: var(--suyo, var(--lavanda));
-  background: color-mix(in srgb, var(--suyo, var(--lavanda)) 14%, transparent);
-}
-/* Con abogado NO cambia: el renglón ya va en tinta y en negrita siempre. */
-.repre--conabogado .repre__llave[aria-pressed="true"] { background: var(--suyo, var(--lavanda)); }
-
-/* La llave es una pastilla y no una casilla del sistema: las del sistema se
-   dibujan distinto en cada aparato y esta pantalla ya tiene su lenguaje. */
-.repre__llave {
-  flex: none; width: 46px; height: 27px; border-radius: var(--radio-pastilla);
-  border: 0; background: var(--linea, #e7e3de); position: relative; cursor: pointer;
-  transition: background var(--dur-corta) var(--suave);
-}
-.repre__llave::after {
-  content: ''; position: absolute; top: 3px; left: 3px;
-  width: 21px; height: 21px; border-radius: 50%; background: var(--superficie);
-  box-shadow: var(--sombra-1);
-  transition: transform var(--dur-corta) var(--rebote);
-}
-/* Encendida va del color del modo, como el aro, el fondo y el texto de la
-   pieza. Era lavanda de marca y quedaba una llave morada dentro de una tarjeta
-   menta: el único resto del color viejo en toda la fila. */
-.repre__llave[aria-pressed="true"] { background: var(--del-modo, var(--lavanda)); }
-.repre__llave[aria-pressed="true"]::after { transform: translateX(19px); }
+.mi-personaje__como b { color: var(--lavanda-oscuro); font-family: var(--display); font-weight: 800; }
 
 /* EL RENGLON DE ERROR NO GASTA ALTO MIENTRAS NO DIGA NADA. Llevaba su margen
    puesto siempre, así que reservaba 12 px para un texto que en el caso normal no
    aparece nunca. Es poco, y en esta pantalla todo lo poco suma: el formulario
    scrolleaba hasta en el marco de escritorio. */
 #p-error:empty { margin: 0; }
-
-/* --- El panel de abogados, dentro de su modal --------------------------------- */
-.abogados-rejilla {
-  display: flex; flex-wrap: wrap; gap: var(--e-3);
-  justify-content: center; padding: var(--e-3) 0;
-}
-.abogado-ficha {
-  flex: 0 1 140px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: var(--e-3) var(--e-2); border-radius: var(--radio-tarjeta);
-  border: 2px solid var(--linea, #e7e3de); background: var(--superficie);
-  font: inherit; color: var(--tinta); cursor: pointer;
-  transition: border-color var(--dur-corta) var(--suave),
-              transform var(--dur-corta) var(--suave);
-}
-.abogado-ficha:active { transform: scale(.97); }
-.abogado-ficha--puesta { border-color: var(--lavanda); background: var(--lavanda-lavado, #f3f0fd); }
-.abogado-ficha__cara { width: 78px; height: 78px; border-radius: 50%; }
-.abogado-ficha__n { font-family: var(--display); font-weight: 800; font-size: var(--t-chico); }
-.abogado-ficha__nota { font-size: var(--t-mini); color: var(--tinta-tenue); line-height: 1.3; }
-
-/* OCUPADO: EN GRIS, SIN TACHAR. El tachado sobraba: la escala de grises ya dice
-   «este no» sin dibujar nada encima, y deja ver quien es, que es lo que hace
-   entender por que no esta disponible. */
-.abogado-ficha--ocupada { opacity: .55; cursor: not-allowed; filter: grayscale(1); }
-.abogado-ficha--ocupada .abogado-ficha__nota { color: var(--peligro); }
 
 /* EL AVISO DE QUE EL VEREDICTO ES DE MENTIRA. Discreto pero legible: no compite
    con el nombre del ganador --que es lo que se ha venido a ver-- pero tampoco se

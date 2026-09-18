@@ -1322,13 +1322,25 @@
       window.ATWI.nube.historial(POR_TANDA).then(function (l) {
         historial = l || [];
         hayMasHistorial = historial.length >= POR_TANDA;
+        /* Lo nuevo ya está aquí: si algo lo había marcado caducado, deja de
+           estarlo. Sin esto, el primer repintado lanzaba OTRA consulta encima
+           —medido: dos viajes de 642 y 279 ms para la misma lista—. */
+        historialCaducado = false;
         if (vistaActual === 'historial') pintarHistorial();
       });
-      /* LAS ACTAS VIENEN EN LA MISMA VISITA, en paralelo y sin esperarlas. Las
-         necesita esta pantalla dos veces: la puerta a la lista, y sobre todo el
-         aviso de borrar, que tiene que decir siempre que el acuerdo se va con
-         la partida. Un aviso que solo avisa a veces es peor que ninguno. */
-      if (!actas) window.ATWI.nube.acuerdos().then(function (l) { actas = l || []; });
+      /* ⚠️ Y LAS ACTAS YA NO SE PIDEN AQUI (2026-09-18). Se pedían en paralelo
+         «sin esperarlas», y esperar no era el problema: **las llamadas a
+         Supabase se encolan**, así que esa consulta le sumaba su turno a la que
+         la persona sí está esperando. Medido en este navegador: cuatro
+         consultas a la vez tardan 286, 547, 831 y 1.075 ms —una detrás de otra,
+         ~270 ms cada una— mientras que cuatro al servidor local van en 3, 3, 4
+         y 5 ms. O sea que cada llamada de más en el arranque del historial es un
+         cuarto de segundo para la última de la cola.
+         Y NO HACEN FALTA: el aviso de borrado solo necesita saber si ESA partida
+         tiene acta, y eso viaja dentro de la propia partida —el `select` del
+         historial trae `acuerdos(tipo,version,texto,…)` anidado desde el
+         2026-09-18—. La lista entera solo la necesita el chip «Acuerdos», que
+         la pide al tocarlo (`pintarActas`). */
       return;
     }
 
@@ -2071,6 +2083,18 @@
      ninguno. La petición no se desperdicia --la puerta a las actas está en esa
      misma pantalla--. */
   function actaDe(debateId) {
+    /* PRIMERO, LA QUE VIENE DENTRO DE LA PARTIDA. El historial trae las actas
+       anidadas, así que para el aviso de borrado no hace falta la lista aparte
+       —que es una consulta más en una cola donde cada turno cuesta ~270 ms—.
+       La lista global se sigue mirando después: una partida que no está cargada
+       (se llegó a ella desde el chip «Acuerdos») no trae la suya. */
+    var d = (historial || []).filter(function (x) { return x.id === debateId; })[0];
+    var dentro = d && d.acuerdos;
+    if (dentro && dentro.length) {
+      return dentro.slice().sort(function (a, b) {
+        return (b.version || 0) - (a.version || 0);
+      })[0];
+    }
     return (actas || []).filter(function (a) {
       return a.debate && a.debate.id === debateId;
     })[0] || null;
@@ -2330,8 +2354,21 @@
            variante del color que esté puesto. Poner las veinticuatro fichas
            sería la misma decisión partida en dos pantallas. */
         '<div>' +
+          /* «QUIÉN HABLA POR TI» y no «con quién juegas» (2026-09-18): desde
+             que el abogado es obligatorio, el personaje de la ficha es el que
+             pone la voz en la sala. Lo que decía el panel de abogados —que dice
+             tu idea mejor dicha, que no argumenta por ti, que puede
+             malinterpretarte— se dice aquí, que es donde ahora se elige. */
           '<span class="chico" style="font-weight:700">' +
-            (deInvitado ? '¿Con quién juega?' : '¿Con quién juegas?') + '</span>' +
+            (deInvitado
+              ? '¿Quién habla por ' + esc(g.nombre || 'tu invitado') + '?'
+              : '¿Quién habla por ti?') + '</span>' +
+          '<span class="chico tenue" style="display:block;margin-top:2px">' +
+            (deInvitado
+              ? 'Dice su idea con su voz y mejor dicha, sin argumentar en su lugar. ' +
+                'Puede malinterpretar lo que dijo, como un abogado de verdad.'
+              : 'Dice tu idea con su voz y mejor dicha, sin argumentar por ti. ' +
+                'Puede malinterpretarte, como un abogado de verdad.') + '</span>' +
           '<div class="personajes" style="margin-top:var(--e-2)">' +
             window.ATWI.quienes().map(function (q) {
               var suyo = q.clave === vetado;
@@ -2395,7 +2432,8 @@
       var bf0 = $('#p-ficha-otro');
       if (bf0) bf0.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', colorElegido)
         .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
-      refrescarRepresentantes();
+      var av0 = $('#p-aviso-ficha');
+      if (av0) av0.textContent = '';
       return;
     }
 
@@ -2421,6 +2459,9 @@
     pintarPerfil();
     refrescarFichaCabecera();
     if (vistaActual === 'jugar') pintarJugar();
+    /* Si se guardó desde «Antes de empezar», arriba de esa pantalla está mi
+       personaje y tiene que enseñar el nuevo (y apartar al invitado si choca). */
+    refrescarMiPersonaje();
 
     if (window.ATWI.auth && window.ATWI.auth.dentro()) {
       var auth = window.ATWI.auth;
@@ -2957,21 +2998,38 @@
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
     propuesta.otroColor = g.color;
-    /* CADA UNO LLEVA UN PERSONAJE QUE HABLA POR ÉL, SIEMPRE (titular,
-       2026-09-18: «ya no será opcional seleccionar un abogado, sí o sí se debe
-       escoger uno; en cada partida se selecciona porque se mantiene la premisa
-       de que no sean el mismo»). Arranca con la ficha de cada quien y, si
-       coinciden, el segundo cambia: la regla de siempre --dos personajes
-       iguales no se distinguen en la sala-- ya no tiene la excepción de «quien
-       va con su voz no bloquea a nadie», porque nadie va con su voz. */
-    propuesta.repreYo = propuesta.repreYo || p.avatar || 'kai';
-    if (!propuesta.repreOtro || propuesta.repreOtro === propuesta.repreYo) {
-      propuesta.repreOtro = propuesta.otroAvatar && propuesta.otroAvatar !== propuesta.repreYo
-        ? propuesta.otroAvatar : window.ATWI.otroPersonaje(propuesta.repreYo);
-    }
+    /* EL PERSONAJE DE CADA UNO ES SU FICHA, Y NO HAY «ABOGADO» APARTE (titular,
+       2026-09-18: «el host juega con su personaje, que viene de su perfil, pero
+       puede cambiarlo antes de cada partida; el del invitado se define en su
+       ficha de invitado, no se selecciona aparte como abogado»). Desde que el
+       personaje es obligatorio, elegirlo dos veces --una como ficha y otra como
+       abogado-- era la misma decisión partida en dos filas. Lo que se ve arriba
+       de esta pantalla es lo que habla por mí, y tocarlo abre MI FICHA: lo que
+       se elija ahí queda en el perfil, o sea para esta partida y para las
+       siguientes. Que los dos no sean el mismo lo cuida la ficha del invitado
+       (`distintoDeMi`) y la red de `sortearYJugar`. */
+    ['repreYo', 'repreOtro'].forEach(function (k) { delete propuesta[k]; });
 
     $('#m-preparar').className = 'modal modal--' + propuesta.modo;
     /* --- Las piezas del formulario, que se ordenan distinto en cada vía --- */
+
+    /* MI PERSONAJE, CENTRADO Y ARRIBA DE TODO (titular, 2026-09-18): es lo
+       primero que se decide porque es quien va a hablar por mí, y sale en las
+       dos vías porque es lo único de esta pantalla que es mío en las dos. El
+       bloque entero es un botón: abre la ficha del perfil, la misma de la
+       pestaña Perfil, y al guardar se repinta aquí (`refrescarMiPersonaje`). */
+    var bloqueMio =
+      '<button type="button" class="mi-personaje" data-accion="ficha-mia"' +
+        ' style="--suyo:' + window.ATWI.colorPersonaje(p.avatarBorde) + '"' +
+        ' aria-label="Cambiar tu personaje">' +
+        '<span class="mi-personaje__retrato">' +
+          window.ATWI.fichaHTML(p.avatar, 'avatar--duelo', p.avatarBorde) +
+        '</span>' +
+        '<span class="mi-personaje__quien">' + esc(p.nombre || 'Tú') + '</span>' +
+        '<span class="mi-personaje__como">' +
+          esc(window.ATWI.nombrePersonaje(p.avatar)) + ' habla por ti · <b>Cambiar</b>' +
+        '</span>' +
+      '</button>';
 
     /* La ficha del invitado se toca para elegirle dibujo y color. No es una
        cuenta: es alguien que agarró este teléfono. Pero su ficha se recuerda,
@@ -2993,12 +3051,19 @@
       '<div class="con-ficha" style="margin-top:6px">' +
         '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
           'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
+        /* SU FICHA ES SU PERSONAJE (2026-09-18): el que se elige aquí es el
+           que habla por el invitado en la sala. Ya no hay una segunda fila
+           de «abogado» que lo repita. */
         '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
-          'aria-label="Elegir el aro de su ficha">' +
+          'aria-label="Elegir su personaje">' +
           window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
             .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
         '</button>' +
-      '</div>';
+      '</div>' +
+      /* Cuando MI personaje pisa el del invitado, el suyo se mueve y aquí se
+         dice: sin este renglón la ficha de al lado cambiaría sola. Vacío no
+         gasta alto. */
+      '<p class="chico aviso-aro" id="p-aviso-ficha" style="margin-top:6px"></p>';
       /* Aquí había un párrafo explicando «una sola palabra, primer nombre o
          apodo». Se fue: el campo ya no ADMITE un espacio ni una letra de más,
          así que la regla se aprende al escribir en vez de leyéndola. */
@@ -3023,34 +3088,16 @@
       '<p class="chico tenue" style="margin-top:6px">' +
         'Le llega un enlace para entrar a esta partida.</p>';
 
-    /* EL ABOGADO. Se elige POR SEPARADO y antes de empezar: uno puede jugar con
-       abogado y el otro a pelo, y esa asimetría es parte de la gracia. Va aquí y
-       no dentro de la sala porque cambiar las reglas a mitad de partida no es
-       una opción, y porque cambia lo que cuesta cada turno.
-       ⚠️ LOS ABOGADOS SON DE LOS DOS, ASI QUE EN LINEA NO SE ELIGEN AQUI. La
-       llave decide si a alguien lo representa un personaje, y eso cambia lo que
-       se oye de ÉL: es suyo. En local los dos están delante y la eligen juntos;
-       en línea cada quien prende la suya en su teléfono. */
-    var bloqueAbogados =
-      /* A LA IZQUIERDA Y PEGADO A SU LISTA (mockup del titular, 2026-09-17).
-         Iban centrados, y un título centrado sobre una lista alineada a la
-         izquierda parte la pantalla en dos ejes. */
-      '<h3 style="margin:var(--e-3) 0 2px">¿Quién los representa?</h3>' +
-      /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
-         explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
-         para una decisión que la mayoría va a dejar como viene, y encima
-         repetidos, porque el modal lo vuelve a decir justo cuando hace falta
-         leerlo —al elegir—. */
-      '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
-        'Un personaje habla por cada uno, con su voz. Tocá la fila para cambiarlo; no pueden ser el mismo.</p>' +
-      pintarRepresentantes();
+    /* AQUÍ IBA «¿QUIÉN LOS REPRESENTA?» —una fila por lado con el abogado— y se
+       fue entero el 2026-09-18: el abogado dejó de ser opcional el mismo día,
+       y con eso el personaje de cada quien ES su ficha —la mía arriba, la del
+       invitado al lado de su nombre—. Dos filas más para elegir por segunda vez
+       lo que las dos fichas ya decían. Con ellas se fueron el panel
+       `m-abogados`, la llave y `repreYo`/`repreOtro`. */
 
     /* EL JUEZ, y en local va DEBAJO DE LOS DOS: arriba de ellos se leería como
        el título de la sección; al lado, como un tercer duelista. Debajo se lee
-       en el orden correcto: estos dos discuten, y este los juzga.
-       Es un renglón y no dos retratos como los abogados, y también a propósito:
-       el abogado cambia lo que el juez va a OIR —es media partida— mientras que
-       el juez, por ahora, solo cambia quién lo cuenta al final. */
+       en el orden correcto: estos dos discuten, y este los juzga. */
     var bloqueJuez =
       '<h3 style="margin:var(--e-3) 0 var(--e-2)">¿Quién juzga?</h3>' +
       pintarJuez();
@@ -3072,6 +3119,7 @@
          mitad, el título ocupaba un renglón entero para presentar tres piezas
          que ya no lo llenaban, y la pantalla ganaba altura sin ganar nada. */
       selectorDeDonde() +
+      bloqueMio +
 
       '<div class="turnos-linea">' +
         /* «Turnos por persona» y no «¿Cuántos turnos?» (decisión del titular):
@@ -3124,14 +3172,14 @@
          que podía tocarlo. Arriba se ven antes de empezar a escribir, que es
          cuando sirven. */
       /* ⚠️ EL ORDEN NO ES EL MISMO EN LAS DOS VIAS (titular, 2026-09-17).
-         En local: con quién juegas, quién los representa y quién juzga — el
-         invitado primero porque está sentado al lado y es lo primero que se
-         resuelve. En línea: **el juez y al final a quién se invita**, porque ahí
-         el correo es lo último que se hace antes de mandar, y debajo de él va a
-         ir la lista de contactos. */
+         En local: con quién juegas y quién juzga — el invitado primero porque
+         está sentado al lado y es lo primero que se resuelve. En línea: **el
+         juez y al final a quién se invita**, porque ahí el correo es lo último
+         que se hace antes de mandar, y debajo de él va a ir la lista de
+         contactos. Mi personaje va arriba en las dos. */
       (enLinea
         ? bloqueJuez + bloqueCorreo
-        : bloqueInvitado + bloqueAbogados + bloqueJuez) +
+        : bloqueInvitado + bloqueJuez) +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
@@ -3154,97 +3202,6 @@
        para encenderlo salvo tocar un campo. */
     revisarPreparar();
     if (!repintando) abrirModal('m-preparar');
-  }
-
-  /* QUIÉN REPRESENTA A CADA UNO EN ESTE DUELO, que ya no es lo mismo que su
-     avatar de perfil. Dos ejes que estaban pegados:
-
-       «Tu voz»      -> se ve tu avatar de perfil y se oye tu grabación.
-       un personaje -> se ve y se oye ese personaje, de abogado.
-
-     DOS ABOGADOS NO PUEDEN SER EL MISMO PERSONAJE: se distinguen por dibujo y
-     por voz, y con la misma cara y la misma voz no se distinguen. Pero solo
-     entre abogados —quien va con su voz no bloquea a nadie, porque lo que de
-     verdad los separa es que una de las dos voces es humana—.
-
-     Aquí el bloqueo es de pantalla porque los dos eligen en el mismo teléfono.
-     En remoto lo arbitra la base con un índice único (migración 0019): el
-     primer INSERT que llega gana. Dos relojes distintos no pueden decidirlo. */
-  function pintarRepresentantes() {
-    var p = datos.perfil();
-    var lados = [
-      { k: 'yo', repre: propuesta.repreYo, ficha: p.avatar, color: p.avatarBorde },
-      { k: 'otro', repre: propuesta.repreOtro, ficha: propuesta.otroAvatar,
-        color: propuesta.otroColor }
-    ];
-    return '<div class="repres">' + lados.map(function (x) {
-      var conAbogado = Boolean(x.repre);
-      /* EL COLOR DE LA PIEZA ES EL DE SU FICHA, no el del modo. Cuando hay
-         abogado, el aro y el tinte salen del color que eligió quien juega
-         --azul, verde, amarillo o morado-- porque eso es lo que ya hace el
-         dibujo: «el abogado sale en el color de perfil de quien lo contrata,
-         que es lo que lo hace reconociblemente suyo». Con el color del modo,
-         las dos piezas se encendían iguales y dejaban de ser de nadie. */
-      /* ⚠️ DOS FILAS Y NO DOS TARJETAS (mockup del titular, 2026-09-17). Eran
-         dos retratos grandes uno al lado del otro, «como se van a ver en el
-         choque de puños», y costaban 226 px de los 697 que medía esta pantalla:
-         con ellos el formulario scrolleaba **hasta en el marco de escritorio**,
-         no solo en un teléfono bajo. Medido antes de tocarlo.
-         En fila cabe lo mismo —la ficha, el nombre, en qué voz habla y la
-         llave— en 60 px por lado, y los dos se siguen abarcando de una mirada.
-         Es la misma lección de las cartas de modo: con dos piezas grandes se
-         comparan mejor, pero lo que no cabe no se compara.
-         LA LLAVE VA DONDE EL MOCKUP PONIA UNA FLECHA (decisión del titular):
-         una flecha dice «hay algo más allá» y aquí no lo hay — lo que se hace
-         en esta fila es prender o apagar, y eso se hace en el sitio. */
-      return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '"' +
-          ' style="--suyo:' + window.ATWI.colorPersonaje(x.color) + '">' +
-          /* SIEMPRE EN EL COLOR DEL CLIENTE, también con abogado. Aquí se
-             pasaba `null` cuando había abogado, porque el color era un aro y un
-             aro ajeno confundía. Ahora el color es la ropa y la regla del
-             titular es al revés: el abogado sale en el color de perfil de quien
-             lo contrata, que es lo que lo hace reconociblemente suyo. */
-          /* ⚠️ LA CARA ES LA DE LA PERSONA, Y EL ABOGADO VA DE INSIGNIA (lo vio
-             el titular, 2026-09-17: «la ficha de invitado se ve que es Maya
-             pero…»). Aquí se pintaba `x.repre || x.ficha`, o sea la cara del
-             DUELO: con abogado, la fila de Mona enseñaba a Luna. Eso venía de
-             cuando esto eran dos retratos grandes y la pieza hacía de vista
-             previa del choque de puños; en una fila de 60 px la cara ya no
-             adelanta nada, IDENTIFICA de quién es la llave — y a dos dedos de
-             distancia estaba el avatar del campo «Invitado», con la cara de
-             verdad de esa persona. Dos caras distintas para el mismo nombre en
-             la misma pantalla.
-             Ahora la fila enseña a la persona y el abogado sale encima, chico:
-             se sigue viendo a quién se eligió, y de quién es. */
-          '<div class="repre__retrato">' +
-            window.ATWI.fichaHTML(x.ficha, 'avatar--chico', x.color) +
-            (conAbogado
-              ? '<span class="repre__abogado">' +
-                  window.ATWI.fichaHTML(x.repre, 'avatar--insignia', x.color) +
-                '</span>'
-              : '') +
-          '</div>' +
-          '<span class="repre__texto">' +
-            '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
-            /* EL MISMO TEXTO PARA LOS DOS. Decía «Tu voz» y «Su voz», que en un
-               teléfono compartido no aclara nada —el «tu» cambia de dueño cada
-               turno— y además no decía lo que de verdad significa la llave
-               apagada: que suena la grabación de la persona y no hay abogado. */
-            '<span class="repre__como">' +
-              /* «Luna defiende» y no «Luna lo defiende»: ese «lo» le pone sexo
-                 masculino a quien está siendo defendido, y quien está siendo
-                 defendido puede ser cualquiera. Sin él la frase es genérica y
-                 además más corta, que en este renglón se agradece. */
-              esc(window.ATWI.nombrePersonaje(x.repre)) + ' habla por ' +
-              (x.k === 'yo' ? esc(p.nombre || 'ti') : esc(propuesta.otro || 'el invitado')) +
-            '</span>' +
-          '</span>' +
-          /* YA NO HAY LLAVE (2026-09-18): el personaje es obligatorio, así que
-             lo único que se hace en la fila es cambiarlo. */
-          '<button type="button" class="repre__cambiar juez-linea__cambiar" data-abogado="' + x.k + '"' +
-            ' aria-label="Cambiar el personaje">Cambiar</button>' +
-        '</div>';
-    }).join('') + '</div>';
   }
 
   function pintarJuez() {
@@ -3280,112 +3237,43 @@
     abrirModal('m-jueces');
   }
 
-  /* EL PANEL DE ABOGADOS, en su propio modal. Se abre al encender la llave y se
-     cierra al elegir: una decisión, una pantalla.
-
-     EL QUE YA SE LLEVÓ EL OTRO SALE EN GRIS, no tachado ni escondido. Escondido,
-     la rejilla se recoloca y no se entiende por qué hay uno menos; tachado hay
-     que dibujar una raya encima de una cara. En gris se ve quién es y se ve que
-     no está, que es lo que hay que entender. */
-  var eligiendoPara = 'yo';
-
-  function abrirAbogados(cual) {
-    eligiendoPara = cual;
-    var mio = cual === 'yo' ? propuesta.repreYo : propuesta.repreOtro;
-    var delOtro = cual === 'yo' ? propuesta.repreOtro : propuesta.repreYo;
-    /* El propio sale del perfil y ya no de un campo: ese campo se quitó. */
-    var nombre = cual === 'yo' ? datos.perfil().nombre
-                               : (($('#p-otro') || {}).value || '');
-
-    var miColor = window.ATWI.elColor(cual === 'yo'
-      ? datos.perfil().avatarBorde : (propuesta.otroColor || datos.perfil().avatarBorde));
-
-    $('#m-abogados .modal__titulo').textContent =
-      nombre.trim() ? 'El abogado de ' + nombre.trim() : 'Elegí el abogado';
-
-    $('#m-abogados .modal__cuerpo').innerHTML =
-      '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
-        'Va a usar su voz y va a decir tu idea mejor dicha. No puede argumentar por ' +
-        'vos ni traer datos que no diste. <b>¡Pero atención!</b> Puede que te ' +
-        'malinterprete, como un mal abogado de verdad.</p>' +
-      '<div class="abogados-rejilla">' +
-        window.ATWI.quienes().map(function (q) {
-          var ocupado = delOtro === q.clave;
-          return '<button type="button" class="abogado-ficha' +
-              (mio === q.clave ? ' abogado-ficha--puesta' : '') +
-              (ocupado ? ' abogado-ficha--ocupada' : '') + '"' +
-              ' data-abogado-es="' + q.clave + '"' + (ocupado ? ' disabled' : '') + '>' +
-              /* EN EL COLOR DE SU CLIENTE. Decisión del titular: el abogado no
-                 elige color, sale en el del perfil de quien lo contrata. Así la
-                 figura que se ve en la sala es reconociblemente tuya aunque la
-                 cara sea de otro. */
-              window.ATWI.fichaHTML(q.clave, 'abogado-ficha__cara', miColor) +
-              '<span class="abogado-ficha__n">' + esc(q.nombre) + '</span>' +
-              '<span class="abogado-ficha__nota">' +
-                (ocupado ? 'Ya lo tomó la otra parte' : esc(comoHabla(q.clave))) +
-              '</span>' +
-            '</button>';
-        }).join('') +
-      '</div>';
-    /* LLEVA EL MODO, como las demás pantallas previas a la partida. Es la única
-       que se quedaba con el lavanda de marca en medio del recorrido, y se abre
-       DESDE «antes de empezar»: cambiar de fondo al entrar y volver a cambiarlo
-       al salir hacía parecer que se había ido a otro sitio. */
-    $('#m-abogados').className = 'modal modal--' + propuesta.modo;
-    abrirModal('m-abogados');
+  /* MI PERSONAJE SE REPINTA SOLO al guardar la ficha del perfil con «Antes de
+     empezar» abierto, sin tocar el resto de la pantalla —repintarla entera se
+     llevaría el nombre del invitado a medio escribir—. Y arrastra al invitado:
+     si el personaje que acabo de elegir era el suyo, el suyo se mueve al
+     siguiente (la regla de `fichaDelInvitado`, aplicada al revés) y el renglón
+     de aviso lo dice, porque una ficha que cambia sola sin explicación es lo
+     que hace desconfiar de la pantalla. */
+  function refrescarMiPersonaje() {
+    var mio = $('#m-preparar .mi-personaje');
+    if (!mio) return;
+    var p = datos.perfil();
+    mio.style.setProperty('--suyo', window.ATWI.colorPersonaje(p.avatarBorde));
+    mio.querySelector('.mi-personaje__retrato').innerHTML =
+      window.ATWI.fichaHTML(p.avatar, 'avatar--duelo', p.avatarBorde);
+    mio.querySelector('.mi-personaje__quien').textContent = p.nombre || 'Tú';
+    mio.querySelector('.mi-personaje__como').innerHTML =
+      esc(window.ATWI.nombrePersonaje(p.avatar)) + ' habla por ti · <b>Cambiar</b>';
+    apartarAlInvitado();
   }
 
-  /* Una línea por personaje para que la elección no sea a ciegas: dos dibujos
-     sin más no dicen en qué se diferencian, y en lo que se diferencian es
-     justo en cómo van a decir lo tuyo. */
-  /* CADA LÍNEA RESUME SU PERSONALIDAD, y la personalidad de verdad vive en
-     `VOCES` de `supabase/functions/turno/index.ts`. Esto es un RESUMEN, no la
-     fuente: si allí se le cambia el carácter a alguno, aquí hay que venir.
-
-     Los cuatro nuevos decían «Todavía sin voz propia» y era cierto hasta que se
-     les escribió una (2026-09-14); quedó sin actualizar y la pantalla siguió
-     diciendo que no tenían lo que ya tenían. Cada línea nombra su EJE, que es
-     en lo que se diferencian: en cómo van a decir lo tuyo. */
-  var COMO_HABLAN = {
-    kai: 'Directo y con frases cortas',
-    luna: 'Cálida y va encadenando',
-    nico: 'Tranquilo y lo pone por pasos',
-    dante: 'Seco: dice poco y se queda',
-    nina: 'Con chispa, y subraya lo tuyo',
-    maya: 'Pausada y lo pone en imágenes'
-  };
-  function comoHabla(clave) { return COMO_HABLAN[clave] || ''; }
-
-  /* El selector se repinta SOLO, sin tocar la pantalla entera: repintarla se
-     llevaría por delante los dos nombres a medio escribir.
-
-     HAY QUE LLAMARLA CADA VEZ QUE CAMBIA LA FICHA DEL INVITADO, no solo al
-     encender la llave del abogado. La ficha de cada quien sale DOS VECES en
-     esta pantalla —el círculo de al lado del nombre y la línea de «¿quién los
-     representa?»— y los tres sitios que la cambiaban repintaban solo el
-     círculo. Resultado: el invitado aparecía de amarillo arriba y de verde
-     abajo, la misma persona con dos personajes, y lo que sale en la línea de
-     abajo es lo que de verdad se va a jugar. */
-  function refrescarRepresentantes() {
-    var caja = $('#m-preparar .repres');
-    if (!caja) return;
-    caja.outerHTML = pintarRepresentantes();
-    nombrarAbogados();
-  }
-
-  /* El botón del abogado dice el NOMBRE de cada quien en cuanto se escribe.
-     «Mi abogado» y «Su abogado» funcionan, pero con dos fichas iguales al lado
-     hay que pararse a pensar cuál es cuál, y esto se decide de un vistazo. */
-  function nombrarAbogados() {
-    var yo = datos.limpiarNombre(datos.perfil().nombre);
-    var otro = ($('#p-otro') && $('#p-otro').value || '').trim();
-    var a = $('#repre-yo'), b = $('#repre-otro');
-    if (a) a.textContent = yo || 'Vos';
-    if (b) b.textContent = otro || 'La otra parte';
+  /** El invitado nunca lleva mi personaje: si lo lleva, se mueve y se avisa. */
+  function apartarAlInvitado() {
+    var aviso = $('#p-aviso-ficha');
+    if (!aviso) return;
+    var mio = datos.perfil().avatar;
+    if (propuesta.otroAvatar !== mio) { aviso.textContent = ''; return; }
+    var antes = window.ATWI.nombrePersonaje(mio);
+    propuesta.otroAvatar = window.ATWI.otroPersonaje(mio);
+    var bf = $('#p-ficha-otro');
+    if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
+      .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
+    aviso.textContent = antes + ' ahora es tu personaje, así que a ' +
+      (propuesta.otro || 'tu invitado') + ' le pusimos ' +
+      window.ATWI.nombrePersonaje(propuesta.otroAvatar) + '.';
   }
 
   function revisarPreparar() {
-    nombrarAbogados();
     /* El botón se apaga con la MISMA regla con la que se rechaza al pulsarlo.
        Tenía la suya —dos letras y nada más— y eso dejaba encender el botón con
        un nombre que luego no pasaba, que es la peor de las dos opciones. */
@@ -3450,21 +3338,16 @@
        una inicial. El primero defiende la postura A y el segundo la B: eso lo
        fija quien elige postura, no el sorteo. El sorteo decide solo QUIÉN ABRE. */
     var p = datos.perfil();
-    /* EL AVATAR DEL DUELO, que no tiene por qué ser el del perfil. Con abogado
-       manda el personaje elegido; sin abogado, el de la ficha de cada uno. */
-    /* Siempre con personaje (2026-09-18): `abogado` es true en los dos lados. */
-    var fichaMia = { nombre: yo, avatar: propuesta.repreYo || p.avatar,
-                     color: p.avatarBorde, abogado: true };
-    var fichaSuya = { nombre: otro, avatar: propuesta.repreOtro || propuesta.otroAvatar,
+    /* EL PERSONAJE DEL DUELO ES LA FICHA DE CADA UNO (2026-09-18): el mío es el
+       del perfil —que arriba de esta pantalla se puede cambiar y queda
+       guardado— y el del invitado es el de su ficha. Siempre con personaje:
+       `abogado` es true en los dos lados, y la función lo fuerza igual. */
+    var fichaMia = { nombre: yo, avatar: p.avatar, color: p.avatarBorde, abogado: true };
+    var fichaSuya = { nombre: otro, avatar: propuesta.otroAvatar,
                       color: propuesta.otroColor, abogado: true };
-    /* DOS FIGURAS IGUALES NO SE PUEDEN LANZAR. El veto de arriba se aplica al
-       abrir la ficha del invitado, y eso no basta: se puede llegar aquí con las
-       dos iguales cambiando de personaje DESPUÉS, o eligiendo el mismo de
-       abogado. Pasó de verdad --dos Nico enfrentados en el versus-- y hasta la
-       sala no se notaba.
-
-       Se mira la ficha DEL DUELO y no la del perfil: con abogado manda el
-       personaje elegido, y es ése el que se ve. */
+    /* DOS FIGURAS IGUALES NO SE PUEDEN LANZAR. El veto se aplica al abrir la
+       ficha del invitado y al guardar la mía, y esto es la red: pasó de verdad
+       --dos Nico enfrentados en el versus-- y hasta la sala no se notaba. */
     if (fichaMia.avatar === fichaSuya.avatar) {
       var comoSe = window.ATWI.nombrePersonaje(fichaMia.avatar);
       $('#p-error').textContent = 'Los dos van con ' + comoSe + ': en la sala serían ' +
@@ -4004,14 +3887,6 @@
 
     /* El abogado se enciende y se apaga tocándolo. No se repinta la pantalla
        entera: hacerlo perdería los dos nombres a medio escribir. */
-    /* La llave: encenderla abre el panel, apagarla devuelve a la voz propia. */
-    var llave = e.target.closest('[data-abogado]');
-    if (llave) {
-      /* Sin llave: siempre se elige, nunca se apaga (2026-09-18). */
-      abrirAbogados(llave.dataset.abogado);
-      return;
-    }
-
     /* Elegir juez. El renglón entero abre el selector. */
     var jz = e.target.closest('[data-accion="elegir-juez"]');
     if (jz) { abrirJueces(); return; }
@@ -4023,18 +3898,9 @@
       cerrarModal('m-jueces');
       /* Se repinta SOLO el renglón, no la pantalla: repintarla se llevaría el
          nombre del invitado a medio escribir. Es la misma razón por la que
-         `refrescarRepresentantes` existe. */
+         `refrescarMiPersonaje` existe. */
       var hueco = $('#m-preparar .juez-linea');
       if (hueco) hueco.outerHTML = pintarJuez();
-      return;
-    }
-
-    /* Elegir uno del panel. Se cierra al elegir: una decisión, una pantalla. */
-    var esc2 = e.target.closest('[data-abogado-es]');
-    if (esc2 && !esc2.disabled) {
-      propuesta[eligiendoPara === 'yo' ? 'repreYo' : 'repreOtro'] = esc2.dataset.abogadoEs;
-      cerrarModal('m-abogados');
-      refrescarRepresentantes();
       return;
     }
 
@@ -4158,6 +4024,9 @@
       irA('catalogo');
     }
     else if (a === 'ficha-invitado') { abrirFicha('invitado'); }
+    /* Mi personaje desde «Antes de empezar»: la misma ficha del perfil, y al
+       guardar queda para el juego entero, no solo para esta partida. */
+    else if (a === 'ficha-mia') { abrirFicha('yo'); }
     else if (a === 'cambiar-modo') {
       /* ROTA ENTRE LOS MODOS QUE HAYA, y ya no alterna entre dos. Esto se
          escribió cuando eran dos —«cambiar» era alternar— y con QuiénGane
@@ -4249,7 +4118,8 @@
            con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
         if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
-        refrescarRepresentantes();
+        var av = $('#p-aviso-ficha');
+        if (av) av.textContent = '';
       }
       revisarPreparar();
       return;

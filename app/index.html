@@ -11,11 +11,34 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo Jugando! Modo ControversIA y modo NegocIAción.">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=9d95a74">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=9d95a74">
-<link rel="stylesheet" href="../assets/css/base.css?v=9d95a74">
-<link rel="stylesheet" href="../assets/css/app.css?v=9d95a74">
-<link rel="stylesheet" href="../assets/css/modal.css?v=9d95a74">
+<!-- ABRIR LA CONEXION CON SUPABASE MIENTRAS SE CARGA EL RESTO.
+
+     La primera llamada al servidor paga DNS + TCP + TLS a Oregón, y eso
+
+     sale del camino crítico si el navegador va abriendo la conexión desde
+
+     que lee la cabecera. Medido en frío: la primera consulta tardó 1,4 s
+
+     contra 270 ms cuando la conexión ya estaba abierta.
+
+     `crossorigin` es obligatorio aquí: sin él el navegador abre una
+
+     conexión anónima que las peticiones con credenciales no reutilizan, y
+
+     el preconnect no sirve de nada. -->
+
+<link rel="preconnect" href="https://vauarfofsfgwnuyjfpni.supabase.co" crossorigin>
+  <!-- Y el respaldo para quien no entienda `preconnect`: al menos que resuelva
+       el nombre. Aquí no es un adorno —medido el 2026-09-18 en la máquina del
+       titular, el DNS interno no contesta para este dominio y la resolución en
+       frío tarda 12 s hasta que responde el secundario. -->
+  <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
+
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=a094a28">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=a094a28">
+<link rel="stylesheet" href="../assets/css/base.css?v=a094a28">
+<link rel="stylesheet" href="../assets/css/app.css?v=a094a28">
+<link rel="stylesheet" href="../assets/css/modal.css?v=a094a28">
 </head>
 
 <body class="app">
@@ -243,16 +266,9 @@
     </div>
   </div>
 
-  <!-- Elegir abogado. Va en su propio modal y no desplegado en la pantalla de
-       preparar: la mayoría va a jugar sin abogado, y seis botones a la vista
-       para una decisión que casi nadie toca es llenar la pantalla por nada. -->
-  <div class="modal" id="m-abogados" hidden role="dialog" aria-modal="true" aria-labelledby="t-abogados">
-    <div class="modal__cabecera">
-      <button class="boton-icono" data-cerrar="m-abogados" aria-label="Volver" data-icono="atras"></button>
-      <span class="modal__titulo" id="t-abogados">Elegí tu abogado</span>
-    </div>
-    <div class="modal__cuerpo"></div>
-  </div>
+  <!-- Aquí estaba el modal de elegir abogado (`m-abogados`). Se fue el
+       2026-09-18: el personaje de cada quien es su ficha y se elige en
+       `m-perfil`, la misma pantalla del perfil y de la ficha del invitado. -->
 
   <!-- Elegir juez: los seis, sin veto. El juez es uno para toda la partida. -->
   <div class="modal" id="m-jueces" hidden role="dialog" aria-modal="true" aria-labelledby="t-jueces">
@@ -338,23 +354,23 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=9d95a74"></script>
-<script src="../assets/js/precarga.js?v=9d95a74"></script>
-<script src="../assets/js/iconos.js?v=9d95a74"></script>
-<script src="../assets/js/personajes.js?v=9d95a74"></script>
-<script src="../assets/js/datos.js?v=9d95a74"></script>
-<script src="../assets/js/sonido.js?v=9d95a74"></script>
-<script src="../assets/js/veredicto.js?v=9d95a74"></script>
-<script src="../assets/js/grabadora.js?v=9d95a74"></script>
-<script src="../assets/js/partida.js?v=9d95a74"></script>
-<script src="../assets/js/auth.js?v=9d95a74"></script>
-<script src="../assets/js/entrada.js?v=9d95a74"></script>
-<script src="../assets/js/nube.js?v=9d95a74"></script>
+<script src="../assets/js/config.js?v=a094a28"></script>
+<script src="../assets/js/precarga.js?v=a094a28"></script>
+<script src="../assets/js/iconos.js?v=a094a28"></script>
+<script src="../assets/js/personajes.js?v=a094a28"></script>
+<script src="../assets/js/datos.js?v=a094a28"></script>
+<script src="../assets/js/sonido.js?v=a094a28"></script>
+<script src="../assets/js/veredicto.js?v=a094a28"></script>
+<script src="../assets/js/grabadora.js?v=a094a28"></script>
+<script src="../assets/js/partida.js?v=a094a28"></script>
+<script src="../assets/js/auth.js?v=a094a28"></script>
+<script src="../assets/js/entrada.js?v=a094a28"></script>
+<script src="../assets/js/nube.js?v=a094a28"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=9d95a74"></script>
-<script src="../assets/js/app.js?v=9d95a74"></script>
+<script src="../assets/js/demo.js?v=a094a28"></script>
+<script src="../assets/js/app.js?v=a094a28"></script>
 </body>
 </html>
