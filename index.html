@@ -15,11 +15,11 @@
 <title>ATWI · El juego de debate para parejas, amigos y familia</title>
 <meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<link rel="stylesheet" href="assets/css/fuentes.css?v=2fef655">
-<link rel="stylesheet" href="assets/css/tokens.css?v=2fef655">
-<link rel="stylesheet" href="assets/css/base.css?v=2fef655">
-<link rel="stylesheet" href="assets/css/landing.css?v=2fef655">
-<link rel="stylesheet" href="assets/css/modal.css?v=2fef655">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=1c94015">
+<link rel="stylesheet" href="assets/css/tokens.css?v=1c94015">
+<link rel="stylesheet" href="assets/css/base.css?v=1c94015">
+<link rel="stylesheet" href="assets/css/landing.css?v=1c94015">
+<link rel="stylesheet" href="assets/css/modal.css?v=1c94015">
 </head>
 
 <body class="landing">
@@ -206,7 +206,7 @@
     <div class="pie__enlaces">
       <a href="#modos">Los tres modos</a>
       <a href="app/">Jugar</a>
-      <a href="privacidad.html">Privacidad y datos</a>
+      <a href="#privacidad" data-hoja="hoja-privacidad">Privacidad y datos</a>
     </div>
     <!-- LA MISMA REDACCIÓN QUE `config.descargo`, y hay que mantenerlas iguales a
          mano: la landing no carga config.js. El comentario de allí dice «en un
@@ -221,12 +221,111 @@
 
 </div>
 
+<!-- LA INFORMACIÓN DE LA LANDING VA EN LA LANDING, EN HOJAS (titular, 2026-09-18:
+     «no hagas la página de privacidad como link aparte: crea un modal elegante en
+     el mismo landing; el único link aparte es el juego»). Es un `<dialog>` nativo
+     —foco atrapado, Escape y fondo gratis— vestido como hoja: en el teléfono sube
+     desde abajo, en escritorio es una tarjeta centrada. Se abre desde el pie y
+     desde `#privacidad` en la dirección, para poder enlazarla desde el juego.
+     Lo que dice sale del código y hay que mantenerlo verdad: qué se guarda, qué no
+     se guarda nunca, quién procesa qué, la IA, cuánto tiempo y los derechos.
+     ⚠️ EL CORREO DE CONTACTO ESTÁ PENDIENTE DEL TITULAR. -->
+<dialog class="hoja" id="hoja-privacidad" aria-labelledby="t-privacidad">
+  <div class="hoja__caja">
+    <button class="hoja__cerrar" type="button" data-cerrar-hoja aria-label="Cerrar">✕</button>
+      <div class="hoja__cuerpo legal">
+    <h2 class="hoja__titulo" id="t-privacidad">Privacidad y datos</h2>
+    <p class="fecha">Última revisión: 18 de septiembre de 2026 · ATWI está en construcción y esto cambia con el juego.</p>
+
+    <div class="clave" style="margin-top:var(--e-4)">
+      <p><strong>Lo corto:</strong> tu voz no se guarda nunca. Lo que se guarda es lo que dijiste en texto,
+      la voz del personaje leyéndolo, tu apodo y tu correo. Todo lo de una partida se borra cuando la
+      borras tú.</p>
+    </div>
+
+    <h3>Qué guarda ATWI</h3>
+    <ul>
+      <li><strong>Tu cuenta:</strong> el correo con el que entras y un apodo. No pedimos nombre real, ni
+        teléfono, ni país, ni foto. El apodo es único en el juego y lo puedes cambiar cuando quieras.</li>
+      <li><strong>Tus partidas:</strong> el tema, el modo, con quién jugaste (el apodo que escribiste para esa
+        persona), qué personaje llevó cada quien y las fechas.</li>
+      <li><strong>Lo que dijiste, en texto:</strong> cada intervención se transcribe y ese texto se guarda tal
+        cual salió (el literal) y en la versión que lee el personaje (el guion). El literal no se toca ni
+        se borra mientras exista la partida: es lo único que permite responder a un «yo nunca dije eso».</li>
+      <li><strong>La voz del personaje:</strong> un archivo de audio de un dibujo leyendo tu guion. Es lo que
+        suena en la sala y en el historial.</li>
+      <li><strong>El resultado:</strong> lo que decidió el juez o propuso el mediador, y el acta que firmaron.</li>
+      <li><strong>Los temas que escribes tú.</strong></li>
+    </ul>
+
+    <h3>Qué no guarda nunca</h3>
+    <ul>
+      <li><strong>Tu voz.</strong> La grabación se transcribe en memoria y se descarta en la misma llamada. No
+        se sube a ningún almacén, no queda copia y nadie la vuelve a oír: ni tú, ni la otra persona, ni
+        nosotros. Lo que suena siempre es el personaje.</li>
+      <li>Nombre real, ubicación, contactos del teléfono, ni nada del aparato más allá de qué navegador es
+        (para saber que la grabación funciona en él).</li>
+    </ul>
+
+    <h3>Quién procesa qué</h3>
+    <p>ATWI no tiene un servidor propio: usa servicios de terceros, y cada uno recibe solo lo que necesita
+      para su parte.</p>
+    <ul>
+      <li><strong>Supabase</strong> guarda la cuenta, las partidas, los textos y los audios del personaje.
+        Los datos viven en la región <strong>Oregón (Estados Unidos)</strong>.</li>
+      <li><strong>Deepgram</strong> recibe la grabación para convertirla en texto: se manda, devuelve el
+        texto y ATWI la descarta. Cada proveedor la procesa según su propia política de privacidad.</li>
+      <li><strong>Anthropic (Claude)</strong> recibe los textos de la ronda para hacer de abogado (pulir
+        cómo se dice), de juez (Controversia), de mediador (Pacto) y de revisor de los temas que escribes.
+        No recibe audio ni tu correo.</li>
+      <li><strong>Microsoft Azure</strong> recibe el guion para generar la voz del personaje.</li>
+      <li><strong>Cloudflare Turnstile</strong> comprueba que quien entra no es un robot.</li>
+      <li><strong>Resend</strong> manda los correos de acceso.</li>
+    </ul>
+    <p>Ninguno recibe tu nombre real, porque no lo tenemos. El correo solo lo ve Supabase (para la cuenta)
+      y Resend (para mandarte el enlace de entrada).</p>
+
+    <h3>La inteligencia artificial</h3>
+    <p>El juez, el mediador, el abogado que habla por ti y el revisor de temas son modelos de IA. Lo que
+      dicen se comprueba con reglas antes de enseñarse, pero pueden equivocarse. ATWI usa IA para facilitar
+      la resolución de conflictos y promover el ejercicio del debate; <strong>no reemplaza la terapia ni
+      asesoramiento profesional</strong>. Si un tema toca algo que el juego no puede tocar, la partida se
+      detiene y no se juzga ni se negocia.</p>
+
+    <h3>Cuánto tiempo</h3>
+    <p>Todo lo de una partida se conserva hasta que la borras. Cada partida del historial lleva su
+      papelera: se van el tema, las intervenciones en texto, la voz del personaje, el resultado y el acta.
+      Lo único que queda es la cuenta de lo que costó procesarla, sin saber de quién era.</p>
+    <p>Las partidas que se abren y nunca llegan a tener una intervención se borran en limpiezas
+      periódicas.</p>
+
+    <h3>Tus derechos</h3>
+    <ul>
+      <li><strong>Ver lo tuyo:</strong> el historial enseña todas tus partidas, con lo que se dijo y cómo
+        acabaron.</li>
+      <li><strong>Borrar:</strong> cada partida, desde su papelera, en el momento.</li>
+      <li><strong>Cambiar el apodo:</strong> desde Perfil; tus partidas siguen siendo tuyas.</li>
+      <li><strong>Borrar la cuenta entera</strong> o pedir una copia de tus datos: escríbenos y lo hacemos.
+        <!-- ⚠️ PENDIENTE DEL TITULAR: la dirección de contacto. -->
+        <em>El correo de contacto se publica aquí en cuanto esté.</em></li>
+    </ul>
+
+    <h3>Para quién es</h3>
+    <p>ATWI es para personas adultas. Los temas son discusiones de pareja, de amigos y de familia; no hay
+      contenido para menores y no se pide la edad porque no se guarda ningún dato para comprobarla.</p>
+
+    <p class="fecha" style="margin-top:var(--e-6)">Si algo de esto deja de ser verdad, es un fallo
+      nuestro y se corrige.</p>
+      </div>
+  </div>
+</dialog>
+
 <!-- `config.js` NO se carga aquí, y son 31 KB. Lo traía la versión anterior
      para sacar de él el descargo de IA; ahora el descargo está escrito arriba
      —con su aviso de mantener las dos copias iguales— y la landing no usa
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=2fef655"></script>
+<script src="assets/js/landing.js?v=1c94015"></script>
 </body>
 </html>

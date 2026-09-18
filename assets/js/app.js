@@ -2287,7 +2287,7 @@
           /* Qué se guarda y qué no, a un toque desde donde está la cuenta. Abre
              en pestaña nueva: es la página pública, fuera del juego. */
           '<p class="chico centrado" style="margin-top:var(--e-2)">' +
-            '<a href="../privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a></p>'
+            '<a href="../#privacidad" target="_blank" rel="noopener">Privacidad y datos</a></p>'
         : '') +
 
       '<div class="contadores" style="margin-top:var(--e-4)">' +

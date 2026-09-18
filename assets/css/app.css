@@ -1019,16 +1019,30 @@ body.app {
   transition: transform var(--dur-corta) var(--rebote), opacity var(--dur-corta) var(--suave),
               box-shadow var(--dur-corta) var(--suave);
 }
-.caras-fila__f { width: 40px; height: 40px; }
+/* ⚠️ 36 px Y NO 40: seis fichas de 40 en los 262 que deja el globo se quedaban
+   a **4,4 px** unas de otras, y con eso cualquier cosa que la puesta hiciera
+   —crecer, ponerse un aro— acababa tocando a la vecina. A 36 el hueco sube a
+   9,2 y el crecimiento cabe dentro de él. */
+.caras-fila__f { width: 36px; height: 36px; }
 .caras-fila__cara:active { transform: scale(.94); }
-/* ⚠️ EL ARO VA A 2 px Y NO A 3 (titular, 2026-09-18: «está muy grueso»). Estas
-   fichas miden 40 px y llevan su propio perfil blanco de pegatina, así que el
-   aro es la TERCERA línea alrededor de la misma cara: con 3 px pesaba más que
-   el dibujo que señala. El del juez puede permitírselos porque ahí la miniatura
-   es mayor. */
+/* ⚠️ EL ARO VA POR DENTRO, COMO EL DEL JUEZ (titular, 2026-09-18: «sigue
+   estando muy grueso el círculo de selección, hace que pise el icono del
+   lado»). Tres pasadas costó, y las dos primeras atacaban el síntoma: de 3 px a
+   2, y aire a los lados para que no lo recortara el `overflow`. El problema es
+   que estaba FUERA. Seis fichas de 40 px en 262 dejan 4,4 px entre vecinas, y
+   un aro de 2 más el crecimiento del `scale` se comen justo esos 4,4: por eso
+   tocaba a la de al lado midiera lo que midiera. Por dentro no ocupa nada
+   fuera del disco —no pisa, no se corta, no hay aire que reservarle— y además
+   se ve más fino, porque cae sobre el propio dibujo en vez de añadir una
+   tercera línea alrededor. Es lo que ya hacía `.juez-ficha--puesta`.
+   El `scale` baja de 1,12 a 1,08: con el aro dentro, lo que dice cuál está
+   puesta es el aro, y el tamaño solo acompaña. */
 .caras-fila__cara[aria-pressed="true"] {
-  opacity: 1; transform: scale(1.12);
-  box-shadow: 0 0 0 2px var(--pj, var(--lavanda)), var(--sombra-2);
+  opacity: 1; transform: scale(1.08);
+  box-shadow: var(--sombra-2);
+}
+.caras-fila__cara[aria-pressed="true"] .avatar {
+  box-shadow: inset 0 0 0 2px var(--pj, var(--lavanda));
 }
 /* La tomada no se puede elegir y se dice con el gris, no con un aspa: es la
    misma regla de «el tuyo está apartado» del texto de abajo. */
@@ -1040,6 +1054,13 @@ body.app {
 .ficha-editor .color { height: 32px; }
 .ficha-editor .color i { max-width: 26px; }
 .ficha-editor .campo { margin: 0; }
+/* ⚠️ EL TEXTO DE DENTRO DEL CAMPO TAMBIÉN SE CENTRA, PERO SOLO EN LOS CORTOS.
+   Un apodo o un correo son una palabra en medio de una caja ancha y centrados
+   acompañan al resto del globo; un enunciado de tres renglones centrado se lee
+   a saltos, porque cada línea empieza en un sitio distinto. Por eso el
+   `textarea` se queda alineado como se escribe. */
+.globo .campo { text-align: center; }
+.globo .campo--parrafo { text-align: left; }
 /* El renglón de error no gasta alto mientras no diga nada. */
 .ficha-editor #f-error:empty { display: none; }
 .personaje__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-chico); }
@@ -3835,7 +3856,7 @@ body.app {
 .perfil-duo--vacio .perfil-duo__quien { color: var(--tinta-suave); }
 
 /* El editor del correo, dentro de su globo. */
-.correo-editor { display: grid; gap: 6px; text-align: left; }
+.correo-editor { display: grid; gap: 6px; }
 .correo-editor p { margin: 0; }
 .correo-editor #p-correo-error:empty { display: none; }
 
@@ -4750,21 +4771,42 @@ body.app {
      metía encima 9 px —la onda ocupa 57 a este ancho— y la última línea se leía
      sobre el dibujo. */
   padding: var(--e-4) var(--e-4) 58px 90px;
+  /* ⚠️ Y EL CENTRADO SE DECLARA, que no venía de ningún sitio (titular,
+     2026-09-18: «centra todos los títulos y contenidos de los globos, incluidos
+     los formularios»). Los globos se leían centrados porque su texto es corto y
+     el hueco de la bombilla lo empujaba al medio; en cuanto uno traía un título
+     o una etiqueta, salía pegado a la izquierda. */
+  text-align: center;
 }
-/* EL HUECO DE LA IZQUIERDA ES EL SITIO DEL SIGNO, y el lápiz de la ficha mide
-   64 px donde la bombilla mide 96: con los 90 de la bombilla, el contenido
-   quedaba corrido a la derecha y las seis caritas se apretaban. */
+/* TODO LO DE DENTRO DE UN GLOBO VA CENTRADO, TAMBIÉN LOS FORMULARIOS (titular,
+   2026-09-18). Los editores alineaban a la izquierda —que es lo normal en un
+   formulario— y el resto de los globos centraba, así que dos piezas de la misma
+   familia se leían distinto según lo que llevaran dentro.
+   ⚠️ Y CENTRAR PIDE QUE LOS DOS LADOS MIDAN LO MISMO. Estos globos llevaban
+   62 px de relleno a la izquierda —el sitio del signo— contra 16 a la derecha:
+   con el texto a la izquierda eso no se notaba, y centrado habría corrido todo
+   el contenido 23 px a la derecha. El relleno vuelve a ser simétrico y **el
+   signo no necesita que se le aparte nada**: mide 64 px y asoma por fuera, así
+   que dentro de la caja solo ocupa los 42 px de arriba a la izquierda, y un
+   título centrado en 250 px empieza mucho más allá. Se probó a apartarlo con
+   un relleno propio y lo único que consiguió fue descentrarlo 26 px, que es
+   justo lo que había que arreglar. */
 .globo:has(.ficha-editor) .globo__caja,
-.globo:has(.tema-editor) .globo__caja {
-  padding-left: 62px;
+.globo:has(.tema-editor) .globo__caja,
+.globo:has(.correo-editor) .globo__caja {
+  /* ⚠️ EXPLICITO, o vuelven los 90 px de la regla general —el hueco de la
+     bombilla— y el contenido sale corrido 37 px a la derecha. Y no es solo el
+     centrado: esos 74 px de más le quitan ancho a la fila de caritas, que a
+     `space-between` se queda con 1,6 px entre vecinas y las hace tocarse. Con
+     el relleno simétrico el hueco sube a 16. */
+  padding-left: var(--e-4);
   box-shadow: var(--sombra-3);
-  text-align: left;
 }
 /* EL EDITOR DE TEMAS DENTRO DEL GLOBO (titular, 2026-09-18). Una columna, con
    el mismo aire entre piezas que el resto del juego. El renglón del error y la
    nota de abajo no ocupan cuando no dicen nada: un hueco fijo reservado para un
    aviso que casi nunca sale deja el botón separado del campo sin motivo. */
-.tema-editor { display: grid; gap: var(--e-3); text-align: left; }
+.tema-editor { display: grid; gap: var(--e-3); }
 /* LO QUE CEDE CUANDO EL GLOBO NO CABE. El tope Y el `overflow` los pone
    `abrirGlobo` midiendo contra el marco —no van aquí a propósito: ver abajo—;
    esto es que, cuando los tenga, se pueda bajar con el dedo sin arrastrar la

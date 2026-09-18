@@ -137,11 +137,36 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
    titular. Un botón que se apaga no se aplana: sigue siendo la misma pieza,
    en gris y sin brillo. Lo que dice «no se puede pulsar» es el color, y que no
    responda al dedo. */
+/* ⚠️ Y LA LETRA DEL APAGADO NO PUEDE SER BLANCA, que es lo que era: sobre el
+   gris de `--linea-fuerte` (#D6CCBE) el blanco da **1,59:1** —medido con la
+   fórmula de WCAG, la misma que decide la letra del botón de mandar el turno—,
+   o sea que el texto de CUALQUIER botón apagado del juego se leía a duras
+   penas. Salió al arreglar el «Borrando…», pero no era solo suyo. `--tinta-
+   suave` da **3,41**, que es lo que se le pide al texto grande —estos botones
+   son 17-19 px en negrita— y sigue leyéndose como apagado: lo que dice que no
+   se puede pulsar es el gris, no que no se vea. */
 .boton[disabled] {
   --cara: var(--linea-fuerte);
-  color: var(--blanco); text-shadow: none; cursor: not-allowed; filter: none;
+  color: var(--tinta-suave); text-shadow: none; cursor: not-allowed; filter: none;
 }
 .boton[disabled]:active { transform: none; }
+/* ⚠️ Y EL APAGADO NO LLEGABA A LOS BOTONES QUE SE PINTAN EL FONDO A MANO (lo vio
+   el titular, 2026-09-18: «mientras se borra una partida, después de darle clic
+   al botón el texto desaparece»). Es la trampa que este proyecto ya tiene
+   escrita —«escribir `background` sobre un botón le borra el relieve»— por el
+   otro lado: `.boton--suave` y `.boton--fantasma` declaran su propio fondo en
+   vez de salir de `--cara`, así que al apagarse **el fondo seguía blanco** y lo
+   único que cambiaba era el color de la letra… a blanco. El «Borrando…» estaba
+   ahí, invisible. Se les devuelve el fondo que el botón calcula solo, que con
+   el `--cara` del apagado ya es gris: el mismo cambio de color que cualquier
+   otro botón del juego, y la letra vuelve a leerse. */
+.boton--suave[disabled] {
+  background: linear-gradient(180deg, var(--cara-clara) 0%, var(--cara) 54%, var(--cara-honda) 100%);
+  border-color: var(--blanco);
+}
+/* El fantasma no tiene fondo por definición —es un enlace con forma de botón—,
+   así que ahí lo que se apaga es la letra. */
+.boton--fantasma[disabled] { color: var(--tinta-tenue); }
 
 /* Botón redondo de icono (cerrar, atrás) */
 .boton-icono {
@@ -208,7 +233,19 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
   font: inherit; color: var(--tinta);
   background: var(--superficie); border: 0; border-radius: var(--radio-boton);
 }
-.campo:focus { outline: none; box-shadow: 0 0 0 2px var(--lavanda); }
+/* ⚠️ EL ANILLO DE FOCO VA POR DENTRO, Y ESO NO ES ESTÉTICA: ES LO QUE HACE QUE
+   NO SE PUEDA CORTAR (titular, 2026-09-18, tras verlo cortado por tercera vez:
+   «revisa que ningún borde de foco en los inputs de globos se corte»). Pintado
+   por fuera —`0 0 0 2px`—, el anillo se sale de la caja del campo, y como el
+   campo mide el 100 % del ancho de su columna, cae justo en el canto de
+   cualquier contenedor con `overflow`: los globos tienen tres —el cuerpo que
+   cede, el bloque entero y el editor de ficha con su tope de alto— y cada uno
+   lo mordía por un lado distinto. Se arreglaron dos a base de aire y apareció
+   el tercero por arriba.
+   `inset` lo mete DENTRO del campo: se ve igual —un filo de color por el borde
+   interior— y ya no hay recorte que lo pueda alcanzar, aquí ni en ningún sitio
+   que venga después. */
+.campo:focus { outline: none; box-shadow: inset 0 0 0 2px var(--lavanda); }
 .campo::placeholder { color: var(--tinta-tenue); }
 textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
 
