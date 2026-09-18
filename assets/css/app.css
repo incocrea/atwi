@@ -4711,9 +4711,20 @@ body[data-demo] { background: var(--crema); }
    ⚠️ Y EL PIE TIENE QUE DEJARLA VER. `.modal__pie` lleva de serie el crema
    opaco y una línea arriba —ahí hace falta, porque separa los botones de un
    cuerpo que scrollea— y aquí las dos cosas taparían la peana entera. */
+/* MÁS ANCHA QUE LA DE LAS CARTAS Y HUNDIDA, ajuste del titular (2026-09-17). El
+   118 % de una carta de 166 px es un dibujo pequeño; el mismo 118 % a lo ancho
+   de la pantalla dejaba una onda fina de 86 px en un modal de 812. Al 138 % el
+   dibujo crece un 17 % y lo que se hunde es la franja lisa de abajo, que no
+   aporta nada: lo que asoma sigue siendo la parte alta, con sus adornos. */
+/* ⚠️ Y HACE FALTA `max-width: none`, O EL ANCHO NO SIRVE DE NADA. `base.css`
+   lleva `img, svg { max-width: 100% }` —el reset de siempre, que evita que una
+   imagen grande ensanche su caja—, y un `width` mayor que el 100 % lo pierde
+   contra él SIN AVISAR: medido, la peana salía a 374 px en un modal de 374 con
+   el 138 % escrito al lado. Cualquier peana que se quiera salir por los lados
+   tiene que apagarlo. */
 .modal__peana {
-  position: absolute; left: 50%; bottom: 0;
-  width: 118%; height: auto;
+  position: absolute; left: 50%; bottom: -28px;
+  width: 138%; max-width: none; height: auto;
   transform: translateX(-50%);
   pointer-events: none;
   z-index: 0;
@@ -4721,7 +4732,8 @@ body[data-demo] { background: var(--crema); }
 #m-tema .modal__pie {
   position: relative; z-index: 1;
   background: none; border-top: 0;
-  /* El sitio de la onda: la peana mide unos 70 px a este ancho y se le dejan
-     ver los de arriba, que es donde está el dibujo. */
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 54px);
+  /* El sitio de la onda: al 138 % mide 94 px y, hundida, asoma 66; los botones
+     se suben esos 66 más cuatro de aire, para que la onda pase por DEBAJO del
+     de abajo y no por detrás. */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
 }
