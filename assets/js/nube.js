@@ -619,59 +619,75 @@ window.ATWI = window.ATWI || {};
        nivel de detalle puesto. */
     var arranque = Date.now();
 
-    return fetch(cfg.supabaseUrl + '/rest/v1/debates' +
-        '?select=' + encodeURIComponent(campos) + '&' + mias +
-        /* AQUÍ HABÍA UN `&cerrado=not.is.null` Y SE FUE (decisión del titular,
-           2026-09-15). Dejaba fuera todo lo que no hubiera terminado, con este
-           motivo escrito: «una ronda dejada a medias no es una partida, es un
-           intento: no se puede oír entera, no tiene resultado, y verla en la
-           lista ofrece algo que al abrirlo no está».
-           Era verdad mientras al abrirla no hubiera nada. Desde que se puede
-           RETOMAR, al abrirla hay exactamente lo que promete: la ronda donde se
-           quedó. Y esconderlas costaba caro en las dos direcciones --se juega
-           por sesiones y por aparatos, y cerrar la pestaña a mitad del tercer
-           turno se llevaba cinco grabaciones sin dejar rastro--.
-           Lo que sí sigue siendo verdad: una partida sin NINGÚN turno no se
-           puede retomar ni oír, y ésa la filtra el cliente, no esta consulta.
-           OJO CON `limpiar_abandonadas.py`: su regla vieja --`cerrado` nulo y
-           más de una hora-- borraba justo lo que ahora hay que conservar. Se
-           cambió en la misma tanda. */
-        (uno ? '&id=eq.' + uno : '') +
-        '&order=creado.desc&limit=' + (cuantas || 20) +
-        (desde ? '&offset=' + desde : ''), {
-      headers: {
-        'apikey': cfg.supabaseAnon,
-        'Authorization': 'Bearer ' + conSesion(),
-        'Accept': 'application/json'
-      }
-    }).then(function (r) {
-      if (!r.ok) return r.text().then(function (t) {
-        throw new Error('historial (' + r.status + '): ' + t.slice(0, 160));
-      });
-      /* Se lee el texto para poder PESARLO. `r.json()` hace lo mismo por dentro
-         —lee el cuerpo entero y lo parsea— así que esto no añade trabajo. */
-      return r.text().then(function (txt) {
-        try {
-          console.debug('ATWI · historial: %s KB en %s ms',
-            Math.round(txt.length / 1024), Date.now() - arranque);
-        } catch (e) {}
-        return JSON.parse(txt);
-      });
-    }).then(function (filas) {
-      return (filas || []).map(function (d) {
-        /* PostgREST no promete el orden de la tabla anidada. Se ordena aqui:
-           una partida contada al reves no es una partida. */
-        d.turnos_grabados = (d.turnos_grabados || [])
-          .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
-        /* Y EL RESULTADO SE DESENVUELVE AQUÍ. PostgREST devuelve la tabla
-           anidada como ARRAY aunque la relación sea de uno a uno --`debate` es
-           `unique` en `resultados`--, y quien la recibe no tiene por qué
-           saberlo. Costó una vuelta: `delArbitro()` leyó el array, no encontró
-           `ganador_lado` en él y pintó un veredicto sin ganador y sin desglose,
-           sin que nada fallara por ninguna parte. */
-        var res = d.resultado;
-        d.resultado = Array.isArray(res) ? (res[0] || null) : (res || null);
-        return d;
+    /* ⚠️ Y SE RENUEVA LA SESIÓN ANTES DE PREGUNTAR (2026-09-18). `conSesion()`
+       lee el token guardado y no mira si sigue vivo: caduca en una hora, y
+       `auth.listo()` —que es quien lo renueva— solo corre al ARRANCAR la app,
+       en la puerta de entrada. Así que dejar la app abierta una hora y volver al
+       historial mandaba un JWT muerto: 401 del servidor y «no se pudieron traer
+       las partidas», sin nada que explicara por qué. Medido en una sesión con el
+       token vencido: la lista tardó **9,9 s** entre los rechazos y el refresco,
+       contra 290 ms con la sesión al día.
+       `listo()` no cuesta nada cuando el token vale: resuelve al instante y solo
+       pide el refresco si le falta menos de un minuto.
+       ⚠️ LAS DEMÁS LLAMADAS SIGUEN SIN ESTO —`turno`, `arbitrar`, `mediar`,
+       `olvidar`— y tienen el mismo agujero: son de un solo uso dentro de una
+       partida, así que se nota menos, pero el día que una ronda dure más de una
+       hora hay que subir esta espera a un envoltorio común. */
+    return auth.listo().then(function () {
+      return fetch(cfg.supabaseUrl + '/rest/v1/debates' +
+          '?select=' + encodeURIComponent(campos) + '&' + mias +
+          /* AQUÍ HABÍA UN `&cerrado=not.is.null` Y SE FUE (decisión del titular,
+             2026-09-15). Dejaba fuera todo lo que no hubiera terminado, con este
+             motivo escrito: «una ronda dejada a medias no es una partida, es un
+             intento: no se puede oír entera, no tiene resultado, y verla en la
+             lista ofrece algo que al abrirlo no está».
+             Era verdad mientras al abrirla no hubiera nada. Desde que se puede
+             RETOMAR, al abrirla hay exactamente lo que promete: la ronda donde se
+             quedó. Y esconderlas costaba caro en las dos direcciones --se juega
+             por sesiones y por aparatos, y cerrar la pestaña a mitad del tercer
+             turno se llevaba cinco grabaciones sin dejar rastro--.
+             Lo que sí sigue siendo verdad: una partida sin NINGÚN turno no se
+             puede retomar ni oír, y ésa la filtra el cliente, no esta consulta.
+             OJO CON `limpiar_abandonadas.py`: su regla vieja --`cerrado` nulo y
+             más de una hora-- borraba justo lo que ahora hay que conservar. Se
+             cambió en la misma tanda. */
+          (uno ? '&id=eq.' + uno : '') +
+          '&order=creado.desc&limit=' + (cuantas || 20) +
+          (desde ? '&offset=' + desde : ''), {
+        headers: {
+          'apikey': cfg.supabaseAnon,
+          'Authorization': 'Bearer ' + conSesion(),
+          'Accept': 'application/json'
+        }
+      }).then(function (r) {
+        if (!r.ok) return r.text().then(function (t) {
+          throw new Error('historial (' + r.status + '): ' + t.slice(0, 160));
+        });
+        /* Se lee el texto para poder PESARLO. `r.json()` hace lo mismo por dentro
+           —lee el cuerpo entero y lo parsea— así que esto no añade trabajo. */
+        return r.text().then(function (txt) {
+          try {
+            console.debug('ATWI · historial: %s KB en %s ms',
+              Math.round(txt.length / 1024), Date.now() - arranque);
+          } catch (e) {}
+          return JSON.parse(txt);
+        });
+      }).then(function (filas) {
+        return (filas || []).map(function (d) {
+          /* PostgREST no promete el orden de la tabla anidada. Se ordena aqui:
+             una partida contada al reves no es una partida. */
+          d.turnos_grabados = (d.turnos_grabados || [])
+            .sort(function (a, b) { return (a.orden || 0) - (b.orden || 0); });
+          /* Y EL RESULTADO SE DESENVUELVE AQUÍ. PostgREST devuelve la tabla
+             anidada como ARRAY aunque la relación sea de uno a uno --`debate` es
+             `unique` en `resultados`--, y quien la recibe no tiene por qué
+             saberlo. Costó una vuelta: `delArbitro()` leyó el array, no encontró
+             `ganador_lado` en él y pintó un veredicto sin ganador y sin desglose,
+             sin que nada fallara por ninguna parte. */
+          var res = d.resultado;
+          d.resultado = Array.isArray(res) ? (res[0] || null) : (res || null);
+          return d;
+        });
       });
     }).catch(function (e) { apuntar(e.message); return []; });
   }

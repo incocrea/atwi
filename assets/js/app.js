@@ -1295,6 +1295,16 @@
      para decidir si enseñar un botón. */
   var hayMasHistorial = true;
   var trayendoMas = false;
+  /* CADUCA, NO SE BORRA (2026-09-18, al mirar por qué «tarda en refrescar»).
+     Terminar una partida o borrar una ponía `historial = null`, así que al
+     volver a la pantalla no había nada que pintar y salía «Buscando tus
+     partidas…» hasta que contestara el servidor. Medido: el viaje a Oregón con
+     RLS son ~250 ms de suelo pase lo que pase, o sea un cuarto de segundo de
+     pantalla vacía cada vez que se vuelve. Ahora la lista vieja se queda puesta
+     y la nueva la reemplaza cuando llega: lo único que cambia entre las dos es
+     una tarjeta. */
+  var historialCaducado = false;
+  var refrescando = false;
 
   function pintarHistorial() {
     var caja = $('#v-historial');
@@ -1320,6 +1330,19 @@
          la partida. Un aviso que solo avisa a veces es peor que ninguno. */
       if (!actas) window.ATWI.nube.acuerdos().then(function (l) { actas = l || []; });
       return;
+    }
+
+    /* LO VIEJO SE SIGUE VIENDO MIENTRAS LLEGA LO NUEVO. Se pide TODO lo que ya
+       estaba cargado —no solo la primera tanda— o volver de una partida
+       encogería una lista que la persona acababa de desplegar. */
+    if (historialCaducado && !refrescando) {
+      refrescando = true;
+      historialCaducado = false;
+      window.ATWI.nube.historial(Math.max(POR_TANDA, historial.length)).then(function (l) {
+        refrescando = false;
+        if (l) historial = l;
+        if (vistaActual === 'historial') pintarHistorial();
+      }).catch(function () { refrescando = false; });
     }
 
     if (!historial.length) {
@@ -2071,8 +2094,7 @@
      antes con el historial viejo: la partida que se acababa de jugar no
      aparecía hasta recargar. */
   window.ATWI.alTerminarPartida = function () {
-    historial = null;
-    hayMasHistorial = true;
+    historialCaducado = true;
     irA(volverTrasLaPartida);
   };
 
@@ -3831,7 +3853,9 @@
 
   /* Al terminar una partida el historial que hay en memoria ya no es el de
      ahora: se tira para que se vuelva a pedir. */
-  window.ATWI.olvidarHistorial = function () { historial = null; hayMasHistorial = true; };
+  /* Caduca en vez de borrar: quien entra al historial ve lo que había mientras
+     llega lo de ahora, en vez de un cuarto de segundo en blanco. */
+  window.ATWI.olvidarHistorial = function () { historialCaducado = true; };
   /* Para quien abra algo a pantalla completa desde fuera de este archivo —el
      veredicto— y necesite que el atrás del teléfono lo cierre a él y no la app. */
   window.ATWI.pasoAtras = apilarPaso;
