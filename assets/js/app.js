@@ -1339,6 +1339,26 @@
       return esEnLinea(d) === (vistaHistorial === 'linea');
     });
 
+    /* LAS QUE PIDEN ALGO VAN PRIMERO, Y DESPUÉS MANDA LA FECHA (titular,
+       2026-09-18). El orden era solo cronológico —`creado.desc` del servidor—,
+       así que una partida que me espera desde el martes quedaba debajo de tres
+       terminadas de hoy: la campana la señala, pero hay que bajar la lista para
+       encontrarla, y eso es trabajo que la app puede hacer.
+
+       ⚠️ SON DOS GRUPOS Y NO UNA PUNTUACIÓN. Dentro de cada uno el orden sigue
+       siendo el de siempre —lo reciente arriba— porque `sort` es estable en JS
+       desde ES2019 y la lista llega ya ordenada por fecha: comparando solo por
+       «me espera» los empates no se tocan. Ordenar además por tipo de espera
+       —primero las de grabar, luego los resultados— sería inventar una prioridad
+       que nadie pidió y que cambiaría de sitio las tarjetas entre visitas.
+
+       Y NO SE MARCA UN CORTE entre los dos grupos: la campana ya dice cuáles
+       son, y una raya de «pendientes» partiría en dos una lista que se lee
+       bajando. */
+    lista.sort(function (a, b) {
+      return (meEspera(b) ? 1 : 0) - (meEspera(a) ? 1 : 0);
+    });
+
     caja.innerHTML = titulo + barraDondeJuego() +
       (lista.length ? '' : (vistaHistorial === 'linea'
         ? estadoVacio('🌐', 'Todavía no hay partidas en línea',
