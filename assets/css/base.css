@@ -228,10 +228,23 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
    —no un `outline`, que en algunos navegadores no sigue el `border-radius` y
    dibujaria un rectangulo sobre una pastilla— y se dibuja POR FUERA, con
    `spread` positivo, asi que no mueve ni un pixel del texto de dentro. */
+/* EL CAMPO LLEVA EL BORDE DEL COLOR DE DONDE ESTÁ (titular, 2026-09-18: «aplica
+   un borde a los inputs del color de resalte de la interfaz actual, donde
+   esté»). Sin borde, sobre el blanco del globo o de una tarjeta el campo solo
+   se distinguía por ser un poco más claro, y en el fondo dibujado ni eso.
+   ⚠️ EL COLOR NO SE ESCRIBE AQUÍ: LO PONE EL SITIO. `--realce` es una variable
+   que cada pantalla declara —el globo el de su tinte, los modales el de su
+   modo— y que aquí solo se LEE, con el lavanda de la marca de respaldo para
+   todo lo demás. Escrito al revés —una regla por pantalla— habría que acordarse
+   de añadir la siguiente, que es exactamente el fallo que este archivo tiene
+   anotado cuatro veces con los iconos y los modos.
+   Al 55 % contra el fondo del campo: a plena fuerza el borde pesaba más que el
+   texto de dentro, y lo que tiene que hacer es decir dónde se escribe. */
 .campo {
   width: 100%; min-height: var(--diana); padding: var(--e-3) var(--e-4);
   font: inherit; color: var(--tinta);
-  background: var(--superficie); border: 0; border-radius: var(--radio-boton);
+  background: var(--superficie); border-radius: var(--radio-boton);
+  border: 2px solid color-mix(in srgb, var(--realce, var(--lavanda)) 55%, var(--superficie));
 }
 /* ⚠️ EL ANILLO DE FOCO VA POR DENTRO, Y ESO NO ES ESTÉTICA: ES LO QUE HACE QUE
    NO SE PUEDA CORTAR (titular, 2026-09-18, tras verlo cortado por tercera vez:
@@ -245,7 +258,13 @@ a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; te
    `inset` lo mete DENTRO del campo: se ve igual —un filo de color por el borde
    interior— y ya no hay recorte que lo pueda alcanzar, aquí ni en ningún sitio
    que venga después. */
-.campo:focus { outline: none; box-shadow: inset 0 0 0 2px var(--lavanda); }
+/* Y AL ESCRIBIR, EL MISMO COLOR A PLENA FUERZA: el foco deja de ser «otro
+   color» y pasa a ser el mismo borde, más marcado. */
+.campo:focus {
+  outline: none;
+  border-color: var(--realce, var(--lavanda));
+  box-shadow: inset 0 0 0 1px var(--realce, var(--lavanda));
+}
 .campo::placeholder { color: var(--tinta-tenue); }
 textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
 

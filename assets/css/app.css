@@ -326,6 +326,19 @@ body.app {
   background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
               var(--competencia-tinte);
 }
+/* EL COLOR DE RESALTE DE CADA PANTALLA, que es lo que los campos leen para su
+   borde (`--realce` en `base.css`). Se declara en el modal y no en cada campo:
+   así una pantalla nueva del mismo modo lo hereda sin tocar nada. */
+#m-tema.modal--debate,
+#m-explicar.modal--debate,
+#m-preparar.modal--debate      { --realce: var(--debate-oscuro); }
+#m-tema.modal--negociacion,
+#m-explicar.modal--negociacion,
+#m-preparar.modal--negociacion { --realce: var(--negociacion-oscuro); }
+#m-tema.modal--competencia,
+#m-explicar.modal--competencia,
+#m-preparar.modal--competencia { --realce: var(--competencia-oscuro); }
+
 #m-explicar .modal__pie,
 #m-preparar .modal__pie { background: none; border-top: 0; }
 
@@ -3986,7 +3999,11 @@ body.app {
    puesto siempre, así que reservaba 12 px para un texto que en el caso normal no
    aparece nunca. Es poco, y en esta pantalla todo lo poco suma: el formulario
    scrolleaba hasta en el marco de escritorio. */
-#p-error:empty { margin: 0; }
+/* ⚠️ VACÍO NO OCUPA **NI CUENTA**: con `margin: 0` seguía siendo un hijo más de
+   `.prep`, y el reparto del alto le daba su parte —un hueco al pie para un
+   aviso que en el caso normal no existe—. `display: none` lo saca del reparto y
+   vuelve en cuanto tiene algo que decir. */
+#p-error:empty { display: none; }
 #p-aviso-ficha { margin: 6px 0 0; }
 #p-aviso-ficha:empty { display: none; }
 
@@ -4075,17 +4092,26 @@ body.app {
    sabe cuánto mide la pantalla. */
 #m-preparar .modal__cuerpo { --fila-opciones: 272px; }
 
-/* EL AIRE ENTRE LOS BLOQUES DE «ANTES DE EMPEZAR» LO MIDE EL JS (titular,
-   2026-09-18: «estos espacios deben ser dinámicos: según el viewport se ajustan
-   para que no se genere scroll y se pueden reducir si se necesita»). Aquí solo
-   está el nombre; el número lo escribe `ajustarAire()` en el propio cuerpo, que
-   es quien sabe cuánto hueco queda. El respaldo de 12 px es para el instante
-   anterior a la primera medida. */
-#m-preparar .modal__cuerpo { --aire: 12px; }
-/* `flow-root` para que los márgenes de los bloques cuenten DENTRO del alto del
-   envoltorio: sin él se colapsan hacia fuera y la medida sale corta. */
-#m-preparar .prep { display: flow-root; }
-#m-preparar .prep__bloque { margin-top: var(--aire); }
+/* EL ALTO DE «ANTES DE EMPEZAR» SE REPARTE SOLO, Y LO HACE EL CSS (titular,
+   2026-09-18: «distribuye equitativamente las secciones de personaje, juez,
+   turnos y micrófono en la altura del viewport, sin permitir que generen
+   scroll»).
+   ⚠️ ESTO ESTUVO MEDIDO EN JS Y NO LLEGABA, y el motivo estaba en el propio
+   mecanismo: repartía `lo que sobra / cuántos bloques` como margen, con un tope
+   de 38 px para que el formulario no se deshilachara. Medido con el formulario
+   de hoy: sobran **153 px** entre tres bloques, o sea 51 cada uno, y el tope
+   dejaba 38 — así que **39 px se quedaban muertos al pie**, que es justo el
+   hueco que el titular señaló dos veces. Subir el tope no es la respuesta: el
+   número correcto no existe, porque depende de cuántos bloques haya y de la
+   pantalla.
+   `space-between` reparte **exactamente lo que sobra**, sea lo que sea, sin
+   medir nada y sin números que mantener. Y cuando no sobra —una pantalla baja—
+   no inventa hueco: el cuerpo scrollea, que es lo que debe pasar. */
+#m-preparar .modal__cuerpo { display: flex; flex-direction: column; }
+#m-preparar .prep {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
 
 /* EL AVISO DE QUE EL VEREDICTO ES DE MENTIRA. Discreto pero legible: no compite
    con el nombre del ganador --que es lo que se ha venido a ver-- pero tampoco se
@@ -4984,7 +5010,9 @@ body.app {
 
 /* El cuerpo del globo: blanco translúcido, el mismo para los cuatro tintes.
    Lo que cambia con el modo es el color de la bombilla, la onda y la frase. */
-.globo { --globo-cuerpo: rgba(255, 255, 255, .6); }
+/* Lo que hay dentro del globo se realza con el color del globo: es la misma
+   variable que leen los campos en `base.css`. */
+.globo { --globo-cuerpo: rgba(255, 255, 255, .6); --realce: var(--globo-fuerte); }
 .globo[data-tinte="debate"]      { --globo-tinte: var(--debate-tinte);      --globo-borde: #F5B49A; --globo-fuerte: var(--debate-oscuro);  --globo-onda: #F35400;}
 .globo[data-tinte="negociacion"] { --globo-tinte: var(--negociacion-tinte); --globo-borde: #8FD9C7; --globo-fuerte: var(--negociacion-oscuro);  --globo-onda: #04A347;}
 .globo[data-tinte="competencia"] { --globo-tinte: var(--competencia-tinte); --globo-borde: #9BD1F5; --globo-fuerte: var(--competencia-oscuro);  --globo-onda: #007EF8;}

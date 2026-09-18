@@ -3682,10 +3682,13 @@
       '</div>';
 
     $('#m-preparar .modal__cuerpo').innerHTML =
-      /* TODO DENTRO DE UN ENVOLTORIO, y no suelto en el cuerpo: es lo que deja
-         MEDIR lo que ocupa el formulario (`ajustarAire`). `scrollHeight` del
-         cuerpo no sirve —nunca baja de su propio alto, así que «lo que sobra»
-         daba cero siempre y el aire se quedaba en el mínimo—. */
+      /* ⚠️ EL INTERRUPTOR VA FUERA DEL ENVOLTORIO, y esto no es un detalle: el
+         reparto del alto mete hueco entre TODOS los hijos de `.prep`, así que
+         con él dentro salía un vacío entre la vía elegida y los dos retratos
+         —110 px medidos— y el formulario se leía como si empezara a media
+         pantalla. No es una sección del formulario: es el mando que lo cambia,
+         y su sitio es arriba y pegado al título. */
+      selectorDeDonde() +
       '<div class="prep">' +
       /* AQUÍ ARRIBA IBA EL ENUNCIADO, EN UNA TARJETA RETOCABLE, Y SE QUITÓ
          (decisión del titular, 2026-09-14). El argumento para tenerlo era que
@@ -3702,7 +3705,6 @@
       /* LA ETIQUETA Y LOS CÍRCULOS EN EL MISMO RENGLÓN. Al encogerlos a la
          mitad, el título ocupaba un renglón entero para presentar tres piezas
          que ya no lo llenaban, y la pantalla ganaba altura sin ganar nada. */
-      selectorDeDonde() +
 
       /* LOS DOS, LADO A LADO Y EN SU SITIO: yo a la izquierda y quien juega
          enfrente a la derecha, que es como se van a ver en el choque de puños.
@@ -3748,7 +3750,11 @@
       (cfg.reglas.turnosConCupo.length
         ? '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">' +
             cfg.reglas.turnosConCupo.join(' y ') + ' turnos necesitan cupo.</p>'
-        : '<div style="height:4px"></div>') +
+        /* Sin relleno cuando no hay cupos: era un hueco fijo para que el
+           bloque de turnos no quedara pegado a lo de abajo, y ahora el hueco lo
+           pone el reparto. Dentro de `.prep` además contaba como una sección
+           más y se llevaba su parte del alto. */
+        : '') +
 
       /* AQUÍ NO SE ENSEÑA NINGUNA POSTURA. Ni para elegir ni como ejemplo: se
          probó a dejarlas de pista y siguen siendo punteros —leerlas antes de
@@ -3820,8 +3826,6 @@
       if (dd) { dd.dataset.suena = '0'; dd.style.setProperty('--nivel', '0'); }
     }
     if (!repintando) abrirModal('m-preparar');
-    /* Con el modal ya visible: antes `clientHeight` es cero y no se puede medir. */
-    setTimeout(ajustarAire, 0);
   }
 
   /* LA FILA DE JUECES: seis discos, solo la cara, y el puesto lleva el aro del
@@ -3916,7 +3920,6 @@
     if (disco) { disco.dataset.suena = '0'; disco.style.setProperty('--nivel', '0'); }
     if (dice) dice.textContent = 'Di «ok» para ' + (queHace || 'empezar');
     if (b) { b.disabled = true; b.textContent = 'Escuchando…'; }
-    ajustarAire();
 
     /* EN TIEMPO REAL: el disco toma el nivel en una variable CSS --de ahí salen
        el halo y cuánto crece-- y `data-suena` enciende el color y la vibración. */
@@ -3952,7 +3955,6 @@
            esta pantalla decide. El micrófono se esconde con él: lo que tiene
            que quedar en pantalla es el botón, listo para volver a tocarlo. */
         if (caja) caja.hidden = true;
-        ajustarAire();
         window.ATWI.aviso(
           /* BLOQUEADO NO ES RECHAZADO, y no se arreglan igual. `denied` es el
              navegador negándose a PREGUNTAR —ahí no hay diálogo que aceptar y
@@ -3979,29 +3981,14 @@
      dentro de un teléfono dibujado que no mide lo mismo.
      Si no cabe ni con el mínimo, el cuerpo scrollea, que es lo correcto: antes
      que recortar el aire a cero y que los bloques se toquen. */
-  var AIRE_MIN = 4, AIRE_MAX = 38;
-  function ajustarAire() {
-    var cuerpo = $('#m-preparar .modal__cuerpo');
-    var prep = cuerpo && cuerpo.querySelector('.prep');
-    if (!prep || !cuerpo.clientHeight) return;
-    var cuantos = prep.querySelectorAll('.prep__bloque').length;
-    if (!cuantos) return;
-    /* ⚠️ SE MIDE EL ENVOLTORIO, NO `scrollHeight` DEL CUERPO. `scrollHeight`
-       devuelve el mayor entre el contenido y la propia caja, así que con el
-       formulario cabiendo daba exactamente el alto del cuerpo: «lo que sobra»
-       era cero SIEMPRE y el aire se quedaba clavado en el mínimo por mucho que
-       creciera la pantalla. El envoltorio va en `flow-root` para que los
-       márgenes de sus hijos cuenten dentro de su alto y no se colapsen fuera. */
-    cuerpo.style.setProperty('--aire', '0px');
-    var sobra = cuerpo.clientHeight - prep.offsetHeight;
-    var cada = Math.floor(sobra / cuantos);
-    cuerpo.style.setProperty('--aire',
-      Math.max(AIRE_MIN, Math.min(AIRE_MAX, cada)) + 'px');
-  }
-  /* El teclado del móvil encoge el viewport visible sin disparar `resize` en
-     iOS, así que se escucha también a `visualViewport`. */
-  window.addEventListener('resize', ajustarAire);
-  if (window.visualViewport) window.visualViewport.addEventListener('resize', ajustarAire);
+  /* ⚠️ AQUÍ VIVÍA `ajustarAire()`, que medía lo que sobraba en «Antes de
+     empezar» y lo repartía como margen entre los bloques. Se va entero: lo hace
+     el CSS con `justify-content: space-between`, que reparte **exactamente** lo
+     que sobre sin tope ni medida —el tope de 38 px dejaba 39 muertos al pie con
+     el formulario de hoy— y sin que haya que volver a llamarlo cada vez que
+     algo cambia de alto. Dos mecanismos para el mismo hueco se pelean: el
+     margen del JS se habría sumado al reparto del CSS. */
+
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
      el documento permite para los temas del catálogo. Con dos teléfonos hace
