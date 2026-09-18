@@ -4686,9 +4686,9 @@ body.app {
   border: 1px solid rgba(122, 106, 216, .3);
   background: var(--lavanda-tinte);
 }
-.invitacion[data-modo="debate"]      { border-color: rgba(255, 122, 89, .4); background: var(--coral-tinte, #FFF1EC); }
-.invitacion[data-modo="negociacion"] { border-color: rgba(52, 199, 128, .4); background: var(--menta-tinte, #EAF9F1); }
-.invitacion[data-modo="competencia"] { border-color: rgba(0, 126, 248, .35); background: #EAF3FF; }
+.invitacion[data-modo="debate"]      { border-color: rgba(240, 127, 85, .4);  background: var(--debate-tinte); }
+.invitacion[data-modo="negociacion"] { border-color: rgba(52, 183, 155, .4);  background: var(--negociacion-tinte); }
+.invitacion[data-modo="competencia"] { border-color: rgba(63, 163, 238, .4);  background: var(--competencia-tinte); }
 .invitacion__eti {
   font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
   color: var(--lavanda-oscuro); text-transform: uppercase;

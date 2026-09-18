@@ -563,11 +563,11 @@ window.ATWI = window.ATWI || {};
     window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
                                ['hablando'],
                                P.jugadores.map(function (j) { return j.color; }));
-    /* La revelación del sorteo, una vez por lado. Con cero intervenciones y
-       sin haberla visto, se ve; si ya hay algo grabado o ya se vio, se entra
-       derecho a lo que toque. */
+    /* La revelación del sorteo, UNA VEZ POR LADO: el host que invitó y volvió
+       cuando el otro ya grabó también la ve —es su primera vez en esta sala—
+       y la ruleta cae donde el servidor dijo. Vista una vez, se entra derecho. */
     var vista = miLado === 'invitado' ? d.intro_visto_invitado : d.intro_visto_propone;
-    if (!vista && !t.length) {
+    if (!vista) {
       P.estado = 'aviso';
       if (window.ATWI.nube && window.ATWI.nube.marcarIntroVista) window.ATWI.nube.marcarIntroVista(d.id);
       return pintarAviso();
