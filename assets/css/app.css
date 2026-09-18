@@ -3776,6 +3776,69 @@ body.app {
    el abogado obligatorio, el personaje de cada quien es su ficha y elegirlo
    dos veces era la misma decisión partida en dos filas.
    ========================================================================== */
+/* --- LOS DOS PERFILES, LADO A LADO (titular, 2026-09-18) ---------------------
+   Yo a la izquierda y quien juega enfrente a la derecha, que es como se van a
+   ver en el choque de puños. Puestos uno encima de otro, la pantalla decía dos
+   veces lo mismo con un rótulo en medio para aclarar de quién era cada uno;
+   enfrentados, el sitio ya lo dice.
+   ⚠️ `minmax(0, 1fr)` Y NO `1fr`: `1fr` es `minmax(auto, 1fr)` y el mínimo del
+   contenido ensancha la columna, así que un correo largo en la de la derecha
+   habría empujado la rejilla fuera del marco. Es la regla del proyecto y aquí
+   vuelve a hacer falta. */
+.duo {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e-2); align-items: start;
+  margin: var(--e-2) 0 0;
+}
+.perfil-duo {
+  display: grid; justify-items: center; gap: 2px;
+  width: 100%; min-width: 0;
+  padding: 0; border: 0; background: none; font: inherit; color: var(--tinta);
+  cursor: pointer;
+}
+.perfil-duo:active .avatar { transform: scale(.96); }
+/* El halo del color de la ficha: es lo que lo hace una pieza del juego y no una
+   foto de perfil. Con 12 px de aire alrededor de un retrato de 84 el resplandor
+   empieza donde acaba el dibujo. */
+.perfil-duo__retrato {
+  display: grid; place-items: center; padding: 12px; border-radius: 50%;
+  background: radial-gradient(closest-side,
+              color-mix(in srgb, var(--suyo, var(--del-modo, var(--lavanda))) 34%, transparent) 62%,
+              transparent 100%);
+}
+.perfil-duo__quien {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-base);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* LOS TRES RENGLONES VAN EN SU LINEA (titular): en media pantalla de ancho, el
+   «Luna habla por ti · Cambiar» de una sola línea se partía por donde cayera y
+   el «Cambiar» acababa solo en un renglón sin decir de qué era. Sombra blanca
+   porque van sobre el fondo dibujado. */
+.perfil-duo__como {
+  font-size: var(--t-mini); color: var(--tinta); font-weight: 700;
+  line-height: 1.25; text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+}
+.perfil-duo__cambiar {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini);
+  color: var(--lavanda-oscuro); text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+}
+/* LA COLUMNA VACIA DE LA VIA EN LINEA: gris y sin personaje, porque el
+   personaje lo elige quien juegue ese lado en su propio teléfono. El punteado
+   dice que es un hueco que se llena, no una ficha apagada. */
+.perfil-duo--vacio { --suyo: var(--tinta-tenue); }
+.perfil-duo__hueco {
+  display: grid; place-items: center;
+  background: var(--crema-hondo); color: var(--tinta-tenue);
+  border: 2px dashed color-mix(in srgb, var(--tinta-tenue) 55%, transparent);
+  box-shadow: none;
+}
+.perfil-duo--vacio .perfil-duo__quien { color: var(--tinta-suave); }
+
+/* El editor del correo, dentro de su globo. */
+.correo-editor { display: grid; gap: 6px; text-align: left; }
+.correo-editor p { margin: 0; }
+.correo-editor #p-correo-error:empty { display: none; }
+
 .mi-personaje {
   display: grid; justify-items: center; gap: 2px;
   width: 100%; margin: var(--e-2) 0 var(--e-1);
@@ -3813,6 +3876,8 @@ body.app {
    aparece nunca. Es poco, y en esta pantalla todo lo poco suma: el formulario
    scrolleaba hasta en el marco de escritorio. */
 #p-error:empty { margin: 0; }
+#p-aviso-ficha { margin: 6px 0 0; }
+#p-aviso-ficha:empty { display: none; }
 
 /* LO QUE DIJO EL REVISOR DEL TEMA (2026-09-18), dentro del editor: el porqué con
    el signo de aviso y, debajo, la reescritura que propone en una tarjeta con su

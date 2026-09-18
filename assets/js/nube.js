@@ -794,22 +794,39 @@ window.ATWI = window.ATWI || {};
     });
   }
 
+  /* EL TOKEN VIVO ANTES DE CADA LLAMADA, EN UN SOLO SITIO (2026-09-18). El
+     historial ya esperaba a `auth.listo()` y las demás no —`turno`, `arbitrar`,
+     `mediar`, `olvidar`…—: `conSesion()` lee el token guardado sin mirar si
+     sigue vivo, y caduca en una hora. Una ronda que se retoma al día siguiente,
+     o que dura más de una hora, mandaba un JWT muerto y el servidor contestaba
+     401 con un motivo que no explicaba nada. `listo()` no cuesta nada cuando el
+     token vale —resuelve al instante— y nunca rechaza: si el refresco falla, la
+     llamada sale igual y falla como fallaba, con su aviso. Se envuelve la
+     exportación y no cada `fetch`: catorce sitios son catorce olvidos posibles. */
+  function conTokenVivo(f) {
+    return function () {
+      var args = arguments;
+      if (!auth || !auth.listo || !auth.dentro()) return f.apply(null, args);
+      return auth.listo().then(function () { return f.apply(null, args); });
+    };
+  }
+
   window.ATWI.nube = {
-    revisarTema: revisarTema,
+    revisarTema: conTokenVivo(revisarTema),
     ladoDeTurno: ladoDeTurno,
     historial: historial,
-    oirDelAlmacen: oirDelAlmacen,
-    olvidar: olvidar,
+    oirDelAlmacen: conTokenVivo(oirDelAlmacen),
+    olvidar: conTokenVivo(olvidar),
     hay: hayNube,
-    abrirPartida: abrirPartida,
-    mandarTurno: mandarTurno,
-    arbitrar: arbitrar,
-    mediar: mediar,
-    anotar: anotar,
-    marcarVisto: marcarVisto,
-    guardarActa: guardarActa,
-    acuerdos: acuerdos,
-    partida: partida,
+    abrirPartida: conTokenVivo(abrirPartida),
+    mandarTurno: conTokenVivo(mandarTurno),
+    arbitrar: conTokenVivo(arbitrar),
+    mediar: conTokenVivo(mediar),
+    anotar: conTokenVivo(anotar),
+    marcarVisto: conTokenVivo(marcarVisto),
+    guardarActa: conTokenVivo(guardarActa),
+    acuerdos: conTokenVivo(acuerdos),
+    partida: conTokenVivo(partida),
     ultimoFallo: function () { return ultimoFallo; }
   };
 })();

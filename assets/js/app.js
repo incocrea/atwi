@@ -2283,7 +2283,11 @@
               ? '<button class="boton boton--suave cuenta__salir" data-accion="salir">' +
                   icono('salir', 22) + 'Salir</button>'
               : '<button class="boton boton--suave cuenta__salir" data-accion="entrar">Entrar</button>') +
-          '</div>'
+          '</div>' +
+          /* Qué se guarda y qué no, a un toque desde donde está la cuenta. Abre
+             en pestaña nueva: es la página pública, fuera del juego. */
+          '<p class="chico centrado" style="margin-top:var(--e-2)">' +
+            '<a href="../privacidad.html" target="_blank" rel="noopener">Privacidad y datos</a></p>'
         : '') +
 
       '<div class="contadores" style="margin-top:var(--e-4)">' +
@@ -2434,7 +2438,9 @@
         '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' +
           datos.NOMBRE_MAX + '" autocomplete="' + (deInvitado ? 'off' : 'nickname') + '" ' +
           'placeholder="' + (deInvitado ? '¿Con quién juegas?' : 'Tu apodo') + '" ' +
-          'value="' + esc(deInvitado ? (propuesta.otro || '') : p.nombre) + '">' +
+          'value="' + esc(deInvitado
+              ? (propuesta.otro === INVITADO ? '' : (propuesta.otro || ''))
+              : p.nombre) + '">' +
 
         /* UNA CARA GRANDE ARRIBA Y LA FILA DEBAJO, como el selector del juez
            (titular, 2026-09-18). Eran seis tarjetas con su nombre y su fondo, y
@@ -2496,10 +2502,48 @@
                     '" data-accion="guardar-ficha">' +
                     (deInvitado ? 'Listo' : 'Guardar') + '</button>' });
 
-    var vacio = deInvitado ? !propuesta.otro : !p.nombre;
+    var vacio = deInvitado ? (!propuesta.otro || propuesta.otro === INVITADO) : !p.nombre;
     setTimeout(function () { var n = $('#f-nombre'); if (n && vacio) n.focus(); }, 60);
   }
 
+
+  /* A QUIEN SE INVITA, EN UN GLOBO (titular, 2026-09-18). Era un campo suelto
+     con su rótulo y su explicación, o sea tres piezas del formulario para un
+     dato que casi siempre se escribe una vez. Ahora sale de la columna vacía,
+     que es la que pregunta por él. */
+  function abrirCorreo(disparador) {
+    var cuerpo =
+      '<div class="correo-editor">' +
+        '<input class="campo" id="p-correo" type="email" inputmode="email" ' +
+          'autocomplete="email" spellcheck="false" maxlength="254" ' +
+          'placeholder="mona@correo.com" value="' + esc(propuesta.correo || '') + '">' +
+        '<p class="chico tenue">Le llega un enlace para entrar a esta partida. ' +
+          'Elige su personaje al entrar.</p>' +
+        '<p class="chico" id="p-correo-error" style="color:var(--peligro)"></p>' +
+      '</div>';
+    abrirGlobo(disparador, { titulo: '¿A quién invitas?' },
+      /* EL SIGNO ES EL «+» DEL HUECO, no el buzón: en esta app la campana del
+         buzón significa «hay algo para ti», y aquí no hay ningún aviso. El
+         globo nace del signo que se tocó, así que lleva el mismo. */
+      { tinte: claseDeModo(), signo: 'mas', signoTam: 64,
+        etiqueta: 'A quién invitas', cuerpo: cuerpo,
+        acciones: '<button class="boton boton--bloque boton--' + claseDeModo() + '" ' +
+                  'data-accion="guardar-correo">Listo</button>' });
+    setTimeout(function () { var n = $('#p-correo'); if (n) n.focus(); }, 60);
+  }
+
+  function guardarCorreo() {
+    var v = ($('#p-correo').value || '').trim();
+    if (!window.ATWI.entrada.valeCorreo(v)) {
+      $('#p-correo-error').textContent = 'Ese correo no parece válido.';
+      return;
+    }
+    propuesta.correo = v;
+    cerrarGlobo();
+    var b = $('#m-preparar [data-accion="invitar-correo"]');
+    if (b) b.outerHTML = huecoDeInvitar();
+    revisarPreparar();
+  }
 
   function guardarFicha() {
     /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
@@ -2508,7 +2552,9 @@
       /* SU NOMBRE SE VALIDA DONDE SE ESCRIBE. Antes esto se miraba al pulsar
          «Sortear», o sea en otra pantalla y después de haber cerrado el globo:
          el aviso salía lejos del campo que lo causaba. */
-      var suyo = datos.limpiarNombre($('#f-nombre').value);
+      /* VACÍO NO ES UN ERROR: es quedarse con el nombre de siempre. Quien
+         borra el campo no está pidiendo un aviso, está diciendo «da igual». */
+      var suyo = datos.limpiarNombre($('#f-nombre').value) || INVITADO;
       var malSuyo = datos.errorDeNombre(suyo);
       if (malSuyo) {
         $('#f-error').textContent =
@@ -3127,29 +3173,58 @@
      porque se pinta al abrir la pantalla y se repinta cada vez que algo le
      cambia —al guardar su globo, y cuando mi personaje le pisa el suyo—: dos
      copias del mismo HTML se desincronizan a la primera. */
-  function fichaGrandeDelInvitado() {
-    var hay = Boolean(propuesta.otro);
-    return '<button type="button" class="mi-personaje" data-accion="ficha-invitado"' +
-        ' style="--suyo:' + window.ATWI.colorPersonaje(propuesta.otroColor) + '"' +
-        ' aria-label="' + (hay ? 'Cambiar la ficha de ' + esc(propuesta.otro)
-                               : 'Ponerle nombre y personaje a tu invitado') + '">' +
-        '<span class="mi-personaje__retrato">' +
-          window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--duelo', propuesta.otroColor) +
-        '</span>' +
-        /* SIN NOMBRE, EL HUECO PREGUNTA. Un retrato con «Sin nombre» debajo
-           parece un dato que falta; la pregunta dice qué hacer y está en el
-           sitio donde se va a leer. */
-        '<span class="mi-personaje__quien' + (hay ? '' : ' mi-personaje__quien--vacio') + '">' +
-          esc(propuesta.otro || '¿Con quién juegas?') + '</span>' +
-        '<span class="mi-personaje__como">' +
-          /* «habla por <nombre>» y no «habla por él/ella»: el invitado no dice
-             de qué género es y no hay por qué suponerlo. */
-          (hay
-            ? esc(window.ATWI.nombrePersonaje(propuesta.otroAvatar)) + ' habla por ' +
-              esc(propuesta.otro) + ' · <b>Cambiar</b>'
-            : '<b>Toca para escribir su nombre y elegir personaje</b>') +
-        '</span>' +
+  /* LOS DOS PERFILES, LADO A LADO Y CON LA MISMA PRESENTACIÓN (titular,
+     2026-09-18: «izquierda el host y el otro por defecto Invitado… nos
+     deshacemos de la label, partimos el "habla por ti" y el "Cambiar" debajo…
+     juez debajo y turnos de último parámetro»). El rótulo «Invitado» se va
+     porque **su nombre ES el título**: con el mío enfrente diciendo el mío, no
+     hace falta una etiqueta que diga de quién es cada columna.
+     Los tres renglones van en su línea —nombre, quién habla, «Cambiar»— porque
+     en media pantalla de ancho el renglón entero se partía por donde cayera. */
+  function perfilEnDuo(o) {
+    return '<button type="button" class="perfil-duo' + (o.vacio ? ' perfil-duo--vacio' : '') +
+        '" data-accion="' + o.accion + '"' +
+        (o.tono ? ' style="--suyo:' + o.tono + '"' : '') +
+        ' aria-label="' + esc(o.etiqueta) + '">' +
+        '<span class="perfil-duo__retrato">' + o.retrato + '</span>' +
+        '<span class="perfil-duo__quien">' + esc(o.quien) + '</span>' +
+        '<span class="perfil-duo__como">' + esc(o.como) + '</span>' +
+        '<span class="perfil-duo__cambiar">' + esc(o.tocar) + '</span>' +
       '</button>';
+  }
+
+  function fichaGrandeDelInvitado() {
+    /* Con el nombre genérico puesto, «Nico habla por Invitado» se lee como un
+       error; se dice de quién habla sin repetir la etiqueta. */
+    var suyo = propuesta.otro === INVITADO ? 'tu invitado' : propuesta.otro;
+    return perfilEnDuo({
+      accion: 'ficha-invitado',
+      tono: window.ATWI.colorPersonaje(propuesta.otroColor),
+      retrato: window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--duelo', propuesta.otroColor),
+      quien: propuesta.otro || INVITADO,
+      como: window.ATWI.nombrePersonaje(propuesta.otroAvatar) + ' habla por ' + suyo,
+      tocar: 'Cambiar',
+      etiqueta: 'Cambiar la ficha de ' + (propuesta.otro || INVITADO)
+    });
+  }
+
+  /* EN LINEA LA COLUMNA DE LA DERECHA ESTÁ VACÍA, Y ESO ES LO QUE DICE (titular,
+     2026-09-18: «aparece vacío, gris y sin personaje, placeholder Invitar; al
+     darle click sacamos un globo con el correo»). No es un hueco pendiente de
+     rellenar por mí: el personaje de quien juegue ese lado **lo elige quien
+     juegue ese lado**, en su teléfono. Lo único mío es a quién se lo mando. */
+  function huecoDeInvitar() {
+    var hay = Boolean(propuesta.correo);
+    return perfilEnDuo({
+      accion: 'invitar-correo',
+      vacio: true,
+      retrato: '<span class="avatar avatar--duelo perfil-duo__hueco">' +
+                 iconoSVG(hay ? 'listo' : 'mas', 34) + '</span>',
+      quien: hay ? propuesta.correo : 'Invitar',
+      como: hay ? 'Le llega un enlace' : 'Elige su personaje al entrar',
+      tocar: hay ? 'Cambiar' : 'Escribir el correo',
+      etiqueta: hay ? 'Cambiar a quién invitas' : 'Escribir el correo de quien invitas'
+    });
   }
 
   /** Repinta la ficha grande del invitado donde esté. */
@@ -3157,6 +3232,30 @@
     var b = $('#m-preparar [data-accion="ficha-invitado"]');
     if (b) b.outerHTML = fichaGrandeDelInvitado();
   }
+
+  function refrescarMiPerfilDuo() {
+    var b = $('#m-preparar [data-accion="ficha-mia"]');
+    if (!b) return false;
+    var p = datos.perfil();
+    b.outerHTML = perfilEnDuo({
+      accion: 'ficha-mia',
+      tono: window.ATWI.colorPersonaje(p.avatarBorde),
+      retrato: window.ATWI.fichaHTML(p.avatar, 'avatar--duelo', p.avatarBorde),
+      quien: p.nombre || 'Tú',
+      como: window.ATWI.nombrePersonaje(p.avatar) + ' habla por ti',
+      tocar: 'Cambiar',
+      etiqueta: 'Cambiar tu personaje'
+    });
+    return true;
+  }
+
+  /* EL INVITADO YA TIENE NOMBRE ANTES DE ESCRIBIRLO (titular, 2026-09-18: «por
+     defecto tiene como nombre: Invitado, o el último invitado que haya
+     jugado»). Sin esto, la pantalla abría con un hueco que había que rellenar
+     para poder jugar; con esto se puede sortear de una y el nombre se cambia
+     solo si se quiere. Es un nombre de verdad —pasa la regla del nombre y viaja
+     a la sala—, no un texto de relleno. */
+  var INVITADO = 'Invitado';
 
   function fichaDelInvitado(nombre) {
     var g = nombre ? datos.invitado(nombre) : null;
@@ -3227,7 +3326,7 @@
        teléfono compartido se repite casi siempre la misma pareja, y escribir el
        mismo nombre cada vez es trabajo que la app ya sabe hacer. */
     propuesta.juez = propuesta.juez || juezPorDefecto();
-    propuesta.otro = propuesta.otro || (invitadosPrevios()[0] || {}).nombre || '';
+    propuesta.otro = propuesta.otro || (invitadosPrevios()[0] || {}).nombre || INVITADO;
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
     propuesta.otroColor = g.color;
@@ -3251,18 +3350,15 @@
        dos vías porque es lo único de esta pantalla que es mío en las dos. El
        bloque entero es un botón: abre la ficha del perfil, la misma de la
        pestaña Perfil, y al guardar se repinta aquí (`refrescarMiPersonaje`). */
-    var bloqueMio =
-      '<button type="button" class="mi-personaje" data-accion="ficha-mia"' +
-        ' style="--suyo:' + window.ATWI.colorPersonaje(p.avatarBorde) + '"' +
-        ' aria-label="Cambiar tu personaje">' +
-        '<span class="mi-personaje__retrato">' +
-          window.ATWI.fichaHTML(p.avatar, 'avatar--duelo', p.avatarBorde) +
-        '</span>' +
-        '<span class="mi-personaje__quien">' + esc(p.nombre || 'Tú') + '</span>' +
-        '<span class="mi-personaje__como">' +
-          esc(window.ATWI.nombrePersonaje(p.avatar)) + ' habla por ti · <b>Cambiar</b>' +
-        '</span>' +
-      '</button>';
+    var bloqueMio = perfilEnDuo({
+      accion: 'ficha-mia',
+      tono: window.ATWI.colorPersonaje(p.avatarBorde),
+      retrato: window.ATWI.fichaHTML(p.avatar, 'avatar--duelo', p.avatarBorde),
+      quien: p.nombre || 'Tú',
+      como: window.ATWI.nombrePersonaje(p.avatar) + ' habla por ti',
+      tocar: 'Cambiar',
+      etiqueta: 'Cambiar tu personaje'
+    });
 
     /* EL INVITADO SE PRESENTA COMO YO (titular, 2026-09-18: «tiene una ficha
        similar a la del user en globo, démosle una igual, y quitamos el input de
@@ -3275,18 +3371,7 @@
        detrás de otro toque.
        No es una cuenta: es alguien que agarró este teléfono. Pero su ficha se
        recuerda, así que la próxima vez que juegue sale como salió. */
-    var bloqueInvitado =
-      /* EL RÓTULO SE QUEDA, y el mío no lo lleva: el de arriba es el primero de
-         la pantalla y se explica solo con «habla por ti»; éste va después de
-         Turnos y Juez, y sin rótulo serían dos retratos apilados sin decir cuál
-         es cuál. Mismo aire y mismo centrado que «¿A quién invitas?» de la otra
-         vía, o cambiar de vía daría un salto. */
-      '<h3 class="centrado" style="margin:var(--e-3) 0 0">Invitado</h3>' +
-      fichaGrandeDelInvitado() +
-      /* Cuando MI personaje pisa el del invitado, el suyo se mueve y aquí se
-         dice: sin este renglón la ficha de al lado cambiaría sola. Vacío no
-         gasta alto. */
-      '<p class="chico aviso-aro" id="p-aviso-ficha" style="margin-top:6px"></p>';
+    var bloqueInvitado = fichaGrandeDelInvitado();
 
     /* EN LINEA NO SE INVITA A UN NOMBRE, SE INVITA A UN CORREO (titular,
        2026-09-17). El nombre vale mientras la persona está al lado; para
@@ -3300,13 +3385,7 @@
        aceptó no dice nada de nadie— y una lista llena de direcciones a las que
        se escribió una vez es una agenda, no unos contactos. Con ellos, reinvitar
        no pide volver a escribir el correo. */
-    var bloqueCorreo =
-      '<h3 class="centrado" style="margin:var(--e-3) 0 6px">¿A quién invitas?</h3>' +
-      '<input class="campo" id="p-correo" type="email" inputmode="email" ' +
-        'autocomplete="email" spellcheck="false" maxlength="254" ' +
-        'placeholder="mona@correo.com" value="' + esc(propuesta.correo || '') + '">' +
-      '<p class="chico tenue" style="margin-top:6px">' +
-        'Le llega un enlace para entrar a esta partida.</p>';
+    var bloqueCorreo = huecoDeInvitar();
 
     /* AQUÍ IBA «¿QUIÉN LOS REPRESENTA?» —una fila por lado con el abogado— y se
        fue entero el 2026-09-18: el abogado dejó de ser opcional el mismo día,
@@ -3342,7 +3421,18 @@
          mitad, el título ocupaba un renglón entero para presentar tres piezas
          que ya no lo llenaban, y la pantalla ganaba altura sin ganar nada. */
       selectorDeDonde() +
-      bloqueMio +
+
+      /* LOS DOS, LADO A LADO Y EN SU SITIO: yo a la izquierda y quien juega
+         enfrente a la derecha, que es como se van a ver en el choque de puños.
+         El aviso de «tu personaje le pisó el suyo» va DEBAJO de los dos, no
+         dentro de una columna: habla de la pareja, no de uno. */
+      '<div class="duo">' + bloqueMio + (enLinea ? bloqueCorreo : bloqueInvitado) + '</div>' +
+      '<p class="chico aviso-aro centrado" id="p-aviso-ficha"></p>' +
+
+      /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
+         juzga es de la partida y los turnos son el último parámetro —cuánto
+         rato quieren estar—, así que van en ese orden de importancia. */
+      bloqueJuez +
 
       '<div class="turnos-linea">' +
         /* «Turnos por persona» y no «¿Cuántos turnos?» (decisión del titular):
@@ -3353,7 +3443,11 @@
         /* «Turnos» a secas (titular, 2026-09-18): el «por persona» que se le
            puso el 2026-09-14 se fue; las cifras de minutos de debajo ya dicen
            cuánto dura la partida entera. */
-        '<h3 class="centrado" style="margin:0">Turnos</h3>' +
+        /* CON SU AIRE ARRIBA: desde que los turnos van los últimos, este título
+           queda pegado a la fila del juez —que son seis discos sin caja— y los
+           dos se tocaban. Antes iba el primero del formulario y no le hacía
+           falta. */
+        '<h3 class="centrado" style="margin:var(--e-4) 0 0">Turnos</h3>' +
         '<div class="turnos-fila">' +
         /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
            `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
@@ -3409,9 +3503,6 @@
          formulario barajado: quien cambia el interruptor veía moverse las
          piezas. Con el juez fijo en medio, lo único que cambia entre una y otra
          es el último bloque, que es exactamente lo que el interruptor decide. */
-      bloqueJuez +
-      (enLinea ? bloqueCorreo : bloqueInvitado) +
-
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
       /* LA PRUEBA DEL MICRÓFONO vive aquí, escondida hasta que se toca «Sortear»:
          el botón pide el permiso, la barra enseña el nivel mientras se dice
@@ -3468,15 +3559,7 @@
      de aviso lo dice, porque una ficha que cambia sola sin explicación es lo
      que hace desconfiar de la pantalla. */
   function refrescarMiPersonaje() {
-    var mio = $('#m-preparar .mi-personaje');
-    if (!mio) return;
-    var p = datos.perfil();
-    mio.style.setProperty('--suyo', window.ATWI.colorPersonaje(p.avatarBorde));
-    mio.querySelector('.mi-personaje__retrato').innerHTML =
-      window.ATWI.fichaHTML(p.avatar, 'avatar--duelo', p.avatarBorde);
-    mio.querySelector('.mi-personaje__quien').textContent = p.nombre || 'Tú';
-    mio.querySelector('.mi-personaje__como').innerHTML =
-      esc(window.ATWI.nombrePersonaje(p.avatar)) + ' habla por ti · <b>Cambiar</b>';
+    if (!refrescarMiPerfilDuo()) return;
     apartarAlInvitado();
   }
 
@@ -3503,8 +3586,9 @@
        un nombre de una palabra no sirve para mandarle nada a nadie; la regla es
        la de la puerta de entrada, no una segunda escrita aquí. */
     if (dondeSeJuega() === 'linea') {
-      var c = $('#p-correo');
-      b.disabled = !window.ATWI.entrada.valeCorreo(((c && c.value) || '').trim());
+      /* El correo vive en la propuesta desde que su globo lo guarda; aquí ya no
+         hay campo que leer. */
+      b.disabled = !window.ATWI.entrada.valeCorreo(propuesta.correo || '');
       return;
     }
     /* Solo por el invitado: el propio viene del perfil, que ya pasó por esta
@@ -4168,8 +4252,6 @@
          dibujar entero y el correo vive en el DOM hasta que se pulsa el botón.
          El nombre del invitado ya no: se guarda en la propuesta al cerrar su
          globo, así que el interruptor no lo puede perder. */
-      var correo = $('#p-correo');
-      if (correo) propuesta.correo = correo.value.trim();
       recordarDonde(don.dataset.donde);
       abrirPreparar(true);
       return;
@@ -4390,6 +4472,8 @@
       irA('catalogo');
     }
     else if (a === 'ficha-invitado') { abrirFicha('invitado', acc); }
+    else if (a === 'invitar-correo') { abrirCorreo(acc); }
+    else if (a === 'guardar-correo') { guardarCorreo(); }
     /* Mi personaje desde «Antes de empezar»: la misma ficha del perfil, y al
        guardar queda para el juego entero, no solo para esta partida. */
     else if (a === 'ficha-mia') { abrirFicha('yo', acc); }
@@ -4486,12 +4570,12 @@
       return;
     }
 
+    /* El correo se guarda al pulsar «Listo» en su globo y no a cada tecla: ahí
+       dentro no hay repintado que lo pueda borrar. Lo que sí hace falta es
+       retirar el aviso mientras se corrige. */
     if (e.target.id === 'p-correo') {
-      /* Se guarda a cada tecla por lo mismo que el nombre: cambiar de vía o
-         retocar algo repinta el formulario, y lo que solo viviera en el campo
-         se perdería. */
-      propuesta.correo = e.target.value.trim();
-      revisarPreparar();
+      var errC = $('#p-correo-error');
+      if (errC) errC.textContent = '';
       return;
     }
 
