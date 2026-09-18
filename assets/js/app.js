@@ -3857,9 +3857,14 @@
   /* ======================================================================
      LA RULETA DEL JUEZ (titular, 2026-09-18)
      Tres segundos recorriendo la fila y frenando, como la ficha del sorteo de
-     quién abre —mismo `clac` y misma idea—. Lo que se sortea ya está decidido
-     antes de arrancar: la animación no elige, ENSEÑA. Así el resultado no
-     depende de cuántos fotogramas dé el teléfono.
+     quién abre —mismo `clac` y misma idea—. **Donde para es el juez de la
+     partida**: cada paso deja puesto (`aria-pressed`) al que toca y escribe
+     `propuesta.juez`, así que lo que se ve marcado y lo que se juega son
+     siempre lo mismo, pare donde pare y se corte cuando se corte.
+     Lo que sí se decide antes de arrancar es a CUÁL va a llegar, y eso es a
+     propósito: si el destino saliera de contar fotogramas, un teléfono lento
+     daría una ruleta más corta y otro juez. Se elige primero y la animación
+     lleva hasta él.
      ⚠️ LOS TIEMPOS SE CALCULAN, NO SE ACUMULAN. Cada paso se programa contra el
      reloj desde que empezó —`t0 + tiempoDe(k)`— y no sumando esperas: sumando,
      cada retraso del navegador se añade al siguiente y tres segundos acaban
@@ -3894,11 +3899,21 @@
     var son = window.ATWI.sonido;
     var haySon = son && son.hay();
     var t0 = (window.performance && performance.now()) || 0;
-    /* Empieza rápido y frena: el cubo es lo que hace que los últimos pasos se
-       vean de uno en uno. */
+    /* ⚠️ ARRANCA A TOPE Y FRENA, Y ESTUVO AL REVÉS (lo vio el titular,
+       2026-09-18: «la animación va al revés, de máxima velocidad inicial hasta
+       detenerse»). La curva se escribió como `1 - (1-p)³`, que es la de siempre
+       para MOVER algo —empieza deprisa y llega suave—, y aquí lo que se reparte
+       no es distancia sino CUÁNDO ocurre cada paso: con esa curva el 27 % del
+       tiempo se iba en el 10 % de los pasos, o sea los primeros muy separados
+       —lento— y los últimos amontonados —acelerando—. Justo lo contrario de una
+       ruleta.
+       Con `p³` el tiempo casi no avanza al principio, así que los pasos caen
+       pegados, y se dispara al final, que es cuando se ven de uno en uno.
+       Medido con 20 pasos en 3 s: los diez primeros en 375 ms y el último él
+       solo en 430. */
     var tiempoDe = function (k) {
       var p = k / total;
-      return RULETA_JUEZ * (1 - Math.pow(1 - p, 3));
+      return RULETA_JUEZ * p * p * p;
     };
 
     var k = 0;
