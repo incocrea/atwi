@@ -277,9 +277,11 @@
             'peticion_id&order=creado.desc&limit=150'),
       pedir('llamadas?select=id,consumo'),
       pedir('tarifas?select=modelo,unidad,usd_por_unidad'),
-      pedir('latidos?select=*')
+      pedir('latidos?select=*'),
+      pedir('ajustes?clave=eq.latido_activo&select=valor,cambiado')
     ]).then(function (r) {
       var filas = r[0], hay = {}, precio = {}, latidos = r[3];
+      var activo = ((r[4] || [])[0] || {}).valor === 'si';
       r[1].forEach(function (l) { hay[l.consumo] = l.id; });
       r[2].forEach(function (t) { (precio[t.modelo] = precio[t.modelo] || {})[t.unidad] = Number(t.usd_por_unidad); });
 
@@ -295,7 +297,27 @@
       /* EL LATIDO ARRIBA Y NO ABAJO. Es lo único de esta pantalla que hay que
          mirar sin buscarlo: si el latido murió, la próxima llamada de verdad
          paga la escritura entera y nadie se entera hasta ver la factura. */
-      var cabeza = latidos.length
+      /* EL INTERRUPTOR DEL LATIDO (titular, 2026-09-18: «mantengamos el latido
+         vivo y agrégame un control en el tablero que me permita activarlo o
+         desactivarlo manualmente»). Va por `latir()`, que exige `es_admin()`:
+         desde aquí es un botón; desde la terminal, `sql.py` no pasa esa guarda.
+         Lo que cuesta encendido con el juego parado: ~0,015 USD por ronda,
+         ~0,40 al día. Apagado, la primera partida de cada hora paga ~0,13 más. */
+      var interruptor =
+        '<div class="tarjetas"><div class="tarjeta" style="grid-column:1/-1">' +
+          '<div class="eti">Latido de la caché</div>' +
+          '<div class="dato">' + (activo ? '● Encendido' : '○ Apagado') + '</div>' +
+          '<div class="pie">' +
+            (activo
+              ? 'Cada familia late cuando lleva 50 min sin usarse: ~0,015 USD por ronda, ~0,40 al día parado.'
+              : 'Sin latido, la caché muere a la hora y la primera partida de cada hora paga ~0,13 USD más.') +
+            ' <button id="b-latido" class="boton" style="margin-left:8px">' +
+              (activo ? 'Apagar' : 'Encender') + '</button> ' +
+            '<span id="r-latido" class="chico"></span>' +
+          '</div>' +
+        '</div></div>';
+
+      var cabeza = interruptor + (latidos.length
         ? '<div class="tarjetas">' + latidos.map(function (l) {
             return tarjeta(
               (l.vivo ? '● ' : '○ ') + 'Latido · ' + esc(l.modelo || '—'),
@@ -309,7 +331,7 @@
               'llegó tarde y la entrada ya había expirado. Si se repite, hay que acortar ' +
               'el intervalo.</div>' : '')
         : '<div class="aviso">Todavía no hay latidos. Sin ellos, la caché del prompt ' +
-          'muere a la hora y cada veredicto vuelve a pagar la escritura entera.</div>';
+          'muere a la hora y cada veredicto vuelve a pagar la escritura entera.</div>');
 
       $('#lienzo').innerHTML = cabeza +
         '<h2>Las últimas 150 llamadas</h2>' +
@@ -358,6 +380,24 @@
                 : '<span class="chico">—</span>'
             ];
           }), [false, false, false, true, true, true, true, true, true, true, false]);
+
+      var bLatido = $('#b-latido');
+      if (bLatido) bLatido.addEventListener('click', function () {
+        var r = $('#r-latido');
+        r.textContent = '…';
+        fetch(cfg.supabaseUrl + '/rest/v1/rpc/latir', {
+          method: 'POST',
+          headers: { apikey: cfg.supabaseAnon, Authorization: 'Bearer ' + sesion.access_token,
+                     'Content-Type': 'application/json' },
+          body: JSON.stringify({ p_que: activo ? 'no' : 'si' })
+        }).then(function (x) {
+          if (!x.ok) return x.text().then(function (t) { throw new Error(t.slice(0, 200)); });
+          return x.json();
+        }).then(function (dicho) {
+          r.textContent = String(dicho);
+          setTimeout(verLlamadas, 700);
+        }).catch(function (e) { r.textContent = 'No se pudo: ' + e.message; });
+      });
     }).catch(fallo);
   }
 
