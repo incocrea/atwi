@@ -967,11 +967,36 @@ body.app {
    ficha entera mide 552 px y deja 2 de aire, o sea que un teléfono de 667 ya no
    la aguanta sin esto. */
 .ficha-editor { display: grid; gap: var(--e-3); max-height: 56vh; overflow-y: auto; }
-.ficha-editor .personajes { gap: 6px; }
-.ficha-editor .personaje { padding: 6px 2px; gap: 2px; }
-.ficha-editor .personaje__cara { width: 100%; height: auto; aspect-ratio: 1; max-width: 72px; }
-.ficha-editor .personaje__nombre { font-size: var(--t-mini); }
-.ficha-editor .colores { justify-content: center; }
+/* EL RETRATO ARRIBA, la fila debajo: el mismo reparto que el selector del juez.
+   Lo que se mira es el dibujo grande; lo que se toca son las miniaturas. */
+.ficha-editor__cara { display: grid; justify-items: center; gap: 4px; }
+.ficha-editor__f { width: 104px; height: 104px; }
+.ficha-editor__nombre { font-family: var(--display); font-weight: 800; font-size: var(--t-chico); }
+/* LA FILA, COMO LA DEL JUEZ, y por lo mismo: seis piezas iguales de las que
+   solo una está puesta. Cambia el aro —ahí es el color del modo y aquí el del
+   personaje, que es lo que se está eligiendo— y que una puede estar tomada. */
+.caras-fila { display: flex; justify-content: space-between; align-items: center; }
+.caras-fila__cara {
+  padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
+  border-radius: 50%; opacity: .72;
+  transition: transform var(--dur-corta) var(--rebote), opacity var(--dur-corta) var(--suave),
+              box-shadow var(--dur-corta) var(--suave);
+}
+.caras-fila__f { width: 40px; height: 40px; }
+.caras-fila__cara:active { transform: scale(.94); }
+.caras-fila__cara[aria-pressed="true"] {
+  opacity: 1; transform: scale(1.12);
+  box-shadow: 0 0 0 3px var(--pj, var(--lavanda)), var(--sombra-2);
+}
+/* La tomada no se puede elegir y se dice con el gris, no con un aspa: es la
+   misma regla de «el tuyo está apartado» del texto de abajo. */
+.caras-fila__cara--tomada { opacity: .3; cursor: default; filter: grayscale(1); }
+/* LOS DISCOS DE COLOR, MAS CHICOS (titular, 2026-09-18): en un globo, cuatro
+   discos de 40 px pesaban tanto como el retrato, y lo que se elige ahí es un
+   matiz de lo de arriba. */
+.ficha-editor .colores { justify-content: center; gap: var(--e-3); }
+.ficha-editor .color { height: 32px; }
+.ficha-editor .color i { max-width: 26px; }
 .ficha-editor .campo { margin: 0; }
 /* El renglón de error no gasta alto mientras no diga nada. */
 .ficha-editor #f-error:empty { display: none; }
@@ -4505,6 +4530,14 @@ body.app {
   .globo-velo { transition-duration: 100ms; }
 }
 
+/* ⚠️ SIN ANILLO DE FOCO CUANDO EL FOCO ES PROGRAMATICO. El globo lleva
+   `tabIndex = -1` para poder recibirlo al abrirse —eso es lo que hace que
+   Escape lo cierre y que un lector de pantalla lo lea—, y el navegador le dibuja
+   su outline: un rectángulo azul alrededor de una pieza redondeada, que se vio
+   en cuanto el globo dejó de tener un campo al que mandar el foco. `focus-visible`
+   distingue los dos casos: por teclado el anillo sigue, que ahí sí hace falta. */
+.globo:focus:not(:focus-visible) { outline: none; }
+
 .globo {
   position: absolute;
   z-index: 60;
@@ -4573,6 +4606,12 @@ body.app {
      metía encima 9 px —la onda ocupa 57 a este ancho— y la última línea se leía
      sobre el dibujo. */
   padding: var(--e-4) var(--e-4) 58px 90px;
+}
+/* EL HUECO DE LA IZQUIERDA ES EL SITIO DEL SIGNO, y el lápiz de la ficha mide
+   64 px donde la bombilla mide 96: con los 90 de la bombilla, el contenido
+   quedaba corrido a la derecha y las seis caritas se apretaban. */
+.globo:has(.ficha-editor) .globo__caja {
+  padding-left: 62px;
   box-shadow: var(--sombra-3);
   text-align: left;
 }

@@ -2318,6 +2318,19 @@
      TRES DISPARADORES Y UN SOLO GLOBO: `editar-ficha` (Perfil), `ficha-mia` y
      `ficha-invitado` (Antes de empezar). Los tres pasan por aquí con el botón
      que se tocó, que es de donde cuelga el pico. */
+  /** El retrato de quien se está poniendo, con su nombre. Se rehace al tocar
+   *  una miniatura o un color: es la única pieza del globo que enseña la
+   *  decisión tomada, y si no se mueve parece que no pasó nada. */
+  function caraGrande() {
+    return window.ATWI.fichaHTML(personajeElegido, 'ficha-editor__f', colorElegido) +
+      '<span class="ficha-editor__nombre">' +
+        esc(window.ATWI.nombrePersonaje(personajeElegido)) + '</span>';
+  }
+  function refrescarCaraGrande() {
+    var c = $('#f-cara');
+    if (c) c.innerHTML = caraGrande();
+  }
+
   function abrirFicha(quien, disparador) {
     var deInvitado = quien === 'invitado';
     editandoFicha = deInvitado ? 'invitado' : 'yo';
@@ -2336,6 +2349,10 @@
     var chocaba = deInvitado && personajeElegido === vetado;
     if (chocaba) personajeElegido = window.ATWI.otroPersonaje(vetado);
 
+    /* EL TINTE ES EL DEL MODO cuando se edita dentro de una partida, y el
+       lavanda de la marca en Perfil, que es donde no hay modo. */
+    var tinteDeLaFicha = (!$('#m-preparar').hidden && propuesta.modo) || 'lavanda';
+
     var cuerpo =
       '<div class="ficha-editor">' +
         (deInvitado
@@ -2344,18 +2361,29 @@
               datos.NOMBRE_MAX + '" autocomplete="nickname" placeholder="Tu apodo" ' +
               'value="' + esc(p.nombre) + '">') +
 
+        /* UNA CARA GRANDE ARRIBA Y LA FILA DEBAJO, como el selector del juez
+           (titular, 2026-09-18). Eran seis tarjetas con su nombre y su fondo, y
+           en un globo eso es una rejilla dentro de una caja dentro de otra: tres
+           cajas para elegir una cara. Ahora lo que se mira es el retrato —el
+           dibujo a tamaño de verse— y lo que se toca es una fila de miniaturas.
+           EL NOMBRE VIVE ARRIBA, junto al retrato: en la fila sobra —seis
+           nombres de seis letras en 280 px no se leen— y arriba dice quién es el
+           que se está poniendo. */
+        '<div class="ficha-editor__cara" id="f-cara">' + caraGrande() + '</div>' +
+
         /* CADA PERSONAJE APARECE UNA VEZ, no cuatro: la cara se elige aquí y el
            color aparte, y al tocar un color se recargan las seis. Poner las
            veinticuatro fichas sería la misma decisión partida en dos pantallas. */
-        '<div class="personajes">' +
+        '<div class="caras-fila" role="group" aria-label="Personaje">' +
           window.ATWI.quienes().map(function (q) {
             var suyo = q.clave === vetado;
-            return '<button class="personaje' + (suyo ? ' personaje--tomado' : '') + '"' +
+            return '<button type="button" class="caras-fila__cara' +
+              (suyo ? ' caras-fila__cara--tomada' : '') + '"' +
               ' data-personaje="' + q.clave + '"' + (suyo ? ' disabled' : '') +
-              (q.clave === personajeElegido ? ' aria-pressed="true"' : '') +
+              ' aria-pressed="' + (q.clave === personajeElegido) + '"' +
+              ' aria-label="' + esc(q.nombre) + '" title="' + esc(q.nombre) + '"' +
               ' style="--pj:' + window.ATWI.colorPersonaje(colorElegido) + '">' +
-              window.ATWI.fichaHTML(q.clave, 'personaje__cara', colorElegido) +
-              '<span class="personaje__nombre">' + esc(q.nombre) + '</span>' +
+              window.ATWI.fichaHTML(q.clave, 'caras-fila__f', colorElegido) +
             '</button>';
           }).join('') +
         '</div>' +
@@ -2380,13 +2408,16 @@
       { titulo: deInvitado
           ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
           : 'Tu ficha' },
-      { /* EL TINTE ES EL DEL MODO cuando se edita dentro de una partida, y el
-           lavanda de la marca en Perfil, que es donde no hay modo. */
-        tinte: (!$('#m-preparar').hidden && propuesta.modo) || 'lavanda',
+      { tinte: tinteDeLaFicha,
         signo: 'lapiz', signoTam: 64,
         etiqueta: deInvitado ? 'Ficha del invitado' : 'Tu ficha',
         cuerpo: cuerpo,
-        acciones: '<button class="boton boton--bloque" data-accion="guardar-ficha">' +
+        /* El botón lleva el color del globo, como el «Jugar ahora» de los
+           globos de modo: dentro de una partida es el del modo y en Perfil el
+           lavanda de la marca, que es el que `.boton` trae de serie. */
+        acciones: '<button class="boton boton--bloque' +
+                    (tinteDeLaFicha === 'lavanda' ? '' : ' boton--' + tinteDeLaFicha) +
+                    '" data-accion="guardar-ficha">' +
                     (deInvitado ? 'Listo' : 'Guardar') + '</button>' });
 
     setTimeout(function () { var n = $('#f-nombre'); if (n && !p.nombre) n.focus(); }, 60);
@@ -3900,8 +3931,9 @@
         var q = b.dataset.personaje;
         b.style.setProperty('--pj', window.ATWI.colorPersonaje(colorElegido));
         var cara = b.querySelector('.avatar');
-        if (cara) cara.outerHTML = window.ATWI.fichaHTML(q, 'personaje__cara', colorElegido);
+        if (cara) cara.outerHTML = window.ATWI.fichaHTML(q, 'caras-fila__f', colorElegido);
       });
+      refrescarCaraGrande();
       return;
     }
 
@@ -3909,9 +3941,9 @@
     if (pj && !pj.disabled) {
       personajeElegido = pj.dataset.personaje;
       $$('.ficha-editor [data-personaje]').forEach(function (x) {
-        if (x.dataset.personaje === personajeElegido) x.setAttribute('aria-pressed', 'true');
-        else x.removeAttribute('aria-pressed');
+        x.setAttribute('aria-pressed', String(x.dataset.personaje === personajeElegido));
       });
+      refrescarCaraGrande();
       return;
     }
 
