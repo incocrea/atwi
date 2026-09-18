@@ -893,6 +893,70 @@
      dentro de otro no es HTML válido. Es una caja con el botón grande arriba
      —tocar el tema— y la fila de chips debajo, donde el de personalizar cabe
      como uno más porque eso es lo que parece. */
+  /* ======================================================================
+     LA RULETA DE TEMAS (titular, 2026-09-18)
+     *«Deja estáticas las opciones y solo el área de los temas queda
+     scrolleable… que nunca se queden cortadas las cards de tema, es decir que
+     se deslicen suavemente y se acomoden siempre para que todas las visibles
+     queden completas, mantendrás siempre 3 o 4 visibles según el viewport, como
+     un estilo ruleta.»*
+
+     Tres piezas, y las tres hacen falta:
+     · **La cabecera no scrollea**: la cinta del modo, las mesas, los filtros y
+       «Mis propios temas» son los MANDOS de la lista, y unos mandos que se van
+       hacia arriba obligan a volver para tocarlos.
+     · **El alto de la caja es un múltiplo exacto del paso de una tarjeta**, que
+       es lo único que garantiza que la última visible esté entera. Se mide del
+       DOM —tarjeta + hueco— en vez de escribirlo aquí, porque el CSS lo puede
+       cambiar y dos números iguales en dos sitios se desincronizan.
+     · **`scroll-snap` hace el resto**: al soltar el dedo, la lista se acomoda
+       sola a la tarjeta más cercana en vez de quedarse a medias.
+     ⚠️ Y PARA QUE ESTO SEA CIERTO, LAS TARJETAS MIDEN TODAS LO MISMO: con altos
+     distintos no hay múltiplo que valga —la última entraría o no según de qué
+     tema fuera—. Lo paga el enunciado, que se recorta a tres renglones.
+     ====================================================================== */
+  var MIN_VISIBLES = 3, MAX_VISIBLES = 4;
+  /* El hueco entre tarjetas se estira para repartir lo que sobra, pero no sin
+     límite: pasados ~28 px las tarjetas dejan de leerse como una lista y el
+     resto se queda de aire al pie. */
+  var HUECO_MIN = 12, HUECO_MAX = 28, AIRE_PIE = 8;
+
+  function ajustarRuleta() {
+    var r = $('#v-catalogo .ruleta');
+    if (!r) return;
+    var uno = r.firstElementChild;
+    if (!uno) return;
+    var alto = uno.offsetHeight;
+    if (!alto) return;
+
+    /* Lo que queda de pantalla por debajo de los mandos, menos el aire del pie:
+       la última tarjeta pegada al canto de la barra se lee como cortada aunque
+       esté entera. */
+    var caja = r.parentNode.getBoundingClientRect();
+    var arriba = r.getBoundingClientRect().top;
+    var libre = caja.bottom - arriba - AIRE_PIE;
+
+    /* Cuántas caben con el hueco más apretado que se admite. */
+    var caben = Math.floor((libre + HUECO_MIN) / (alto + HUECO_MIN));
+    var n = Math.max(MIN_VISIBLES, Math.min(MAX_VISIBLES, caben));
+    /* Con menos temas que huecos, la caja mide lo que hay: una ruleta con aire
+       debajo se lee como una lista que se quedó corta. */
+    n = Math.min(n, r.children.length);
+    if (n < 1) return;
+
+    /* ⚠️ Y EL ALTO QUE SOBRA SE REPARTE ENTRE LAS TARJETAS (titular,
+       2026-09-18: «también deben autodistribuir su distancia entre ellas para
+       usar el alto disponible»). Con el hueco fijo, tres tarjetas de 99 en 356
+       px dejaban 48 muertos al pie —un vacío que se lee como que la lista se
+       acabó—. Repartidos, el hueco pasa de 12 a 28 y la ruleta llena su sitio.
+       El snap no se entera: va por tarjeta, no por una distancia escrita. */
+    var hueco = n > 1
+      ? Math.max(HUECO_MIN, Math.min(HUECO_MAX, (libre - n * alto) / (n - 1)))
+      : HUECO_MIN;
+    r.style.rowGap = Math.round(hueco) + 'px';
+    r.style.height = Math.round(n * alto + (n - 1) * Math.round(hueco)) + 'px';
+  }
+
   function tarjetaTema(t) {
     var hecho = datos.yaDebatido(t.id);
     var tocado = t.propio || datos.estaReescrito(t.id);
@@ -1216,12 +1280,13 @@
           '</div>' +
 
           (temas.length
-            ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
+            ? '<div class="ruleta">' + temas.map(tarjetaTema).join('') + '</div>'
             /* Y EL DIBUJO DEL HUECO ES EL MISMO «MÁS», y se toca: aquí solo hay
                una cosa que hacer, así que el sitio donde se mira es el sitio
                donde hay que poder tocar. */
             : estadoVacio(icono('mas', 76), 'Todavía no escribieron ninguno',
                 palabras().ninguno, 'tema-nuevo', palabras().primero));
+        ajustarRuleta();
         devolverFoco();
         return;
       }
@@ -1315,8 +1380,9 @@
         '</button>' +
 
         (temas.length
-          ? '<div class="apilado">' + temas.map(tarjetaTema).join('') + '</div>'
+          ? '<div class="ruleta">' + temas.map(tarjetaTema).join('') + '</div>'
           : estadoVacio(icono('lupa', 76), 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
+      ajustarRuleta();
       devolverFoco();
     }).catch(function () {
       caja.innerHTML = estadoVacio('😕', 'No se pudo cargar el catálogo', 'Comprueba que estás sirviendo el sitio con tools/servir.ps1 y no abriendo el archivo directamente.');

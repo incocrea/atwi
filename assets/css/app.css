@@ -1231,12 +1231,76 @@ body.app {
    tarjeta esta arriba a la derecha, frente al titulo.
    `align-items: start` es lo que lo deja ARRIBA: sin el, la rejilla estira las
    dos celdas y el lapiz queda centrado contra un enunciado de tres renglones. */
+/* --- LA RULETA DE TEMAS (titular, 2026-09-18) --------------------------------
+   Los mandos —la cinta del modo, las mesas, los filtros y «Mis propios temas»—
+   se quedan quietos y **solo la lista scrollea**: unos mandos que se van hacia
+   arriba obligan a volver a bajar para tocarlos.
+   ⚠️ LA VISTA DEJA DE SCROLLEAR, Y ESO ES LO QUE HAY QUE APAGAR: `.vista` lleva
+   `overflow-y: auto` para todas las pantallas, y con la lista scrolleando
+   dentro habría DOS barras, una dentro de la otra. Solo cuando el catálogo
+   trae ruleta —con el buscador abierto o sin temas no la hay— y solo en él. */
+#v-catalogo:has(.ruleta) {
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+/* `min-height: 0` o el hijo con scroll no puede encoger: el mínimo de una caja
+   flexible es el de su contenido, y aquí el contenido son 305 tarjetas. */
+#v-catalogo:has(.ruleta) > * { flex: none; }
+.ruleta {
+  display: grid; gap: var(--e-3);
+  min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  /* LA INERCIA LA PONE EL NAVEGADOR, y lo que hay que hacer es NO CORTARLA
+     (titular, 2026-09-18: «entre más rápido se arrastren, más avanza»). Con
+     `mandatory` el momentum corre entero y el snap se aplica AL FINAL, cuando
+     la lista ya se paró: un arrastre corto avanza una tarjeta y uno rápido
+     varias, y en las dos acaba cuadrada. Lo que sí la mataría es la propiedad
+     que obliga a parar en cada punto de snap —`always`—, que convierte
+     cualquier gesto en un paso de uno: **no se pone, y no está**. Y
+     `-webkit-overflow-scrolling` es el momentum de iOS, que sin él frena en
+     seco al soltar. */
+  -webkit-overflow-scrolling: touch;
+  /* EL ALTO LO PONE EL JS, en múltiplos exactos del paso de una tarjeta: es lo
+     único que garantiza que la última visible esté entera. */
+  /* Y AL SOLTAR EL DEDO SE ACOMODA SOLA a la tarjeta más cercana. `mandatory` y
+     no `proximity`: con `proximity` el navegador decide cuándo vale la pena
+     ajustar, y una lista que a veces se acomoda y a veces no se lee como un
+     fallo. */
+  scroll-snap-type: y mandatory;
+  /* ⚠️ SIN `scroll-behavior: smooth`, y no por gusto: lo suave del snap lo pone
+     el navegador al soltar el dedo, esta propiedad solo afecta a los scroll
+     PROGRAMÁTICOS —y los intercepta todos, también los que no quieren
+     animación—. Es la misma trampa que ya costó medirse en el pase de la
+     landing: con ella puesta, `scrollTop = 170` no llegaba a ningún sitio
+     mientras la pestaña no pintara. Medido aquí: sin ella, pedir 60 deja la
+     lista en 111, pedir 170 en 222 y pedir 300 en 333 —múltiplos exactos del
+     paso, o sea tarjetas siempre enteras—. */
+  /* Sin barra a la vista: el snap ya dice dónde está la lista, y una barra
+     dentro del teléfono dibujado se lee como un elemento del juego. */
+  scrollbar-width: none;
+}
+.ruleta::-webkit-scrollbar { display: none; }
+.ruleta > * { scroll-snap-align: start; }
+
 .tema-caja {
   padding: var(--e-4);
   display: grid; grid-template-columns: minmax(0, 1fr) auto;
   gap: var(--e-2); align-items: start;
   background: var(--carta-velo);
 }
+/* ⚠️ TODAS MIDEN LO MISMO, Y ESE ES EL PRECIO DE LA RULETA. Con altos distintos
+   no hay múltiplo que valga: la última tarjeta entraría entera o no según de
+   qué tema fuera, que es justo lo que se quería quitar. El alto sale del
+   contenido más largo que se admite —título de una línea y enunciado de tres—
+   y lo que pase de ahí se recorta. */
+/* ⚠️ DOS RENGLONES DE ENUNCIADO Y NO TRES, Y EL NÚMERO SALE DE LA CUENTA DE LO
+   QUE PIDIÓ EL TITULAR: «siempre 3 o 4 visibles». A 375×812 el hueco que dejan
+   los mandos son 364 px; con tres renglones la tarjeta mide 118 y el paso 130,
+   así que solo caben DOS. Con dos renglones la tarjeta baja a 99, el paso a 111
+   y entran las tres justas (333 de 364) —y cuatro en un teléfono de 430×932—.
+   99 = 16 de relleno + 22 del título + 6 de hueco + 39 de dos renglones + 16.
+   El JS NO lee este número: mide la tarjeta del DOM, así que cambiarlo aquí
+   basta para mover toda la cuenta. */
+.ruleta .tema-caja { height: 99px; align-content: start; }
 /* SOLO EL ICONO, sin caja, sin borde y sin palabra. Lo que lo hace tocable es
    su propia diana de 40 px, que es mas grande que el dibujo: el lapiz mide 24 y
    el resto es margen para el dedo. */
@@ -1263,7 +1327,14 @@ body.app {
   font-family: var(--display); font-weight: 800;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.tema__enunciado { font-size: var(--t-chico); color: var(--tinta-suave); }
+.tema__enunciado {
+  font-size: var(--t-chico); color: var(--tinta-suave);
+  /* TRES RENGLONES Y LO QUE SOBRE SE CORTA. Es lo que deja que todas las
+     tarjetas midan lo mismo; el enunciado entero se lee en el editor —el lápiz
+     de al lado— y en la cabecera de la sala, que lo lleva toda la partida. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 
 /* ⚠️ AQUÍ VIVÍA `.chip--editar`, el «Personalizar» con borde punteado, y se fue
    con la fila de chips (titular, 2026-09-17): ahora es `.tema__editar`, solo el
