@@ -559,6 +559,12 @@ window.ATWI = window.ATWI || {};
        «esto es una prueba» y una de las dos mal. */
     dePruebas: modoPruebas,
 
+    /* QUE ES UN CORREO SE DECIDE EN UN SOLO SITIO. Lo pide también «Antes de
+       empezar», para invitar a jugar en línea, y escribir allá otra expresión
+       regular es tener dos definiciones de lo mismo y que una de las dos se
+       quede vieja — que es exactamente lo que ya pasó con el descargo. */
+    valeCorreo: valeCorreo,
+
     /** Abre la puerta si hace falta. Llama a `hecho` cuando se puede jugar. */
     exigir: function (hecho) {
       alTerminar = hecho;

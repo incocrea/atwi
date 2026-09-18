@@ -2769,6 +2769,90 @@
     propuesta.otroColor = g.color;
 
     $('#m-preparar').className = 'modal modal--' + propuesta.modo;
+    /* --- Las piezas del formulario, que se ordenan distinto en cada vía --- */
+
+    /* La ficha del invitado se toca para elegirle dibujo y color. No es una
+       cuenta: es alguien que agarró este teléfono. Pero su ficha se recuerda,
+       así que la próxima vez que juegue sale como salió.
+       LOS ATAJOS VAN EN EL RENGLÓN DEL RÓTULO, a la derecha. Estaban debajo del
+       campo y del texto de ayuda, o sea DESPUÉS de haber leído «escribí un
+       nombre»: quien ya jugó con alguien lo escribía entero antes de ver que
+       podía tocarlo.
+       EL CAMPO PRIMERO Y LA FICHA DESPUÉS, en el orden del HTML y no con
+       `row-reverse`: así el tabulador pasa por el nombre antes que por el
+       dibujo, que es el orden en que se rellena. */
+    var bloqueInvitado =
+      '<div class="fila-invitado">' +
+        /* «Invitado» a secas: que la partida es local se sabe desde que se
+           eligió «En este móvil», y repetirlo aquí contesta una pregunta que
+           nadie se estaba haciendo. */
+        '<h3 style="margin:0">Invitado</h3>' +
+      '</div>' +
+      '<div class="con-ficha" style="margin-top:6px">' +
+        '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+          'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
+        '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
+          'aria-label="Elegir el aro de su ficha">' +
+          window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
+            .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
+        '</button>' +
+      '</div>';
+      /* Aquí había un párrafo explicando «una sola palabra, primer nombre o
+         apodo». Se fue: el campo ya no ADMITE un espacio ni una letra de más,
+         así que la regla se aprende al escribir en vez de leyéndola. */
+
+    /* EN LINEA NO SE INVITA A UN NOMBRE, SE INVITA A UN CORREO (titular,
+       2026-09-17). El nombre vale mientras la persona está al lado; para
+       mandarle una partida hace falta una dirección. El campo es `type="email"`
+       de verdad —no un texto que parece uno— para que el teclado del teléfono
+       salga con la arroba, y lo valida la MISMA función que la puerta de
+       entrada: `ATWI.entrada.valeCorreo`.
+       ⚠️ AQUI DEBAJO VAN A IR LOS CONTACTOS, y la regla ya está decidida: la
+       lista son las personas con las que se COMPLETÓ al menos una partida, no
+       las que se invitaron. Invitar no es jugar —una invitación que nadie
+       aceptó no dice nada de nadie— y una lista llena de direcciones a las que
+       se escribió una vez es una agenda, no unos contactos. Con ellos, reinvitar
+       no pide volver a escribir el correo. */
+    var bloqueCorreo =
+      '<h3 style="margin:var(--e-3) 0 6px">¿A quién invitas?</h3>' +
+      '<input class="campo" id="p-correo" type="email" inputmode="email" ' +
+        'autocomplete="email" spellcheck="false" maxlength="254" ' +
+        'placeholder="mona@correo.com" value="' + esc(propuesta.correo || '') + '">' +
+      '<p class="chico tenue" style="margin-top:6px">' +
+        'Le llega un enlace para entrar a esta partida.</p>';
+
+    /* EL ABOGADO. Se elige POR SEPARADO y antes de empezar: uno puede jugar con
+       abogado y el otro a pelo, y esa asimetría es parte de la gracia. Va aquí y
+       no dentro de la sala porque cambiar las reglas a mitad de partida no es
+       una opción, y porque cambia lo que cuesta cada turno.
+       ⚠️ LOS ABOGADOS SON DE LOS DOS, ASI QUE EN LINEA NO SE ELIGEN AQUI. La
+       llave decide si a alguien lo representa un personaje, y eso cambia lo que
+       se oye de ÉL: es suyo. En local los dos están delante y la eligen juntos;
+       en línea cada quien prende la suya en su teléfono. */
+    var bloqueAbogados =
+      /* A LA IZQUIERDA Y PEGADO A SU LISTA (mockup del titular, 2026-09-17).
+         Iban centrados, y un título centrado sobre una lista alineada a la
+         izquierda parte la pantalla en dos ejes. */
+      '<h3 style="margin:var(--e-3) 0 2px">¿Quién los representa?</h3>' +
+      /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
+         explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
+         para una decisión que la mayoría va a dejar como viene, y encima
+         repetidos, porque el modal lo vuelve a decir justo cuando hace falta
+         leerlo —al elegir—. */
+      '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
+        'Prendé la llave para que un personaje te haga de abogado.</p>' +
+      pintarRepresentantes();
+
+    /* EL JUEZ, y en local va DEBAJO DE LOS DOS: arriba de ellos se leería como
+       el título de la sección; al lado, como un tercer duelista. Debajo se lee
+       en el orden correcto: estos dos discuten, y este los juzga.
+       Es un renglón y no dos retratos como los abogados, y también a propósito:
+       el abogado cambia lo que el juez va a OIR —es media partida— mientras que
+       el juez, por ahora, solo cambia quién lo cuenta al final. */
+    var bloqueJuez =
+      '<h3 style="margin:var(--e-3) 0 var(--e-2)">¿Quién juzga?</h3>' +
+      pintarJuez();
+
     $('#m-preparar .modal__cuerpo').innerHTML =
       /* AQUÍ ARRIBA IBA EL ENUNCIADO, EN UNA TARJETA RETOCABLE, Y SE QUITÓ
          (decisión del titular, 2026-09-14). El argumento para tenerlo era que
@@ -2837,80 +2921,15 @@
          un nombre»: quien ya jugó con alguien lo escribía entero antes de ver
          que podía tocarlo. Arriba se ven antes de empezar a escribir, que es
          cuando sirven. */
-      '<div class="fila-invitado">' +
-        /* UN SOLO RÓTULO. Estaban «Invitado local» de título y «Nombre de
-           invitado» de etiqueta, uno encima del otro diciendo lo mismo. Se
-           queda el título, con los atajos a su derecha en la misma fila. */
-        /* «Invitado» a secas: que la partida es local se sabe desde que se
-           eligió «Jugar los dos en este móvil», y repetirlo aquí contesta una
-           pregunta que nadie se estaba haciendo.
-           EN LINEA CAMBIA EL RÓTULO porque cambia la pregunta: aquí no hay
-           nadie sentado al lado, hay alguien a quien se le va a mandar esto. */
-        '<h3 style="margin:0">' + (enLinea ? '¿A quién invitas?' : 'Invitado') + '</h3>' +
-      '</div>' +
-      /* EL CAMPO PRIMERO Y LA FICHA DESPUÉS. Va en el orden del HTML y no con
-         `row-reverse`: así el tabulador pasa por el nombre antes que por el
-         dibujo, que es el orden en que se rellena.
-         ⚠️ EN LINEA NO HAY FICHA QUE ELEGIR: el personaje y el color son de
-         quien juega, y quien juega ese lado va a estar en su propio teléfono.
-         Elegírselos desde aquí sería repartirle un dibujo sin preguntarle. */
-      '<div class="' + (enLinea ? '' : 'con-ficha') + '" style="margin-top:6px">' +
-        '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-          'autocomplete="off" placeholder="' + (enLinea ? 'Su nombre' : '¿Con quién juegas?') +
-          '" value="' + esc(propuesta.otro) + '">' +
-        (enLinea ? '' :
-          '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
-            'aria-label="Elegir el aro de su ficha">' +
-            window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
-              .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
-          '</button>') +
-      '</div>' +
-      /* Aquí había un párrafo explicando «una sola palabra, primer nombre o
-         apodo». Se fue: el campo ya no ADMITE un espacio ni una letra de más,
-         así que la regla se aprende al escribir en vez de leyéndola. Lo único
-         que el campo no puede decir solo —que tocando el círculo se le elige
-         personaje— lo dice el propio círculo al tocarlo. */
-
-      /* Los tres últimos, y solo tres: es una lista para tocar de un vistazo, no
-         un historial. Cuentan como el mismo quien repite NOMBRE Y PERSONAJE;
-         el mismo nombre con otro personaje es otra ficha. */
-      /* EL ABOGADO. Se elige POR SEPARADO y antes de empezar: uno puede jugar
-         con abogado y el otro a pelo, y esa asimetría es parte de la gracia.
-         Va aquí y no dentro de la sala porque cambiar las reglas a mitad de
-         partida no es una opción, y porque cambia lo que cuesta cada turno. */
-      /* ⚠️ LOS ABOGADOS SON DE LOS DOS, ASI QUE EN LINEA NO SE ELIGEN AQUI. La
-         llave decide si a alguien lo representa un personaje, y eso cambia lo
-         que se oye de ÉL: es suyo. En local los dos están delante y la eligen
-         juntos; en línea cada quien prende la suya en su teléfono. */
-      (enLinea ? '' :
-        /* A LA IZQUIERDA Y PEGADO A SU LISTA (mockup del titular, 2026-09-17).
-           Iban centrados, y un título centrado sobre una lista alineada a la
-           izquierda parte la pantalla en dos ejes. El rótulo y su línea de
-           ayuda van juntos, como un solo bloque. */
-        '<h3 style="margin:var(--e-3) 0 2px">¿Quién los representa?</h3>' +
-        /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
-           explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
-           para una decisión que la mayoría va a dejar como viene, y encima
-           repetidos, porque el modal lo vuelve a decir justo cuando hace falta
-           leerlo —al elegir—.
-           Y DE DOS RENGLONES A UNO: la mitad que se fue —«cada quien se
-           representa a sí mismo»— es lo que la propia lista ya dice en cada
-           fila con «Voz original, sin abogado». */
-        '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
-          'Prendé la llave para que un personaje te haga de abogado.</p>' +
-        pintarRepresentantes()) +
-
-      /* EL JUEZ VA DEBAJO DE LOS DOS, y el sitio es la mitad de la decision.
-         Arriba de ellos se leeria como el titulo de la seccion; al lado, como
-         un tercer duelista. Debajo se lee en el orden correcto: estos dos
-         discuten, y este los juzga.
-
-         Es un renglon y no dos retratos como los abogados, y tambien a
-         proposito: el abogado cambia lo que el juez va a OIR --es media
-         partida-- mientras que el juez, por ahora, solo cambia quien lo cuenta
-         al final. Darle el mismo peso en pantalla diria que pesa lo mismo. */
-      '<h3 style="margin:var(--e-3) 0 var(--e-2)">¿Quién juzga?</h3>' +
-      pintarJuez() +
+      /* ⚠️ EL ORDEN NO ES EL MISMO EN LAS DOS VIAS (titular, 2026-09-17).
+         En local: con quién juegas, quién los representa y quién juzga — el
+         invitado primero porque está sentado al lado y es lo primero que se
+         resuelve. En línea: **el juez y al final a quién se invita**, porque ahí
+         el correo es lo último que se hace antes de mandar, y debajo de él va a
+         ir la lista de contactos. */
+      (enLinea
+        ? bloqueJuez + bloqueCorreo
+        : bloqueInvitado + bloqueAbogados + bloqueJuez) +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
 
@@ -3167,10 +3186,19 @@
     /* El botón se apaga con la MISMA regla con la que se rechaza al pulsarlo.
        Tenía la suya —dos letras y nada más— y eso dejaba encender el botón con
        un nombre que luego no pasaba, que es la peor de las dos opciones. */
+    var b = $('#m-preparar .modal__pie button');
+    /* CADA VIA SE VALIDA CONTRA LO QUE PIDE. En línea lo que hay es un correo, y
+       un nombre de una palabra no sirve para mandarle nada a nadie; la regla es
+       la de la puerta de entrada, no una segunda escrita aquí. */
+    if (dondeSeJuega() === 'linea') {
+      var c = $('#p-correo');
+      b.disabled = !window.ATWI.entrada.valeCorreo(((c && c.value) || '').trim());
+      return;
+    }
     /* Solo por el invitado: el propio viene del perfil, que ya pasó por esta
        misma regla en la puerta, y aquí no hay campo donde corregirlo. */
     var mal = datos.errorDeNombre($('#p-otro') && $('#p-otro').value);
-    $('#m-preparar .modal__pie button').disabled = Boolean(mal);
+    b.disabled = Boolean(mal);
   }
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
@@ -3269,18 +3297,27 @@
        seguía usando los de antes. Es el mismo fallo que la landing tenía por
        siete sitios — nada avisa de que un texto dejó de ser verdad. */
     var m = cfg.modos[propuesta.modo] || {};
-    var campo = $('#p-otro');
-    var quien = datos.limpiarNombre((campo && campo.value) || propuesta.otro || '');
+    var campo = $('#p-correo');
+    var quien = ((campo && campo.value) || propuesta.correo || '').trim();
     var turnos = propuesta.turnos || cfg.reglas.turnosPorDefecto;
+    /* SE COMPRUEBA AL PULSAR Y NO SOLO AL ESCRIBIR, con la misma regla que apaga
+       el botón: un campo rellenado por el navegador o un repintado a destiempo
+       pueden dejar el botón encendido con algo que no es una dirección. */
+    if (!window.ATWI.entrada.valeCorreo(quien)) {
+      var err = $('#p-error');
+      if (err) err.textContent = 'Ese correo no parece válido.';
+      return;
+    }
 
     $('#m-invitar .modal__cuerpo').innerHTML =
       '<div class="centrado" style="padding:var(--e-6) 0">' +
         '<div style="margin-bottom:var(--e-3)">' + icono('buzon', 76) + '</div>' +
         '<h2 style="margin-bottom:var(--e-2)">Propuesta lista</h2>' +
         '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
-          (quien ? 'Le vas a proponer a <strong>' + esc(quien) + '</strong> '
-                 : 'Vas a proponer ') +
-          '<strong>' + esc(t.titulo) + '</strong> en modo <strong>' +
+          /* El correo y el título, separados. Pegados —«a mona@correo.com Mi
+             rincón en zona común»— se leían como una sola cosa larga. */
+          'Le vas a proponer a <strong>' + esc(quien) + '</strong> jugar ' +
+          '<strong>«' + esc(t.titulo) + '»</strong> en modo <strong>' +
           esc(m.nombre || propuesta.modo) + '</strong>, ' + turnos +
           ' turno' + (turnos === 1 ? '' : 's') + ' cada uno. ' +
           'Podrá aceptarlo o pedirte otro modo.' +
@@ -3640,6 +3677,8 @@
          boton: sin esto, teclear el nombre y tocar el interruptor lo borra. */
       var campo = $('#p-otro');
       if (campo) propuesta.otro = campo.value;
+      var correo = $('#p-correo');
+      if (correo) propuesta.correo = correo.value.trim();
       recordarDonde(don.dataset.donde);
       abrirPreparar(true);
       return;
@@ -3983,6 +4022,15 @@
           .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
         refrescarRepresentantes();
       }
+      revisarPreparar();
+      return;
+    }
+
+    if (e.target.id === 'p-correo') {
+      /* Se guarda a cada tecla por lo mismo que el nombre: cambiar de vía o
+         retocar algo repinta el formulario, y lo que solo viviera en el campo
+         se perdería. */
+      propuesta.correo = e.target.value.trim();
       revisarPreparar();
       return;
     }
