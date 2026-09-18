@@ -3844,12 +3844,22 @@
          son la salida. Un globo que explica dos frases no tiene nada que ceda y
          esto no le hace nada. */
       if (cede) {
+        /* ⚠️ EL SCROLL SE PONE SOLO CUANDO HACE FALTA, y no de serie en el CSS.
+           Un contenedor con `overflow` RECORTA lo que se salga de él, y el
+           anillo de foco de un campo (`box-shadow: 0 0 0 2px`) se pinta FUERA
+           de su caja: con el campo al 100 % del ancho, el anillo caía justo en
+           el canto del área y se veía cortado por los dos lados —lo vio el
+           titular en el editor de temas, en un globo que ni siquiera
+           scrolleaba—. Sin tope no hay área de recorte y el problema no existe;
+           cuando sí lo hay, el aire de `.globo__cede` le deja sitio. */
         cede.style.maxHeight = '';
+        cede.style.overflowY = '';
         alto = nodo.offsetHeight;
         var sitio = m.height - AIRE * 2 - PICO;
         if (alto > sitio) {
           cede.style.maxHeight =
             Math.max(140, cede.offsetHeight - (alto - sitio)) + 'px';
+          cede.style.overflowY = 'auto';
           alto = nodo.offsetHeight;
         }
       }

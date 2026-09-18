@@ -4676,10 +4676,16 @@ body.app {
    nota de abajo no ocupan cuando no dicen nada: un hueco fijo reservado para un
    aviso que casi nunca sale deja el botón separado del campo sin motivo. */
 .tema-editor { display: grid; gap: var(--e-3); text-align: left; }
-/* LO QUE CEDE CUANDO EL GLOBO NO CABE. El tope lo pone `abrirGlobo` midiendo
-   contra el marco: aquí solo está que, cuando lo tenga, se pueda bajar con el
-   dedo sin arrastrar la pantalla de detrás. */
-.globo__cede { overflow-y: auto; overscroll-behavior: contain; }
+/* LO QUE CEDE CUANDO EL GLOBO NO CABE. El tope Y el `overflow` los pone
+   `abrirGlobo` midiendo contra el marco —no van aquí a propósito: ver abajo—;
+   esto es que, cuando los tenga, se pueda bajar con el dedo sin arrastrar la
+   pantalla de detrás.
+   ⚠️ Y EL AIRE DE LOS LADOS ES PARA EL ANILLO DE FOCO. Un campo mide el 100 %
+   de su caja y su anillo (`box-shadow: 0 0 0 2px`) se pinta por FUERA, así que
+   al recortar el área de scroll el borde del campo enfocado se veía cortado por
+   los dos costados. El relleno le deja sitio dentro del recorte y el margen
+   negativo lo devuelve, así que el ancho del formulario no cambia. */
+.globo__cede { overscroll-behavior: contain; padding-inline: 4px; margin-inline: -4px; }
 .tema-editor #e-error:empty { display: none; }
 .tema-editor__nota { margin: 0; }
 .tema-editor .reescrito { margin: 0; }
