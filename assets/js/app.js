@@ -915,11 +915,25 @@
      distintos no hay múltiplo que valga —la última entraría o no según de qué
      tema fuera—. Lo paga el enunciado, que se recorta a tres renglones.
      ====================================================================== */
-  var MIN_VISIBLES = 3, MAX_VISIBLES = 4;
-  /* El hueco entre tarjetas se estira para repartir lo que sobra, pero no sin
-     límite: pasados ~28 px las tarjetas dejan de leerse como una lista y el
-     resto se queda de aire al pie. */
-  var HUECO_MIN = 12, HUECO_MAX = 28, AIRE_PIE = 8;
+  /* ⚠️ NO HAY MÍNIMO DE TARJETAS, Y ESE ERA EL FALLO (titular, 2026-09-18, con
+     una foto de su móvil: *«¿ves cómo se corta la tercera card? No debería
+     pasar: si el cálculo no confirma que las 3 salen completas, quita una y
+     redistribuye»*). Aquí había un `MIN_VISIBLES = 3` que forzaba tres aunque
+     solo cupieran dos, y entonces la ruleta medía más que su hueco y la última
+     salía cortada —justo lo que la ruleta existe para que no pase—. **Lo que
+     manda es lo que cabe**: el mínimo era una intención escrita como número, y
+     una intención no cambia el alto de la pantalla.
+     Y por el otro lado (su PC): *«sobra más espacio abajo que arriba; se podría
+     reducir el espacio entre cards y meter una cuarta, o distribuir las 3
+     equitativamente hasta el botnav»*. Las dos cosas, en este orden: primero se
+     aprieta el hueco hasta el mínimo para ver si entra **una más** —una tarjeta
+     de verdad vale más que aire repartido— y solo lo que sobre después se
+     reparte. */
+  var MAX_VISIBLES = 4;
+  /* El hueco se mueve entre estos dos: 8 es lo más apretado en que dos tarjetas
+     siguen leyéndose como dos, y 36 lo más suelto antes de que la lista parezca
+     tres cosas sueltas. */
+  var HUECO_MIN = 8, HUECO_MAX = 36, AIRE_PIE = 8;
 
   function ajustarRuleta() {
     var r = $('#v-catalogo .ruleta');
@@ -929,33 +943,51 @@
     var alto = uno.offsetHeight;
     if (!alto) return;
 
-    /* Lo que queda de pantalla por debajo de los mandos, menos el aire del pie:
-       la última tarjeta pegada al canto de la barra se lee como cortada aunque
-       esté entera. */
+    /* Se mide SIN el margen de la vez anterior, o cada repintado lo acumularía:
+       el margen es el resultado de esta cuenta, no un dato de entrada. */
+    r.style.marginTop = '';
     var caja = r.parentNode.getBoundingClientRect();
     var arriba = r.getBoundingClientRect().top;
+    /* Lo que queda de pantalla por debajo de los mandos, menos el aire del pie:
+       la última pegada al canto de la barra se lee como cortada aunque esté
+       entera. */
     var libre = caja.bottom - arriba - AIRE_PIE;
 
-    /* Cuántas caben con el hueco más apretado que se admite. */
-    var caben = Math.floor((libre + HUECO_MIN) / (alto + HUECO_MIN));
-    var n = Math.max(MIN_VISIBLES, Math.min(MAX_VISIBLES, caben));
-    /* Con menos temas que huecos, la caja mide lo que hay: una ruleta con aire
+    /* Cuántas caben DE VERDAD, con el hueco más apretado que se admite. */
+    var n = Math.floor((libre + HUECO_MIN) / (alto + HUECO_MIN));
+    /* Con menos temas que sitio, la caja mide lo que hay: una ruleta con aire
        debajo se lee como una lista que se quedó corta. */
-    n = Math.min(n, r.children.length);
-    if (n < 1) return;
+    n = Math.min(n, MAX_VISIBLES, r.children.length);
+    if (n < 1) { r.style.height = ''; r.style.rowGap = ''; return; }
 
-    /* ⚠️ Y EL ALTO QUE SOBRA SE REPARTE ENTRE LAS TARJETAS (titular,
-       2026-09-18: «también deben autodistribuir su distancia entre ellas para
-       usar el alto disponible»). Con el hueco fijo, tres tarjetas de 99 en 356
-       px dejaban 48 muertos al pie —un vacío que se lee como que la lista se
-       acabó—. Repartidos, el hueco pasa de 12 a 28 y la ruleta llena su sitio.
-       El snap no se entera: va por tarjeta, no por una distancia escrita. */
+    /* EL ALTO QUE SOBRA SE REPARTE ENTRE LAS TARJETAS, hasta el tope del hueco;
+       lo que no quepa ni así se va a un margen ARRIBA Y ABAJO por igual, que es
+       lo que pidió el titular —«dejando margen arriba o abajo»—: todo el
+       sobrante al pie se lee como que la lista se acabó.
+       El snap no se entera de nada de esto: va por tarjeta, no por una
+       distancia escrita. */
     var hueco = n > 1
       ? Math.max(HUECO_MIN, Math.min(HUECO_MAX, (libre - n * alto) / (n - 1)))
       : HUECO_MIN;
-    r.style.rowGap = Math.round(hueco) + 'px';
-    r.style.height = Math.round(n * alto + (n - 1) * Math.round(hueco)) + 'px';
-    sonarRuleta(r, alto + Math.round(hueco));
+    hueco = Math.round(hueco);
+    var altura = n * alto + (n - 1) * hueco;
+    r.style.rowGap = hueco + 'px';
+    r.style.height = altura + 'px';
+    r.style.marginTop = Math.max(0, Math.round((libre - altura) / 2)) + 'px';
+    sonarRuleta(r, alto + hueco);
+  }
+
+  /* LA CUENTA SE REHACE CUANDO CAMBIA EL SITIO. Girar el teléfono, abrir el
+     teclado o —en escritorio— estirar la ventana cambian el alto disponible, y
+     una ruleta calculada para el de antes es exactamente lo que se quería
+     evitar: la última tarjeta cortada. */
+  window.addEventListener('resize', ajustarRuleta);
+  /* ⚠️ Y EN EL MÓVIL EL SITIO CAMBIA SIN QUE HAYA `resize`: la barra de
+     direcciones del navegador se esconde al deslizar y el viewport VISIBLE
+     crece, igual que con el teclado. Es el mismo aviso que ya costó el globo:
+     lo que hay que escuchar es `visualViewport`. */
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', ajustarRuleta);
   }
 
   /* EL CLAC DE LA RULETA (titular, 2026-09-18). El sonido ya existía y estaba
