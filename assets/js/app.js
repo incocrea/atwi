@@ -1244,15 +1244,28 @@
       var propios = datos.cuantosPropios();
 
       caja.innerHTML = cinta +
-        '<div class="fila fila--cabecera" style="margin-bottom:var(--e-3)">' +
-          /* EL SELECTOR DE MESA, donde estaba la flecha de volver: ahora no hay a
-             dónde volver, y lo que hacía falta ahí es poder cambiar de mesa sin
-             salir de la lista. Es el mismo gesto que el de modo —un disco con el
-             signo, que rota a la siguiente— y por eso el título dice cuál es:
-             entre tres, un icono solo no basta para saber dónde estás. */
-          '<button class="boton-icono" data-accion="siguiente-mesa"' +
-            ' aria-label="Cambiar con quién juegas" title="Cambiar con quién juegas">' +
-            icono(modoPublico, 26) + '</button>' +
+        '<div class="fila fila--cabecera fila--mesas" style="margin-bottom:var(--e-3)">' +
+          /* LAS TRES MESAS A LA VISTA, NO UNA QUE ROTA (titular, 2026-09-18). El
+             disco que rotaba pedía tocar dos veces para llegar a la tercera y no
+             decía cuántas hay ni cuál es la otra; con las tres puestas, cambiar
+             es un toque y siempre el mismo. Es la fila del juez otra vez: seis
+             piezas iguales de las que solo una está puesta, aquí con tres.
+             El manejador es el de siempre —`data-publico`—, que se quedó vivo
+             cuando se fueron las cartas del paso 0. */
+          '<div class="mesas-fila" role="group" aria-label="Con quién juegas">' +
+            PUBLICOS.map(function (x) {
+              var puesta = x[0] === modoPublico;
+              return '<button type="button" class="mesas-fila__mesa"' +
+                ' data-publico="' + x[0] + '" aria-pressed="' + puesta + '"' +
+                ' aria-label="' + esc(nombrePublico(x[0])) + '"' +
+                ' title="' + esc(nombrePublico(x[0])) + '">' +
+                /* 36 Y NO 30: estas pegatinas dejan como un tercio del cuadro en
+                   transparente —lo mismo que ya está medido para las bombillas y
+                   los play—, así que a 30 el dibujo se queda en 20 y la fila
+                   parecía tres puntos. */
+                icono(x[0], 36) + '</button>';
+            }).join('') +
+          '</div>' +
           tituloVista(nombrePublico(modoPublico), 'font-size:var(--t-h2)') +
           botonBuscar() +
         '</div>' +
@@ -3224,6 +3237,13 @@
       (enLinea ? bloqueCorreo : bloqueInvitado) +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
+      /* LA PRUEBA DEL MICRÓFONO vive aquí, escondida hasta que se toca «Sortear»:
+         el botón pide el permiso, la barra enseña el nivel mientras se dice
+         algo, y en cuanto hay voz se sortea. Ver `conMicrofono()`. */
+      '<div class="micro-prueba" id="p-micro" hidden>' +
+        '<p class="chico" id="p-micro-dice"></p>' +
+        '<div class="nivel-barra"><i id="p-micro-nivel" style="width:0"></i></div>' +
+      '</div>' +
 
       /* Y aquí había un aviso diciendo que quién abre se sortea. También se
          fue: el botón dice «Sortear quién abre» y a continuación se ve la
@@ -3317,6 +3337,59 @@
        misma regla en la puerta, y aquí no hay campo donde corregirlo. */
     var mal = datos.errorDeNombre($('#p-otro') && $('#p-otro').value);
     b.disabled = Boolean(mal);
+  }
+
+  /* EL MICRÓFONO SE PRUEBA ANTES DE SORTEAR (titular, 2026-09-18). Hasta hoy
+     el permiso se pedía al primer toque de grabar, ya en la sala, y si fallaba
+     salía «no se pudo abrir el micrófono» con la partida ya abierta en el
+     servidor. Ahora el toque en «Sortear quién abre» hace tres cosas seguidas:
+     pide el permiso, escucha unos segundos --«Di algo…», con la barra de
+     nivel-- y, en cuanto capta voz, sortea. Si no hay permiso, no hay micro o
+     no capta nada, lo dice ahí mismo y no lanza la ronda.
+     UNA VEZ POR SESIÓN: el teléfono es uno y el permiso, una vez dado, se
+     queda; volver a pedir «di algo» en cada partida sería un peaje. Se recuerda
+     en `sessionStorage`, que muere con la pestaña: en la siguiente visita se
+     vuelve a comprobar, que es cuando pueden haber cambiado el permiso. */
+  var probandoMicro = false;
+  function conMicrofono(sigue) {
+    var g = window.ATWI.grabadora;
+    if (!g || !g.probar) return sigue();
+    var ya = false;
+    try { ya = sessionStorage.getItem('atwi-micro-ok') === '1'; } catch (e) {}
+    if (ya || probandoMicro) return ya ? sigue() : undefined;
+
+    var caja = $('#p-micro'), dice = $('#p-micro-dice'), nivel = $('#p-micro-nivel');
+    var b = $('#m-preparar .modal__pie button');
+    var err = $('#p-error');
+    if (err) err.textContent = '';
+    probandoMicro = true;
+    if (caja) caja.hidden = false;
+    if (dice) dice.textContent = 'Probando el micrófono: di algo…';
+    if (b) { b.disabled = true; b.textContent = 'Escuchando…'; }
+
+    g.probar(function (n) { if (nivel) nivel.style.width = Math.round(n * 100) + '%'; }, 5000)
+      .then(function (r) {
+        probandoMicro = false;
+        if (b) { b.disabled = false; b.textContent = 'Sortear quién abre'; }
+        if (r.ok) {
+          try { sessionStorage.setItem('atwi-micro-ok', '1'); } catch (e) {}
+          if (dice) dice.textContent = 'Micrófono listo.';
+          if (nivel) nivel.style.width = '100%';
+          return sigue();
+        }
+        if (nivel) nivel.style.width = '0';
+        var que = r.motivo === 'permiso'
+          ? 'El navegador no dio permiso para el micrófono. Actívalo en los ajustes del ' +
+            'sitio (el candado junto a la dirección) y vuelve a tocar «Sortear».'
+          : r.motivo === 'sin-micro'
+          ? 'No se encontró ningún micrófono en este aparato.'
+          : r.motivo === 'silencio'
+          ? 'El micrófono abrió pero no captó tu voz. Acércate, sube el volumen del ' +
+            'micrófono o quita lo que lo tape, y vuelve a tocar «Sortear».'
+          : (r.texto || 'Este navegador no puede grabar.');
+        if (dice) dice.textContent = que;
+        if (caja) caja.classList.add('micro-prueba--fallo');
+      });
   }
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
@@ -3831,8 +3904,11 @@
        el globo de ayuda de un modo podría volver a ofrecerlas, y cuesta una
        línea. Si en un mes nadie lo usa, se va. */
     if (pub) {
+      /* SIN `entrar()`: esto ya no abre un paso nuevo —cambia la lista de la
+         pantalla en la que se está—, así que apilar una entrada de historial
+         dejaría el atrás del teléfono deshaciendo toques de selector. */
       modoPublico = pub.dataset.publico; recordarMesa(modoPublico);
-      categoriaAbierta = null; entrar(); pintarCatalogo(); return;
+      categoriaAbierta = null; pintarCatalogo(); return;
     }
 
     var cat = e.target.closest('[data-categoria]');
@@ -4042,17 +4118,6 @@
       reponerFoco = buscadorAbierto;
       pintarCatalogo();
     }
-    /* ROTA, COMO EL DE MODO. Con tres mesas, un menú sería una capa más para
-       elegir entre tres cosas que caben en tres toques; y la lista se repinta
-       debajo, así que se ve lo que se está eligiendo mientras se elige. */
-    else if (a === 'siguiente-mesa') {
-      var mesas = PUBLICOS.map(function (x) { return x[0]; });
-      var i = mesas.indexOf(modoPublico);
-      modoPublico = mesas[(i + 1) % mesas.length];
-      recordarMesa(modoPublico);
-      categoriaAbierta = null;
-      pintarCatalogo();
-    }
     else if (a === 'catalogo-atras' || a === 'cambiar-publico') {
       /* Las flechas de dentro del catálogo hacen lo mismo que el atrás del
          teléfono, y por el mismo camino: si cambiaran el estado por su cuenta,
@@ -4088,7 +4153,7 @@
     else if (a === 'mas-historial') { masHistorial(); }
     else if (a === 'proponer') { proponer(); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
-    else if (a === 'sortear') { sortearYJugar(); }
+    else if (a === 'sortear') { conMicrofono(sortearYJugar); }
     else if (a === 'editar-ficha') { abrirFicha('yo', acc); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
     else if (a === 'tema-nuevo') { abrirEscribir(null); }
