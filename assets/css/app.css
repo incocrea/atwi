@@ -858,6 +858,18 @@ body.app {
    en 343 px de columna queda ~16 entre disco y disco. El puesto lleva el aro
    del color del modo y sube un pelo; los demás van un punto apagados para que
    se lea cuál está. */
+/* ⚠️ LAS DOS FILAS DE OPCIONES MIDEN LO MISMO (titular, 2026-09-18: «distribuye
+   sus anchos para que los tamaños y el ancho de las opciones de selección de
+   jueces y de turnos sean los mismos»). Jueces y turnos son la misma clase de
+   control —piezas de las que solo una está puesta— y a lo ancho de la pantalla
+   entera los seis discos quedaban desperdigados mientras las tres fichas de
+   turno se apretaban en el centro: dos rejillas distintas para lo mismo.
+   `--fila-opciones` es ese ancho común, centrado, y dentro cada fila reparte lo
+   suyo con `space-between`. */
+.jueces-fila, .turnos-linea .turnos-fila {
+  width: min(100%, var(--fila-opciones, 272px));
+  margin-inline: auto;
+}
 .jueces-fila { display: flex; justify-content: space-between; align-items: center; }
 .jueces-fila__juez {
   padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
@@ -865,7 +877,11 @@ body.app {
   transition: transform var(--dur-corta) var(--rebote), opacity var(--dur-corta) var(--suave),
               box-shadow var(--dur-corta) var(--suave);
 }
-.jueces-fila__juez .avatar--juez { width: 44px; height: 44px; }
+/* UN 30 % MENOS QUE LOS 44 QUE TENÍAN (titular, 2026-09-18): son seis en fila y
+   con 44 pesaban como los dos retratos de arriba, que sí son la decisión grande
+   de esta pantalla. Con 31 y el ancho acotado quedan juntos y siguen tocándose
+   de sobra: el blanco de los 44 lo hacía el hueco, no el dibujo. */
+.jueces-fila__juez .avatar--juez { width: 31px; height: 31px; }
 .jueces-fila__juez:active { transform: scale(.94); }
 .jueces-fila__juez[aria-pressed="true"] {
   opacity: 1; transform: scale(1.12);
@@ -3385,10 +3401,7 @@ body.app {
    acotar el ancho, un grid de columnas `1fr` ocupa la fila entera y centrarlo no
    se nota. */
 .turnos-linea { text-align: center; }
-.turnos-linea .turnos-fila {
-  width: max-content; max-width: 100%;
-  margin: var(--e-2) auto 0;
-}
+.turnos-linea .turnos-fila { margin-top: var(--e-2); }
 .turnos-linea .turno-ficha { width: auto; }
 
 /* De qué color va lo que lleva el color del modo dentro de esta pantalla. Se
@@ -3404,14 +3417,15 @@ body.app {
 #m-preparar.modal--negociacion { --del-modo: var(--negociacion); }
 #m-preparar.modal--competencia { --del-modo: var(--competencia); }
 
+/* `space-between` y no una rejilla de columnas iguales: es lo que hace que las
+   tres fichas empiecen y acaben donde empiezan y acaban los seis jueces. */
 .turnos-fila {
-  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
-  gap: var(--e-2); justify-items: center;
+  display: flex; justify-content: space-between; align-items: flex-start;
 }
 .turno-ficha {
   display: grid; justify-items: center; gap: 6px;
   border: 0; background: none; padding: 0;
-  cursor: pointer; font: inherit; color: inherit; width: 100%;
+  cursor: pointer; font: inherit; color: inherit;
 }
 /* El número va DENTRO del círculo y centrado, y el círculo es el botón: el
    minutaje queda fuera y debajo, que es un dato de apoyo y no la elección. */
@@ -3420,7 +3434,14 @@ body.app {
      completo tres círculos eran la pieza más grande de la pantalla, y elegir
      cuántos turnos no es la decisión más importante de «antes de empezar» —lo
      es con quién se juega—. El número sigue leyéndose de sobra. */
-  width: min(36px, 100%); aspect-ratio: 1; border-radius: 50%;
+  /* Y DE 36 A 44 (titular, 2026-09-18: «amplía un poco los selectores de
+     turno»): con los jueces bajando a 31 y las dos filas al mismo ancho, los
+     turnos se quedaban como la pieza más chica de la pantalla siendo la última
+     decisión que se toma. */
+  /* ⚠️ SIN `min(..., 100%)`: desde que la fila es `space-between` el ancho del
+     botón es el de su contenido --el «3 min» de debajo, 30 px-- y el círculo se
+     ataba a ÉL en vez de al número. Medía 30 con 44 escritos al lado. */
+  width: 44px; aspect-ratio: 1; border-radius: 50%;
   display: grid; place-items: center;
   font-family: var(--display); font-weight: 800; font-size: 1rem;
   /* EL BORDE LLEVA EL COLOR DEL MODO, y más grueso. Al encoger, el aro gris de
@@ -3986,51 +4007,85 @@ body.app {
 }
 .tema-revision__sugerencia .boton { margin-top: 4px; }
 
-/* LA PRUEBA DEL MICRÓFONO, debajo del formulario y encima del pie: sale al
-   tocar «Sortear». EL INDICADOR ES EL PROPIO MICRÓFONO (titular, 2026-09-18):
-   gris y quieto cuando no capta nada, encendido en el color del modo y vibrando
-   cuando entra voz. `--nivel` (0 a 1) llega desde el JS en cada medida --unas
-   veinte veces por segundo-- y de ahí salen el halo y cuánto crece el disco, así
-   que responde MIENTRAS se habla y no al final.
-   La vibración va sobre el SVG y el crecimiento sobre el disco: dos animaciones
-   sobre el mismo `transform` se pisan. */
+/* LA PRUEBA DEL MICRÓFONO, EN EL PIE Y ENCIMA DEL BOTÓN (titular, 2026-09-18:
+   «nuestro icono de micrófono, gris y centrado abajo encima del botón de ok»).
+   Va centrada porque es lo último que se mira antes de pulsar, y en el pie
+   porque el cuerpo puede scrollear y esto no puede quedarse fuera de pantalla.
+
+   SIN DISCO DETRÁS: el icono es una pegatina de la plancha, con su propio
+   perfil blanco, así que un círculo de fondo le pone un segundo borde —la misma
+   razón por la que la bombilla de las cartas va suelta—. Y por eso el halo va en
+   `drop-shadow` y no en `box-shadow`: una sombra de caja dibujaría un cuadrado
+   de luz alrededor de un dibujo recortado (la lección de la campana del
+   historial).
+
+   GRIS CUANDO NO CAPTA, EN COLOR CUANDO SÍ. `--nivel` (0 a 1) llega desde el JS
+   unas veinte veces por segundo, así que el halo y el tamaño responden MIENTRAS
+   se habla; `data-suena` enciende el color y el temblor. */
 .micro-prueba {
-  display: flex; align-items: center; gap: var(--e-3); margin-top: var(--e-3);
+  display: grid; justify-items: center; gap: 6px;
+  margin-bottom: var(--e-2);
 }
-.micro-prueba p { margin: 0; color: var(--tinta); font-weight: 700; }
-.micro-prueba--fallo p { color: var(--gancho, #A8431F); }
+/* ⚠️ Y `[hidden]` HAY QUE DECIRLO: el `display: none` que el navegador le pone
+   al atributo viene de su hoja por defecto y lo pisa CUALQUIER clase con
+   `display`. El bloque nacía oculto en el HTML y se veía igual. */
+.micro-prueba[hidden] { display: none; }
+.micro-prueba p {
+  margin: 0; text-align: center; color: var(--tinta); font-weight: 700;
+  max-width: 34ch;
+}
+/* Aquí había un `.micro-prueba--fallo` que pintaba el motivo en rojo dentro
+   del pie. Los fallos van en un toast desde el 2026-09-18: en la pantalla solo
+   queda la instrucción («Di «ok»…»), que no es un error. */
 .micro-prueba__disco {
-  flex: none; display: grid; place-items: center;
-  width: 48px; height: 48px; border-radius: 50%;
-  background: var(--crema-hondo, rgba(0, 0, 0, .05));
-  color: var(--tinta-tenue);
-  transform: scale(calc(1 + var(--nivel, 0) * .14));
-  transition: background var(--dur-corta) var(--suave), color var(--dur-corta) var(--suave);
+  display: block; line-height: 0;
+  /* Gris y apagado: no capta nada. */
+  filter: grayscale(1) opacity(.45);
+  transform: scale(calc(1 + var(--nivel, 0) * .12));
+  transition: filter var(--dur-corta) var(--suave);
 }
-.micro-prueba__disco svg { display: block; }
-/* CON VOZ: el color del modo, el halo que crece con el nivel y el temblor. El
-   halo es `box-shadow` y no un borde porque tiene que poder salirse del disco
-   sin mover nada de sitio. */
-.micro-prueba__disco[data-suena="1"] {
-  color: #fff;
-  background: var(--del-modo, var(--lavanda));
-  box-shadow: 0 0 0 calc(var(--nivel, 0) * 10px)
-              color-mix(in srgb, var(--del-modo, var(--lavanda)) 28%, transparent);
+.micro-prueba__disco img { display: block; }
+/* DOS ESTADOS ENCENDIDOS Y UNA SOLA VIBRACIÓN: `1` es «te estoy oyendo ahora»
+   --color, halo y temblor-- y `ok` es «te oí», que conserva el color y para el
+   temblor. Sin esa distinción el icono se quedaba vibrando después de terminar
+   la prueba, y la partida siguiente abría temblando. */
+.micro-prueba__disco[data-suena="1"],
+.micro-prueba__disco[data-suena="ok"] {
+  filter: drop-shadow(0 0 calc(4px + var(--nivel, 0) * 12px)
+          color-mix(in srgb, var(--del-modo, var(--lavanda)) 65%, transparent));
 }
-.micro-prueba__disco[data-suena="1"] svg { animation: micro-vibra .18s linear infinite; }
+/* El temblor va sobre el dibujo y el crecimiento sobre el contenedor: dos
+   animaciones sobre el mismo `transform` se pisan. */
+.micro-prueba__disco[data-suena="1"] img { animation: micro-vibra .18s linear infinite; }
 @keyframes micro-vibra {
   0%   { transform: translate(0, 0) rotate(0deg); }
-  25%  { transform: translate(-1px, 1px) rotate(-3deg); }
-  50%  { transform: translate(1px, -1px) rotate(3deg); }
+  25%  { transform: translate(-1px, 1px) rotate(-4deg); }
+  50%  { transform: translate(1px, -1px) rotate(4deg); }
   75%  { transform: translate(-1px, -1px) rotate(-2deg); }
   100% { transform: translate(0, 0) rotate(0deg); }
 }
-/* Con el movimiento reducido no tiembla: lo que dice que capta es el color y el
-   halo, y eso se queda. */
+/* Con el movimiento reducido no tiembla: lo que dice que capta es que deja de
+   estar gris, y eso se queda. */
 @media (prefers-reduced-motion: reduce) {
-  .micro-prueba__disco[data-suena="1"] svg { animation: none; }
+  .micro-prueba__disco[data-suena="1"] img { animation: none; }
   .micro-prueba__disco { transition: none; }
 }
+
+/* El ancho común de las dos filas de opciones vive en el modal, que es quien
+   sabe cuánto mide la pantalla. */
+#m-preparar .modal__cuerpo { --fila-opciones: 272px; }
+
+/* EL AIRE ENTRE LOS BLOQUES DE «ANTES DE EMPEZAR» LO MIDE EL JS (titular,
+   2026-09-18: «estos espacios deben ser dinámicos: según el viewport se ajustan
+   para que no se genere scroll y se pueden reducir si se necesita»). Aquí solo
+   está el nombre; el número lo escribe `ajustarAire()` en el propio cuerpo, que
+   es quien sabe cuánto hueco queda. El respaldo de 12 px es para el instante
+   anterior a la primera medida. */
+#m-preparar .modal__cuerpo { --aire: 12px; }
+/* `flow-root` para que los márgenes de los bloques cuenten DENTRO del alto del
+   envoltorio: sin él se colapsan hacia fuera y la medida sale corta. */
+#m-preparar .prep { display: flow-root; }
+#m-preparar .prep__bloque { margin-top: var(--aire); }
 
 /* EL AVISO DE QUE EL VEREDICTO ES DE MENTIRA. Discreto pero legible: no compite
    con el nombre del ganador --que es lo que se ha venido a ver-- pero tampoco se

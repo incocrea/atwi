@@ -3676,10 +3676,17 @@
        con el juez puesto y un «Cambiar» que abría otra pantalla se va; se toca
        el que se quiera y queda puesto. Igual en las dos vías. */
     var bloqueJuez =
-      '<h3 class="centrado" style="margin:var(--e-3) 0 var(--e-2)">Juez</h3>' +
-      pintarJuez();
+      '<div class="prep__bloque">' +
+        '<h3 class="centrado" style="margin:0 0 var(--e-2)">Juez</h3>' +
+        pintarJuez() +
+      '</div>';
 
     $('#m-preparar .modal__cuerpo').innerHTML =
+      /* TODO DENTRO DE UN ENVOLTORIO, y no suelto en el cuerpo: es lo que deja
+         MEDIR lo que ocupa el formulario (`ajustarAire`). `scrollHeight` del
+         cuerpo no sirve —nunca baja de su propio alto, así que «lo que sobra»
+         daba cero siempre y el aire se quedaba en el mínimo—. */
+      '<div class="prep">' +
       /* AQUÍ ARRIBA IBA EL ENUNCIADO, EN UNA TARJETA RETOCABLE, Y SE QUITÓ
          (decisión del titular, 2026-09-14). El argumento para tenerlo era que
          este es el último momento antes de grabar y es cuando se ve que una
@@ -3701,7 +3708,7 @@
          enfrente a la derecha, que es como se van a ver en el choque de puños.
          El aviso de «tu personaje le pisó el suyo» va DEBAJO de los dos, no
          dentro de una columna: habla de la pareja, no de uno. */
-      '<div class="duo">' + bloqueMio + (enLinea ? bloqueCorreo : bloqueInvitado) + '</div>' +
+      '<div class="duo prep__bloque">' + bloqueMio + (enLinea ? bloqueCorreo : bloqueInvitado) + '</div>' +
       '<p class="chico aviso-aro centrado" id="p-aviso-ficha"></p>' +
 
       /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
@@ -3709,7 +3716,7 @@
          rato quieren estar—, así que van en ese orden de importancia. */
       bloqueJuez +
 
-      '<div class="turnos-linea">' +
+      '<div class="turnos-linea prep__bloque">' +
         /* «Turnos por persona» y no «¿Cuántos turnos?» (decisión del titular):
            la pregunta no decía DE QUÉ eran los turnos, y tres turnos son tres
            de cada uno, o sea seis intervenciones. Quien leía la pregunta podía
@@ -3722,7 +3729,7 @@
            queda pegado a la fila del juez —que son seis discos sin caja— y los
            dos se tocaban. Antes iba el primero del formulario y no le hacía
            falta. */
-        '<h3 class="centrado" style="margin:var(--e-4) 0 0">Turnos</h3>' +
+        '<h3 class="centrado" style="margin:0">Turnos</h3>' +
         '<div class="turnos-fila">' +
         /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
            `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
@@ -3782,24 +3789,14 @@
       /* LA PRUEBA DEL MICRÓFONO vive aquí, escondida hasta que se toca «Sortear»:
          el botón pide el permiso, la barra enseña el nivel mientras se dice
          algo, y en cuanto hay voz se sortea. Ver `conMicrofono()`. */
-      /* EL INDICADOR ES EL MICRÓFONO, NO UNA BARRA (titular, 2026-09-18). Una
-         barra de progreso dice «esto avanza hasta llenarse», y aquí no se llena
-         nada: lo que hay que ver es si el micrófono capta o no. El icono se
-         enciende en el color del modo y vibra cuando entra voz, y se queda gris
-         y quieto cuando no. `--nivel` la escribe `conMicrofono()` en cada
-         medida, así que responde mientras se habla. */
-      '<div class="micro-prueba" id="p-micro" hidden>' +
-        '<span class="micro-prueba__disco" id="p-micro-disco" aria-hidden="true">' +
-          iconoSVG('micro', 30) +
-        '</span>' +
-        '<p class="chico" id="p-micro-dice"></p>' +
-      '</div>' +
+      /* El indicador del micrófono ya no vive aquí: está en el PIE, encima del
+         botón, y en el HTML (titular, 2026-09-18). */
 
       /* Y aquí había un aviso diciendo que quién abre se sortea. También se
          fue: el botón dice «Sortear quién abre» y a continuación se ve la
          ruleta girando. Explicar por escrito lo que se va a ver en pantalla dos
          segundos después es contar el final antes de la película. */
-      '';
+      '</div>';
 
     var b = $('#m-preparar .modal__pie button');
     b.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
@@ -3813,7 +3810,18 @@
        —que es el caso normal— el botón se quedaba apagado sin nada que hacer
        para encenderlo salvo tocar un campo. */
     revisarPreparar();
+    /* EL MICRÓFONO VUELVE A CERO, no solo se esconde: el texto y el estado del
+       icono son de la partida anterior, y esconder un bloque no lo limpia. */
+    var mic = $('#p-micro');
+    if (mic) {
+      mic.hidden = true;
+      var dc = $('#p-micro-dice'); if (dc) dc.textContent = '';
+      var dd = $('#p-micro-disco');
+      if (dd) { dd.dataset.suena = '0'; dd.style.setProperty('--nivel', '0'); }
+    }
     if (!repintando) abrirModal('m-preparar');
+    /* Con el modal ya visible: antes `clientHeight` es cero y no se puede medir. */
+    setTimeout(ajustarAire, 0);
   }
 
   /* LA FILA DE JUECES: seis discos, solo la cara, y el puesto lleva el aro del
@@ -3893,22 +3901,22 @@
      en `sessionStorage`, que muere con la pestaña: en la siguiente visita se
      vuelve a comprobar, que es cuando pueden haber cambiado el permiso. */
   var probandoMicro = false;
-  function conMicrofono(sigue) {
+  function conMicrofono(sigue, queHace) {
     var g = window.ATWI.grabadora;
     if (!g || !g.probar) return sigue();
-    var ya = false;
-    try { ya = sessionStorage.getItem('atwi-micro-ok') === '1'; } catch (e) {}
-    if (ya || probandoMicro) return ya ? sigue() : undefined;
+    if (probandoMicro) return;
 
     var caja = $('#p-micro'), dice = $('#p-micro-dice'), disco = $('#p-micro-disco');
     var b = $('#m-preparar .modal__pie button');
+    var texto = b ? b.textContent : '';
     var err = $('#p-error');
     if (err) err.textContent = '';
     probandoMicro = true;
     if (caja) caja.hidden = false;
-    if (dice) dice.textContent = 'Probando el micrófono: di algo…';
     if (disco) { disco.dataset.suena = '0'; disco.style.setProperty('--nivel', '0'); }
+    if (dice) dice.textContent = 'Di «ok» para ' + (queHace || 'empezar');
     if (b) { b.disabled = true; b.textContent = 'Escuchando…'; }
+    ajustarAire();
 
     /* EN TIEMPO REAL: el disco toma el nivel en una variable CSS --de ahí salen
        el halo y cuánto crece-- y `data-suena` enciende el color y la vibración. */
@@ -3919,27 +3927,81 @@
     }, 6000)
       .then(function (r) {
         probandoMicro = false;
-        if (b) { b.disabled = false; b.textContent = 'Sortear quién abre'; }
+        if (b) { b.disabled = false; b.textContent = texto; }
         if (r.ok) {
-          try { sessionStorage.setItem('atwi-micro-ok', '1'); } catch (e) {}
-          if (dice) dice.textContent = 'Micrófono listo.';
-          if (disco) { disco.dataset.suena = '1'; disco.style.setProperty('--nivel', '1'); }
-          return sigue();
+          if (dice) dice.textContent = 'Te oí.';
+          /* ⚠️ `ok` Y NO `1`: con `1` el icono se quedaba VIBRANDO para siempre
+             --la animación es infinita-- y la partida siguiente abría con el
+             micrófono temblando y un «Te oí» de la vez anterior (lo vio el
+             titular). `ok` deja el color, que dice que se oyó, y para el
+             temblor, que dice que está escuchando AHORA. */
+          if (disco) { disco.dataset.suena = 'ok'; disco.style.setProperty('--nivel', '.5'); }
+          /* UN SEGUNDO Y MEDIO ANTES DE LANZAR (titular, 2026-09-18). Sin la
+             pausa, el «Te oí» y el sorteo caen en el mismo fotograma: nadie
+             llega a ver que el micrófono respondió y la pantalla cambia como si
+             el toque hubiera lanzado la partida sin más. Con la espera, lo que
+             se ve es la respuesta —el icono encendido y la frase— y después el
+             cambio de pantalla. */
+          return setTimeout(sigue, 1500);
         }
-        if (disco) { disco.dataset.suena = '0'; disco.style.setProperty('--nivel', '0'); }
-        var que = r.motivo === 'permiso'
-          ? 'El navegador no dio permiso para el micrófono. Actívalo en los ajustes del ' +
-            'sitio (el candado junto a la dirección) y vuelve a tocar «Sortear».'
+        /* LO QUE FALLA SE DICE EN UN TOAST, NO EN LA PANTALLA (titular,
+           2026-09-18: «los errores de micro muéstralos en toast, no escribas en
+           la misma interfaz»). Un párrafo de tres renglones metido en el pie
+           empujaba el botón y se quedaba puesto hasta el siguiente intento;
+           el aviso flotante se va solo, no mueve nada y no compite con lo que
+           esta pantalla decide. El micrófono se esconde con él: lo que tiene
+           que quedar en pantalla es el botón, listo para volver a tocarlo. */
+        if (caja) caja.hidden = true;
+        ajustarAire();
+        window.ATWI.aviso(
+          /* BLOQUEADO NO ES RECHAZADO, y no se arreglan igual. `denied` es el
+             navegador negándose a PREGUNTAR —ahí no hay diálogo que aceptar y
+             hay que ir al candado—; un rechazo en el diálogo se arregla
+             tocando otra vez. */
+          r.motivo === 'permiso' && r.permiso === 'denied'
+            ? 'Este navegador tiene bloqueado el micrófono para ATWI. Actívalo en el candado de la barra de direcciones y vuelve a tocar el botón.'
+          : r.motivo === 'permiso'
+            ? 'Sin micrófono no se puede grabar la ronda. Toca otra vez y acepta el permiso.'
           : r.motivo === 'sin-micro'
-          ? 'No se encontró ningún micrófono en este aparato.'
+            ? 'No se encontró ningún micrófono en este aparato.'
           : r.motivo === 'silencio'
-          ? 'El micrófono abrió pero no captó tu voz. Acércate, sube el volumen del ' +
-            'micrófono o quita lo que lo tape, y vuelve a tocar «Sortear».'
-          : (r.texto || 'Este navegador no puede grabar.');
-        if (dice) dice.textContent = que;
-        if (caja) caja.classList.add('micro-prueba--fallo');
+            ? 'No te oí. Acércate, sube el volumen del micrófono o quita lo que lo tape, y vuelve a tocar el botón.'
+          : (r.texto || 'Este navegador no puede grabar.'));
       });
   }
+
+  /* EL AIRE ENTRE BLOQUES SE MIDE, NO SE ESCRIBE (titular, 2026-09-18: «estos
+     espacios deben ser dinámicos: según el viewport se ajustan para que no se
+     genere scroll y se pueden reducir si se necesita»). Se pone el aire a cero,
+     se mide lo que ocupa el formulario desnudo, y lo que sobra del hueco visible
+     se reparte entre las separaciones, con tope arriba y abajo. Una sola pasada
+     y sin `vh`: `vh` es la ventana del navegador, y en escritorio el juego vive
+     dentro de un teléfono dibujado que no mide lo mismo.
+     Si no cabe ni con el mínimo, el cuerpo scrollea, que es lo correcto: antes
+     que recortar el aire a cero y que los bloques se toquen. */
+  var AIRE_MIN = 4, AIRE_MAX = 38;
+  function ajustarAire() {
+    var cuerpo = $('#m-preparar .modal__cuerpo');
+    var prep = cuerpo && cuerpo.querySelector('.prep');
+    if (!prep || !cuerpo.clientHeight) return;
+    var cuantos = prep.querySelectorAll('.prep__bloque').length;
+    if (!cuantos) return;
+    /* ⚠️ SE MIDE EL ENVOLTORIO, NO `scrollHeight` DEL CUERPO. `scrollHeight`
+       devuelve el mayor entre el contenido y la propia caja, así que con el
+       formulario cabiendo daba exactamente el alto del cuerpo: «lo que sobra»
+       era cero SIEMPRE y el aire se quedaba clavado en el mínimo por mucho que
+       creciera la pantalla. El envoltorio va en `flow-root` para que los
+       márgenes de sus hijos cuenten dentro de su alto y no se colapsen fuera. */
+    cuerpo.style.setProperty('--aire', '0px');
+    var sobra = cuerpo.clientHeight - prep.offsetHeight;
+    var cada = Math.floor(sobra / cuantos);
+    cuerpo.style.setProperty('--aire',
+      Math.max(AIRE_MIN, Math.min(AIRE_MAX, cada)) + 'px');
+  }
+  /* El teclado del móvil encoge el viewport visible sin disparar `resize` en
+     iOS, así que se escucha también a `visualViewport`. */
+  window.addEventListener('resize', ajustarAire);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', ajustarAire);
 
   /* De momento se juega en un solo dispositivo, por turnos, que es el modo que
      el documento permite para los temas del catálogo. Con dos teléfonos hace
@@ -4799,9 +4861,12 @@
       pintarCatalogo();
     }
     else if (a === 'mas-historial') { masHistorial(); }
-    else if (a === 'proponer') { proponer(); }
+    /* LA INVITACIÓN TAMBIÉN PASA POR EL MICRÓFONO (titular, 2026-09-18: «el
+       permiso se debe consultar siempre antes de cada sorteo o envío de
+       invitación»): quien invita va a grabar su turno en este mismo teléfono. */
+    else if (a === 'proponer') { conMicrofono(proponer, 'enviar'); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
-    else if (a === 'sortear') { conMicrofono(sortearYJugar); }
+    else if (a === 'sortear') { conMicrofono(sortearYJugar, 'empezar'); }
     else if (a === 'editar-ficha') { abrirFicha('yo', acc); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
     else if (a === 'tema-nuevo') { abrirEscribir(null, acc); }

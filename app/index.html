@@ -34,11 +34,11 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=419ba45">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=419ba45">
-<link rel="stylesheet" href="../assets/css/base.css?v=419ba45">
-<link rel="stylesheet" href="../assets/css/app.css?v=419ba45">
-<link rel="stylesheet" href="../assets/css/modal.css?v=419ba45">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=d5c41ab">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=d5c41ab">
+<link rel="stylesheet" href="../assets/css/base.css?v=d5c41ab">
+<link rel="stylesheet" href="../assets/css/app.css?v=d5c41ab">
+<link rel="stylesheet" href="../assets/css/modal.css?v=d5c41ab">
 </head>
 
 <body class="app">
@@ -312,6 +312,16 @@
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
+      <!-- EL MICRÓFONO, CENTRADO ENCIMA DEL BOTÓN (titular, 2026-09-18). Va en el
+           PIE y no en el cuerpo: es lo último que se mira antes de pulsar, y el
+           cuerpo puede scrollear. Nace oculto; lo enciende `conMicrofono()` al
+           tocar el botón, y es el icono de nuestra plancha —gris y quieto sin
+           sonido, en color y vibrando cuando capta—. -->
+      <div class="micro-prueba" id="p-micro" hidden>
+        <span class="micro-prueba__disco" id="p-micro-disco" aria-hidden="true"
+              data-icono="micro" data-tam="60"></span>
+        <p class="chico" id="p-micro-dice"></p>
+      </div>
       <button class="boton boton--bloque boton--grande" data-accion="sortear" disabled>Sortear quién abre</button>
     </div>
   </div>
@@ -332,23 +342,23 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=419ba45"></script>
-<script src="../assets/js/precarga.js?v=419ba45"></script>
-<script src="../assets/js/iconos.js?v=419ba45"></script>
-<script src="../assets/js/personajes.js?v=419ba45"></script>
-<script src="../assets/js/datos.js?v=419ba45"></script>
-<script src="../assets/js/sonido.js?v=419ba45"></script>
-<script src="../assets/js/veredicto.js?v=419ba45"></script>
-<script src="../assets/js/grabadora.js?v=419ba45"></script>
-<script src="../assets/js/partida.js?v=419ba45"></script>
-<script src="../assets/js/auth.js?v=419ba45"></script>
-<script src="../assets/js/entrada.js?v=419ba45"></script>
-<script src="../assets/js/nube.js?v=419ba45"></script>
+<script src="../assets/js/config.js?v=d5c41ab"></script>
+<script src="../assets/js/precarga.js?v=d5c41ab"></script>
+<script src="../assets/js/iconos.js?v=d5c41ab"></script>
+<script src="../assets/js/personajes.js?v=d5c41ab"></script>
+<script src="../assets/js/datos.js?v=d5c41ab"></script>
+<script src="../assets/js/sonido.js?v=d5c41ab"></script>
+<script src="../assets/js/veredicto.js?v=d5c41ab"></script>
+<script src="../assets/js/grabadora.js?v=d5c41ab"></script>
+<script src="../assets/js/partida.js?v=d5c41ab"></script>
+<script src="../assets/js/auth.js?v=d5c41ab"></script>
+<script src="../assets/js/entrada.js?v=d5c41ab"></script>
+<script src="../assets/js/nube.js?v=d5c41ab"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=419ba45"></script>
-<script src="../assets/js/app.js?v=419ba45"></script>
+<script src="../assets/js/demo.js?v=d5c41ab"></script>
+<script src="../assets/js/app.js?v=d5c41ab"></script>
 </body>
 </html>

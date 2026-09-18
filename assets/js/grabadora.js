@@ -275,7 +275,17 @@ window.ATWI = window.ATWI || {};
 
     /** Pide el micrófono. Debe llamarse dentro de un gesto de la persona. */
     abrir: function () {
-      if (flujo && flujo.active) return Promise.resolve(flujo);
+      /* ⚠️ `active` NO BASTA: si se revoca el permiso desde el candado con la
+         app abierta, el navegador MATA las pistas y el flujo se queda
+         `active` con una pista en `ended`. Reutilizarlo daba un analizador que
+         devuelve ceros para siempre --o sea «no capté tu voz» con el permiso
+         retirado, que es justo lo que hay que distinguir--. Se comprueba la
+         pista, y si está muerta se vuelve a pedir: ahí el navegador dice la
+         verdad. */
+      var vivo = flujo && flujo.active &&
+                 flujo.getAudioTracks().some(function (p) { return p.readyState === 'live'; });
+      if (vivo) return Promise.resolve(flujo);
+      if (flujo) { try { flujo.getTracks().forEach(function (p) { p.stop(); }); } catch (e) {} flujo = null; }
       return navigator.mediaDevices.getUserMedia({
         /* EN MONO. Esto es una nota de voz de una persona hablando a un
            teléfono: el segundo canal es la misma señal otra vez y duplica todo
@@ -304,6 +314,42 @@ window.ATWI = window.ATWI || {};
         return Promise.resolve({ ok: false, motivo: 'navegador', texto: this.porQueNo() });
       }
       var Ctx = window.AudioContext || window.webkitAudioContext;
+      var esa = this;
+      /* EL PERMISO SE CONSULTA SIEMPRE (titular, 2026-09-18: «el permiso se debe
+         consultar siempre antes de cada sorteo o envío de invitación»), y es una
+         pregunta DISTINTA de la prueba de voz: una dice si el navegador nos deja
+         abrir el micrófono y la otra si ese micrófono capta algo. Si está
+         denegado se dice sin intentar nada: `getUserMedia` con el permiso
+         retirado a veces ni siquiera pregunta --rechaza en silencio-- y lo que
+         se vería sería «no te oí», que manda a la persona a subir el volumen de
+         un micrófono que no se va a abrir.
+         `permissions.query` no existe en todos los navegadores (Safari y
+         Firefox no lo traen para el micrófono): donde no está, se sigue y lo
+         contesta `getUserMedia`, que es lo que había. */
+      /* ⚠️ CON TOPE DE TIEMPO, y no es una precaución teórica: en un navegador
+         con el micrófono bloqueado por política `permissions.query` **no
+         resuelve nunca**, y sin el tope la pantalla se quedaba en «Escuchando…»
+         para siempre, sin sortear y sin decir nada. Una comprobación que se
+         cuelga no puede quedarse con el camino: a los 800 ms se sigue sin ella
+         y lo contesta `getUserMedia`, que es lo que había antes de existir. */
+      var preguntar = (navigator.permissions && navigator.permissions.query)
+        ? Promise.race([
+            navigator.permissions.query({ name: 'microphone' })
+              .then(function (p) { return p && p.state; })
+              .catch(function () { return null; }),
+            new Promise(function (r) { setTimeout(function () { r(null); }, 800); })
+          ])
+        : Promise.resolve(null);
+      return preguntar.then(function (estado) {
+        if (estado === 'denied') {
+          return { ok: false, motivo: 'permiso', texto: esa.porQueNo(), permiso: estado };
+        }
+        return esa.abrirYEscuchar(alNivel, ms, Ctx, estado);
+      });
+    },
+
+    /** La escucha en sí, ya con el permiso consultado. */
+    abrirYEscuchar: function (alNivel, ms, Ctx, permiso) {
       var esa = this;
       return this.abrir().then(function (f) {
         if (!Ctx) return { ok: true, nivel: null };   // sin Web Audio no se mide: se confía
@@ -365,7 +411,7 @@ window.ATWI = window.ATWI || {};
           ok: false,
           motivo: /NotAllowed|Permission|Security/i.test(n) ? 'permiso'
                 : /NotFound|Devices/i.test(n) ? 'sin-micro' : 'navegador',
-          texto: esa.porQueNo(), error: n
+          texto: esa.porQueNo(), error: n, permiso: permiso
         };
       });
     },
