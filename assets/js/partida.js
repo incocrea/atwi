@@ -652,15 +652,20 @@ window.ATWI = window.ATWI || {};
       return { jugador: 0, nombre: q.nombre, avatar: q.avatar, color: q.color,
                numero: 1, esUltima: false, esPrimera: true };
     }
-    var j = P.orden[P.i % 2];                 // índice del jugador
+    /* GRABANDO DE NUEVO UN TURNO RECHAZADO (2026-09-18): el turno en pantalla
+       es el que falló, no el que sigue. `P.regrabando` es su índice en
+       `intervenciones`, y coincide con el `P.i` que tenía cuando se mandó. */
+    var i = P.regrabando != null ? P.regrabando : P.i;
+    var j = P.orden[i % 2];                   // índice del jugador
     return {
       jugador: j,
       nombre: P.jugadores[j].nombre,
       avatar: P.jugadores[j].avatar,
       color: P.jugadores[j].color,
-      numero: Math.floor(P.i / 2) + 1,
-      esUltima: P.i === P.turnos * 2 - 1,
-      esPrimera: P.i === 0
+      numero: Math.floor(i / 2) + 1,
+      esUltima: i === P.turnos * 2 - 1,
+      esPrimera: i === 0,
+      regrabando: P.regrabando != null
     };
   }
 
@@ -1014,8 +1019,11 @@ window.ATWI = window.ATWI || {};
     var m = falla.motivo ||
       (window.ATWI.nube && window.ATWI.nube.ultimoFallo && window.ATWI.nube.ultimoFallo());
     if (!m) return '';
-    return '<p class="dicho__fallo">Sin voz de personaje: ' + esc(m) +
-           '<br><span class="tenue">Toca la casilla para el detalle.</span></p>';
+    var n = P.intervenciones.indexOf(falla);
+    return '<p class="dicho__fallo">Turno ' + falla.turno + ' de ' + esc(falla.nombre || '') +
+           ' sin guardar: ' + esc(m) +
+           '<br><span class="tenue">Toca la casilla ' + (n + 1) + ' para ' +
+           (falla.regrabable ? 'grabarlo de nuevo' : 'volver a mandarlo') + '.</span></p>';
   }
 
   /* ==========================================================================
@@ -1089,9 +1097,7 @@ window.ATWI = window.ATWI || {};
       'Se está transcribiendo y poniéndole la voz del personaje. Tarda unos ' +
       'segundos y no se puede oír hasta que esté: lo que hay guardado todavía es ' +
       'la grabación, y esa no se reproduce nunca.');
-    if (i && i.falloLaNube) return contarQuePasa(i, 'Se quedó sin voz',
-      'Esta intervención cuenta para la partida igual —el juez la va a leer— pero ' +
-      'no se le pudo poner la voz del personaje.');
+    if (i && i.falloLaNube) return contarFallo(i, P.intervenciones.indexOf(i));
     /* Y AHORA si: si despues de todo eso no hay nada que sonar, se sale. Antes
        este guardia estaba el PRIMERO y se comia los dos casos de arriba. */
     if (!p.url) return;
@@ -1658,7 +1664,9 @@ window.ATWI = window.ATWI || {};
     if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
 
     pintarSala({
-      dice: t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.',
+      dice: t.regrabando
+        ? 'Tu turno ' + t.numero + ' no se entendió. Grábalo otra vez: te escucho.'
+        : t.esPrimera ? 'Abres tú. Te escucho.' : 'Te toca contestar. Te escucho.',
       pie: botonDeGrabar('grabar') +
         '<p class="chico centrado pie-nota">Tocas para empezar y tocas para parar. ' +
           'Podrás escucharlo antes de mandarlo.</p>'
@@ -1872,9 +1880,66 @@ window.ATWI = window.ATWI || {};
       });
       var v = P.intervenciones[P.intervenciones.length - 1];
       tirarBorrador();
+      /* SI ERA UN TURNO RECHAZADO, OCUPA SU SITIO y la partida vuelve a donde
+         estaba (2026-09-18): el que sigue, o la pantalla de cierre si ya se
+         había mandado el último. No se acusa recibo otra vez: el juez ya lo
+         hizo cuando este turno se mandó la primera vez. */
+      if (P.regrabando != null) {
+        var orden = P.regrabando;
+        P.regrabando = null;
+        P.intervenciones.pop();
+        var viejo = P.intervenciones[orden];
+        if (viejo && viejo.url && viejo.url.indexOf('blob:') === 0) {
+          try { URL.revokeObjectURL(viejo.url); } catch (e) {}
+        }
+        P.intervenciones[orden] = v;
+        if (P.cerrando) volverAlCierre(); else pintarTurno();
+        subirTurno(v, orden);
+        return;
+      }
       acusarRecibo(t);
       subirTurno(v, P.intervenciones.length - 1);
     });
+  }
+
+  /** Después de regrabar con la ronda ya cerrada: la pantalla de «ver el
+      resultado» otra vez, y se vuelve a pedir el veredicto porque el de antes
+      cayó con «la partida no terminó» (faltaba justo este turno). */
+  function volverAlCierre() {
+    P.estado = 'recibo';
+    P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
+    pintarSala({ dice: '', pie: principal('p-seguir', 'Ver el resultado') });
+  }
+
+  /** ¿Se puede volver al turno `orden` ahora mismo? Solo con la sala quieta:
+      nadie grabando ni con un borrador sin mandar. */
+  function puedeRegrabar(orden) {
+    var v = P && P.intervenciones[orden];
+    if (!v || !v.falloLaNube || !v.regrabable) return false;
+    if (P.repaso || P.regrabando != null) return false;
+    if (P.borrador || grabadora.grabando() || abriendo) return false;
+    return P.estado === 'turno' || P.estado === 'recibo';
+  }
+
+  function regrabar(orden) {
+    if (!puedeRegrabar(orden)) return;
+    var d = $('#p-detalle');
+    if (d) d.remove();
+    cerrarReproductor();
+    P.regrabando = orden;
+    pintarTurno();
+  }
+
+  /** El mismo audio, otra vez: para los fallos de voz o de red. */
+  function remandar(orden) {
+    var v = P && P.intervenciones[orden];
+    if (!v || !v.audio) return;
+    var d = $('#p-detalle');
+    if (d) d.remove();
+    v.falloLaNube = false;
+    v.motivo = '';
+    v.reintentos = 0;
+    subirTurno(v, orden);
   }
 
   /* ==========================================================================
@@ -1949,16 +2014,10 @@ window.ATWI = window.ATWI || {};
          encender la casilla con una promesa en vez de con un sonido. */
       if (r && r.voz) { /* lo apaga `bajarLaVoz` */ } else { v.preparando = false; }
       if (!r) {
-        v.falloLaNube = true;
-        v.motivo = window.ATWI.nube.ultimoFallo() || 'el servidor no devolvió nada';
-        return marcarRueda(orden);
+        return noSubio(v, orden, { clase: 'red', reintentar: true,
+          aviso: window.ATWI.nube.ultimoFallo() || 'el servidor no devolvió nada' });
       }
-      if (r.valido === false) {
-        v.falloLaNube = true;
-        v.motivo = (r.aviso || 'no se aceptó el audio') +
-                   (r.motivo ? ' (' + r.motivo + ')' : '');
-        return marcarRueda(orden);
-      }
+      if (r.valido === false) return noSubio(v, orden, r);
       v.transcripcion = r.transcripcion || '';
       v.guion = r.guion || '';
       if (r.voz) {
@@ -2004,17 +2063,76 @@ window.ATWI = window.ATWI || {};
     }, function (e) {
       /* El rechazo de la promesa también: si no se atrapa, el reloj se queda
          girando igual que con la excepción síncrona. */
-      v.preparando = false;
-      v.falloLaNube = true;
-      v.motivo = 'falló la subida: ' + (e && e.message || e);
-      marcarRueda(orden);
+      noSubio(v, orden, { clase: 'red', reintentar: true,
+        aviso: 'falló la subida: ' + (e && e.message || e) });
     });
+  }
+
+  /* EL SERVIDOR NO ACEPTÓ EL TURNO, Y DICE DE QUÉ CLASE FUE (2026-09-18). Tres
+     clases y dos salidas:
+       audio / argumento -> no se entendió o no era una intervención: hay que
+                            GRABAR OTRA VEZ (`regrabable`)
+       voz / red         -> se transcribió pero Azure no puso la voz, o no llegó:
+                            el MISMO audio se vuelve a mandar. Primero solo, dos
+                            veces con tres segundos entre medio --casi siempre
+                            sale a la segunda--, y si insiste, el botón.
+     En todos los casos el turno NO ESTÁ en el servidor: la casilla lo dice y
+     `pedir_veredicto` no cerraría la ronda sin él. Aquí decía «cuenta para la
+     partida igual», y era falso. */
+  var REINTENTOS = 2;
+  function noSubio(v, orden, r) {
+    v.clase = r.clase || 'red';
+    v.regrabable = Boolean(r.regrabar);
+    v.remandable = Boolean(r.reintentar) && Boolean(v.audio);
+    v.motivo = (r.aviso || 'no se aceptó el audio') +
+               (r.motivo && r.motivo !== r.aviso ? ' (' + r.motivo + ')' : '');
+    v.reintentos = v.reintentos || 0;
+    if (v.remandable && v.reintentos < REINTENTOS && P) {
+      v.reintentos++;
+      v.preparando = true;
+      marcarRueda(orden);
+      return setTimeout(function () { if (P && P.intervenciones[orden] === v) subirTurno(v, orden); }, 3000);
+    }
+    v.preparando = false;
+    v.falloLaNube = true;
+    marcarRueda(orden);
+  }
+
+  /** La casilla rechazada: qué pasó, y el botón que lo arregla. */
+  function contarFallo(v, orden) {
+    var titulo, que, boton = '';
+    if (v.clase === 'audio' || v.clase === 'argumento') {
+      titulo = v.clase === 'audio' ? 'No se entendió' : 'No se aceptó como intervención';
+      que = 'Esta intervención NO está guardada y no cuenta para la partida: hay ' +
+            'que grabarla otra vez. ' +
+            (v.clase === 'audio'
+              ? 'Acércate al micrófono y habla sin ruido de fondo.'
+              : 'Di lo que piensas sobre el tema.');
+      if (puedeRegrabar(orden)) {
+        boton = '<button type="button" class="boton boton--bloque" data-accion="p-regrabar" ' +
+                'data-orden="' + orden + '">' + iconoSVG('micro', 20) + 'Grabar de nuevo</button>';
+      } else if (P && !P.repaso) {
+        que += ' Cuando se mande o se borre lo que se está grabando, vuelve a esta casilla.';
+      }
+    } else {
+      titulo = v.clase === 'voz' ? 'Falta la voz del personaje' : 'No se pudo mandar';
+      que = 'Esta intervención NO está guardada todavía y no cuenta para la partida. ' +
+            (v.clase === 'voz'
+              ? 'Se transcribió, pero no se le pudo poner la voz del personaje. '
+              : 'No llegó al servidor. ') +
+            'Se intentó ' + (1 + (v.reintentos || 0)) + ' veces; vuelve a mandarla.';
+      if (v.remandable && P && !P.repaso) {
+        boton = '<button type="button" class="boton boton--bloque" data-accion="p-remandar" ' +
+                'data-orden="' + orden + '">Volver a mandar</button>';
+      }
+    }
+    contarQuePasa(v, titulo, que, boton);
   }
 
   /** El detalle de una casilla que no suena. Va en un modal y no en un aviso
       pequeño porque el motivo puede ser largo y hay que poder leerlo entero y
-      copiarlo. */
-  function contarQuePasa(v, titulo, explicacion) {
+      copiarlo. `acciones` es el botón que lo arregla, si lo hay. */
+  function contarQuePasa(v, titulo, explicacion, acciones) {
     var viejo = $('#p-detalle');
     if (viejo) viejo.remove();
     var m = document.createElement('div');
@@ -2030,8 +2148,9 @@ window.ATWI = window.ATWI || {};
           ' · ' + (v.segundos || 0) + ' s' +
           (v.audio && v.audio.size ? ' · ' + Math.round(v.audio.size / 1024) + ' KB' : '') +
         '</p>' +
-        '<button type="button" class="boton boton--bloque" data-accion="p-cerrar-detalle">' +
-          'Entendido</button>' +
+        (acciones || '') +
+        '<button type="button" class="boton boton--bloque' + (acciones ? ' boton--suave boton--punteado' : '') +
+          '" data-accion="p-cerrar-detalle">' + (acciones ? 'Ahora no' : 'Entendido') + '</button>' +
       '</div>';
     $('#m-partida').appendChild(m);
   }
@@ -2866,6 +2985,8 @@ window.ATWI = window.ATWI || {};
     if (!b) return;
     var a = b.dataset.accion;
     if (a === 'p-cerrar-detalle') { var d = $('#p-detalle'); if (d) d.remove(); return; }
+    if (a === 'p-regrabar') { regrabar(Number(b.dataset.orden)); return; }
+    if (a === 'p-remandar') { remandar(Number(b.dataset.orden)); return; }
     if (a === 'p-oir-todo') { oir('i0'); return; }
     if (a === 'p-listo') { if (P.demo) demoLaRonda(); else pintarTurno(); }
     else if (a === 'p-grabar') empezarAGrabar(false);

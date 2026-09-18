@@ -3001,6 +3001,10 @@ body.app {
   word-break: break-word; user-select: text; -webkit-user-select: text;
 }
 .detalle__quien { margin: 0 0 var(--e-3); font-size: var(--t-mini); color: var(--tinta-tenue); }
+/* Dos botones apilados cuando hay algo que arreglar --«Grabar de nuevo» o
+   «Volver a mandar», y debajo «Ahora no»--: la regla de siempre, mismo tamaño y
+   el blanco punteado. */
+.detalle__caja .boton + .boton { margin-top: var(--e-2); }
 
 .dicho__fallo {
   margin: var(--e-2) 0 0; text-align: center;

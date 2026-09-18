@@ -287,6 +287,68 @@ window.ATWI = window.ATWI || {};
       }).then(function (f) { flujo = f; return f; });
     },
 
+    /**
+     * LA PRUEBA DEL MICRÓFONO, antes de lanzar la ronda (titular, 2026-09-18:
+     * «cómo nos aseguramos que el usuario sí tiene activado el micrófono y
+     * todo en orden para empezar a grabar antes de lanzar la ronda»). Pide el
+     * permiso --que hasta hoy se pedía al primer toque de grabar, ya dentro de
+     * la sala-- y escucha hasta `ms` milisegundos: si el nivel llega a voz,
+     * resuelve `{ok: true}` en cuanto la oye; si no, `{ok: false, motivo}`
+     * con `permiso` (el navegador no lo dio), `silencio` (abrió y no captó
+     * nada) o `navegador` (no sabe grabar). `alNivel(0..1)` va pintando la
+     * barra. Debe llamarse dentro de un gesto de la persona, como `abrir`.
+     * El flujo se deja abierto: es el mismo que va a usar la sala.
+     */
+    probar: function (alNivel, ms) {
+      if (!this.sePuede()) {
+        return Promise.resolve({ ok: false, motivo: 'navegador', texto: this.porQueNo() });
+      }
+      var Ctx = window.AudioContext || window.webkitAudioContext;
+      var esa = this;
+      return this.abrir().then(function (f) {
+        if (!Ctx) return { ok: true, nivel: null };   // sin Web Audio no se mide: se confía
+        return new Promise(function (resolver) {
+          var ctx, an, datos, latido, tope, maximo = 0, conVoz = 0;
+          try {
+            ctx = new Ctx();
+            an = ctx.createAnalyser();
+            an.fftSize = 1024;
+            ctx.createMediaStreamSource(f).connect(an);
+            datos = new Float32Array(an.fftSize);
+          } catch (e) { return resolver({ ok: true, nivel: null }); }
+          var cerrar = function (r) {
+            clearInterval(latido); clearTimeout(tope);
+            try { ctx.close(); } catch (e) {}
+            resolver(r);
+          };
+          latido = setInterval(function () {
+            an.getFloatTimeDomainData(datos);
+            var suma = 0;
+            for (var i = 0; i < datos.length; i++) suma += datos[i] * datos[i];
+            var nivel = Math.sqrt(suma / datos.length);
+            if (nivel > maximo) maximo = nivel;
+            if (alNivel) alNivel(Math.min(1, nivel / 0.08));
+            /* VOZ DE VERDAD Y NO UN GOLPE: hace falta medio segundo seguido por
+               encima del umbral de la sala. Un toque en la mesa pasa el umbral
+               un instante; hablar lo pasa medio segundo. */
+            if (nivel >= NIVEL_DE_VOZ * 1.5) { conVoz += 60; if (conVoz >= 500) cerrar({ ok: true, nivel: maximo }); }
+            else conVoz = 0;
+          }, 60);
+          tope = setTimeout(function () {
+            cerrar({ ok: false, motivo: 'silencio', nivel: maximo });
+          }, ms || 4000);
+        });
+      }, function (e) {
+        var n = (e && e.name) || '';
+        return {
+          ok: false,
+          motivo: /NotAllowed|Permission|Security/i.test(n) ? 'permiso'
+                : /NotFound|Devices/i.test(n) ? 'sin-micro' : 'navegador',
+          texto: esa.porQueNo(), error: n
+        };
+      });
+    },
+
     /** Empieza una grabación NUEVA, desde cero. */
     empezar: function (cadaSegundo, topeSegundos, alLlegarAlTope) {
       alSegundo = cadaSegundo;

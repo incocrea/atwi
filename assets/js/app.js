@@ -167,8 +167,6 @@
       ocultarModal(pilaModales[pilaModales.length - 1]);
     } else if (vistaActual === 'catalogo' && categoriaAbierta) {
       categoriaAbierta = null; pintarCatalogo();
-    } else if (vistaActual === 'catalogo' && modoPublico) {
-      modoPublico = null; categoriaAbierta = null; pintarCatalogo();
     } else if (vistaActual !== 'jugar') {
       irA('jugar');
     } else {
@@ -979,20 +977,11 @@
      lo que deja comparar las tres mesas sin leer los tres párrafos. Salen de la
      misma tabla `PUBLICOS`, en la cuarta columna, para que nombre, frase y
      chips no se puedan desincronizar. */
-  function cartaPublico(p) {
-    return '<button class="publico publico--' + p[0] + '" data-publico="' + p[0] + '">' +
-        '<span class="publico__alto">' + icono(p[0], 76) + '</span>' +
-        '<img class="publico__base" src="../assets/img/iconos/base-' + p[0] + '.png" ' +
-          'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
-        '<span class="publico__texto">' +
-          '<span class="publico__nombre">' + p[1].replace(/<br>/g, ' ') + '</span>' +
-          '<span class="publico__que">' + esc(p[2]) + '</span>' +
-          (p[3] ? '<span class="publico__marcas">' + p[3].map(function (x) {
-            return '<span class="publico__marca">' + esc(x) + '</span>';
-          }).join('') + '</span>' : '') +
-        '</span>' +
-      '</button>';
-  }
+  /* ⚠️ AQUI ESTABA `cartaPublico`, la carta grande de cada mesa, y se fue con el
+     paso 0 (titular, 2026-09-18): con quién se juega se elige ahora en la
+     cabecera de la lista, sin cambiar de pantalla. Las tres piezas que usaba
+     --el icono de la mesa, su peana y sus tres palabras-- siguen vivas: el icono
+     lo pinta el selector nuevo y los chips los lee `PUBLICOS`. */
 
   var ultimaMesa;               // para saber cuándo se cambió de mesa
 
@@ -1016,7 +1005,25 @@
     if (!(id in azarDeTema)) azarDeTema[id] = Math.random();
     return azarDeTema[id];
   }
-  var modoPublico = null;   // 'pareja' | 'amigos'; null = todavia no ha elegido
+  /* CON QUIEN SE JUEGA YA NO ES UNA PANTALLA (titular, 2026-09-18: «ya no
+     usaremos una pantalla completa para seleccionar con quién se juega»). Era el
+     paso 0 del catálogo —tres cartas grandes— y ahora es un SELECTOR dentro de
+     la lista, al lado del de modo: se toca, la lista cambia en vivo y no hay que
+     salir de donde se está para mirar los temas de la otra mesa.
+     POR ESO NUNCA ES NULA: el catálogo abre siempre en una lista de verdad. La
+     última elegida se recuerda —como el modo, el juez y la ficha del invitado—
+     porque quien juega con su pareja no cambia de mesa cada vez. */
+  var MESA_RECORDADA = 'atwi-mesa';
+  function mesaGuardada() {
+    var m = null;
+    try { m = localStorage.getItem(MESA_RECORDADA); } catch (e) {}
+    for (var i = 0; i < PUBLICOS.length; i++) if (PUBLICOS[i][0] === m) return m;
+    return PUBLICOS[0][0];
+  }
+  function recordarMesa(m) {
+    try { localStorage.setItem(MESA_RECORDADA, m); } catch (e) {}
+  }
+  var modoPublico = mesaGuardada();
   var busqueda = '';        // texto del buscador
   var filtro = 'todos';     // 'todos' | 'sin' | 'con'
 
@@ -1085,9 +1092,10 @@
     };
   }
 
-  /** Deja el catálogo como recién abierto: en la pregunta de con quién juegas. */
+  /** Deja el catálogo como recién abierto: la lista de la mesa recordada, sin
+   *  filtros ni búsqueda. Antes volvía a «¿con quién juegas?», que ya no existe. */
   function reiniciarCatalogo() {
-    modoPublico = null;
+    modoPublico = mesaGuardada();
     categoriaAbierta = null;
     busqueda = '';
     filtro = 'todos';
@@ -1096,8 +1104,25 @@
   /* Elegido el modo en la portada, hay que poder verlo —y cambiarlo— sin
      llegar hasta el final. La cinta va arriba de todas las pantallas del
      catálogo, con el color del modo. */
+  /* EL MODO TAMBIEN SE RECUERDA, y por lo mismo que la mesa (2026-09-18). Desde
+     que el catálogo es la pantalla y no un paso, se entra a él por la pestaña de
+     abajo tanto como desde la portada, y quien entraba por ahí veía la lista
+     **sin cinta**: ni a qué modo pertenece ni cómo cambiarlo, y al tocar un tema
+     se jugaba el modo de fábrica sin que nadie lo hubiera dicho. */
+  var MODO_RECORDADO = 'atwi-modo';
+  function modoGuardado() {
+    var m = null;
+    try { m = localStorage.getItem(MODO_RECORDADO); } catch (e) {}
+    return cfg.modos[m] ? m : Object.keys(cfg.modos)[0];
+  }
+  function recordarModo(m) {
+    try { localStorage.setItem(MODO_RECORDADO, m); } catch (e) {}
+  }
+
   function cintaModo() {
-    if (!propuesta.modo) return '';
+    /* Sin modo elegido se usa el recordado, y se deja puesto: lo que la cinta
+       enseña tiene que ser lo que la partida va a llevar. */
+    if (!propuesta.modo) propuesta.modo = modoGuardado();
     var m = cfg.modos[propuesta.modo] || {};
     return '<button class="cinta-modo cinta-modo--' + propuesta.modo + '" ' +
             'data-accion="cambiar-modo" aria-label="Cambiar de modo">' +
@@ -1140,18 +1165,9 @@
     caja.dataset.paso = modoPublico || 'modo';
     caja.dataset.modo = propuesta.modo || '';
 
-    // Paso 0: con quien se juega. De eso depende que temas tienen sentido.
-    if (!modoPublico) {
-      /* SIN BAJADA (titular, 2026-09-16). Decía «los temas cambian según con
-         quién estés debatiendo», que es lo que las tres cartas ya enseñan: cada
-         una trae su nombre, de qué va y tres palabras de lo que se discute
-         ahí. Una frase que anuncia lo que hay justo debajo gasta el alto que
-         necesitan las cartas. */
-      caja.innerHTML = cinta +
-        tituloVista('¿Con quién juegas?', 'margin-bottom:var(--e-4)') +
-        '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
-      return;
-    }
+    /* ⚠️ AQUI ESTABA EL PASO 0 —las tres cartas de «¿Con quién juegas?»— y se fue
+       entero (titular, 2026-09-18). Lo que hacía ahora lo hace el selector de la
+       cabecera, en vivo y sin cambiar de pantalla. */
 
     datos.catalogo().then(function (cat) {
       var buscando = busqueda.trim() !== '' || filtro !== 'todos';
@@ -1229,7 +1245,14 @@
 
       caja.innerHTML = cinta +
         '<div class="fila fila--cabecera" style="margin-bottom:var(--e-3)">' +
-          '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
+          /* EL SELECTOR DE MESA, donde estaba la flecha de volver: ahora no hay a
+             dónde volver, y lo que hacía falta ahí es poder cambiar de mesa sin
+             salir de la lista. Es el mismo gesto que el de modo —un disco con el
+             signo, que rota a la siguiente— y por eso el título dice cuál es:
+             entre tres, un icono solo no basta para saber dónde estás. */
+          '<button class="boton-icono" data-accion="siguiente-mesa"' +
+            ' aria-label="Cambiar con quién juegas" title="Cambiar con quién juegas">' +
+            icono(modoPublico, 26) + '</button>' +
           tituloVista(nombrePublico(modoPublico), 'font-size:var(--t-h2)') +
           botonBuscar() +
         '</div>' +
@@ -3804,7 +3827,13 @@
     }
 
     var pub = e.target.closest('[data-publico]');
-    if (pub) { modoPublico = pub.dataset.publico; categoriaAbierta = null; entrar(); pintarCatalogo(); return; }
+    /* Las cartas de mesa se fueron con el paso 0, pero el manejador se queda:
+       el globo de ayuda de un modo podría volver a ofrecerlas, y cuesta una
+       línea. Si en un mes nadie lo usa, se va. */
+    if (pub) {
+      modoPublico = pub.dataset.publico; recordarMesa(modoPublico);
+      categoriaAbierta = null; entrar(); pintarCatalogo(); return;
+    }
 
     var cat = e.target.closest('[data-categoria]');
     if (cat) { categoriaAbierta = cat.dataset.categoria; entrar(); pintarCatalogo(); return; }
@@ -3846,6 +3875,7 @@
          lleva: hay que cerrarlo a mano o se queda flotando sobre el catálogo. */
       cerrarGlobo();
       propuesta.modo = crear.dataset.crear;
+      recordarModo(propuesta.modo);
       propuesta.turnos = cfg.reglas.turnosPorDefecto;
       reiniciarCatalogo();
       irA('catalogo');
@@ -4012,6 +4042,17 @@
       reponerFoco = buscadorAbierto;
       pintarCatalogo();
     }
+    /* ROTA, COMO EL DE MODO. Con tres mesas, un menú sería una capa más para
+       elegir entre tres cosas que caben en tres toques; y la lista se repinta
+       debajo, así que se ve lo que se está eligiendo mientras se elige. */
+    else if (a === 'siguiente-mesa') {
+      var mesas = PUBLICOS.map(function (x) { return x[0]; });
+      var i = mesas.indexOf(modoPublico);
+      modoPublico = mesas[(i + 1) % mesas.length];
+      recordarMesa(modoPublico);
+      categoriaAbierta = null;
+      pintarCatalogo();
+    }
     else if (a === 'catalogo-atras' || a === 'cambiar-publico') {
       /* Las flechas de dentro del catálogo hacen lo mismo que el atrás del
          teléfono, y por el mismo camino: si cambiaran el estado por su cuenta,
@@ -4041,6 +4082,7 @@
          y volver serían tres, y encima perdería el sitio del catálogo. */
       var modos = Object.keys(cfg.modos);
       propuesta.modo = modos[(modos.indexOf(propuesta.modo) + 1) % modos.length];
+      recordarModo(propuesta.modo);
       pintarCatalogo();
     }
     else if (a === 'mas-historial') { masHistorial(); }
