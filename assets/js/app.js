@@ -297,8 +297,8 @@
          EL NIVEL SE OCULTA, NO SE BORRA: los puntos todavía no significan nada
          para quien juega, así que anunciarlos es prometer un sistema que no
          existe. El bloque `.saludo` sigue en `app.css` esperándolo. */
-      '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">' +
-        (p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!') + '</h1>' +
+      tituloVista((p.nombre ? '¡Hola, ' + esc(p.nombre) + '!' : '¡Hola!'),
+                  'margin-bottom:var(--e-4)') +
 
       /* EL VEREDICTO QUE TE ESTÁ ESPERANDO, delante de todo. Quien cerró la app
          mientras el juez leía no tiene por qué acordarse de ir al historial a
@@ -1039,6 +1039,23 @@
     return m === 'negociacion' || m === 'competencia' ? m : 'debate';
   }
 
+  /* EL TITULO DE UNA VISTA, CON SU DECORACION (mockup del titular, 2026-09-17):
+     tres destellos amarillos a cada lado y el texto virando de la tinta al
+     lavanda. Vive aqui y no escrito cinco veces porque son CINCO titulos —el
+     saludo, «¿Con quien juegas?», la mesa, «Mis propios temas» y «Historial»—
+     y una decoracion repetida a mano se queda a medias a la primera que
+     alguien toque uno.
+
+     EL TEXTO VA EN UN `span` Y NO SUELTO, y no es un envoltorio de adorno: el
+     degradado se pinta con `background-clip: text`, que recorta el FONDO del
+     elemento a la forma de su texto. Con el `h1` convertido en caja flexible
+     para colocar los destellos, el texto suelto queda en una caja anonima que
+     no se puede pintar; el `span` es lo que se puede recortar. */
+  function tituloVista(html, estilo) {
+    return '<h1 class="vista__titulo"' + (estilo ? ' style="' + estilo + '"' : '') + '>' +
+        '<span class="vista__titulo__t">' + html + '</span></h1>';
+  }
+
   function palabras() {
     var premio = propuesta.modo === 'competencia';
     return premio ? {
@@ -1125,7 +1142,7 @@
          ahí. Una frase que anuncia lo que hay justo debajo gasta el alto que
          necesitan las cartas. */
       caja.innerHTML = cinta +
-        '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">¿Con quién juegas?</h1>' +
+        tituloVista('¿Con quién juegas?', 'margin-bottom:var(--e-4)') +
         '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
       return;
     }
@@ -1150,8 +1167,9 @@
             /* SIN LA MANITO ✍️ delante del título (titular, 2026-09-16): era un
                emoji —lo dibujaba el sistema— y encima decía lo mismo que el
                botón de debajo, que sí lleva el icono de la casa. */
-            '<div class="vista__titulo"><h1 style="font-size:var(--t-h2)">' + esc(palabras().mis) + '</h1>' +
-            '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
+            '<div class="centrado">' +
+              tituloVista(esc(palabras().mis), 'font-size:var(--t-h2)') +
+              '<p class="chico suave">' + temas.length + ' de ' + mios.length + '</p></div>' +
           '</div>' +
 
           /* EN EL COLOR DEL MODO (titular, 2026-09-17), no en el lavanda de
@@ -1206,8 +1224,7 @@
       caja.innerHTML = cinta +
         '<div class="fila fila--cabecera" style="margin-bottom:var(--e-3)">' +
           '<button class="boton-icono" data-accion="cambiar-publico" aria-label="Volver">' + icono('atras', 22) + '</button>' +
-          '<h1 class="vista__titulo" style="font-size:var(--t-h2)">' +
-            nombrePublico(modoPublico) + '</h1>' +
+          tituloVista(nombrePublico(modoPublico), 'font-size:var(--t-h2)') +
           botonBuscar() +
         '</div>' +
         /* AQUÍ IBA «105 temas, ordenados por dónde y cuándo suele salir la
@@ -1265,7 +1282,7 @@
 
   function pintarHistorial() {
     var caja = $('#v-historial');
-    var titulo = '<h1 class="vista__titulo" style="margin-bottom:var(--e-4)">Historial</h1>';
+    var titulo = tituloVista('Historial', 'margin-bottom:var(--e-4)');
 
     if (!window.ATWI.nube || !window.ATWI.nube.hay()) {
       caja.innerHTML = titulo + estadoVacio(icono('historial', 76), 'Entrá con tu cuenta',

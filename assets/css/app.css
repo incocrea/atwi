@@ -4206,7 +4206,49 @@ body.app {
   grid-template-columns: var(--diana) minmax(0, 1fr) var(--diana);
   align-items: center;
 }
+/* --- El titulo de una vista, con su decoracion (mockup del titular, 2026-09-17)
+   Tres destellos amarillos a cada lado y el texto virando de la tinta al
+   lavanda. Lo pinta `tituloVista()` en `app.js`, que es quien mete el `span`.
+
+   LOS DESTELLOS VAN PEGADOS AL TEXTO, NO A LOS CANTOS DE LA PANTALLA, y eso no
+   es estetica: dos de los cinco titulos comparten fila con controles —la flecha
+   de volver y la lupa del catalogo— y unos destellos anclados al borde caerian
+   justo encima. Pegados al texto funcionan en los cinco.
+
+   Y SON UN SVG EN `background`, no una imagen de `assets/`: son seis trazos,
+   pesan menos que la peticion que costaria bajarlos y asi no entran en el
+   manifiesto de la cache. El de la derecha es el mismo, volteado.
+
+   ⚠️ EL AMARILLO VA ESCRITO EN EL SVG Y NO SALE DE UN TOKEN: dentro de un
+   `url(data:…)` no se pueden leer variables CSS. Es `--sol`, #F5C243, y si ese
+   token cambia hay que venir aqui. */
 .vista__titulo, .vista__bajada { text-align: center; }
+
+.vista__titulo {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+}
+.vista__titulo::before, .vista__titulo::after {
+  content: '';
+  flex: none;
+  width: 18px; height: 30px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 30'%3E%3Cg stroke='%23F5C243' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M14 6 L5 2'/%3E%3Cpath d='M13 15 L3 15'/%3E%3Cpath d='M14 24 L5 28'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+.vista__titulo::after { transform: scaleX(-1); }
+
+/* EL DEGRADADO ARRANCA EN LA TINTA Y ACABA EN EL LAVANDA, que es lo que hace el
+   mockup sin necesitar dos trozos de texto: en «¡Hola, Starlord!» la primera
+   palabra sale oscura y el nombre vira al lavanda, y en un titulo de una sola
+   palabra se lee como un degradado suave. Con dos `span` habria que decidir
+   donde parte cada titulo, y «Historial» no tiene por donde. */
+.vista__titulo__t {
+  background-image: linear-gradient(100deg, var(--tinta) 15%, var(--lavanda) 85%);
+  -webkit-background-clip: text; background-clip: text;
+  color: transparent;
+  /* El recorte deja fuera las colas de la «g» y la «j» si la caja se ajusta al
+     texto: un pelo de relleno abajo y vuelven. */
+  padding-bottom: 2px;
+}
 
 /* --- Las tres mesas: con quién juegas (mockup del titular, 2026-09-16) -------
    Eran dos botones anchos con un icono a la izquierda y un párrafo al lado, y
