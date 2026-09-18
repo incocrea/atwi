@@ -2723,8 +2723,9 @@
   /* Ya solo se retoca el enunciado: las posturas se fueron del tema. */
   var SECCIONES = {
     enunciado: { titulo: 'La pregunta', minimo: 15, max: 240,
-                 pista: 'Una pregunta de opinión, con las dos salidas dentro y sin ' +
-                        'inclinarse por ninguna.',
+                 /* Sin «las dos salidas dentro»: ver la ayuda del editor. */
+                 pista: 'Una pregunta de opinión, sin inclinarse por ninguna ' +
+                        'respuesta.',
                  corto: 'Escribe la pregunta.' }
   };
   var retocando = null;
@@ -2850,7 +2851,17 @@
                   'El original del catálogo no se toca.')
             : (esPremio
                 ? 'Qué se lleva quien gane. Concreto, entre ustedes dos y para esta semana.'
-                : 'Una pregunta de opinión, con las dos salidas dentro. Nadie elige lado.')) +
+                /* ⚠️ SIN «CON LAS DOS SALIDAS DENTRO» (titular, 2026-09-18:
+                   «eso es falso para el proyecto»). Pedía escribir el tema como
+                   una disyuntiva, y eso no es lo que el juego necesita ni lo
+                   que el revisor comprueba: su prompt dice expresamente que la
+                   pregunta «puede estar escrita sin signos de interrogación o
+                   sin un "o" explícito» y que lo que importa es que haya dos
+                   posturas que alguien razonable pueda sostener. Una cosa es
+                   que el tema ADMITA dos respuestas —eso sí, y lo mira el
+                   revisor al guardar— y otra que haya que escribirlas. */
+                : 'Una pregunta de opinión sobre algo de ustedes. Nadie elige ' +
+                  'lado: cada quien dice lo suyo al hablar.')) +
         '</p>' +
 
         (reescrito
@@ -3680,6 +3691,10 @@
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) fuera();
     else setTimeout(fuera, 160);
     window.removeEventListener('resize', g.recolocar);
+    if (window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', g.recolocar);
+      window.visualViewport.removeEventListener('scroll', g.recolocar);
+    }
   }
 
   /* CADA GLOBO LLEVA SU COLOR Y SU PEANA, como las cartas de modo: el de un
@@ -3799,8 +3814,10 @@
       '<span class="globo__pico" aria-hidden="true"></span>';
     marco.appendChild(nodo);
 
-    /* La pieza que puede encoger, si el cuerpo trae una. */
+    /* Las dos piezas que pueden encoger: la que el cuerpo marque, y como
+       último recurso el bloque entero. */
     var cede = nodo.querySelector('.globo__cede');
+    var dicho = nodo.querySelector('.globo__dicho');
 
     var recolocar = function () {
       var m = marco.getBoundingClientRect();
@@ -3833,6 +3850,22 @@
         m.width - 2 * (oDer - ALCANCE),
         2 * (oIzq + ALCANCE) - m.width));
       nodo.style.width = ancho + 'px';
+
+      /* ⚠️ EL SITIO NO ES EL MARCO ENTERO, ES LO QUE SE VE DE ÉL (titular,
+         2026-09-18: «el modal debe garantizar siempre quedar completo dentro
+         del viewport»). Dos cosas lo encogen y ninguna mueve el marco: en
+         escritorio el teléfono dibujado puede ser más alto que la ventana, y en
+         un móvil **el teclado** se come media pantalla en cuanto se toca un
+         campo —que es justo lo que hacen los globos que traen formulario—. El
+         sitio es la INTERSECCIÓN del marco con el viewport visible, en
+         coordenadas del marco. */
+      var vv = window.visualViewport;
+      var vArriba = vv ? vv.offsetTop : 0;
+      var vAlto = vv ? vv.height : window.innerHeight;
+      var techo = Math.max(0, vArriba - m.top) + AIRE;
+      var suelo = Math.min(m.height, vArriba + vAlto - m.top) - AIRE;
+      var sitio = Math.max(160, suelo - techo - PICO);
+
       var alto = nodo.offsetHeight;
 
       /* ⚠️ UN GLOBO MAS ALTO QUE LA PANTALLA DEJA SUS BOTONES FUERA, y no hay
@@ -3855,7 +3888,6 @@
         cede.style.maxHeight = '';
         cede.style.overflowY = '';
         alto = nodo.offsetHeight;
-        var sitio = m.height - AIRE * 2 - PICO;
         if (alto > sitio) {
           cede.style.maxHeight =
             Math.max(140, cede.offsetHeight - (alto - sitio)) + 'px';
@@ -3864,15 +3896,35 @@
         }
       }
 
+      /* ⚠️ Y SI AÚN NO CABE, CEDE EL BLOQUE ENTERO. Lo de arriba deja fuera dos
+         casos y los dos salen en pantalla: un globo **sin** cuerpo que ceda —la
+         ficha, una explicación larga— y uno cuyo cuerpo ya llegó a su mínimo.
+         En los dos el globo se quedaba más alto que el hueco, y como la caja no
+         scrollea y el marco tampoco, lo que sobraba **no se podía alcanzar**.
+         Que el título y los botones se queden quietos es lo preferible, no lo
+         obligatorio: antes que dejar algo fuera de la pantalla, scrollea todo.
+         Con esto el globo cabe SIEMPRE, sea cual sea su contenido. */
+      dicho.style.maxHeight = '';
+      dicho.style.overflowY = '';
+      alto = nodo.offsetHeight;
+      if (alto > sitio) {
+        dicho.style.maxHeight =
+          Math.max(60, dicho.offsetHeight - (alto - sitio)) + 'px';
+        dicho.style.overflowY = 'auto';
+        alto = nodo.offsetHeight;
+      }
+
       /* ARRIBA SI CABE, y si no abajo. Se mide contra el alto de verdad del
          globo, no contra un número inventado: un texto largo cabe o no cabe
          según lo que ocupe, no según lo que ocupara el día que se escribió. */
-      var huecoArriba = dArriba - AIRE;
-      var huecoAbajo = m.height - (dArriba + d.height) - AIRE;
+      var huecoArriba = dArriba - techo;
+      var huecoAbajo = suelo - (dArriba + d.height);
       var arriba = huecoArriba >= alto + PICO || huecoArriba >= huecoAbajo;
 
       var y = arriba ? dArriba - alto - PICO : dArriba + d.height + PICO;
-      y = Math.max(AIRE, Math.min(y, m.height - alto - AIRE));
+      /* Y SE ACOTA CONTRA LO QUE SE VE, no contra el marco: con el teclado
+         abierto el canto de abajo del marco está debajo del teclado. */
+      y = Math.max(techo, Math.min(y, suelo - alto));
 
       /* CENTRADO EN LA PANTALLA (titular, 2026-09-17), no colgado del signo.
          Colgado, un signo de la esquina dejaba el globo pegado a un lado y la
@@ -3924,6 +3976,13 @@
 
     globoAbierto = { nodo: nodo, disparador: disparador, velo: velo, recolocar: recolocar };
     window.addEventListener('resize', recolocar);
+    /* ⚠️ EL TECLADO NO DISPARA `resize` EN TODOS LOS NAVEGADORES: en iOS no
+       cambia el tamaño de la ventana, encoge el viewport VISIBLE. Sin esto, el
+       globo se quedaba colocado para una pantalla que ya no está. */
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', recolocar);
+      window.visualViewport.addEventListener('scroll', recolocar);
+    }
   }
 
   /* Se cierra tocando fuera y con Escape. El clic de dentro no cuenta —hay

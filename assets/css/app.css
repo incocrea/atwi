@@ -4740,7 +4740,16 @@ body.app {
   filter: drop-shadow(0 3px 6px rgba(46, 42, 63, .18));
 }
 
-.globo__dicho { position: relative; z-index: 2; }
+/* EL AIRE DE LOS LADOS ES PARA EL ANILLO DE FOCO, igual que en `.globo__cede`:
+   este bloque también puede acabar con `overflow` cuando el globo no cabe de
+   ninguna otra manera, y entonces recortaría el borde del campo enfocado. Sin
+   `overflow` no hace nada: el margen negativo devuelve exactamente lo que el
+   relleno quita. */
+.globo__dicho {
+  position: relative; z-index: 2;
+  padding-inline: 4px; margin-inline: -4px;
+  overscroll-behavior: contain;
+}
 .globo__titulo {
   font-family: var(--display); font-weight: 800;
   font-size: 1.0625rem; line-height: 1.2;
