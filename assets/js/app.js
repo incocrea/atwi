@@ -3782,9 +3782,17 @@
       /* LA PRUEBA DEL MICRÓFONO vive aquí, escondida hasta que se toca «Sortear»:
          el botón pide el permiso, la barra enseña el nivel mientras se dice
          algo, y en cuanto hay voz se sortea. Ver `conMicrofono()`. */
+      /* EL INDICADOR ES EL MICRÓFONO, NO UNA BARRA (titular, 2026-09-18). Una
+         barra de progreso dice «esto avanza hasta llenarse», y aquí no se llena
+         nada: lo que hay que ver es si el micrófono capta o no. El icono se
+         enciende en el color del modo y vibra cuando entra voz, y se queda gris
+         y quieto cuando no. `--nivel` la escribe `conMicrofono()` en cada
+         medida, así que responde mientras se habla. */
       '<div class="micro-prueba" id="p-micro" hidden>' +
+        '<span class="micro-prueba__disco" id="p-micro-disco" aria-hidden="true">' +
+          iconoSVG('micro', 30) +
+        '</span>' +
         '<p class="chico" id="p-micro-dice"></p>' +
-        '<div class="nivel-barra"><i id="p-micro-nivel" style="width:0"></i></div>' +
       '</div>' +
 
       /* Y aquí había un aviso diciendo que quién abre se sortea. También se
@@ -3892,26 +3900,33 @@
     try { ya = sessionStorage.getItem('atwi-micro-ok') === '1'; } catch (e) {}
     if (ya || probandoMicro) return ya ? sigue() : undefined;
 
-    var caja = $('#p-micro'), dice = $('#p-micro-dice'), nivel = $('#p-micro-nivel');
+    var caja = $('#p-micro'), dice = $('#p-micro-dice'), disco = $('#p-micro-disco');
     var b = $('#m-preparar .modal__pie button');
     var err = $('#p-error');
     if (err) err.textContent = '';
     probandoMicro = true;
     if (caja) caja.hidden = false;
     if (dice) dice.textContent = 'Probando el micrófono: di algo…';
+    if (disco) { disco.dataset.suena = '0'; disco.style.setProperty('--nivel', '0'); }
     if (b) { b.disabled = true; b.textContent = 'Escuchando…'; }
 
-    g.probar(function (n) { if (nivel) nivel.style.width = Math.round(n * 100) + '%'; }, 5000)
+    /* EN TIEMPO REAL: el disco toma el nivel en una variable CSS --de ahí salen
+       el halo y cuánto crece-- y `data-suena` enciende el color y la vibración. */
+    g.probar(function (n, suena) {
+      if (!disco) return;
+      disco.style.setProperty('--nivel', n.toFixed(2));
+      disco.dataset.suena = suena ? '1' : '0';
+    }, 6000)
       .then(function (r) {
         probandoMicro = false;
         if (b) { b.disabled = false; b.textContent = 'Sortear quién abre'; }
         if (r.ok) {
           try { sessionStorage.setItem('atwi-micro-ok', '1'); } catch (e) {}
           if (dice) dice.textContent = 'Micrófono listo.';
-          if (nivel) nivel.style.width = '100%';
+          if (disco) { disco.dataset.suena = '1'; disco.style.setProperty('--nivel', '1'); }
           return sigue();
         }
-        if (nivel) nivel.style.width = '0';
+        if (disco) { disco.dataset.suena = '0'; disco.style.setProperty('--nivel', '0'); }
         var que = r.motivo === 'permiso'
           ? 'El navegador no dio permiso para el micrófono. Actívalo en los ajustes del ' +
             'sitio (el candado junto a la dirección) y vuelve a tocar «Sortear».'

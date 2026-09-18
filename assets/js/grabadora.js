@@ -308,9 +308,14 @@ window.ATWI = window.ATWI || {};
       return this.abrir().then(function (f) {
         if (!Ctx) return { ok: true, nivel: null };   // sin Web Audio no se mide: se confía
         return new Promise(function (resolver) {
-          var ctx, an, datos, latido, tope, maximo = 0, conVoz = 0;
+          var ctx, an, datos, latido, tope, maximo = 0, conVoz = 0, antes = Date.now();
           try {
             ctx = new Ctx();
+            /* SE DESPIERTA A MANO. Un AudioContext creado fuera de un gesto
+               --o en Safari, casi siempre-- arranca `suspended` y el analizador
+               devuelve ceros para siempre: la prueba diria «no capte tu voz»
+               con el microfono abierto y funcionando. */
+            if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
             an = ctx.createAnalyser();
             an.fftSize = 1024;
             ctx.createMediaStreamSource(f).connect(an);
@@ -318,6 +323,7 @@ window.ATWI = window.ATWI || {};
           } catch (e) { return resolver({ ok: true, nivel: null }); }
           var cerrar = function (r) {
             clearInterval(latido); clearTimeout(tope);
+            if (alNivel) alNivel(0, false);
             try { ctx.close(); } catch (e) {}
             resolver(r);
           };
@@ -326,17 +332,32 @@ window.ATWI = window.ATWI || {};
             var suma = 0;
             for (var i = 0; i < datos.length; i++) suma += datos[i] * datos[i];
             var nivel = Math.sqrt(suma / datos.length);
+            var ahora = Date.now();
+            var paso = ahora - antes;
+            antes = ahora;
             if (nivel > maximo) maximo = nivel;
-            if (alNivel) alNivel(Math.min(1, nivel / 0.08));
-            /* VOZ DE VERDAD Y NO UN GOLPE: hace falta medio segundo seguido por
-               encima del umbral de la sala. Un toque en la mesa pasa el umbral
-               un instante; hablar lo pasa medio segundo. */
-            if (nivel >= NIVEL_DE_VOZ * 1.5) { conVoz += 60; if (conVoz >= 500) cerrar({ ok: true, nivel: maximo }); }
-            else conVoz = 0;
-          }, 60);
+            var suena = nivel >= NIVEL_DE_VOZ;
+            /* EL INDICADOR VA EN TIEMPO REAL y por eso se manda SIEMPRE, suene
+               o no: quien esta hablando tiene que ver que el microfono responde
+               mientras habla, no al final. 0,05 es el techo de la escala --una
+               voz normal a un palmo del telefono ronda 0,02-0,06 de RMS--. */
+            if (alNivel) alNivel(Math.min(1, nivel / 0.05), suena);
+            /* ⚠️ EL TIEMPO CON VOZ SE ACUMULA, NO SE EXIGE SEGUIDO, y es lo que
+               hacia fallar la prueba con el microfono funcionando (lo vio el
+               titular: «el indicador muestra claramente que si hay input»). Se
+               pedia medio segundo CONSECUTIVO por encima del umbral y se
+               reseteaba a cero en cuanto un tick caia por debajo; entre silaba y
+               silaba el RMS de una ventana de 23 ms baja siempre, asi que hablar
+               normal casi nunca junta 500 ms seguidos. Ahora suma el tiempo que
+               de verdad hubo voz --con reloj, no contando ticks, porque el
+               navegador estrangula los intervalos-- y con 300 ms basta.
+               Un golpe en la mesa sigue sin pasar: son 20-40 ms. */
+            if (suena) conVoz += paso;
+            if (conVoz >= 300) cerrar({ ok: true, nivel: maximo, conVoz: conVoz });
+          }, 50);
           tope = setTimeout(function () {
-            cerrar({ ok: false, motivo: 'silencio', nivel: maximo });
-          }, ms || 4000);
+            cerrar({ ok: false, motivo: 'silencio', nivel: maximo, conVoz: conVoz });
+          }, ms || 5000);
         });
       }, function (e) {
         var n = (e && e.name) || '';
