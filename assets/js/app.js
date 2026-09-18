@@ -1813,7 +1813,15 @@
      Va junto al estado y no en su propia línea: es la MISMA pregunta —«¿qué
      pasó con esta?»— y partirla en dos renglones haría la tarjeta más alta sin
      decir nada más. */
+  var COMO_ACABO_PACTO = { acuerdo: 'Acuerdo firmado', desacuerdo: 'Sin acuerdo', parada: 'Detenida', aplazado: 'Aplazado' };
   function comoAcabo(d) {
+    /* EN NEGOCIACIÓN LO DICE EL ACTA (S27, 2026-09-18): firmaron, marcaron
+       «Ninguna» o el mediador paró. Las de Controversia lo decían y las de Pacto
+       no decían nada. La última versión manda, como en el chip de actas. */
+    if (d.modo === 'negociacion') {
+      var actas = (d.acuerdos || []).slice().sort(function (a, b) { return (b.version || 0) - (a.version || 0); });
+      return actas.length ? (COMO_ACABO_PACTO[actas[0].tipo] || '') : '';
+    }
     var r = d.resultado;
     if (!r || !r.tipo_resultado) return '';
     if (r.tipo_resultado === 'empate_tecnico') return 'Empate';
@@ -1918,12 +1926,15 @@
       actas.map(function (a) {
         var d = a.debate || {};
         var hubo = a.tipo === 'acuerdo';
+        /* «Detenida» para la parada del mediador (S27): no es que no acordaran,
+           es que el mediador leyó la ronda y no propuso. El texto del acta en
+           ese caso es su cierre. */
         return '<div class="tarjeta partida-fila" data-tipo="' + esc(a.tipo) + '">' +
             '<button class="partida" data-acta-de="' + esc(d.id || '') + '">' +
               '<span class="partida__alto">' +
                 '<span class="partida__estado' +
                     (hubo ? '' : ' partida__estado--hecha') + '">' +
-                  (hubo ? 'Acuerdo' : 'Sin acuerdo') +
+                  (hubo ? 'Acuerdo' : a.tipo === 'parada' ? 'Detenida' : 'Sin acuerdo') +
                 '</span>' +
                 '<span class="partida__cuando">' + esc(cuando(a.creado)) + '</span>' +
               '</span>' +

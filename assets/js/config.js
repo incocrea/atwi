@@ -102,7 +102,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: 'e476f50',
+  version: 'acdca90',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -411,6 +411,20 @@ window.ATWI.config = {
          nombrar el patrón está prohibido. */
       blandaTitular: 'Sin veredicto',
       blanda: 'El juez decidió no puntuar esta ronda. Lo que dijo cada quien queda registrado.',
+      /* EN PACTO NO HAY VEREDICTO QUE NEGAR NI JUEZ QUE PUNTÚE (S26, 2026-09-18).
+         La parada blanda del mediador salía con los textos del árbitro --«esta
+         no la puntúo», «no siempre hay un veredicto que dar»-- en un modo donde
+         nadie puntúa. El mediador dice lo suyo: leyó la ronda y hoy no propone.
+         Lo que sigue sin decirse es POR QUÉ, igual que en el árbitro. */
+      blandaTitularNegociacion: 'Sin propuestas',
+      blandaNegociacion: 'El mediador leyó la ronda y decidió no proponer. Lo que dijo cada quien queda registrado.',
+      diceBlandaNegociacion: 'Leí la ronda entera y la decisión es mía: hoy no propongo nada. No ' +
+                             'siempre hay una manera de quedar que salga de los dos, y ' +
+                             'fabricarla sería peor que no proponerla.',
+      /* EL CIERRE (S12 en el árbitro desde su v2.2, S26 aquí): la única frase de
+         la parada que deja algo que hacer. Los párrafos dicen qué pidió cada uno;
+         esto es lo común. Se rotula para que no se lea como un tercer párrafo. */
+      rotuloCierre: 'Para la próxima vez',
 
       /* LA DURA NO ES LA BLANDA Y NO PUEDE DECIR LO MISMO. La blanda es
          asimetría --la ronda no tuvo partido-- y lleva copy lúdico y su reporte.

@@ -358,6 +358,29 @@ window.ATWI = window.ATWI || {};
       veredicto: d.resultado || null,
       debate: d.id
     };
+    /* EN NEGOCIACIÓN EL RESULTADO ES EL ACTA (2026-09-18). El repaso de una
+       Negociación terminada pasaba por `arrancarVotacion()` sin propuestas
+       cargadas y caía en «no contestó»: el cierre no se podía volver a ver. Se
+       monta aquí desde la última acta --firmada, «Ninguna» o parada del
+       mediador--, que es lo que la pareja dejó, y `revelar()` lo pinta como la
+       primera vez. La parada trae sus párrafos y su cierre en `lo_que_dijo`. */
+    if (d.modo === 'negociacion') {
+      var actas = (d.acuerdos || []).slice().sort(function (a, b) { return (b.version || 0) - (a.version || 0); });
+      var acta = actas[0] || null;
+      P.propuestasListas = Boolean(acta);
+      P.cerrada = Boolean(acta);
+      P.acuerdo = acta && acta.tipo === 'acuerdo' ? { texto: acta.texto } : null;
+      P.paradaNegociacion = acta && acta.tipo === 'parada' ? 'blanda' : null;
+      var lqd = acta && acta.lo_que_dijo;
+      if (lqd) {
+        var yo = indiceDeLaCuenta();
+        P.loQueDijoNegociacion = [
+          { nombre: P.jugadores[yo].nombre, texto: lqd.p1 || '' },
+          { nombre: P.jugadores[1 - yo].nombre, texto: lqd.p2 || '' }
+        ].filter(function (q) { return q.texto; });
+        P.cierreNegociacion = lqd.cierre || null;
+      }
+    }
     if (op.estrenar) {
       /* SE SELLA AL ABRIR Y NO AL CERRAR. Quien abre la revelación ya la vio; y
          esperar al final dejaría sin sellar justo a quien cierra la app a mitad
@@ -2197,6 +2220,7 @@ window.ATWI = window.ATWI || {};
     P.propuestasListas = false;
     P.paradaNegociacion = null;
     P.loQueDijoNegociacion = null;
+    P.cierreNegociacion = null;
     var n = window.ATWI.nube;
     if (!n || !n.mediar || !n.hay() || !P.debate) return Promise.resolve(null);
     return n.mediar(P.debate).then(function (d) {
@@ -2229,6 +2253,8 @@ window.ATWI = window.ATWI || {};
           { nombre: P.jugadores[yo].nombre, texto: d.lo_que_dijo.p1 || '' },
           { nombre: P.jugadores[1 - yo].nombre, texto: d.lo_que_dijo.p2 || '' }
         ].filter(function (q) { return q.texto; });
+        /* El cierre viaja dentro de `lo_que_dijo` (mediador v2.1, S12). */
+        P.cierreNegociacion = d.lo_que_dijo.cierre || null;
       }
       return null;
     }, function () { return null; });
@@ -2497,6 +2523,9 @@ window.ATWI = window.ATWI || {};
   function arrancarVotacion() {
     if (!P.propuestasListas) return deliberar(true);
     if (P.paradaNegociacion) return revelar();
+    /* Cerrada --firmada o «Ninguna»-- no se vuelve a votar: se enseña lo que
+       quedó (repaso de una Negociación terminada). */
+    if (P.cerrada) return revelar();
     P.voto = null;
     return votar();
   }
@@ -2693,6 +2722,8 @@ window.ATWI = window.ATWI || {};
                    color: persona(l).color, rubrica: d[l] || {} };
         })
       } : null,
+      /* El `cierre` (árbitro v2.2) viaja con los párrafos en `lo_que_dijo`. */
+      cierre: (res.lo_que_dijo && res.lo_que_dijo.cierre) || null,
       loQueDijo: res.lo_que_dijo ? ['propone', 'invitado'].map(function (l) {
         return { nombre: persona(l).nombre, texto: res.lo_que_dijo[l] || '' };
       }) : null
@@ -2761,6 +2792,7 @@ window.ATWI = window.ATWI || {};
          llama obligatorios. En Controversia los trae `real`; aquí, su propia
          llamada. */
       loQueDijo: P.loQueDijoNegociacion || null,
+      cierre: P.cierreNegociacion || null,
       alCerrar: function () {
         /* UN ENSAYO NO ES UNA PARTIDA Y NO SE ANOTA. Esto contaba el tema como
            jugado y subía el contador de debates o de acuerdos CADA VEZ que el

@@ -575,7 +575,7 @@ window.ATWI = window.ATWI || {};
          si le faltaba justo eso, y las marcaba todas `terminada`. Solo los
          campos que decide `estadoDe()`; el texto del acta lo trae el chip
          «Acuerdos» por su cuenta. */
-      'acuerdos(tipo,version,lo_que_dijo,creado)';
+      'acuerdos(tipo,version,texto,lo_que_dijo,creado)';
     /* Y SE PIDEN LAS MÍAS, EXPLÍCITAMENTE. Esto no estaba y costó una tarde
        (2026-09-15): la consulta traía «los debates que RLS me deje ver» y se
        daba por hecho que eran los míos. Para casi todo el mundo lo son, pero la

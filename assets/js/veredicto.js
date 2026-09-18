@@ -667,8 +667,11 @@ window.ATWI = window.ATWI || {};
          pantalla del juez. Por qué no dice «Empate», que es lo que se pidió:
          ver `cfg.veredicto.sinResultado`. */
       var sr = v.sinResultado || {};
-      titular = sr[r.sinResultado + 'Titular'] || 'Hoy no hubo partido';
-      detalle = pie(sr[r.sinResultado] || '');
+      /* La blanda de Pacto tiene sus textos (S26); la dura es la misma en los dos
+         modos, porque la detiene el juego y no quien media o juzga. */
+      var neg = r.modo === 'negociacion' && r.sinResultado === 'blanda' ? 'Negociacion' : '';
+      titular = sr[r.sinResultado + 'Titular' + neg] || sr[r.sinResultado + 'Titular'] || 'Hoy no hubo partido';
+      detalle = pie(sr[r.sinResultado + neg] || sr[r.sinResultado] || '');
     } else if (r.modo === 'negociacion') {
       /* Aquí no gana una persona: o ganan los dos o no gana nadie, y las dos
          figuras lo dicen antes que el texto.
@@ -793,7 +796,7 @@ window.ATWI = window.ATWI || {};
        `stopPropagation` deja la colisión puesta para el siguiente que escriba
        un botón aquí. Los verbos genéricos --«salir», «cerrar», «volver»-- se
        prefijan con la pantalla. */
-    abajo.innerHTML = hayJuez ? boton('ver-juez', 'Qué dijo el juez')
+    abajo.innerHTML = hayJuez ? boton('ver-juez', r.modo === 'negociacion' ? 'Qué dijo el mediador' : 'Qué dijo el juez')
                               : boton('rev-salir', r.sinResultado ? 'Entendido' : 'Salir',
                                           r.sinResultado ? '' : 'salir');
 
@@ -897,14 +900,25 @@ window.ATWI = window.ATWI || {};
          quedar guardada. */
       var dura = r.sinResultado === 'dura';
       var dichos = dura ? [] : (r.loQueDijo || []).filter(function (q) { return q.texto; });
-      dice = '<p class="dice__linea">' +
-             esc(sr0[r.sinResultado === 'dura' ? 'diceDura' : 'diceBlanda'] || '') + '</p>' +
+      /* EL MEDIADOR HABLA COMO MEDIADOR (S26): en Pacto la blanda lleva su
+         frase; la dura es la misma en los dos modos. */
+      var frase = dura ? 'diceDura'
+                : (r.modo === 'negociacion' && sr0.diceBlandaNegociacion) ? 'diceBlandaNegociacion'
+                : 'diceBlanda';
+      dice = '<p class="dice__linea">' + esc(sr0[frase] || '') + '</p>' +
              (dichos.length
                ? '<p class="dice__rotulo">' + esc(sr0.rotuloDichos || '') + '</p>' +
                  '<div class="lo-mejor">' + dichos.map(function (q) {
                    return '<p class="lo-mejor__linea"><b>' + esc(q.nombre) + '</b> ' +
                           esc(q.texto) + '</p>';
                  }).join('') + '</div>'
+               : '') +
+             /* EL CIERRE, que el contrato exige desde la v2.2 del árbitro y la v2.1
+                del mediador y que ninguna pantalla enseñaba (S12, S26): es lo
+                único de la parada que deja algo que hacer. */
+             (!dura && r.cierre
+               ? '<p class="dice__rotulo">' + esc(sr0.rotuloCierre || '') + '</p>' +
+                 '<p class="dice__linea">' + esc(r.cierre) + '</p>'
                : '') +
              (!dura && sr0.paraQue
                ? '<p class="dice__linea">' + esc(sr0.paraQue) + '</p>' : '') +
