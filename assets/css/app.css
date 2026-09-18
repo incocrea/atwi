@@ -332,6 +332,47 @@ body.app {
 #m-explicar .modal__pie,
 #m-preparar .modal__pie { background: none; border-top: 0; }
 
+/* --- El interruptor de la vía: en este móvil o con invitación --------------- */
+/* Titular, 2026-09-17. Sustituye a la pantalla que preguntaba lo mismo con dos
+   botones al final del detalle del tema.
+
+   VA EN EL COLOR DEL MODO, con los tonos `-oscuro` y no los base: el texto va en
+   blanco y el coral base (#F07F55) con blanco encima se queda en 2,3:1. Es la
+   misma cuenta de los chips de filtro y de los chips de mesa.
+   ⚠️ `--modo-fuerte` NO LLEGA SOLO A LOS MODALES: está declarado sobre
+   `#v-catalogo[data-modo]`, así que aquí hay que darlo otra vez. El respaldo es
+   el lavanda de la marca, que es lo que se ve si algún día esto sale fuera de un
+   modal teñido. */
+#m-preparar.modal--debate      { --modo-fuerte: var(--debate-oscuro); }
+#m-preparar.modal--negociacion { --modo-fuerte: var(--negociacion-oscuro); }
+#m-preparar.modal--competencia { --modo-fuerte: var(--competencia-oscuro); }
+
+.donde {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4px; padding: 4px;
+  margin: 0 auto var(--e-5);
+  max-width: 320px;
+  border-radius: var(--radio-pastilla);
+  /* El mismo velo blanco de las tarjetas: sobre el fondo dibujado del modal un
+     blanco opaco se lee como un recorte, y el velo deja pasar el dibujo. */
+  background: var(--carta-velo);
+}
+.donde__op {
+  border: 0; cursor: pointer;
+  padding: 10px 6px;
+  border-radius: var(--radio-pastilla);
+  background: none;
+  color: var(--tinta-suave);
+  font-family: inherit; font-weight: 800; font-size: var(--t-chico);
+  /* Sin canto y sin relieve, a propósito: no es un botón que lanza algo, es un
+     estado que se mira. El relieve está reservado para lo que hace. */
+  transition: background var(--dur-corta) var(--suave), color var(--dur-corta) var(--suave);
+}
+.donde__op--puesto {
+  background: var(--modo-fuerte, var(--lavanda));
+  color: var(--blanco);
+}
+
 /* EL BUZÓN LLEVA FONDO PROPIO, y no el de ningún modo: ahí caen avisos de las
    dos clases —una invitación a Controversia y un resultado de Negociación en la
    misma lista—, así que pintarlo de coral o de menta diría que el buzón es de un

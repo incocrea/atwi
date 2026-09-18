@@ -1067,6 +1067,7 @@
       vacio: 'Lo que quieras poner en juego y no está en la lista, escríbelo aquí.',
       cambian: 'Los premios cambian según con quién estés jugando.',
       escribir: 'Escribir un premio',
+      jugar: 'Jugar por este premio',
       primero: 'Escribir el primer premio',
       ninguno: 'El catálogo trae los premios de siempre, pero los suyos son suyos. ' +
                'Escribe qué se lleva quien gane y se juega igual que cualquier otro.'
@@ -1076,6 +1077,7 @@
       vacio: 'Lo que discutes y no está en la lista, escríbelo aquí para debatir o negociar.',
       cambian: 'Los temas cambian según con quién estés debatiendo.',
       escribir: 'Escribir un tema',
+      jugar: 'Jugar este tema',
       primero: 'Escribir el primer tema',
       ninguno: 'El catálogo trae las discusiones más comunes, pero las suyas son suyas. ' +
                'Escribe el enunciado y las dos posturas, y se juega igual que cualquier otro tema.'
@@ -1118,28 +1120,6 @@
       '</button>';
   }
 
-  /* EL INTERRUPTOR, debajo del titulo de la pantalla de mesas. Va DEBAJO y no
-     al lado: el titulo lleva sus destellos y esta centrado contra la pantalla,
-     asi que cualquier cosa a su derecha lo descentra —es la misma cuenta de
-     `--diana` en las cabeceras—.
-     Dos botones de verdad y no un `checkbox` disfrazado: son dos caminos con
-     nombre, y con `aria-pressed` un lector de pantalla dice cual esta puesto. */
-  var DONDES = [
-    ['local', 'En este móvil'],
-    ['linea', 'Con invitación']
-  ];
-  function selectorDeDonde() {
-    var puesto = dondeSeJuega();
-    return '<div class="donde" role="group" aria-label="Dónde se juega">' +
-      DONDES.map(function (d) {
-        return '<button class="donde__op' + (d[0] === puesto ? ' donde__op--puesto' : '') +
-               '" data-donde="' + d[0] + '" aria-pressed="' + (d[0] === puesto) + '">' +
-                 esc(d[1]) +
-               '</button>';
-      }).join('') +
-    '</div>';
-  }
-
   function pintarCatalogo() {
     var caja = $('#v-catalogo');
     var cinta = cintaModo();
@@ -1167,8 +1147,7 @@
          ahí. Una frase que anuncia lo que hay justo debajo gasta el alto que
          necesitan las cartas. */
       caja.innerHTML = cinta +
-        tituloVista('¿Con quién juegas?', 'margin-bottom:var(--e-3)') +
-        selectorDeDonde() +
+        tituloVista('¿Con quién juegas?', 'margin-bottom:var(--e-4)') +
         '<div class="publicos">' + PUBLICOS.map(cartaPublico).join('') + '</div>';
       return;
     }
@@ -2445,15 +2424,14 @@
     /* El tema ya lleva el color del modo: desde que se elige, el flujo entero
        va teñido y no hay que recordarlo de memoria. */
     $('#m-tema').className = 'modal modal--' + propuesta.modo;
-    /* UN SOLO BOTON, Y LO QUE DICE LO DECIDIO EL INTERRUPTOR de «¿Con quién
-       juegas?». Aquí había un par apilado —«Jugar los dos en este móvil» y
-       «Enviar invitación»— y el titular lo descartó: preguntar la vía al final
-       es preguntarlo tarde. El que queda va al camino elegido. */
-    var enLinea = dondeSeJuega() === 'linea';
+    /* UN SOLO BOTON, Y NO PREGUNTA POR QUE VIA SE JUEGA (titular, 2026-09-17).
+       Aquí había un par apilado —«Jugar los dos en este móvil» y «Enviar
+       invitación»— y esa pantalla se descartó entera: la vía se elige ahora en
+       «Antes de empezar», que es donde ya se decide todo lo demás de la partida.
+       Este botón solo lleva allí. */
     var bt = $('#m-tema .modal__pie button');
     bt.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
-    bt.dataset.accion = enLinea ? 'proponer' : 'jugar-aqui';
-    bt.textContent = enLinea ? 'Enviar invitación' : 'Jugar los dos en este móvil';
+    bt.textContent = palabras().jugar;
     $('#m-tema .modal__titulo').textContent = t.titulo;
     /* EL ICONO DE LA MESA, en la tercera columna de la cabecera. Es el unico
        dato que esta pantalla no dice por ningun otro sitio —el modo lo dicen el
@@ -2813,10 +2791,44 @@
    * un texto desde aquí. Reabrirla apilaría otra entrada de historial y
    * perdería la postura ya elegida y los nombres escritos.
    */
+  /* EL INTERRUPTOR DE LA VIA, arriba del todo de «Antes de empezar». Va aquí y
+     no en una pantalla propia (titular, 2026-09-17): había un par de botones al
+     final del detalle del tema —«Jugar los dos en este móvil» y «Enviar
+     invitación»— y esa pregunta, hecha al final y en una pantalla entera, llega
+     tarde y de sorpresa. Aquí es una línea en la pantalla donde ya se decide
+     todo lo demás de la partida, y lo que elige cambia el resto del formulario.
+     Dos botones de verdad y no un `checkbox` disfrazado: son dos caminos con
+     nombre, y `aria-pressed` deja que un lector de pantalla diga cuál está
+     puesto. */
+  var DONDES = [
+    ['local', 'En este móvil'],
+    ['linea', 'Con invitación']
+  ];
+  function selectorDeDonde() {
+    var puesto = dondeSeJuega();
+    return '<div class="donde" role="group" aria-label="Dónde se juega">' +
+      DONDES.map(function (d) {
+        return '<button type="button" class="donde__op' +
+                 (d[0] === puesto ? ' donde__op--puesto' : '') +
+               '" data-donde="' + d[0] + '" aria-pressed="' + (d[0] === puesto) + '">' +
+                 esc(d[1]) +
+               '</button>';
+      }).join('') +
+    '</div>';
+  }
+
   function abrirPreparar(repintando) {
     var t = datos.tema(propuesta.temaId);
     if (!t) return;
     var p = datos.perfil();
+    /* EN LINEA SE PREGUNTA MENOS, y no es por simplificar: lo que se va es lo
+       que NO es mío. La ficha del invitado y su abogado los elige él en su
+       teléfono —decidirlos por él sería repartirle personaje sin preguntarle—,
+       así que de esta pantalla solo quedan los turnos, el juez y a quién se
+       invita. En local los dos están delante y se elige todo aquí.
+       ⚠️ LA PARTIDA EN LINEA NO EXISTE TODAVIA: este camino termina en la
+       pantalla de invitación, que dice que aún no hay servidor. */
+    var enLinea = dondeSeJuega() === 'linea';
     /* El último con quien se jugó viene puesto: nombre, personaje y aro. En un
        teléfono compartido se repite casi siempre la misma pareja, y escribir el
        mismo nombre cada vez es trabajo que la app ya sabe hacer. */
@@ -2843,6 +2855,8 @@
       /* LA ETIQUETA Y LOS CÍRCULOS EN EL MISMO RENGLÓN. Al encogerlos a la
          mitad, el título ocupaba un renglón entero para presentar tres piezas
          que ya no lo llenaban, y la pantalla ganaba altura sin ganar nada. */
+      selectorDeDonde() +
+
       '<div class="turnos-linea">' +
         /* «Turnos por persona» y no «¿Cuántos turnos?» (decisión del titular):
            la pregunta no decía DE QUÉ eran los turnos, y tres turnos son tres
@@ -2899,20 +2913,27 @@
            queda el título, con los atajos a su derecha en la misma fila. */
         /* «Invitado» a secas: que la partida es local se sabe desde que se
            eligió «Jugar los dos en este móvil», y repetirlo aquí contesta una
-           pregunta que nadie se estaba haciendo. */
-        '<h3 style="margin:0">Invitado</h3>' +
+           pregunta que nadie se estaba haciendo.
+           EN LINEA CAMBIA EL RÓTULO porque cambia la pregunta: aquí no hay
+           nadie sentado al lado, hay alguien a quien se le va a mandar esto. */
+        '<h3 style="margin:0">' + (enLinea ? '¿A quién invitas?' : 'Invitado') + '</h3>' +
       '</div>' +
       /* EL CAMPO PRIMERO Y LA FICHA DESPUÉS. Va en el orden del HTML y no con
          `row-reverse`: así el tabulador pasa por el nombre antes que por el
-         dibujo, que es el orden en que se rellena. */
-      '<div class="con-ficha" style="margin-top:6px">' +
+         dibujo, que es el orden en que se rellena.
+         ⚠️ EN LINEA NO HAY FICHA QUE ELEGIR: el personaje y el color son de
+         quien juega, y quien juega ese lado va a estar en su propio teléfono.
+         Elegírselos desde aquí sería repartirle un dibujo sin preguntarle. */
+      '<div class="' + (enLinea ? '' : 'con-ficha') + '" style="margin-top:6px">' +
         '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-          'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
-        '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
-          'aria-label="Elegir el aro de su ficha">' +
-          window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
-            .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
-        '</button>' +
+          'autocomplete="off" placeholder="' + (enLinea ? 'Su nombre' : '¿Con quién juegas?') +
+          '" value="' + esc(propuesta.otro) + '">' +
+        (enLinea ? '' :
+          '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
+            'aria-label="Elegir el aro de su ficha">' +
+            window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
+              .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
+          '</button>') +
       '</div>' +
       /* Aquí había un párrafo explicando «una sola palabra, primer nombre o
          apodo». Se fue: el campo ya no ADMITE un espacio ni una letra de más,
@@ -2927,16 +2948,21 @@
          con abogado y el otro a pelo, y esa asimetría es parte de la gracia.
          Va aquí y no dentro de la sala porque cambiar las reglas a mitad de
          partida no es una opción, y porque cambia lo que cuesta cada turno. */
-      '<h3 class="centrado" style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
-      /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
-         explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
-         para una decisión que la mayoría va a dejar como viene, y encima
-         repetidos, porque el modal lo vuelve a decir justo cuando hace falta
-         leerlo —al elegir—. */
-      '<p class="chico tenue centrado" style="margin-bottom:var(--e-4)">' +
-        'Cada quien se representa a sí mismo. Prendé la llave para que un ' +
-        'personaje te haga de abogado.</p>' +
-      pintarRepresentantes() +
+      /* ⚠️ LOS ABOGADOS SON DE LOS DOS, ASI QUE EN LINEA NO SE ELIGEN AQUI. La
+         llave decide si a alguien lo representa un personaje, y eso cambia lo
+         que se oye de ÉL: es suyo. En local los dos están delante y la eligen
+         juntos; en línea cada quien prende la suya en su teléfono. */
+      (enLinea ? '' :
+        '<h3 class="centrado" style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
+        /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
+           explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
+           para una decisión que la mayoría va a dejar como viene, y encima
+           repetidos, porque el modal lo vuelve a decir justo cuando hace falta
+           leerlo —al elegir—. */
+        '<p class="chico tenue centrado" style="margin-bottom:var(--e-4)">' +
+          'Cada quien se representa a sí mismo. Prendé la llave para que un ' +
+          'personaje te haga de abogado.</p>' +
+        pintarRepresentantes()) +
 
       /* EL JUEZ VA DEBAJO DE LOS DOS, y el sitio es la mitad de la decision.
          Arriba de ellos se leeria como el titulo de la seccion; al lado, como
@@ -2960,6 +2986,11 @@
 
     var b = $('#m-preparar .modal__pie button');
     b.className = 'boton boton--bloque boton--grande boton--' + propuesta.modo;
+    /* EL BOTON DICE LO QUE VA A PASAR, que es distinto en cada vía: en local se
+       sortea quién abre y arranca la partida ahí mismo; en línea lo que sale de
+       aquí es una invitación y la partida no empieza hasta que la acepten. */
+    b.dataset.accion = enLinea ? 'proponer' : 'sortear';
+    b.textContent = enLinea ? 'Enviar invitación' : 'Sortear quién abre';
     /* Se revisa AL ABRIR y no solo al escribir. Antes el botón nacía apagado y
        lo encendía elegir postura; sin ese paso, con los dos nombres ya puestos
        —que es el caso normal— el botón se quedaba apagado sin nada que hacer
@@ -3268,18 +3299,33 @@
     });
   }
 
+  /* AHORA SE LLEGA DESDE «ANTES DE EMPEZAR» y no desde el detalle del tema
+     (titular, 2026-09-17), así que lo que se propone ya trae turnos, juez y a
+     quién: se dicen aquí, porque una invitación que no dice a qué partida
+     invita obliga a fiarse. */
   function proponer() {
     var t = datos.tema(propuesta.temaId);
-    var esPacto = propuesta.modo === 'negociacion';
+    /* EL NOMBRE DEL MODO SALE DE LA CONFIGURACION. Aquí estaba escrito a mano y
+       decía «Debate» y «Negociación», que son los nombres VIEJOS: los modos se
+       llaman Controversia, Pacto y QuiénGane desde hace días y esta pantalla
+       seguía usando los de antes. Es el mismo fallo que la landing tenía por
+       siete sitios — nada avisa de que un texto dejó de ser verdad. */
+    var m = cfg.modos[propuesta.modo] || {};
+    var campo = $('#p-otro');
+    var quien = datos.limpiarNombre((campo && campo.value) || propuesta.otro || '');
+    var turnos = propuesta.turnos || cfg.reglas.turnosPorDefecto;
 
     $('#m-invitar .modal__cuerpo').innerHTML =
       '<div class="centrado" style="padding:var(--e-6) 0">' +
         '<div style="margin-bottom:var(--e-3)">' + icono('buzon', 76) + '</div>' +
         '<h2 style="margin-bottom:var(--e-2)">Propuesta lista</h2>' +
         '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
-          'Le vas a proponer <strong>' + esc(t.titulo) + '</strong> en modo ' +
-          '<strong>' + (esPacto ? 'Negociación' : 'Debate') + '</strong>. ' +
-          'Podrá aceptarlo o pedirte el otro modo.' +
+          (quien ? 'Le vas a proponer a <strong>' + esc(quien) + '</strong> '
+                 : 'Vas a proponer ') +
+          '<strong>' + esc(t.titulo) + '</strong> en modo <strong>' +
+          esc(m.nombre || propuesta.modo) + '</strong>, ' + turnos +
+          ' turno' + (turnos === 1 ? '' : 's') + ' cada uno. ' +
+          'Podrá aceptarlo o pedirte otro modo.' +
         '</p>' +
       '</div>' +
       '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
@@ -3289,7 +3335,7 @@
         '</p>' +
       '</div>';
 
-    cerrarModales(['m-tema']);
+    cerrarModales(['m-preparar', 'm-tema']);
     abrirModal('m-invitar');
   }
 
@@ -3630,7 +3676,16 @@
     if (fil) { filtro = fil.dataset.filtro; pintarCatalogo(); return; }
 
     var don = e.target.closest('[data-donde]');
-    if (don) { recordarDonde(don.dataset.donde); pintarCatalogo(); return; }
+    if (don) {
+      /* LO ESCRITO NO SE PIERDE AL CAMBIAR DE VIA. El formulario se vuelve a
+         dibujar entero, y el nombre vive en el DOM hasta que se pulsa el
+         boton: sin esto, teclear el nombre y tocar el interruptor lo borra. */
+      var campo = $('#p-otro');
+      if (campo) propuesta.otro = campo.value;
+      recordarDonde(don.dataset.donde);
+      abrirPreparar(true);
+      return;
+    }
 
     var pub = e.target.closest('[data-publico]');
     if (pub) { modoPublico = pub.dataset.publico; categoriaAbierta = null; entrar(); pintarCatalogo(); return; }
