@@ -2408,19 +2408,27 @@
     var pe = $('#t-tema-peana');
     if (pe) pe.src = '../assets/img/iconos/base-' + propuesta.modo + '.png';
 
-    /* El bloque ilustrado del detalle: solo el estallido, suelto sobre el fondo
-     del modal. ⚠️ TENIA UNA CAJA BLANCA DETRAS y se fue (titular, 2026-09-17):
-     el modal ya viene tenido del modo y una tarjeta encima lo unico que hacia
-     era recortar ese fondo en un rectangulo. La peana ya no vive aqui: se fue
-     al pie del MODAL, que es donde el titular la queria —como el zocalo de las
-     cartas de seleccion, pero a lo ancho de la pantalla—. */
+    /* El bloque ilustrado del detalle: la pieza suelta sobre el fondo del modal.
+     ⚠️ TENIA UNA CAJA BLANCA DETRAS y se fue (titular, 2026-09-17): el modal ya
+     viene tenido del modo y una tarjeta encima lo unico que hacia era recortar
+     ese fondo en un rectangulo. La peana ya no vive aqui: se fue al pie del
+     MODAL, que es donde el titular la queria —como el zocalo de las cartas de
+     seleccion, pero a lo ancho de la pantalla—.
+
+     CADA MODO TIENE SU DIBUJO, Y SON PROPIOS (plancha del titular, 2026-09-17).
+     Hasta hoy salia aqui la pieza de la CORTINILLA —`piezaDelEncuentro`—, y eso
+     traia dos problemas de una vez: se repetia treinta segundos despues entrando
+     con sus rebotes, y QuienGane salia con el CORAZON de Pacto, porque esa
+     funcion se escribio cuando habia dos modos y reparte «VS o corazon». Los
+     tres nuevos dicen lo que pasa en su modo: los bocadillos con el VS son
+     Controversia, las dos piezas de puzzle encajando son Pacto y el mando es
+     QuienGane, donde lo decide un minijuego.
+     El color ya no es el de la MESA: es el del dibujo. La mesa se sigue diciendo
+     en el icono de la cabecera, que es donde no se repite con nada. */
   function escenaDelTema() {
-    var pa = window.ATWI.partida;
-    if (!pa || !pa.piezaDelEncuentro) return '';
     return '<div class="escena">' +
-        '<img class="escena__pieza" src="' +
-          pa.piezaDelEncuentro(propuesta.modo, modoPublico || 'pareja') +
-          '" alt="" width="180" height="176">' +
+        '<img class="escena__pieza" src="../assets/img/iconos/escena-' +
+          propuesta.modo + '.png" alt="" width="448" height="448">' +
       '</div>';
   }
 
@@ -2446,27 +2454,19 @@
 
          Ya no hay boton de «Editar tema»: cada trozo se toca y se edita solo,
          asi que abrir el formulario entero sobra y ademas competia con los
-         lapices que tiene al lado. */
-      '<div class="aviso-ia">' + iconoSVG('aviso', 20) +
-        '<span>Hablen libre: no hay lados asignados. Si el enunciado no se parece a la ' +
-        'discusión de ustedes, tócalo y reescríbelo — el tema es una plantilla, no una ' +
-        'sentencia.</span>' +
-      '</div>' +
+         lapices que tiene al lado.
+
+         Y SE FUE TAMBIEN EL AVISO DE «HABLEN LIBRE» (titular, 2026-09-17), que
+         decia que no hay lados asignados y que el enunciado se puede reescribir.
+         Lo segundo ya lo dice el lapiz que el enunciado lleva al lado —y lo dice
+         mejor, porque se toca—; lo primero es la regla del juego entero y no de
+         este tema. Eran cuatro renglones de letra chica justo encima de la
+         ilustracion, en la ultima pantalla antes de jugar. */
 
       /* LA ESCENA DE LO QUE VA A PASAR (mockup del titular, 2026-09-17).
          Medido antes de ponerla: entre el aviso y los dos botones quedaban 368
          px vacios a 375, o sea el 43 % del alto del modal. Esta pantalla es la
-         ultima antes de jugar y no ensenaba nada de lo que viene.
-
-         ES LA MISMA PIEZA DE LA CORTINILLA, no un dibujo nuevo: el estallido
-         con el VS en Controversia y el del corazon en los otros dos, del color
-         de la mesa. Ya existe, ya la decide `piezaDelEncuentro(modo, publico)` y
-         ya dice exactamente lo que el mockup queria decir —que esto es un duelo
-         o un encuentro—.
-         ⚠️ Y SE VUELVE A VER treinta segundos despues, entrando desde abajo con
-         sus rebotes. Es una repeticion a proposito: aqui quieta y pequena, alli
-         en movimiento y grande. Si algun dia molesta, el sitio donde cambiarla
-         es esta linea. */
+         ultima antes de jugar y no ensenaba nada de lo que viene. */
       escenaDelTema();
 
     abrirModal('m-tema');

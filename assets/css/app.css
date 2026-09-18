@@ -4688,14 +4688,33 @@ body[data-demo] { background: var(--crema); }
    escena ocupa lo que quede y se encoge sola en un teléfono bajo, en vez de
    empujar los botones fuera de la pantalla. */
 #m-tema .modal__cuerpo { display: flex; flex-direction: column; }
+/* ⚠️ `minmax(0, 1fr)` Y `min-height: 0`, O LA PIEZA NO CEDE Y APARECE EL SCROLL.
+   Es la trampa de siempre en este proyecto, aquí por dos sitios a la vez: el
+   `min-height: 120px` le ponía un suelo a la escena, y con una ilustración de
+   300 px el suelo lo pone ELLA —la escena no baja de lo que mide su contenido—,
+   así que el cuerpo se ponía a scrollear en un teléfono bajo. Y el
+   `max-height: 100%` de la pieza no la salvaba: un porcentaje contra una altura
+   `auto` no se resuelve, así que se ignoraba sin decir nada. Con la fila en
+   `minmax(0, 1fr)` la altura pasa a estar definida, el porcentaje se resuelve y
+   la pieza cede con `contain` —el dibujo se ve más chico, nunca deformado—.
+   Medido a cuatro alturas de marco (846 → 560): cero scroll en las cuatro. */
 .escena {
   flex: 1 1 auto;
-  min-height: 120px;
-  display: grid; place-items: center;
+  min-height: 0;
+  display: grid; grid-template-rows: minmax(0, 1fr); place-items: center;
   padding: var(--e-3) 0;
 }
+/* ⚠️ EL LIENZO NO ES EL DIBUJO, y por eso el ancho es tan grande. Las tres
+   piezas vienen niveladas por CUERPO en un cuadrado de 448 —es lo que hace que
+   cambiar de modo no le cambie el tamaño a la ilustración—, y el cuerpo ocupa
+   ahí el 68 %: lo demás es el aire que necesita la pieza de salpicaduras más
+   extendida. Así que un `width` de 190 px pintaría 129 de dibujo. Al 78 % del
+   modal el cuerpo sale a unos 200, que es lo que el mockup enseñaba.
+   `max-height` porque la escena cede alto en un teléfono bajo: sin él la pieza
+   seguiría midiendo lo mismo y se saldría por el pie. */
 .escena__pieza {
-  width: min(52%, 190px); height: auto;
+  width: min(86%, 340px); height: auto;
+  max-height: 100%; object-fit: contain;
   filter: drop-shadow(0 8px 14px rgba(46, 42, 63, .18));
 }
 
