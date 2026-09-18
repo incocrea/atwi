@@ -370,9 +370,12 @@ window.ATWI = window.ATWI || {};
       P.propuestasListas = Boolean(acta);
       P.cerrada = Boolean(acta);
       P.acuerdo = acta && acta.tipo === 'acuerdo' ? { texto: acta.texto } : null;
-      P.paradaNegociacion = acta && acta.tipo === 'parada' ? 'blanda' : null;
+      /* La fila de la parada dice si fue dura (`lo_que_dijo.parada`) o blanda
+         (con parrafos y cierre). Las dos terminan la partida (titular, 2026-09-18). */
+      P.paradaNegociacion = acta && acta.tipo === 'parada'
+        ? ((acta.lo_que_dijo && acta.lo_que_dijo.parada === 'dura') ? 'dura' : 'blanda') : null;
       var lqd = acta && acta.lo_que_dijo;
-      if (lqd) {
+      if (lqd && lqd.parada !== 'dura') {
         var yo = indiceDeLaCuenta();
         P.loQueDijoNegociacion = [
           { nombre: P.jugadores[yo].nombre, texto: lqd.p1 || '' },
