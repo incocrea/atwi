@@ -2882,7 +2882,7 @@
       (cfg.reglas.turnosConCupo.length
         ? '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">' +
             cfg.reglas.turnosConCupo.join(' y ') + ' turnos necesitan cupo.</p>'
-        : '<div style="height:var(--e-4)"></div>') +
+        : '<div style="height:var(--e-2)"></div>') +
 
       /* AQUÍ NO SE ENSEÑA NINGUNA POSTURA. Ni para elegir ni como ejemplo: se
          probó a dejarlas de pista y siguen siendo punteros —leerlas antes de
@@ -2953,15 +2953,21 @@
          que se oye de ÉL: es suyo. En local los dos están delante y la eligen
          juntos; en línea cada quien prende la suya en su teléfono. */
       (enLinea ? '' :
-        '<h3 class="centrado" style="margin:var(--e-5) 0 var(--e-2)">¿Quién los representa?</h3>' +
+        /* A LA IZQUIERDA Y PEGADO A SU LISTA (mockup del titular, 2026-09-17).
+           Iban centrados, y un título centrado sobre una lista alineada a la
+           izquierda parte la pantalla en dos ejes. El rótulo y su línea de
+           ayuda van juntos, como un solo bloque. */
+        '<h3 style="margin:var(--e-4) 0 2px">¿Quién los representa?</h3>' +
         /* UNA LÍNEA, y el resto en el modal. Aquí estaba el párrafo entero
            explicando qué hace un abogado y qué riesgo tiene: cuatro renglones
            para una decisión que la mayoría va a dejar como viene, y encima
            repetidos, porque el modal lo vuelve a decir justo cuando hace falta
-           leerlo —al elegir—. */
-        '<p class="chico tenue centrado" style="margin-bottom:var(--e-4)">' +
-          'Cada quien se representa a sí mismo. Prendé la llave para que un ' +
-          'personaje te haga de abogado.</p>' +
+           leerlo —al elegir—.
+           Y DE DOS RENGLONES A UNO: la mitad que se fue —«cada quien se
+           representa a sí mismo»— es lo que la propia lista ya dice en cada
+           fila con «Voz original, sin abogado». */
+        '<p class="chico tenue" style="margin-bottom:var(--e-2)">' +
+          'Prendé la llave para que un personaje te haga de abogado.</p>' +
         pintarRepresentantes()) +
 
       /* EL JUEZ VA DEBAJO DE LOS DOS, y el sitio es la mitad de la decision.
@@ -2973,7 +2979,7 @@
          proposito: el abogado cambia lo que el juez va a OIR --es media
          partida-- mientras que el juez, por ahora, solo cambia quien lo cuenta
          al final. Darle el mismo peso en pantalla diria que pesa lo mismo. */
-      '<h3 class="centrado" style="margin:var(--e-5) 0 var(--e-2)">¿Quién juzga?</h3>' +
+      '<h3 style="margin:var(--e-4) 0 var(--e-2)">¿Quién juzga?</h3>' +
       pintarJuez() +
 
       '<p class="chico" id="p-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>' +
@@ -3032,37 +3038,46 @@
          dibujo: «el abogado sale en el color de perfil de quien lo contrata,
          que es lo que lo hace reconociblemente suyo». Con el color del modo,
          las dos piezas se encendían iguales y dejaban de ser de nadie. */
+      /* ⚠️ DOS FILAS Y NO DOS TARJETAS (mockup del titular, 2026-09-17). Eran
+         dos retratos grandes uno al lado del otro, «como se van a ver en el
+         choque de puños», y costaban 226 px de los 697 que medía esta pantalla:
+         con ellos el formulario scrolleaba **hasta en el marco de escritorio**,
+         no solo en un teléfono bajo. Medido antes de tocarlo.
+         En fila cabe lo mismo —la ficha, el nombre, en qué voz habla y la
+         llave— en 60 px por lado, y los dos se siguen abarcando de una mirada.
+         Es la misma lección de las cartas de modo: con dos piezas grandes se
+         comparan mejor, pero lo que no cabe no se compara.
+         LA LLAVE VA DONDE EL MOCKUP PONIA UNA FLECHA (decisión del titular):
+         una flecha dice «hay algo más allá» y aquí no lo hay — lo que se hace
+         en esta fila es prender o apagar, y eso se hace en el sitio. */
       return '<div class="repre' + (conAbogado ? ' repre--conabogado' : '') + '"' +
           ' style="--suyo:' + window.ATWI.colorPersonaje(x.color) + '">' +
-          /* EL RETRATO MANDA. Esto eran dos tarjetas de ancho completo con la
-             ficha diminuta a un lado: ocupaban media pantalla para enseñar dos
-             dibujos de 26 px. Ahora son dos retratos grandes uno al lado del
-             otro —que es como se van a ver en el choque de puños— con su nombre
-             y su llave debajo. La decisión se ve, no se lee. */
           /* SIEMPRE EN EL COLOR DEL CLIENTE, también con abogado. Aquí se
              pasaba `null` cuando había abogado, porque el color era un aro y un
              aro ajeno confundía. Ahora el color es la ropa y la regla del
              titular es al revés: el abogado sale en el color de perfil de quien
              lo contrata, que es lo que lo hace reconociblemente suyo. */
           '<div class="repre__retrato">' +
-            window.ATWI.fichaHTML(suyo, 'avatar--duelo', x.color) +
+            window.ATWI.fichaHTML(suyo, 'avatar--chico', x.color) +
           '</div>' +
-          '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
+          '<span class="repre__texto">' +
+            '<span class="repre__quien" id="repre-' + x.k + '"></span>' +
+            /* EL MISMO TEXTO PARA LOS DOS. Decía «Tu voz» y «Su voz», que en un
+               teléfono compartido no aclara nada —el «tu» cambia de dueño cada
+               turno— y además no decía lo que de verdad significa la llave
+               apagada: que suena la grabación de la persona y no hay abogado. */
+            '<span class="repre__como">' +
+              /* «Luna defiende» y no «Luna lo defiende»: ese «lo» le pone sexo
+                 masculino a quien está siendo defendido, y quien está siendo
+                 defendido puede ser cualquiera. Sin él la frase es genérica y
+                 además más corta, que en este renglón se agradece. */
+              (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' defiende'
+                          : 'Voz original, sin abogado') +
+            '</span>' +
+          '</span>' +
           '<button type="button" class="repre__llave" data-abogado="' + x.k + '"' +
             (conAbogado ? ' aria-pressed="true"' : '') +
             ' aria-label="Usar abogado"></button>' +
-          /* EL MISMO TEXTO PARA LOS DOS. Decía «Tu voz» y «Su voz», que en un
-             teléfono compartido no aclara nada —el «tu» cambia de dueño cada
-             turno— y además no decía lo que de verdad significa la llave
-             apagada: que suena la grabación de la persona y no hay abogado. */
-          '<span class="repre__como">' +
-            /* «Luna defiende» y no «Luna lo defiende»: ese «lo» le pone sexo
-               masculino a quien está siendo defendido, y quien está siendo
-               defendido puede ser cualquiera. Sin él la frase es genérica y
-               además más corta, que en este renglón se agradece. */
-            (conAbogado ? esc(window.ATWI.nombrePersonaje(x.repre)) + ' defiende'
-                        : 'Voz original, sin abogado') +
-          '</span>' +
         '</div>';
     }).join('') + '</div>';
   }
