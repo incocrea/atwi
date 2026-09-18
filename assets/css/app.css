@@ -966,7 +966,18 @@ body.app {
    habría caras que no se podrían tocar. Medido en el marco de escritorio: la
    ficha entera mide 552 px y deja 2 de aire, o sea que un teléfono de 667 ya no
    la aguanta sin esto. */
-.ficha-editor { display: grid; gap: var(--e-3); max-height: 56vh; overflow-y: auto; }
+/* ⚠️ Y EL AIRE DE LOS LADOS ES PARA EL ARO DE LAS CARITAS DE LOS EXTREMOS (lo
+   vio el titular, 2026-09-18: la última salía cortada por la derecha). Este
+   bloque lleva `overflow` por su tope de alto —la red para un teléfono bajo— y
+   un contenedor con `overflow` RECORTA lo que se salga: la fila va en
+   `space-between`, así que la primera y la última quedan pegadas al canto, y
+   con el `scale(1.12)` y el aro por fuera lo que sobresale se pierde. Es el
+   mismo caso que el anillo de foco de los campos, por un sitio nuevo. El margen
+   negativo devuelve lo que el relleno quita, así que la fila no se mueve. */
+.ficha-editor {
+  display: grid; gap: var(--e-3); max-height: 56vh; overflow-y: auto;
+  padding-inline: 8px; margin-inline: -8px;
+}
 /* EL RETRATO ARRIBA, la fila debajo: el mismo reparto que el selector del juez.
    Lo que se mira es el dibujo grande; lo que se toca son las miniaturas. */
 .ficha-editor__cara { display: grid; justify-items: center; gap: 4px; }
@@ -1010,9 +1021,14 @@ body.app {
 }
 .caras-fila__f { width: 40px; height: 40px; }
 .caras-fila__cara:active { transform: scale(.94); }
+/* ⚠️ EL ARO VA A 2 px Y NO A 3 (titular, 2026-09-18: «está muy grueso»). Estas
+   fichas miden 40 px y llevan su propio perfil blanco de pegatina, así que el
+   aro es la TERCERA línea alrededor de la misma cara: con 3 px pesaba más que
+   el dibujo que señala. El del juez puede permitírselos porque ahí la miniatura
+   es mayor. */
 .caras-fila__cara[aria-pressed="true"] {
   opacity: 1; transform: scale(1.12);
-  box-shadow: 0 0 0 3px var(--pj, var(--lavanda)), var(--sombra-2);
+  box-shadow: 0 0 0 2px var(--pj, var(--lavanda)), var(--sombra-2);
 }
 /* La tomada no se puede elegir y se dice con el gris, no con un aspa: es la
    misma regla de «el tuyo está apartado» del texto de abajo. */
