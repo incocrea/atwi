@@ -1384,8 +1384,7 @@
            solos y además se leen como lo que son: las dos señas de la partida
            --cuándo fue y a qué se jugó--. */
         return '<div class="tarjeta partida-fila" data-familia="' +
-            (FAMILIA[e] || 'hecha') + '"' +
-            (meEspera(d) ? ' data-espera' : '') + '>' +
+            (FAMILIA[e] || 'hecha') + '">' +
           '<button class="partida" ' +
             (rot ? 'data-tono="' + rot[1] + '" ' : '') +
             'data-partida="' + esc(d.id) + '">' +
@@ -1412,6 +1411,20 @@
              tambien ocupa sitio en la lista, y no poder quitarla obliga a
              cargar con ella para siempre. Abajo a la derecha: es lo ultimo que
              se decide sobre una tarjeta, y arriba competia con el modo. */
+          /* LA QUE ME ESPERA LLEVA SU CAMPANA (titular, 2026-09-18). Antes era
+             la TARJETA ENTERA la que respiraba con un halo dorado, y el titular
+             la quiere como las demás: lo que late es un signo dentro, encima de
+             la papelera. Dos motivos que se ven al ponerlo: una tarjeta que
+             brilla entera no dice QUÉ hay que hacer ni dónde tocar, y con el
+             velo y la peana nuevos el halo competía con el dibujo del pie.
+             ES LA CAMPANA DEL BUZÓN, y no el disco rojo de aviso: en esta app la
+             campana ya significa «hay algo para ti» —late en la cabecera cuando
+             el buzón trae algo— y ninguna de las tres cosas que esperan aquí es
+             un problema. Un rojo diría avería sobre una partida a medias. */
+          (meEspera(d)
+            ? '<span class="partida__espera" aria-hidden="true">' +
+                icono('buzon', 26) + '</span>'
+            : '') +
           '<button class="partida__borrar" data-borrar="' + esc(d.id) + '"' +
             ' aria-label="Borrar esta partida">' +
             icono('papelera', 22) + '</button>' +

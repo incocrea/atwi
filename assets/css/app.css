@@ -3940,48 +3940,58 @@ body.app {
 /* `hecha` se queda con el blanco de la tarjeta: lo terminado es el estado
    normal de un historial y no necesita anunciarse. */
 
-/* LAS QUE ME ESPERAN RESPIRAN (regla del titular, 2026-09-16). Solo las que
-   tienen algo que **yo** pueda hacer: me toca grabar, hay que volver a pedir el
-   veredicto, o hay uno listo sin abrir. Lo decide `meEspera()` en `app.js`, que
-   es donde está escrito el porqué de cada caso.
+/* LA QUE ME ESPERA LLEVA UNA CAMPANA QUE LATE, Y LA TARJETA SE QUEDA QUIETA
+   (titular, 2026-09-18; revoca el halo de la tarjeta entera del 2026-09-16).
+   Solo las que tienen algo que **yo** pueda hacer: me toca grabar, hay que
+   volver a pedir el veredicto, hay uno listo sin abrir o falta cerrar la
+   negociación. Lo decide `meEspera()` en `app.js`, que es donde está escrito el
+   porqué de cada caso.
 
-   LA MITAD DEL VALOR ESTÁ EN LAS QUE NO BRILLAN: una lista donde todo llama la
-   atención no señala nada. Por eso una partida remota que espera al OTRO se
-   queda apagada aunque esté a medias.
+   POR QUÉ SE MUDA A UN ICONO. El halo envolvía la tarjeta entera, y eso dice
+   «aquí pasa algo» sin decir QUÉ ni dónde tocar; encima, desde que las tarjetas
+   llevan velo y peana, el brillo del canto competía con el dibujo del pie. Un
+   signo dentro señala, y además deja a las tarjetas **iguales entre sí**, que es
+   lo que el titular pidió.
 
-   RESPIRA, NO PARPADEA. Dos segundos por ciclo y el halo no llega a apagarse
-   del todo: lo que tiene que decir es «esto sigue aquí», no «mírame ya». Un
-   parpadeo rápido en una lista de veinte tarjetas es un error de accesibilidad
-   además de ser feo.
-   Y VA DORADO EN LOS TRES CASOS (ajuste del titular, 2026-09-16). Primero
-   llevaba el color de su familia —lavanda lo que está a medias, dorado el
-   resultado— para que el brillo dijera además de qué tipo era. Se cae, y el
-   motivo es que esas dos cosas no compiten: **de qué tipo ya lo dicen el
-   rótulo y el fondo de la tarjeta**, y lo que el halo tiene que decir es una
-   sola cosa —hay algo que hacer—. Con dos colores la lista se leía como dos
-   avisos distintos; con uno, como una sola llamada. El dorado es el de premio,
-   que es el único color del juego que no significa ni modo ni mesa. */
-.partida-fila[data-espera] {
-  --halo: var(--premio);
-  animation: partida-respira 2s ease-in-out infinite;
+   LA MITAD DEL VALOR SIGUE ESTANDO EN LAS QUE NO LO LLEVAN: una lista donde todo
+   llama la atención no señala nada, así que una partida remota que espera al
+   OTRO se queda sin campana aunque esté a medias.
+
+   RESPIRA, NO PARPADEA. Dos segundos por ciclo y el brillo no llega a apagarse
+   del todo: quien baja la lista con el pulgar cruza la tarjeta en cualquier
+   punto del ciclo, así que tiene que verse distinta en todos. Un parpadeo rápido
+   en una lista de veinte es un error de accesibilidad además de ser feo.
+   VA DORADO, que es el color de premio: el único del juego que no significa ni
+   modo ni mesa. Con el color de cada familia, la lista se leía como dos avisos
+   distintos; con uno, como una sola llamada.
+   ⚠️ Y EL BRILLO VA EN `drop-shadow` Y NO EN `box-shadow`: el icono es una
+   pegatina recortada, así que una sombra de caja dibujaría un cuadrado de luz
+   alrededor de una campana. `drop-shadow` sigue la silueta. */
+.partida-fila .partida__espera {
+  position: absolute;
+  /* En la misma columna que la papelera y justo encima: es la esquina que la
+     tarjeta ya tiene reservada —el enunciado se aparta 42 px— así que el signo
+     no le roba ancho a nada. */
+  right: var(--e-4); bottom: 82px;
+  /* LA MISMA CAJA QUE LA PAPELERA, o los dos signos de la columna no comparten
+     eje: la campana mide 26 y el disco de borrar 38, y anclados los dos por la
+     derecha sus centros quedaban a 5 px uno del otro. Medido. */
+  width: 38px; height: 38px;
+  display: grid; place-items: center;
+  animation: espera-late 2s ease-in-out infinite;
 }
-/* EL HALO NO SE APAGA NUNCA DEL TODO, y ese fue el primer intento: una onda
-   que se expandía y se desvanecía, tan sutil que había que saber que estaba.
-   Lo que hace falta aquí es que la tarjeta se vea distinta ESTÉ DONDE ESTÉ del
-   ciclo —quien baja la lista con el pulgar la cruza en cualquier momento—, así
-   que el brillo va de tenue a fuerte y vuelve, sin pasar por cero. */
-@keyframes partida-respira {
-  0%, 100% { box-shadow: 0 0 0 1px color-mix(in srgb, var(--halo) 26%, transparent),
-                         0 0 6px 0 color-mix(in srgb, var(--halo) 26%, transparent); }
-  50%      { box-shadow: 0 0 0 2px color-mix(in srgb, var(--halo) 55%, transparent),
-                         0 0 12px 0 color-mix(in srgb, var(--halo) 58%, transparent); }
+@keyframes espera-late {
+  0%, 100% { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--premio) 70%, transparent));
+             transform: scale(1); }
+  50%      { filter: drop-shadow(0 0 9px var(--premio));
+             transform: scale(1.09); }
 }
-/* Sin movimiento se queda el halo puesto y quieto: la tarjeta sigue diciendo
+/* Sin movimiento se queda el brillo puesto y quieto: la tarjeta sigue diciendo
    que espera algo, que es la información; lo que se va es la animación. */
 @media (prefers-reduced-motion: reduce) {
-  .partida-fila[data-espera] {
+  .partida-fila .partida__espera {
     animation: none;
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--halo) 42%, transparent), var(--sombra-1);
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--premio) 80%, transparent));
   }
 }
 
