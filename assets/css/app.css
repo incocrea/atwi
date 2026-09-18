@@ -3099,6 +3099,11 @@ body.app {
 }
 
 /* --- La ficha del invitado, en la pantalla de antes de empezar --------------- */
+/* ⚠️ `.con-ficha` y `.fila-invitado` SE QUEDARON SIN USO el 2026-09-18, cuando
+   el invitado pasó a presentarse con la misma ficha grande que el host y su
+   nombre se mudó al globo. No se borran todavía porque son el patrón «campo con
+   su avatar al lado», que es lo que tendría la partida en línea el día que haya
+   contactos; si ese día no llega, se van. */
 .con-ficha { display: flex; align-items: center; gap: var(--e-3); }
 .con-ficha .campo { flex: 1; min-width: 0; }
 .avatar--chico { width: 48px; height: 48px; font-size: 1.4rem; border: 0; cursor: pointer; padding: 0; }
@@ -3783,6 +3788,9 @@ body.app {
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
 .mi-personaje__como b { color: var(--lavanda-oscuro); font-family: var(--display); font-weight: 800; }
+/* El invitado sin nombre: la pregunta ocupa el sitio del nombre y se lee como
+   lo que es —un hueco que hay que llenar— y no como un dato. */
+.mi-personaje__quien--vacio { color: var(--tinta-tenue); font-weight: 700; }
 
 /* EL RENGLON DE ERROR NO GASTA ALTO MIENTRAS NO DIGA NADA. Llevaba su margen
    puesto siempre, así que reservaba 12 px para un texto que en el caso normal no

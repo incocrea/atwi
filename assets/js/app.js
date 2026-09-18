@@ -2379,6 +2379,27 @@
     if (c) c.innerHTML = caraGrande();
   }
 
+  /** Deja el editor de ficha enseñando lo que hay elegido: el retrato, la cara
+      marcada en la fila y el color puesto. Lo llaman los dos manejadores del
+      globo y la recuperación de la ficha de un invitado ya conocido, que cambia
+      las tres cosas de una vez. */
+  function sincronizarFichaEditor() {
+    $$('.ficha-editor [data-color]').forEach(function (x) {
+      if (x.dataset.color === colorElegido) x.setAttribute('aria-pressed', 'true');
+      else x.removeAttribute('aria-pressed');
+    });
+    /* LAS SEIS CARAS SE REPINTAN, que antes no hacía falta. El color ya no es un
+       aro alrededor de una cara que no cambia: es la ropa del dibujo, así que al
+       tocarlo todas las fichas de arriba pasan a ser otra imagen. */
+    $$('.ficha-editor [data-personaje]').forEach(function (b) {
+      b.style.setProperty('--pj', window.ATWI.colorPersonaje(colorElegido));
+      b.setAttribute('aria-pressed', String(b.dataset.personaje === personajeElegido));
+      var cara = b.querySelector('.avatar');
+      if (cara) cara.outerHTML = window.ATWI.fichaHTML(b.dataset.personaje, 'caras-fila__f', colorElegido);
+    });
+    refrescarCaraGrande();
+  }
+
   function abrirFicha(quien, disparador) {
     var deInvitado = quien === 'invitado';
     editandoFicha = deInvitado ? 'invitado' : 'yo';
@@ -2403,11 +2424,17 @@
 
     var cuerpo =
       '<div class="ficha-editor">' +
-        (deInvitado
-          ? ''
-          : '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' +
-              datos.NOMBRE_MAX + '" autocomplete="nickname" placeholder="Tu apodo" ' +
-              'value="' + esc(p.nombre) + '">') +
+        /* EL NOMBRE SE ESCRIBE AQUÍ, TAMBIÉN EL DEL INVITADO (titular,
+           2026-09-18). Antes el suyo era un campo suelto en «Antes de empezar»
+           y su dibujo vivía en este globo: dos sitios para una sola persona, y
+           el de fuera obligaba a que la pantalla tuviera un formulario donde lo
+           demás son retratos. El mío se guarda en el perfil y el suyo en la
+           propuesta; lo que se escribe es lo mismo y la regla del nombre
+           también (`data-nombre` la aplica tecla a tecla). */
+        '<input class="campo" id="f-nombre" data-nombre type="text" maxlength="' +
+          datos.NOMBRE_MAX + '" autocomplete="' + (deInvitado ? 'off' : 'nickname') + '" ' +
+          'placeholder="' + (deInvitado ? '¿Con quién juegas?' : 'Tu apodo') + '" ' +
+          'value="' + esc(deInvitado ? (propuesta.otro || '') : p.nombre) + '">' +
 
         /* UNA CARA GRANDE ARRIBA Y LA FILA DEBAJO, como el selector del juez
            (titular, 2026-09-18). Eran seis tarjetas con su nombre y su fondo, y
@@ -2453,9 +2480,10 @@
       '</div>';
 
     abrirGlobo(disparador,
-      { titulo: deInvitado
-          ? (g.nombre ? 'La ficha de ' + g.nombre : 'La ficha de tu invitado')
-          : 'Tu ficha' },
+      /* «Tu invitado», fijo: el título llevaba su nombre y ahora el nombre se
+         escribe dos renglones más abajo —se leería el viejo mientras se teclea
+         el nuevo—. */
+      { titulo: deInvitado ? 'Tu invitado' : 'Tu ficha' },
       { tinte: tinteDeLaFicha,
         signo: 'lapiz', signoTam: 64,
         etiqueta: deInvitado ? 'Ficha del invitado' : 'Tu ficha',
@@ -2468,7 +2496,8 @@
                     '" data-accion="guardar-ficha">' +
                     (deInvitado ? 'Listo' : 'Guardar') + '</button>' });
 
-    setTimeout(function () { var n = $('#f-nombre'); if (n && !p.nombre) n.focus(); }, 60);
+    var vacio = deInvitado ? !propuesta.otro : !p.nombre;
+    setTimeout(function () { var n = $('#f-nombre'); if (n && vacio) n.focus(); }, 60);
   }
 
 
@@ -2476,14 +2505,29 @@
     /* La del invitado no se guarda en ningún perfil: se queda en la propuesta y
        se recuerda al empezar la partida, cuando ya se sabe su nombre. */
     if (editandoFicha === 'invitado') {
+      /* SU NOMBRE SE VALIDA DONDE SE ESCRIBE. Antes esto se miraba al pulsar
+         «Sortear», o sea en otra pantalla y después de haber cerrado el globo:
+         el aviso salía lejos del campo que lo causaba. */
+      var suyo = datos.limpiarNombre($('#f-nombre').value);
+      var malSuyo = datos.errorDeNombre(suyo);
+      if (malSuyo) {
+        $('#f-error').textContent =
+          malSuyo.replace('Escribe tu nombre.', 'Escribe con quién juegas.');
+        return;
+      }
+      if (suyo.toLowerCase() === datos.limpiarNombre(datos.perfil().nombre).toLowerCase()) {
+        $('#f-error').textContent =
+          'Se llaman igual que tú: ponle otro nombre para no confundirse en la sala.';
+        return;
+      }
+      propuesta.otro = suyo;
       propuesta.otroAvatar = personajeElegido;
       propuesta.otroColor = colorElegido;
       cerrarGlobo();
-      var bf0 = $('#p-ficha-otro');
-      if (bf0) bf0.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', colorElegido)
-        .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
+      refrescarInvitado();
       var av0 = $('#p-aviso-ficha');
       if (av0) av0.textContent = '';
+      revisarPreparar();
       return;
     }
 
@@ -3079,6 +3123,41 @@
     return quien === mio ? window.ATWI.otroPersonaje(mio) : quien;
   }
 
+  /* LA MISMA PIEZA QUE `bloqueMio`, con el invitado dentro. Vive en una función
+     porque se pinta al abrir la pantalla y se repinta cada vez que algo le
+     cambia —al guardar su globo, y cuando mi personaje le pisa el suyo—: dos
+     copias del mismo HTML se desincronizan a la primera. */
+  function fichaGrandeDelInvitado() {
+    var hay = Boolean(propuesta.otro);
+    return '<button type="button" class="mi-personaje" data-accion="ficha-invitado"' +
+        ' style="--suyo:' + window.ATWI.colorPersonaje(propuesta.otroColor) + '"' +
+        ' aria-label="' + (hay ? 'Cambiar la ficha de ' + esc(propuesta.otro)
+                               : 'Ponerle nombre y personaje a tu invitado') + '">' +
+        '<span class="mi-personaje__retrato">' +
+          window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--duelo', propuesta.otroColor) +
+        '</span>' +
+        /* SIN NOMBRE, EL HUECO PREGUNTA. Un retrato con «Sin nombre» debajo
+           parece un dato que falta; la pregunta dice qué hacer y está en el
+           sitio donde se va a leer. */
+        '<span class="mi-personaje__quien' + (hay ? '' : ' mi-personaje__quien--vacio') + '">' +
+          esc(propuesta.otro || '¿Con quién juegas?') + '</span>' +
+        '<span class="mi-personaje__como">' +
+          /* «habla por <nombre>» y no «habla por él/ella»: el invitado no dice
+             de qué género es y no hay por qué suponerlo. */
+          (hay
+            ? esc(window.ATWI.nombrePersonaje(propuesta.otroAvatar)) + ' habla por ' +
+              esc(propuesta.otro) + ' · <b>Cambiar</b>'
+            : '<b>Toca para escribir su nombre y elegir personaje</b>') +
+        '</span>' +
+      '</button>';
+  }
+
+  /** Repinta la ficha grande del invitado donde esté. */
+  function refrescarInvitado() {
+    var b = $('#m-preparar [data-accion="ficha-invitado"]');
+    if (b) b.outerHTML = fichaGrandeDelInvitado();
+  }
+
   function fichaDelInvitado(nombre) {
     var g = nombre ? datos.invitado(nombre) : null;
     return {
@@ -3185,48 +3264,29 @@
         '</span>' +
       '</button>';
 
-    /* La ficha del invitado se toca para elegirle dibujo y color. No es una
-       cuenta: es alguien que agarró este teléfono. Pero su ficha se recuerda,
-       así que la próxima vez que juegue sale como salió.
-       LOS ATAJOS VAN EN EL RENGLÓN DEL RÓTULO, a la derecha. Estaban debajo del
-       campo y del texto de ayuda, o sea DESPUÉS de haber leído «escribí un
-       nombre»: quien ya jugó con alguien lo escribía entero antes de ver que
-       podía tocarlo.
-       EL CAMPO PRIMERO Y LA FICHA DESPUÉS, en el orden del HTML y no con
-       `row-reverse`: así el tabulador pasa por el nombre antes que por el
-       dibujo, que es el orden en que se rellena. */
+    /* EL INVITADO SE PRESENTA COMO YO (titular, 2026-09-18: «tiene una ficha
+       similar a la del user en globo, démosle una igual, y quitamos el input de
+       nombre de la interfaz y lo metemos en el globo también para el
+       invitado»). Eran dos cosas distintas para la misma decisión: mi persona
+       era un retrato centrado que se toca, y la suya un campo de texto con una
+       ficha chica al lado. Ahora las dos son la misma pieza —retrato, nombre y
+       en qué voz habla— y **todo lo suyo se edita en su globo**: el nombre
+       estaba suelto en el formulario y el dibujo dos centímetros más allá,
+       detrás de otro toque.
+       No es una cuenta: es alguien que agarró este teléfono. Pero su ficha se
+       recuerda, así que la próxima vez que juegue sale como salió. */
     var bloqueInvitado =
-      '<div class="fila-invitado">' +
-        /* «Invitado» a secas: que la partida es local se sabe desde que se
-           eligió «En este móvil», y repetirlo aquí contesta una pregunta que
-           nadie se estaba haciendo. */
-        /* CON EL MISMO AIRE Y EL MISMO CENTRADO QUE «¿A quién invitas?» de la
-           otra vía: los dos rótulos ocupan el mismo sitio del formulario, así
-           que si uno lleva margen y el otro no, cambiar de vía da un salto.
-           El `flex: 1` es lo que lo centra de verdad: en una fila flexible, un
-           `text-align: center` sobre una caja que solo mide lo que su texto no
-           mueve nada. */
-        '<h3 class="centrado" style="margin:var(--e-3) 0 6px;flex:1 0 100%">Invitado</h3>' +
-      '</div>' +
-      '<div class="con-ficha" style="margin-top:6px">' +
-        '<input class="campo" id="p-otro" data-nombre type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
-          'autocomplete="off" placeholder="¿Con quién juegas?" value="' + esc(propuesta.otro) + '">' +
-        /* SU FICHA ES SU PERSONAJE (2026-09-18): el que se elige aquí es el
-           que habla por el invitado en la sala. Ya no hay una segunda fila
-           de «abogado» que lo repita. */
-        '<button type="button" class="avatar-boton" data-accion="ficha-invitado" ' +
-          'aria-label="Elegir su personaje">' +
-          window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
-            .replace('class="avatar', 'id="p-ficha-otro" class="avatar') +
-        '</button>' +
-      '</div>' +
+      /* EL RÓTULO SE QUEDA, y el mío no lo lleva: el de arriba es el primero de
+         la pantalla y se explica solo con «habla por ti»; éste va después de
+         Turnos y Juez, y sin rótulo serían dos retratos apilados sin decir cuál
+         es cuál. Mismo aire y mismo centrado que «¿A quién invitas?» de la otra
+         vía, o cambiar de vía daría un salto. */
+      '<h3 class="centrado" style="margin:var(--e-3) 0 0">Invitado</h3>' +
+      fichaGrandeDelInvitado() +
       /* Cuando MI personaje pisa el del invitado, el suyo se mueve y aquí se
          dice: sin este renglón la ficha de al lado cambiaría sola. Vacío no
          gasta alto. */
       '<p class="chico aviso-aro" id="p-aviso-ficha" style="margin-top:6px"></p>';
-      /* Aquí había un párrafo explicando «una sola palabra, primer nombre o
-         apodo». Se fue: el campo ya no ADMITE un espacio ni una letra de más,
-         así que la regla se aprende al escribir en vez de leyéndola. */
 
     /* EN LINEA NO SE INVITA A UN NOMBRE, SE INVITA A UN CORREO (titular,
        2026-09-17). El nombre vale mientras la persona está al lado; para
@@ -3428,9 +3488,7 @@
     if (propuesta.otroAvatar !== mio) { aviso.textContent = ''; return; }
     var antes = window.ATWI.nombrePersonaje(mio);
     propuesta.otroAvatar = window.ATWI.otroPersonaje(mio);
-    var bf = $('#p-ficha-otro');
-    if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', propuesta.otroColor)
-      .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
+    refrescarInvitado();
     aviso.textContent = antes + ' ahora es tu personaje, así que a ' +
       (propuesta.otro || 'tu invitado') + ' le pusimos ' +
       window.ATWI.nombrePersonaje(propuesta.otroAvatar) + '.';
@@ -3451,8 +3509,9 @@
     }
     /* Solo por el invitado: el propio viene del perfil, que ya pasó por esta
        misma regla en la puerta, y aquí no hay campo donde corregirlo. */
-    var mal = datos.errorDeNombre($('#p-otro') && $('#p-otro').value);
-    b.disabled = Boolean(mal);
+    /* Su nombre ya no está en un campo de esta pantalla: vive en la propuesta,
+       que es lo que su globo guarda. */
+    b.disabled = Boolean(datos.errorDeNombre(propuesta.otro));
   }
 
   /* EL MICRÓFONO SE PRUEBA ANTES DE SORTEAR (titular, 2026-09-18). Hasta hoy
@@ -3513,7 +3572,7 @@
      falta el servidor y llega después. */
   function sortearYJugar() {
     var t = datos.tema(propuesta.temaId);
-    var otro = datos.limpiarNombre($('#p-otro').value);
+    var otro = datos.limpiarNombre(propuesta.otro);
     var yo = datos.limpiarNombre(datos.perfil().nombre);
 
     /* El propio ya no se escribe aquí, pero se comprueba igual: un perfil de
@@ -4106,10 +4165,9 @@
     var don = e.target.closest('[data-donde]');
     if (don) {
       /* LO ESCRITO NO SE PIERDE AL CAMBIAR DE VIA. El formulario se vuelve a
-         dibujar entero, y el nombre vive en el DOM hasta que se pulsa el
-         boton: sin esto, teclear el nombre y tocar el interruptor lo borra. */
-      var campo = $('#p-otro');
-      if (campo) propuesta.otro = campo.value;
+         dibujar entero y el correo vive en el DOM hasta que se pulsa el botón.
+         El nombre del invitado ya no: se guarda en la propuesta al cerrar su
+         globo, así que el interruptor no lo puede perder. */
       var correo = $('#p-correo');
       if (correo) propuesta.correo = correo.value.trim();
       recordarDonde(don.dataset.donde);
@@ -4239,35 +4297,15 @@
        no existe es una pista falsa para quien venga a leer esto—.
 
        Lo que hacía sigue pasando por otro lado: al ESCRIBIR un nombre ya
-       recordado, el manejador de `#p-otro` devuelve su ficha. */
+       recordado dentro de su globo, vuelve su ficha entera. */
 
     var col = e.target.closest('.ficha-editor .colores [data-color]');
-    if (col) {
-      colorElegido = col.dataset.color;
-      $$('.ficha-editor [data-color]').forEach(function (x) {
-        if (x.dataset.color === colorElegido) x.setAttribute('aria-pressed', 'true');
-        else x.removeAttribute('aria-pressed');
-      });
-      /* LAS SEIS CARAS SE REPINTAN, que antes no hacía falta. El color ya no es
-         un aro alrededor de una cara que no cambia: es la ropa del dibujo, así
-         que al tocarlo todas las fichas de arriba pasan a ser otra imagen. */
-      $$('.ficha-editor [data-personaje]').forEach(function (b) {
-        var q = b.dataset.personaje;
-        b.style.setProperty('--pj', window.ATWI.colorPersonaje(colorElegido));
-        var cara = b.querySelector('.avatar');
-        if (cara) cara.outerHTML = window.ATWI.fichaHTML(q, 'caras-fila__f', colorElegido);
-      });
-      refrescarCaraGrande();
-      return;
-    }
+    if (col) { colorElegido = col.dataset.color; sincronizarFichaEditor(); return; }
 
     var pj = e.target.closest('[data-personaje]');
     if (pj && !pj.disabled) {
       personajeElegido = pj.dataset.personaje;
-      $$('.ficha-editor [data-personaje]').forEach(function (x) {
-        x.setAttribute('aria-pressed', String(x.dataset.personaje === personajeElegido));
-      });
-      refrescarCaraGrande();
+      sincronizarFichaEditor();
       return;
     }
 
@@ -4431,27 +4469,20 @@
       datos.pulirCampoDeNombre(e.target);
     }
 
-    if (e.target.id === 'p-otro') {
-      /* Se guarda según se escribe: un repintado —al retocar un texto desde
-         aquí— dejaba el campo vacío porque solo se leía al sortear. */
-      propuesta.otro = e.target.value.trim();
-      /* Si el nombre escrito es de alguien con quien ya se jugó, vuelve su
-         ficha: la gracia de recordarla es no tener que elegirla otra vez. */
-      var g = datos.invitado(propuesta.otro);
+    /* EL NOMBRE DEL INVITADO SE ESCRIBE EN SU GLOBO, y ahí sigue valiendo lo de
+       siempre: si es alguien con quien ya se jugó, vuelve su ficha entera. La
+       gracia de recordarla es no tener que elegirla otra vez, y ahora además se
+       ve al instante —la cara grande está justo encima del campo—. */
+    if (e.target.id === 'f-nombre' && editandoFicha === 'invitado') {
+      var g = datos.invitado(e.target.value.trim());
       if (g) {
-        propuesta.otroAvatar = distintoDeMi(g.avatar);
-        propuesta.otroColor = g.color;
-        var bf = $('#p-ficha-otro');
-        /* Con `propuesta.otroAvatar` y no con `g.avatar`: lo guardado puede
-           haber chocado con mi personaje y haberse movido una linea mas arriba.
-           Pintando el crudo, la pantalla enseñaba una ficha y la partida salia
-           con otra --y eso fue lo que hizo desconfiar de lo que se veia--. */
-        if (bf) bf.outerHTML = window.ATWI.fichaHTML(propuesta.otroAvatar, 'avatar--chico', g.color)
-          .replace('class="avatar', 'id="p-ficha-otro" class="avatar');
-        var av = $('#p-aviso-ficha');
-        if (av) av.textContent = '';
+        /* Con `distintoDeMi` y no con lo guardado a secas: lo de antes puede
+           chocar con mi personaje de hoy, y pintar el crudo enseñaría una ficha
+           mientras la partida saldría con otra. */
+        personajeElegido = distintoDeMi(g.avatar);
+        colorElegido = window.ATWI.elColor(g.color);
+        sincronizarFichaEditor();
       }
-      revisarPreparar();
       return;
     }
 
