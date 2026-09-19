@@ -3018,11 +3018,24 @@
     var correo = dentro ? auth.correo() : '';
 
     /* El correo vive dentro de la sesión y a veces llega después —al volver del
-       enlace del correo la sesión no lo trae—. Se pregunta y se repinta. */
-    if (dentro && !correo && !pintarPerfil.preguntando) {
+       enlace del correo la sesión no lo trae—. Se pregunta y se repinta.
+       ⚠️ UNA VEZ, Y SOLO SE REPINTA SI LA RESPUESTA TRAJO EL CORREO (2026-09-19).
+       Esto preguntaba y repintaba, y el repintado volvía a preguntar si el correo
+       seguía vacío: el log de Auth enseñó 4.441 llamadas a `/auth/v1/user` en
+       catorce minutos —325 por minuto, a la velocidad de la red— desde atwi.app,
+       hasta que el titular pulsó «Salir». Bastó una sesión cuya respuesta no traía
+       `email` para que la pantalla de Perfil martillara Auth mientras estuviera
+       abierta. Ahora se pregunta una vez por sesión y, si no vino, se queda sin
+       correo: la tarjeta ya sabe enseñarse sin él. */
+    if (dentro && !correo && !pintarPerfil.preguntando &&
+        pintarPerfil.preguntadoPara !== (auth.sesion() && auth.sesion().access_token)) {
       pintarPerfil.preguntando = true;
-      auth.quienSoy().then(function () { pintarPerfil.preguntando = false; pintarPerfil(); })
-                     .catch(function () { pintarPerfil.preguntando = false; });
+      pintarPerfil.preguntadoPara = auth.sesion().access_token;
+      auth.quienSoy().then(function (u) {
+        pintarPerfil.preguntando = false;
+        if (u && u.email) pintarPerfil();
+        else if (window.console) console.warn('[ATWI] /auth/v1/user contestó sin correo', u && Object.keys(u));
+      }).catch(function () { pintarPerfil.preguntando = false; });
     }
 
     caja.innerHTML =

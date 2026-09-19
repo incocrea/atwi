@@ -123,6 +123,9 @@
     trasto = window.turnstile.render(hueco, {
       sitekey: cfg.turnstileSiteKey,
       language: 'es', theme: 'light', size: 'flexible',
+      /* El token caduca a los cinco minutos; que el widget lo renueve solo, como
+         en el juego, o quien deja la puerta abierta un rato manda uno muerto. */
+      'refresh-expired': 'auto',
       callback: function (t) { captcha = t; },
       'expired-callback': function () { captcha = ''; },
       'error-callback': function () { captcha = ''; }
@@ -154,19 +157,34 @@
   }
 
   /* --- La puerta ------------------------------------------------------------- */
+  /* ⚠️ UN INTENTO A LA VEZ, Y EL TOKEN SE GASTA AL MANDARLO (2026-09-19). El log
+     de Auth lo enseñó con segundos: 14:54:10 entrada correcta (200) y 14:54:16 el
+     MISMO token otra vez, «captcha protection: request disallowed
+     (timeout-or-duplicate)». Lo que pasó: la comprobación de admin tardó --el DNS
+     de la máquina, 12 s en frío--, en pantalla no se veía nada, el titular pulsó
+     Enter otra vez, y el Enter no miraba `disabled`. El segundo intento salió con
+     el token que el primero ya había gastado --Turnstile es de UN solo uso--, y
+     su `catch` borró la sesión que el primero acababa de conseguir. Cloudflare no
+     tuvo nada que ver, y el mensaje lo culpaba a él. */
+  var entrando = false;
+
   function entrar() {
+    if (entrando) return;
     var correo = $('#correo').value.trim().toLowerCase();
     var clave = $('#clave').value;
     $('#error').textContent = '';
     if (!correo || !clave) { $('#error').textContent = 'Faltan datos.'; return; }
 
+    entrando = true;
     $('#entrar').disabled = true;
     $('#error').textContent = 'Comprobando que no sos un robot…';
     $('#error').style.color = 'var(--suave)';
 
     conElToken().then(function (t) {
-      $('#error').textContent = '';
-      $('#error').style.color = 'var(--mal)';
+      /* Gastado: si algo vuelve a llamar a `entrar` tendrá que esperar a uno
+         nuevo en vez de mandar este por segunda vez. */
+      captcha = '';
+      $('#error').textContent = 'Entrando…';
       return fetch(cfg.supabaseUrl + '/auth/v1/token?grant_type=password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', apikey: cfg.supabaseAnon },
@@ -182,26 +200,32 @@
            disallowed», que no le dice nada a nadie. Se traduce a lo que de
            verdad hay que hacer. */
         if (s && s.error_code === 'captcha_failed') {
-          msg = 'El antirrobots no dio token. Recargá la página; si sigue igual, ' +
-                'revisá que este dominio esté en la lista del widget de Turnstile.';
+          /* El antirrobots SÍ dio token; lo que pasó es que llegó gastado o
+             caducado. Decirlo bien evita que alguien vaya a revisar Cloudflare
+             cuando lo que hay que hacer es volver a intentar. */
+          msg = 'La verificación antirrobots caducó. Probá otra vez.';
         }
         throw new Error(msg);
       }
       sesion = s;
       try { sessionStorage.setItem(CLAVE, JSON.stringify(s)); } catch (e) {}
+      $('#error').textContent = 'Comprobando la cuenta…';
       return comprobarQueEsAdmin();
     }).catch(function (e) {
       $('#error').textContent = e.message;
       $('#error').style.color = 'var(--mal)';
       sesion = null;
-      /* El token de Turnstile es DE UN SOLO USO. Si el intento falló --por la
-         contraseña o por lo que sea-- el siguiente saldría sin token y el error
-         cambiaría a uno del captcha, que despista. Se pide uno nuevo. */
+    }).then(function () {
+      /* El token de Turnstile es DE UN SOLO USO y este intento ya lo gastó,
+         haya salido bien o mal: se pide uno nuevo para el siguiente. */
       captcha = '';
       if (window.turnstile && trasto !== null) {
         try { window.turnstile.reset(trasto); } catch (x) {}
       }
-    }).then(function () { $('#entrar').disabled = false; });
+      entrando = false;
+      $('#entrar').disabled = false;
+      if (sesion) { $('#error').textContent = ''; $('#error').style.color = 'var(--mal)'; }
+    });
   }
 
   /** Que la cuenta esté en `admins`. Lo dice la BASE, no esta página: se pide la

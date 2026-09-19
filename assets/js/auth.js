@@ -105,14 +105,36 @@ window.ATWI = window.ATWI || {};
   var ANTES_DE_CADUCAR = 5 * 60 * 1000;
   var temporizador = null;
   var enVuelo = null;
+  /* ⚠️ UN REFRESH TOKEN QUE FALLÓ NO SE VUELVE A INTENTAR CADA SEGUNDO
+     (2026-09-19). El log de Auth enseñó 151 refrescos con 400 y 62 con 429
+     --rate limit-- en cuatro minutos, uno por segundo: un aparato con el refresh
+     token MUERTO --«Salir» en otro aparato cerraba TODAS las sesiones de la
+     cuenta-- entraba en la ventana entre cinco y un minutos antes de caducar, el
+     refresco fallaba, se releía el almacenamiento, la sesión seguía «viva» por su
+     access token y `programarRefresco` la volvía a citar en `max(1000, …)` = un
+     segundo. Y el 429 de Supabase es POR IP: mientras eso corre, a quien intente
+     entrar desde la misma red también le falla.
+     Ahora el refresh token que ya falló se recuerda y no se vuelve a mandar: la
+     sesión sigue valiendo hasta que su access token caduque, y ahí se cierra. Un
+     429 se espera un minuto entero antes de volver a preguntar. */
+  var refreshMuerto = '';
+  var esperaTrasRateLimit = 60 * 1000;
 
-  function programarRefresco() {
+  /** @param minimo cuánto esperar como poco; tras un fallo de red son 15 s, para
+   *  que un refresco que no sale no se convierta en uno por segundo. */
+  function programarRefresco(minimo) {
     if (temporizador) { clearTimeout(temporizador); temporizador = null; }
     var s = sesion();
     if (!s || !s.refresh_token || !s.expires_at) return;
+    if (s.refresh_token === refreshMuerto) {
+      /* No hay con qué renovar: se cita para cuando venza, a cerrarla. */
+      var vence = Math.max(1000, (s.expires_at * 1000) - Date.now());
+      temporizador = setTimeout(function () { if (caducada()) guardarSesion(null); }, vence);
+      return;
+    }
     /* Nunca menos de un segundo: si ya está vencido, se renueva enseguida pero
        sin bloquear el hilo con un cero. */
-    var falta = Math.max(1000, (s.expires_at * 1000) - Date.now() - ANTES_DE_CADUCAR);
+    var falta = Math.max(minimo || 1000, (s.expires_at * 1000) - Date.now() - ANTES_DE_CADUCAR);
     temporizador = setTimeout(function () { refrescarYa(); }, falta);
   }
 
@@ -120,15 +142,22 @@ window.ATWI = window.ATWI || {};
     if (enVuelo) return enVuelo;
     var s = sesion();
     if (!s || !s.refresh_token) return Promise.resolve(null);
+    if (s.refresh_token === refreshMuerto) {
+      /* Ya se sabe que no sirve. Mientras el access token viva, se sigue con
+         él; cuando no, se cierra y quien llame verá que no hay sesión. */
+      if (caducada()) guardarSesion(null);
+      return Promise.resolve(sesion());
+    }
+    var usado = s.refresh_token;
     enVuelo = pedir('/auth/v1/token?grant_type=refresh_token', {
       method: 'POST',
       headers: cabeceras(false),
-      body: JSON.stringify({ refresh_token: s.refresh_token })
+      body: JSON.stringify({ refresh_token: usado })
     }).then(function (nueva) {
       enVuelo = null;
       guardarSesion(nueva);
       return nueva;
-    }).catch(function () {
+    }).catch(function (e) {
       enVuelo = null;
       /* ANTES DE DARLA POR PERDIDA, MIRAR SI OTRA PESTAÑA LA RENOVÓ. Con la
          rotación, la pestaña que llega segunda recibe un 400 con un refresh
@@ -136,7 +165,23 @@ window.ATWI = window.ATWI || {};
          está dentro en la pestaña de al lado. */
       _sesion = undefined;
       var otra = sesion();
-      if (otra && otra.access_token && !caducada()) { programarRefresco(); return otra; }
+      if (otra && otra.refresh_token && otra.refresh_token !== usado) {
+        /* Otra pestaña la renovó: ésa es la buena. */
+        programarRefresco();
+        return otra;
+      }
+      if (e && e.estado === 429) {
+        /* Rate limit: no es que el token esté muerto, es que se preguntó de
+           más. Se espera un minuto y se vuelve a citar. */
+        if (temporizador) { clearTimeout(temporizador); }
+        temporizador = setTimeout(function () { refrescarYa(); }, esperaTrasRateLimit);
+        return otra;
+      }
+      if (e && (e.estado === 400 || e.estado === 401 || e.estado === 403)) {
+        /* El servidor dijo que ese refresh token no vale: no se manda más. */
+        refreshMuerto = usado;
+      }
+      if (otra && otra.access_token && !caducada()) { programarRefresco(15000); return otra; }
       guardarSesion(null);
       return null;
     });
@@ -354,11 +399,18 @@ window.ATWI = window.ATWI || {};
       return (s && s.user && s.user.email) || '';
     },
 
+    /* SALIR ES SALIR DE ESTE APARATO (2026-09-19). Sin `scope`, Supabase cierra
+       TODAS las sesiones de la cuenta --el teléfono, la otra pestaña, el
+       tablero--, y el juego en línea se juega justamente desde dos aparatos:
+       cerrar sesión en la PC dejaba al teléfono con un refresh token muerto
+       intentando renovarlo (ver arriba). `scope=local` cierra solo la sesión de
+       este refresh token; las demás siguen. */
     salir: function () {
       var s = sesion();
       guardarSesion(null);
+      refreshMuerto = '';
       if (!s) return Promise.resolve();
-      return fetch(url('/auth/v1/logout'), {
+      return fetch(url('/auth/v1/logout?scope=local'), {
         method: 'POST',
         headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + s.access_token }
       }).catch(function () { /* da igual: la sesión local ya no está */ });

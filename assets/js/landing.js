@@ -11,6 +11,26 @@
    datos de alguien por si acaso. Hasta que se toca el botón, aquí no hay más
    que una portada de 3 KB.
    ========================================================================== */
+/* ⚠️ EL ENLACE DEL CORREO PUEDE CAER AQUI, Y AQUI NO HAY JUEGO (lo vio el
+   titular, 2026-09-19: «el link que me llega al email me envía a atwi.app pero
+   no directo al juego para continuar el registro»). Supabase construye el
+   enlace con el `redirect_to` que se le pide, PERO si esa dirección no está en
+   la lista blanca del proyecto la descarta sin avisar y usa el **Site URL**,
+   que es la landing. Entonces la sesión llega colgada del fragmento de ESTA
+   página —`#access_token=…`— y aquí no hay nadie que la recoja: el registro se
+   queda a medias y lo que se ve es la portada.
+   Esto lo reenvía al juego con su fragmento intacto, así que el alta sigue
+   donde debe. **Es una red, no el arreglo**: la lista blanca tiene que tener
+   `https://atwi.app/app/**` para que el enlace apunte bien desde el correo.
+   Va lo primero del archivo y fuera del visor: no depende de que la página
+   termine de montarse, y cuanto antes salte, menos se ve la landing. */
+(function () {
+  var h = location.hash || '';
+  if (/[#&](access_token|error_description|error_code)=/.test(h)) {
+    location.replace(location.origin + '/app/' + h);
+  }
+})();
+
 (function () {
   'use strict';
 
