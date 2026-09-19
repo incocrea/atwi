@@ -345,6 +345,25 @@ window.ATWI = window.ATWI || {};
      email o por apodo; validar si existe»). Devuelve id, apodo y ficha, o null;
      NUNCA el correo, que quien invita por apodo no tiene por qué conocer. Lo que
      se guarda en la propuesta es el ID: el apodo se puede cambiar. */
+  /* BORRAR MI CUENTA (titular, 2026-09-19). Sin `perfil` en el cuerpo: la
+     funcion de borde toma el del JWT, asi que no hay forma de equivocarse de
+     cuenta. Lo que hace es el borrado entero --audios, partidas, perfil y la
+     cuenta de acceso--, el mismo que el del tablero. */
+  function borrarMiCuenta() {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return fetch(cfg.supabaseUrl + '/functions/v1/borrar_cuenta', {
+      method: 'POST',
+      headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(),
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (!r.ok || !d || !d.borrada) throw new Error((d && d.error) || ('no se pudo borrar (' + r.status + ')'));
+        return d;
+      });
+    });
+  }
+
   function perfilPorApodo(apodo) {
     if (!hayNube()) return Promise.reject(new Error('sin sesión'));
     return rpc('perfil_por_apodo', { p_apodo: String(apodo || '').trim() });
@@ -1025,6 +1044,7 @@ window.ATWI = window.ATWI || {};
     aceptarInvitacion: conTokenVivo(aceptarInvitacion),
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
     perfilPorApodo: conTokenVivo(perfilPorApodo),
+    borrarMiCuenta: conTokenVivo(borrarMiCuenta),
     bloquear: conTokenVivo(bloquear),
     desbloquear: conTokenVivo(desbloquear),
     misBloqueos: conTokenVivo(misBloqueos),

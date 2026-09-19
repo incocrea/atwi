@@ -5641,3 +5641,14 @@ body[data-demo] { background: var(--crema); }
   background: var(--lavanda-oscuro); color: var(--blanco); box-shadow: none;
 }
 .reporte textarea.campo { text-align: left; resize: vertical; }
+
+
+/* --- Borrar mi cuenta (titular, 2026-09-19) --------------------------------
+   El aviso es una lista y no un parrafo: lo que se va son cuatro cosas de peso
+   distinto, y en parrafo se leen como una sola frase larga que nadie termina. */
+.borrar-cuenta { display: grid; gap: var(--e-2); text-align: left; }
+.borrar-cuenta .globo__texto { text-align: center; margin-bottom: 0; }
+.borrar-cuenta__lista { margin: 0; padding-left: 1.1rem; display: grid; gap: var(--e-1); }
+.borrar-cuenta__lista li { font-size: .9rem; line-height: 1.45; }
+.borrar-cuenta .campo { text-align: center; }
+.borrar-cuenta .chico:empty { display: none; }

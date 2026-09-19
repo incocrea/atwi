@@ -16,339 +16,435 @@
  "grabado": {
   "bruno-cierre-1.mp3": {
    "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 27360
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16704
   },
   "remo-cierre-1.mp3": {
    "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 28800
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19440
   },
   "teo-cierre-1.mp3": {
    "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 22896
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21024
   },
   "vera-cierre-1.mp3": {
    "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 30672
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
   },
   "iris-cierre-1.mp3": {
    "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 27360
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20160
   },
   "ada-cierre-1.mp3": {
    "texto": "Ya tengo todos los argumentos. Voy a deliberar.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 27792
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15552
   },
   "bruno-cierre-2.mp3": {
    "texto": "Con esto me basta. Denme un momento para pensarlo.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 28512
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15840
   },
   "remo-cierre-2.mp3": {
    "texto": "Con esto me basta. Denme un momento para pensarlo.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 28944
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20016
   },
   "teo-cierre-2.mp3": {
    "texto": "Con esto me basta. Denme un momento para pensarlo.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 22752
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 24624
   },
   "vera-cierre-2.mp3": {
    "texto": "Con esto me basta. Denme un momento para pensarlo.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 30672
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18720
   },
   "iris-cierre-2.mp3": {
    "texto": "Con esto me basta. Denme un momento para pensarlo.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 27360
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22176
   },
   "ada-cierre-2.mp3": {
    "texto": "Con esto me basta. Denme un momento para pensarlo.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 28944
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
   },
   "bruno-cierre-3.mp3": {
    "texto": "Terminamos la ronda. Ahora me toca a mí.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 24912
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15984
   },
   "remo-cierre-3.mp3": {
    "texto": "Terminamos la ronda. Ahora me toca a mí.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 26352
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16128
   },
   "teo-cierre-3.mp3": {
    "texto": "Terminamos la ronda. Ahora me toca a mí.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 20448
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22176
   },
   "vera-cierre-3.mp3": {
    "texto": "Terminamos la ronda. Ahora me toca a mí.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 27360
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16128
   },
   "iris-cierre-3.mp3": {
    "texto": "Terminamos la ronda. Ahora me toca a mí.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 24480
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21168
   },
   "ada-cierre-3.mp3": {
    "texto": "Terminamos la ronda. Ahora me toca a mí.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 26064
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16416
   },
   "bruno-entre-1.mp3": {
    "texto": "Te escuché. Veamos qué dice la otra parte.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 25344
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 13680
   },
   "remo-entre-1.mp3": {
    "texto": "Te escuché. Veamos qué dice la otra parte.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 27072
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20160
   },
   "teo-entre-1.mp3": {
    "texto": "Te escuché. Veamos qué dice la otra parte.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 21168
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19440
   },
   "vera-entre-1.mp3": {
    "texto": "Te escuché. Veamos qué dice la otra parte.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 27792
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 17712
   },
   "iris-entre-1.mp3": {
    "texto": "Te escuché. Veamos qué dice la otra parte.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 24768
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 25344
   },
   "ada-entre-1.mp3": {
    "texto": "Te escuché. Veamos qué dice la otra parte.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 26208
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18720
   },
   "bruno-entre-2.mp3": {
    "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 27072
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18288
   },
   "remo-entre-2.mp3": {
    "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 27792
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20592
   },
   "teo-entre-2.mp3": {
    "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 23040
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21600
   },
   "vera-entre-2.mp3": {
    "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 30096
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
   },
   "iris-entre-2.mp3": {
    "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 26784
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19584
   },
   "ada-entre-2.mp3": {
    "texto": "Anotado tal cual lo dijiste. Turno de enfrente.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 28800
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19584
   },
   "bruno-entre-3.mp3": {
    "texto": "Lo tengo. Ahora escucho a la otra persona.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 25776
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15984
   },
   "remo-entre-3.mp3": {
    "texto": "Lo tengo. Ahora escucho a la otra persona.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 27360
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19008
   },
   "teo-entre-3.mp3": {
    "texto": "Lo tengo. Ahora escucho a la otra persona.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 21024
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19872
   },
   "vera-entre-3.mp3": {
    "texto": "Lo tengo. Ahora escucho a la otra persona.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 28944
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18000
   },
   "iris-entre-3.mp3": {
    "texto": "Lo tengo. Ahora escucho a la otra persona.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 25920
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15120
   },
   "ada-entre-3.mp3": {
    "texto": "Lo tengo. Ahora escucho a la otra persona.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 26640
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 14688
   },
   "bruno-entre-4.mp3": {
    "texto": "Registrado. Que hable la otra parte.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 23472
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15840
   },
   "remo-entre-4.mp3": {
    "texto": "Registrado. Que hable la otra parte.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 24624
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16416
   },
   "teo-entre-4.mp3": {
    "texto": "Registrado. Que hable la otra parte.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 20016
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15264
   },
   "vera-entre-4.mp3": {
    "texto": "Registrado. Que hable la otra parte.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 26208
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15840
   },
   "iris-entre-4.mp3": {
    "texto": "Registrado. Que hable la otra parte.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 23328
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
   },
   "ada-entre-4.mp3": {
    "texto": "Registrado. Que hable la otra parte.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 24336
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18720
   },
   "bruno-entre-5.mp3": {
    "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
-   "voz": "es-GQ-JavierNeural",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 7,
-   "bytes": 26064
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15984
   },
   "remo-entre-5.mp3": {
    "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
-   "voz": "es-ES-ArnauNeural",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 26352
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 14976
   },
   "teo-entre-5.mp3": {
    "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
-   "voz": "es-PY-MarioNeural",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
    "tono": 0,
    "ritmo": 6,
-   "bytes": 22032
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19728
   },
   "vera-entre-5.mp3": {
    "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
-   "voz": "es-PR-KarinaNeural",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 4,
-   "bytes": 28944
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16704
   },
   "iris-entre-5.mp3": {
    "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
-   "voz": "es-US-PalomaNeural",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 25920
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22320
   },
   "ada-entre-5.mp3": {
    "texto": "Hasta aquí lo tuyo. Escuchemos el otro lado.",
-   "voz": "es-AR-ElenaNeural",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
    "tono": 0,
    "ritmo": 0,
-   "bytes": 26784
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 15552
   }
  }
 }

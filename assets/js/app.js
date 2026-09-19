@@ -3191,6 +3191,15 @@
 
       '<div class="apilado" style="margin-top:var(--e-6)">' +
         '<button class="boton boton--fantasma boton--bloque" data-accion="olvidar">Borrar mis datos de este dispositivo</button>' +
+        /* BORRAR LA CUENTA ENTERA (titular, 2026-09-19). Debajo del borrado
+           local y no al lado: son dos cosas de tamaño muy distinto --uno limpia
+           este teléfono, el otro no deja nada en ninguna parte-- y ponerlas
+           como hermanas invita a confundirlas. La hoja de privacidad prometía
+           «escríbenos y lo hacemos»; ahora se hace desde aquí. */
+        (dentro
+          ? '<button class="boton boton--fantasma boton--bloque boton--borrar" ' +
+              'data-accion="borrar-cuenta">Borrar mi cuenta para siempre</button>'
+          : '') +
       '</div>';
 
     if (dentro) pintarBloqueados();
@@ -3341,6 +3350,78 @@
       for (var j = 0; j < bs.length; j++) bs[j].disabled = false;
       var er = $('#rp-error');
       if (er) er.textContent = porQueBloqueo(e);
+    });
+  }
+
+  /* BORRAR LA CUENTA: EL AVISO DICE LO QUE DE VERDAD PASA, incluido lo que le
+     pasa al otro. Un borrado total se lleva las partidas EN LÍNEA también del
+     historial de quien las jugó contigo --es una fila y dos historiales
+     (0061)-- y eso hay que decirlo antes, no descubrirlo después. La hoja de
+     privacidad promete un borrado de verdad; esta pantalla es donde se cumple.
+
+     SE CONFIRMA ESCRIBIENDO EL APODO, no con un «¿seguro?»: esto no se deshace
+     y un sí se pulsa sin leer. Es la misma regla que el borrado de cuentas del
+     tablero. */
+  function abrirBorrarCuenta(disparador) {
+    var p = datos.perfil();
+    var apodo = datos.limpiarNombre(p.nombre || '');
+    var cuerpo =
+      '<div class="globo__cede borrar-cuenta">' +
+        '<p class="globo__texto">Se va <b>todo</b> y no se puede deshacer:</p>' +
+        '<ul class="borrar-cuenta__lista">' +
+          '<li>tus partidas, con sus intervenciones, la voz del personaje, los resultados y las actas;</li>' +
+          '<li>las partidas <b>en línea</b> también desaparecen del historial de quien las jugó contigo;</li>' +
+          '<li>tus temas propios, tus vidas y tus bloqueos;</li>' +
+          '<li>y tu cuenta de acceso: no vas a poder volver a entrar con este correo.</li>' +
+        '</ul>' +
+        '<p class="chico suave">Lo único que se queda es la cuenta de lo que costó procesar tus ' +
+          'partidas, <b>sin tu nombre</b>, para que las facturas cuadren.</p>' +
+        '<p class="chico" style="margin-top:var(--e-3)">Para confirmar, escribe tu apodo ' +
+          '(<b>' + esc(apodo) + '</b>):</p>' +
+        '<input class="campo" id="bc-apodo" type="text" maxlength="16" autocomplete="off" ' +
+          'autocapitalize="off" spellcheck="false" placeholder="Tu apodo">' +
+        '<p class="chico" id="bc-error" style="color:var(--peligro)"></p>' +
+      '</div>';
+    abrirGlobo(disparador, { titulo: 'Borrar mi cuenta' }, {
+      tinte: 'lavanda', signo: 'papelera', signoTam: 83, etiqueta: 'Borrar mi cuenta',
+      cuerpo: cuerpo,
+      acciones:
+        '<button class="boton boton--bloque boton--suave boton--punteado" data-cerrar-globo>' +
+          'Mejor no</button>' +
+        '<button class="boton boton--bloque boton--suave boton--borrar" data-accion="borrar-cuenta-ya">' +
+          'Borrar mi cuenta</button>'
+    });
+    setTimeout(function () { var c = $('#bc-apodo'); if (c) c.focus(); }, 80);
+  }
+
+  function borrarCuentaYa() {
+    var p = datos.perfil();
+    var apodo = datos.limpiarNombre(p.nombre || '');
+    var escrito = datos.limpiarNombre(($('#bc-apodo') || {}).value || '');
+    var err = $('#bc-error');
+    if (escrito.toLowerCase() !== apodo.toLowerCase()) {
+      if (err) err.textContent = 'El apodo no coincide. Escríbelo tal cual para confirmar.';
+      return;
+    }
+    if (err) err.textContent = '';
+    var b = document.querySelector('.globo [data-accion="borrar-cuenta-ya"]');
+    if (b) { b.disabled = true; b.textContent = 'Borrando…'; }
+    window.ATWI.nube.borrarMiCuenta().then(function (r) {
+      /* Y SE LIMPIA ESTE TELÉFONO TAMBIÉN: la cuenta ya no existe, así que
+         dejar aquí el perfil local y la sesión sería dejar el fantasma de algo
+         que se acaba de borrar. Se recarga a la puerta, que es donde empieza
+         quien no tiene cuenta. */
+      try { datos.olvidar(); } catch (e) {}
+      window.ATWI.auth.salir().catch(function () {}).then(function () {
+        try { localStorage.clear(); sessionStorage.clear(); } catch (e) {}
+        window.alert('Tu cuenta se borró. Se fueron ' + (r && r.partidas != null ? r.partidas : 0) +
+                     ' partida(s) y ' + (r && r.audios != null ? r.audios : 0) + ' audio(s). Gracias por jugar.');
+        location.replace(location.pathname);
+      });
+    }).catch(function (e) {
+      if (b) { b.disabled = false; b.textContent = 'Borrar mi cuenta'; }
+      var e2 = $('#bc-error');
+      if (e2) e2.textContent = String((e && e.message) || 'No se pudo borrar.');
     });
   }
 
@@ -6052,6 +6133,8 @@
         location.href = location.pathname;
       });
     }
+    else if (a === 'borrar-cuenta') { abrirBorrarCuenta(acc); }
+    else if (a === 'borrar-cuenta-ya') { borrarCuentaYa(); }
     else if (a === 'olvidar') {
       if (confirm('Se borrará tu perfil, tus partidas y tus actas de este dispositivo. No se puede deshacer.')) {
         datos.olvidar();

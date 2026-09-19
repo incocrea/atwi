@@ -26,11 +26,11 @@
      ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
      los `<script src>` relativos a su servidor. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=1aaff90">
-<link rel="stylesheet" href="assets/css/tokens.css?v=1aaff90">
-<link rel="stylesheet" href="assets/css/base.css?v=1aaff90">
-<link rel="stylesheet" href="assets/css/landing.css?v=1aaff90">
-<link rel="stylesheet" href="assets/css/modal.css?v=1aaff90">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=a9dcc0d">
+<link rel="stylesheet" href="assets/css/tokens.css?v=a9dcc0d">
+<link rel="stylesheet" href="assets/css/base.css?v=a9dcc0d">
+<link rel="stylesheet" href="assets/css/landing.css?v=a9dcc0d">
+<link rel="stylesheet" href="assets/css/modal.css?v=a9dcc0d">
 </head>
 
 <body class="landing">
@@ -326,8 +326,14 @@
         acabaron.</li>
       <li><strong>Borrar:</strong> cada partida, desde su papelera, en el momento.</li>
       <li><strong>Cambiar el apodo:</strong> desde Perfil; tus partidas siguen siendo tuyas.</li>
-      <li><strong>Borrar la cuenta entera</strong> o pedir una copia de tus datos: escríbenos a
-        <a href="mailto:hola@atwi.app">hola@atwi.app</a> y lo hacemos.</li>
+      <!-- ⚠️ ESTO DECIA «escribenos y lo hacemos» y desde el 2026-09-19 se hace
+           solo: el boton esta en Perfil, al final. Cada frase de esta hoja tiene
+           que seguir siendo verdad en el codigo. -->
+      <li><strong>Borrar la cuenta entera:</strong> en <em>Perfil</em>, al final, «Borrar mi cuenta
+        para siempre». Se van tus partidas con sus audios, tus temas y tu acceso, y las partidas
+        en línea desaparecen también del historial de quien jugó contigo. No se puede deshacer.</li>
+      <li><strong>Pedir una copia de tus datos:</strong> escríbenos a
+        <a href="mailto:hola@atwi.app">hola@atwi.app</a> y te la mandamos.</li>
     </ul>
 
     <h3>Para quién es</h3>
@@ -346,6 +352,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=1aaff90"></script>
+<script src="assets/js/landing.js?v=a9dcc0d"></script>
 </body>
 </html>
