@@ -2117,12 +2117,17 @@
          cuántas quedan porque no se sabe: saberlo costaría una consulta de
          cuenta entera cada vez que se abre el historial, y eso es justo lo que
          esta pantalla viene a dejar de hacer.
-         ⚠️ SE CUENTA CONTRA LO TRAÍDO, NO CONTRA LO QUE SE VE: el filtro de
-         local / en línea es del cliente, así que en la pestaña de en línea el
-         botón puede salir con la lista vacía. Es correcto —hay más partidas que
-         mirar, solo que las diez primeras eran de la otra pestaña— y se nota
-         ahí porque hoy no existe la partida remota. */
-      (hayMasHistorial
+         ⚠️ Y SOLO SI HAY LISTA QUE ALARGAR (titular, 2026-09-18: «el botón
+         cargar más es solamente para cuando hay algo más que cargar y existan
+         más de las que carga por bloque»). Aquí se contaba únicamente contra lo
+         TRAÍDO, y el filtro de local / en línea es del cliente: en la pestaña de
+         en línea —donde hoy no hay ninguna— salía el botón **debajo del estado
+         vacío**, ofreciendo alargar una lista que no existe. Se defendió en su
+         momento con que había más partidas que mirar; es verdad y da igual, lo
+         que se lee es «cargar más» encima de «todavía no hay partidas».
+         La cuenta que manda es la de lo que se VE: si la pestaña no tiene nada,
+         no hay nada que alargar. */
+      (hayMasHistorial && lista.length
         ? '<button class="boton boton--bloque boton--suave boton--punteado" ' +
             'data-accion="mas-historial"' + (trayendoMas ? ' disabled' : '') + '>' +
             (trayendoMas ? 'Trayendo…' : 'Cargar más') +
