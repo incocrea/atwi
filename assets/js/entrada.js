@@ -35,12 +35,7 @@ window.ATWI = window.ATWI || {};
     });
   }
 
-  /* El nombre se escribe antes de salir hacia el correo, así que se guarda para
-     recuperarlo al volver. Si el enlace se abre en otro dispositivo no estará,
-     y entonces se vuelve a pedir en el último paso. */
-  var CLAVE_NOMBRE = 'atwi.nombre.pendiente';
-
-  var estado = { paso: 'datos', nombre: '', correo: '', captcha: '',
+  var estado = { paso: 'entrar', nombre: '', correo: '', captcha: '',
                  /* Lo último que dijo Turnstile cuando no dio token. Vacío
                     mientras todo va bien. */
                  captchaFallo: '', enviando: false };
@@ -226,9 +221,14 @@ window.ATWI = window.ATWI || {};
     var boton = $('#puerta .modal__pie button');
     var p = estado.paso;
 
+    /* ⚠️ ESTE PASO SOLO EXISTE SIN SERVIDOR, y ya no es «la pantalla de
+       registrarse»: es la que deja jugar en un ATWI sin Supabase configurado,
+       donde no hay correo ni contraseña que valgan y lo único que hace falta
+       es un apodo. Con servidor —el caso real— la puerta abre en `entrar` y el
+       alta vive en el globo de «¡Soy nuevo!». */
     if (p === 'datos') {
       caja.innerHTML =
-        cabeza(null, 'Entra a jugar', 'Solo el nombre y el correo. Nada más.') +
+        cabeza(null, 'Entra a jugar', 'Solo el apodo. Nada más.') +
         '<div class="apilado-5">' +
           /* UNA SOLA PALABRA Y 16 LETRAS. El nombre acaba en el rótulo que
              flota sobre la figura en la sala, y los dos rótulos van uno al
@@ -237,37 +237,16 @@ window.ATWI = window.ATWI || {};
           campo('c-nombre', 'Tu apodo en el juego',
                 'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
                 'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
-                'Una sola palabra, y tiene que estar libre: no hay dos apodos iguales.') +
-          campo('c-correo', 'Tu correo',
-                'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"',
-                'Te mandamos un enlace para entrar. La contraseña la eliges después.') +
-          '<div class="captcha"><div id="captcha"></div></div>' +
+                'Una sola palabra.') +
           ERROR +
-        '</div>' +
-        '<button class="boton boton--fantasma boton--bloque" data-accion="ir-entrar" style="margin-top:var(--e-4)">' +
-          'Ya tengo cuenta</button>' +
-        AVISO_IA;
-      montarCaptcha();
-      avisarSiFaltaElCaptcha();
+        '</div>' + AVISO_IA;
       enfocar('#c-nombre', !estado.nombre);
-      boton.textContent = 'Mandarme el enlace';
-
-    } else if (p === 'revisa') {
-      caja.innerHTML =
-        cabeza(icono('buzon', 76), 'Mira tu correo',
-               'Mandamos un enlace a <strong>' + esc(estado.correo) + '</strong>. Ábrelo en este mismo teléfono y entras solo.') +
-        '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
-          '<p class="chico suave">¿No llega? Mira en el correo no deseado. El enlace caduca en una hora.</p>' +
-        '</div>' +
-        ERROR +
-        '<button class="boton boton--fantasma boton--bloque" data-accion="otro-correo" style="margin-top:var(--e-4)">' +
-          'Usar otro correo</button>';
-      boton.textContent = 'Volver a mandarlo';
+      boton.textContent = 'Jugar';
 
     } else if (p === 'contrasena') {
       caja.innerHTML =
         cabeza('🔑', 'Ya estás dentro',
-               'Elige una contraseña para la próxima vez. El navegador te la va a guardar.') +
+               'Elige tu apodo y una contraseña para la próxima vez. El navegador te la va a guardar.') +
         '<div class="apilado-5">' +
           campo('c-nombre2', 'Tu apodo en el juego',
                 'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
@@ -282,8 +261,14 @@ window.ATWI = window.ATWI || {};
       boton.textContent = 'Guardar y jugar';
 
     } else if (p === 'entrar') {
+      /* LA UNICA PANTALLA DE LA PUERTA (titular, 2026-09-19). Antes esto era
+         «Hola otra vez», la alternativa a la de registrarse; ahora es la
+         entrada y punto, así que el saludo no puede dar por hecho que ya se
+         estuvo aquí. Y lleva el AVISO DE IA, que vivía en la pantalla de alta:
+         al quedarse ésta sola, sin él el descargo no se leía en ningún sitio
+         antes de jugar. */
       caja.innerHTML =
-        cabeza(null, 'Hola otra vez', 'Correo y contraseña y listo.') +
+        cabeza(null, 'Entra a jugar', 'Tu correo y tu contraseña.') +
         '<div class="apilado-5">' +
           campo('c-correo2', 'Tu correo',
                 'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"') +
@@ -291,8 +276,12 @@ window.ATWI = window.ATWI || {};
           '<div class="captcha"><div id="captcha"></div></div>' +
           ERROR +
         '</div>' +
-        '<button class="boton boton--fantasma boton--bloque" data-accion="ir-datos" style="margin-top:var(--e-4)">' +
-          'Es mi primera vez</button>';
+        /* EL ALTA NO CAMBIA DE PANTALLA, ABRE UN GLOBO: es una pregunta de un
+           campo y cambiar la pantalla entera para hacerla era lo que hacía
+           confusa la puerta. */
+        '<button class="boton boton--fantasma boton--bloque" data-accion="soy-nuevo" style="margin-top:var(--e-4)">' +
+          '¡Soy nuevo!</button>' +
+        AVISO_IA;
       montarCaptcha();
       avisarSiFaltaElCaptcha();
       enfocar('#c-correo2', !estado.correo);
@@ -419,54 +408,142 @@ window.ATWI = window.ATWI || {};
     }, 12000);
   }
 
-  /* --- Acciones --------------------------------------------------------------- */
-  function mandarEnlace() {
-    var nombre = datos.limpiarNombre($('#c-nombre') ? $('#c-nombre').value : estado.nombre);
-    var correo = ($('#c-correo') ? $('#c-correo').value : estado.correo || '').trim().toLowerCase();
-    var malElNombre = datos.errorDeNombre(nombre);
-    if (malElNombre) return error(malElNombre);
-    if (!valeCorreo(correo)) return error('Ese correo no parece válido.');
+  /* --- El alta, en un globo ---------------------------------------------------
+     EL REGISTRO ES UN AUTOINVITE (titular, 2026-09-19): *«prefiero una sola
+     pantalla, la de login normal por defecto, y un botón o mensaje de "soy
+     nuevo" que en vez de cambiar la screen completa abra un globo de sistema
+     con el campo email y enviar enlace»*. Y lo que llega detrás ya existía: el
+     enlace del correo abre la pantalla de apodo y contraseña, que es la misma
+     que estrena cualquier invitado.
 
-    estado.nombre = nombre;
-    estado.correo = correo;
-    error('');
-    try { localStorage.setItem(CLAVE_NOMBRE, nombre); } catch (e) {}
+     LO QUE ESTO ARREGLA es que la puerta pedía elegir antes de nada —«Entra a
+     jugar» con apodo y correo, o «Ya tengo cuenta» en letra chica— y las dos
+     pantallas se parecían lo bastante como para no saber en cuál se estaba.
+     Ahora hay UNA, la de siempre, y el alta es una pregunta de un campo.
 
-    if (!auth.hayServidor()) {          // modo local: sin backend no hay correo
-      datos.actualizar({ nombre: nombre });
-      return cerrar();
+     ⚠️ Y EL APODO SE PIDE DESPUÉS, NO AQUÍ. Antes se escribía en el primer
+     paso, se guardaba en `localStorage` para sobrevivir al viaje por el correo
+     —el enlace puede abrirse en otra pestaña— y se volvía a pedir al final por
+     si se había perdido. Pidiéndolo solo al volver, ese guardado deja de
+     existir y con él la única pieza del alta que podía llegar vacía. */
+  var globoAlta = null;          // el botón del que cuelga, para reabrirlo
+
+  function cuerpoAlta(mandado) {
+    return '<div id="a-cuerpo">' + dentroDelAlta(mandado) + '</div>';
+  }
+
+  function dentroDelAlta(mandado) {
+    if (mandado) {
+      return '<p class="globo__texto">Te mandamos un enlace a <b>' + esc(estado.correo) + '</b>. ' +
+        'Ábrelo en este mismo teléfono y entras solo.</p>' +
+        '<p class="chico tenue" style="margin-top:var(--e-2)">¿No llega? Mira en el correo no ' +
+        'deseado. El enlace caduca en una hora.</p>' +
+        '<p class="chico" id="a-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+    }
+    return '<p class="globo__texto">Escribe tu correo y te mandamos un enlace para entrar. ' +
+        'El apodo y la contraseña los eliges al volver.</p>' +
+      '<label style="display:block;margin-top:var(--e-3)">' +
+        '<span class="solo-lectores">Tu correo</span>' +
+        '<input class="campo" id="a-correo" type="email" autocomplete="email" inputmode="email" ' +
+          'placeholder="tu@correo.com" value="' + esc(estado.correo) + '">' +
+      '</label>' +
+      '<p class="chico" id="a-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+  }
+
+  /** Abre el globo del alta, o lo repinta si ya está abierto.
+      ⚠️ NO SE REABRE DESDE EL MISMO BOTÓN PARA CAMBIARLE EL CONTENIDO: `abrirGlobo`
+      trata el disparador como un INTERRUPTOR —tocar el mismo signo cierra el globo—,
+      así que pedirlo otra vez desde «¡Soy nuevo!» lo cerraba justo cuando el
+      correo acababa de salir, y la persona se quedaba en la pantalla de entrar
+      sin saber si se había mandado. Lo que cambia es lo de dentro. */
+  function abrirAlta(disparador, mandado) {
+    if (disparador) globoAlta = disparador;
+    if (!globoAlta || !window.ATWI.globo) return;
+
+    var dentro = $('#a-cuerpo');
+    if (dentro) {
+      var titulo = document.querySelector('.globo .globo__titulo');
+      var bot = document.querySelector('.globo [data-puerta="enviar"]');
+      if (titulo) titulo.textContent = mandado ? 'Mira tu correo' : 'Entra por primera vez';
+      dentro.innerHTML = dentroDelAlta(mandado);
+      if (bot) { bot.disabled = false; bot.textContent = mandado ? 'Volver a mandarlo' : 'Enviar enlace'; }
+      /* Lo que crece dentro de un globo no se recoloca solo: mide y se sitúa al
+         abrirse, y este cuerpo cambia de alto. */
+      window.ATWI.globo.recolocar();
+      return;
     }
 
-    ocupado(true);
-    /* El apodo tiene que estar libre (migración 0053). Se pregunta antes de
-       mandar el correo, que es cuando todavía se puede cambiar sin volver a
-       empezar. */
-    return auth.apodoLibre(nombre).then(function (libre) {
-      if (!libre) {
-        ocupado(false, 'Mandarme el enlace');
-        return error('Ese apodo ya está en uso. Prueba otro.');
-      }
-      return mandarElCorreo(nombre, correo);
+    window.ATWI.globo.abrir(globoAlta, { titulo: mandado ? 'Mira tu correo' : 'Entra por primera vez' }, {
+      tinte: 'lavanda',
+      /* LA CAMPANA Y NO LA BOMBILLA: aquí no se explica nada, se dice que va a
+         llegar algo al correo, que es lo que esa pegatina significa en el resto
+         del juego. */
+      signo: 'buzon',
+      etiqueta: 'Entrar por primera vez',
+      cuerpo: cuerpoAlta(mandado),
+      acciones: '<button class="boton boton--bloque" data-puerta="enviar">' +
+        (mandado ? 'Volver a mandarlo' : 'Enviar enlace') + '</button>'
     });
+    if (!mandado) setTimeout(function () { var c = $('#a-correo'); if (c) c.focus(); }, 80);
   }
-  function mandarElCorreo(nombre, correo) {
+
+  function errorAlta(texto) {
+    var e = $('#a-error');
+    if (e) e.textContent = texto || '';
+  }
+
+  function ocupadoAlta(si, textoQuieto) {
+    estado.enviando = si;
+    var b = document.querySelector('.globo [data-puerta="enviar"]');
+    if (!b) return;
+    b.disabled = si;
+    b.textContent = si ? 'Mandando…' : (textoQuieto || 'Enviar enlace');
+  }
+
+  /* --- Acciones --------------------------------------------------------------- */
+  function mandarEnlace() {
+    var campoCorreo = $('#a-correo');
+    var correo = ((campoCorreo ? campoCorreo.value : estado.correo) || '').trim().toLowerCase();
+    if (!valeCorreo(correo)) return errorAlta('Ese correo no parece válido.');
+
+    estado.correo = correo;
+    errorAlta('');
+    ocupadoAlta(true);
+    return mandarElCorreo(correo);
+  }
+  function mandarElCorreo(correo) {
     /* La vuelta es esta misma pantalla. Tiene que estar dada de alta en el panel
        de Supabase, en Authentication -> URL Configuration -> Redirect URLs. */
     var vuelta = location.origin + location.pathname;
+    /* ⚠️ EL ANTIRROBOTS ES EL DE LA PANTALLA DE DETRÁS, no uno propio del globo.
+       Montar un segundo widget de Turnstile aquí dentro sería meter un iframe
+       que crece cuando Cloudflare pide resolver un reto en una caja con
+       `overflow`; y no hace falta, porque el token ya está resuelto abajo. Si
+       todavía no lo está, se dice aquí y el reto sigue a la vista al cerrar. */
     conToken().then(function (ficha) {
       if (cfg.turnstileSiteKey && !ficha) {
-        ocupado(false, 'Mandarme el enlace');
+        ocupadoAlta(false);
         reintentarCaptcha();
-        return error('La verificación antirrobots no terminó. Esperá un momento y tocá otra vez.');
+        return errorAlta('La verificación antirrobots de la pantalla de atrás no terminó. ' +
+                         'Espera un momento y toca otra vez.');
       }
       return auth.mandarEnlace(correo, ficha, vuelta)
-        .then(function () { estado.paso = 'revisa'; ocupado(false, 'Volver a mandarlo'); pintar(); });
+        .then(function () { estado.enviando = false; abrirAlta(null, true); });
     })
       .catch(function (e) {
-        ocupado(false, 'Mandarme el enlace');
-        error(porQue(e));
+        ocupadoAlta(false);
+        errorAlta(porQue(e));
         refrescarCaptcha();
       });
+  }
+
+  /** Sin servidor no hay correo ni contraseña: con el apodo basta para jugar. */
+  function jugarSinServidor() {
+    var nombre = datos.limpiarNombre($('#c-nombre') ? $('#c-nombre').value : '');
+    var malElNombre = datos.errorDeNombre(nombre);
+    if (malElNombre) return error(malElNombre);
+    datos.actualizar({ nombre: nombre });
+    cerrar();
   }
 
   function guardarContrasena() {
@@ -494,7 +571,6 @@ window.ATWI = window.ATWI || {};
       })
       .then(function (perfil) {
         datos.actualizar({ nombre: (perfil && perfil.nombre) || nombre });
-        try { localStorage.removeItem(CLAVE_NOMBRE); } catch (e) {}
         ocupado(false, '');
         cerrar();
       })
@@ -545,17 +621,21 @@ window.ATWI = window.ATWI || {};
 
   /* --- Eventos ---------------------------------------------------------------- */
   document.addEventListener('click', function (ev) {
+    /* EL BOTON DEL GLOBO VIVE FUERA DE `#puerta` —el globo se cuelga del marco,
+       no del modal—, así que se mira aparte y con marca propia: `data-accion`
+       lo atiende también `app.js`. */
+    var alta = ev.target.closest('.globo [data-puerta="enviar"]');
+    if (alta) { if (!estado.enviando) mandarEnlace(); return; }
+
     var acc = ev.target.closest('#puerta [data-accion]');
     if (!acc || estado.enviando) return;
     var a = acc.dataset.accion;
     if (a === 'continuar') {
-      if (estado.paso === 'datos' || estado.paso === 'revisa') mandarEnlace();
+      if (estado.paso === 'datos') jugarSinServidor();
       else if (estado.paso === 'contrasena') guardarContrasena();
       else if (estado.paso === 'entrar') entrar();
-    } else if (a === 'otro-correo' || a === 'ir-datos') {
-      estado.paso = 'datos'; refrescarCaptcha(); pintar();
-    } else if (a === 'ir-entrar') {
-      estado.paso = 'entrar'; refrescarCaptcha(); pintar();
+    } else if (a === 'soy-nuevo') {
+      abrirAlta(acc, false);
     }
   });
 
@@ -564,7 +644,10 @@ window.ATWI = window.ATWI || {};
     var p = $('#puerta');
     if (!p || p.hidden || estado.enviando) return;
     if (ev.target.tagName === 'INPUT') ev.preventDefault();
-    var b = $('#puerta .modal__pie button');
+    /* Con el globo abierto, el Enter es suyo: el botón del pie está detrás del
+       velo y pulsarlo desde aquí sería entrar con la contraseña vacía. */
+    var b = document.querySelector('.globo [data-puerta="enviar"]') ||
+            $('#puerta .modal__pie button');
     if (b) b.click();
   });
 
@@ -611,7 +694,6 @@ window.ATWI = window.ATWI || {};
       catch (e) { fallo = e.message; }
 
       if (recogida) {
-        try { estado.nombre = localStorage.getItem(CLAVE_NOMBRE) || ''; } catch (e) {}
         p.hidden = false;
         estado.paso = 'contrasena';
         pintar();
@@ -638,7 +720,7 @@ window.ATWI = window.ATWI || {};
           return;
         }
         p.hidden = false;
-        estado.paso = 'datos';
+        estado.paso = 'entrar';
         pintar();
         if (fallo) {
           error(/invalid or has expired/i.test(fallo)
