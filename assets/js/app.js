@@ -5707,6 +5707,17 @@
     /* LA INVITACIÓN TAMBIÉN PASA POR EL MICRÓFONO (titular, 2026-09-18: «el
        permiso se debe consultar siempre antes de cada sorteo o envío de
        invitación»): quien invita va a grabar su turno en este mismo teléfono. */
+    /* ⚠️ QUIÉNGANE SE FRENA AQUÍ HASTA QUE HAYA MINIJUEGOS (titular, 2026-09-19:
+       «bloquea el avance de QuiénGane hasta tener minijuegos: a diferencia de los
+       otros dos modos, en QuiénGane se debe seleccionar un minijuego en Antes de
+       empezar; como aún no se pueden seleccionar, al dar clic en empezar bloquea
+       y muestra un toast de En desarrollo»). Se corta en las DOS vías —sortear e
+       invitar— y ANTES del micrófono: pedir permiso para algo que no va a
+       arrancar sería un peaje sin partida detrás. Lo que sigue (la sala, la base)
+       no sabe nada de este modo; ver «El tercer modo: QuiénGane». */
+    else if ((a === 'proponer' || a === 'sortear') && propuesta.modo === 'competencia') {
+      window.ATWI.aviso('QuiénGane está en desarrollo: falta elegir el minijuego. Muy pronto.');
+    }
     else if (a === 'proponer') { conMicrofono(proponer, 'enviar'); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { conMicrofono(sortearYJugar, 'empezar'); }
