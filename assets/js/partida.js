@@ -2336,6 +2336,19 @@ window.ATWI = window.ATWI || {};
        · la sala sigue en el recibo: si alguien ya se fue de esta pantalla, lo
          que toque lo decide `seguir()` o el historial, no esto.
      Y repinta el pie, porque el botón dice «Deliberando…» hasta que llega. */
+  /** ¿Están TODAS las intervenciones guardadas en el servidor? Una que sigue
+      subiendo --o que falló-- significa que la ronda no está completa, y pedir
+      el veredicto con un hueco es lo que devolvía «la partida no terminó». */
+  function rondaSubidaEntera() {
+    if (!P || !P.intervenciones || !P.intervenciones.length) return false;
+    if (P.intervenciones.length < P.turnos * 2) return false;
+    for (var i = 0; i < P.intervenciones.length; i++) {
+      var v = P.intervenciones[i];
+      if (v.preparando || v.falloLaNube) return false;
+    }
+    return true;
+  }
+
   function arrancarElJuicio() {
     if (!P || !P.cerrando || P.juicio) return;
     /* Las dos pantallas donde se puede estar esperando: el recibo --con el
@@ -2784,7 +2797,15 @@ window.ATWI = window.ATWI || {};
        «No llegó la respuesta» sin que nadie hubiera preguntado nada. Se queda
        el juez pensando; quien pida el juicio repinta (`arrancarElJuicio`). */
     var cuando = P.juicio;
-    if (!cuando) return;
+    if (!cuando) {
+      /* Y SI LA RONDA YA ESTÁ SUBIDA ENTERA, SE PIDE DESDE AQUÍ. Sin esto había
+         un callejón: llegar a esta pantalla con el juicio sin pedir --porque el
+         estado cambió justo cuando el turno terminaba de subir-- dejaba al juez
+         pensando para siempre y sin botón. Si todavía hay algo subiendo, no se
+         hace nada: lo arranca el `.then` de esa subida. */
+      if (rondaSubidaEntera()) arrancarElJuicio();
+      return;
+    }
     cuando.then(function () {
       if (P.estado !== 'deliberando') return;
       /* SI NO HUBO RESPUESTA, NO SE REVELA NADA: se queda aquí y se ofrece
