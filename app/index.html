@@ -34,11 +34,11 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=ab3b4f9">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=ab3b4f9">
-<link rel="stylesheet" href="../assets/css/base.css?v=ab3b4f9">
-<link rel="stylesheet" href="../assets/css/app.css?v=ab3b4f9">
-<link rel="stylesheet" href="../assets/css/modal.css?v=ab3b4f9">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=a0d2128">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=a0d2128">
+<link rel="stylesheet" href="../assets/css/base.css?v=a0d2128">
+<link rel="stylesheet" href="../assets/css/app.css?v=a0d2128">
+<link rel="stylesheet" href="../assets/css/modal.css?v=a0d2128">
 </head>
 
 <body class="app">
@@ -343,25 +343,129 @@
 
 </div>
 
+<!-- ===========================================================================
+     LOS TERMINOS Y CONDICIONES (titular, 2026-09-19): *«este disclaimer ya no
+     va, lo vamos a reemplazar por los términos y condiciones —a mostrar en un
+     globo estilizado con botón de aceptar— que debe leerse y aceptarse para
+     poder continuar la primera vez; la cuenta no se crea y activa sin esto: es
+     nuestro gate de aprobación legal»*.
+
+     ⚠️ ESTO ES TEXTO LEGAL VINCULANTE Y ES UN BORRADOR. Lo escribió Claude a
+     partir de lo que el proyecto ya declara —la hoja de privacidad de la
+     landing, el descargo de IA, las reglas de `docs/02`— y **no lo ha revisado
+     un abogado**. Los huecos marcados con «PENDIENTE» son decisiones del
+     titular y no pueden quedarse así el día del lanzamiento.
+
+     ⚠️ Y VIVE EN HTML, NO EN UN STRING DE JAVASCRIPT, a propósito: es lo que
+     hay que poder leer y corregir sin tocar código. La VERSION va en el propio
+     `data-version` y es la que se guarda en `perfiles` al aceptar: cambiarla
+     vuelve a pedir la aceptación a todo el mundo, que es lo que tiene que pasar
+     cuando estas condiciones cambien.
+     ========================================================================= -->
+<template id="tpl-terminos" data-version="1" data-fecha="19 de septiembre de 2026">
+  <p class="legal__fecha">Versión 1 · 19 de septiembre de 2026</p>
+
+  <p class="legal__corto"><b>Lo corto:</b> ATWI es un juego para discutir mejor.
+    No es terapia ni asesoramiento profesional, y su resultado no dice quién tiene
+    razón en la vida. Tu voz no se guarda nunca. Si un tema toca violencia o daño,
+    la partida se detiene.</p>
+
+  <h3>1. Qué es ATWI</h3>
+  <p>Un juego para dos personas: eligen un tema, graban lo que piensan por turnos y
+    una inteligencia artificial devuelve un resultado —un veredicto en Controversia,
+    un acuerdo propuesto en Pacto— o decide un premio en QuiénGane. Es entretenimiento.</p>
+
+  <h3>2. Qué no es</h3>
+  <p>ATWI <b>no reemplaza la terapia ni el asesoramiento profesional</b>, sea
+    psicológico, legal, médico o financiero. Lo que diga el juez o proponga el
+    mediador es parte del juego: no es un dictamen, no prueba nada y no dice quién
+    tiene razón fuera de la partida. Si están pasando por algo serio, búsquen ayuda
+    de verdad.</p>
+
+  <h3>3. Quién puede jugar</h3>
+  <p>Tienes que tener al menos <b>16 años</b>. Si eres menor de edad en tu país,
+    necesitas el permiso de quien te cuida para usar ATWI.
+    <span class="legal__pendiente">PENDIENTE: confirmar la edad mínima según los
+    países donde se lance.</span></p>
+
+  <h3>4. Tu cuenta</h3>
+  <p>Se entra con un correo y se juega con un apodo. No pedimos tu nombre real.
+    El apodo es único y lo puedes cambiar. Eres responsable de tu contraseña y de
+    lo que se haga desde tu cuenta: si crees que alguien entró, cámbiala.</p>
+
+  <h3>5. Lo que dices y lo que escribes</h3>
+  <p>Lo que grabas y los temas que escribes <b>siguen siendo tuyos</b>. Para que el
+    juego funcione nos das permiso para transcribirlo, pulirlo, locutarlo con la voz
+    de un personaje, enseñárselo a la otra persona de la partida y guardarlo mientras
+    la partida exista. Nada de eso se usa para otra cosa, no se vende y no se publica.</p>
+  <p><b>Tu voz no se guarda.</b> La grabación se convierte en texto y se descarta en
+    la misma llamada; lo que se oye siempre es el personaje. Qué se guarda y quién lo
+    procesa está en la hoja de <a href="../#privacidad" target="_blank" rel="noopener">Privacidad
+    y datos</a>, que forma parte de estas condiciones.</p>
+
+  <h3>6. Cómo hay que tratarse</h3>
+  <p>ATWI existe para discutir mejor, no para hacer daño. No se puede usar para
+    amenazar, acosar, humillar ni presionar a nadie; para subir datos de terceros;
+    ni para contenido sexual con menores, delitos o cualquier otra cosa ilegal.</p>
+  <p>El juego <b>detiene una partida</b> cuando detecta señales de violencia, abuso o
+    daño a una persona, y en ese caso no juzga ni propone nada. Eso no es un juicio
+    sobre nadie: es que ese tema no se juega aquí. Podemos cerrar una cuenta que use
+    ATWI para lo que este punto prohíbe.</p>
+
+  <h3>7. La inteligencia artificial</h3>
+  <p>El juez, el mediador, el personaje que habla por ti y el revisor de temas son
+    modelos de IA. Lo que dicen se comprueba con reglas antes de enseñarse, pero
+    <b>pueden equivocarse</b>: pueden entender mal lo que dijiste, puntuar de una
+    manera que te parezca injusta o proponer algo que no encaje. El audio que suena
+    es una voz sintética de un personaje, no la de ninguna persona.</p>
+
+  <h3>8. Vidas y pagos</h3>
+  <p>Crear una partida cuesta una «vida». Hoy no se cobra por ellas.
+    <span class="legal__pendiente">PENDIENTE: condiciones de compra, reembolsos y
+    precios cuando se active el cobro.</span></p>
+
+  <h3>9. El servicio está en construcción</h3>
+  <p>ATWI se ofrece <b>tal como está</b>. Puede cambiar, fallar, perder datos o dejar
+    de funcionar sin aviso. No prometemos que esté siempre disponible ni que los
+    resultados sean correctos.</p>
+
+  <h3>10. Responsabilidad</h3>
+  <p>Hasta donde la ley lo permita, no respondemos por lo que pase a raíz de usar el
+    juego: decisiones que tomen, discusiones que tengan, ni daños indirectos. Lo que
+    ocurre entre ustedes es de ustedes.</p>
+
+  <h3>11. Borrar tus datos</h3>
+  <p>Cada partida se borra desde el historial, con sus grabaciones del personaje y su
+    acta. Para borrar la cuenta entera, escríbenos.
+    <span class="legal__pendiente">PENDIENTE: correo de contacto.</span></p>
+
+  <h3>12. Si estas condiciones cambian</h3>
+  <p>Te las volvemos a enseñar y hay que aceptarlas otra vez para seguir jugando.</p>
+
+  <h3>13. Ley y contacto</h3>
+  <p><span class="legal__pendiente">PENDIENTE: quién presta el servicio (persona o
+    empresa), país, ley aplicable y correo de contacto.</span></p>
+</template>
+
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=ab3b4f9"></script>
-<script src="../assets/js/precarga.js?v=ab3b4f9"></script>
-<script src="../assets/js/iconos.js?v=ab3b4f9"></script>
-<script src="../assets/js/personajes.js?v=ab3b4f9"></script>
-<script src="../assets/js/datos.js?v=ab3b4f9"></script>
-<script src="../assets/js/sonido.js?v=ab3b4f9"></script>
-<script src="../assets/js/veredicto.js?v=ab3b4f9"></script>
-<script src="../assets/js/grabadora.js?v=ab3b4f9"></script>
-<script src="../assets/js/partida.js?v=ab3b4f9"></script>
-<script src="../assets/js/auth.js?v=ab3b4f9"></script>
-<script src="../assets/js/entrada.js?v=ab3b4f9"></script>
-<script src="../assets/js/nube.js?v=ab3b4f9"></script>
+<script src="../assets/js/config.js?v=a0d2128"></script>
+<script src="../assets/js/precarga.js?v=a0d2128"></script>
+<script src="../assets/js/iconos.js?v=a0d2128"></script>
+<script src="../assets/js/personajes.js?v=a0d2128"></script>
+<script src="../assets/js/datos.js?v=a0d2128"></script>
+<script src="../assets/js/sonido.js?v=a0d2128"></script>
+<script src="../assets/js/veredicto.js?v=a0d2128"></script>
+<script src="../assets/js/grabadora.js?v=a0d2128"></script>
+<script src="../assets/js/partida.js?v=a0d2128"></script>
+<script src="../assets/js/auth.js?v=a0d2128"></script>
+<script src="../assets/js/entrada.js?v=a0d2128"></script>
+<script src="../assets/js/nube.js?v=a0d2128"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=ab3b4f9"></script>
-<script src="../assets/js/app.js?v=ab3b4f9"></script>
+<script src="../assets/js/demo.js?v=a0d2128"></script>
+<script src="../assets/js/app.js?v=a0d2128"></script>
 </body>
 </html>

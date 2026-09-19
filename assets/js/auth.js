@@ -350,6 +350,19 @@ window.ATWI = window.ATWI || {};
       }).then(function (r) { return r === true; })
         .catch(function () { return true; });   // sin red no se bloquea aquí: la base decide al guardar
     },
+    /* LA ACEPTACION DE LOS TERMINOS, Y NO SE TRAGA EL FALLO (migración 0063).
+       `apodoLibre` de aquí arriba devuelve `true` cuando no hay red —bloquear
+       por una consulta que no llegó sería peor, y la base decide igualmente al
+       guardar—; esto es lo contrario: si la constancia no se pudo escribir, no
+       se ha aceptado nada y quien llama tiene que enterarse. */
+    aceptarTerminos: function (version) {
+      return pedir('/rest/v1/rpc/aceptar_terminos', {
+        method: 'POST',
+        headers: cabeceras(true),
+        body: JSON.stringify({ p_version: String(version) })
+      });
+    },
+
     crearPerfil: function (nombre, avatar) {
       return this.conUsuario().then(function (s) {
         if (!s || !s.user) throw new Error('Sin sesión');

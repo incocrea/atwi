@@ -215,6 +215,135 @@ window.ATWI = window.ATWI || {};
 
   var ERROR = '<p class="chico" id="c-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
 
+  /* --- El gate legal -----------------------------------------------------------
+     EL DESCARGO DE IA DEJA SITIO A LOS TERMINOS (titular, 2026-09-19): *«este
+     disclaimer ya no va, lo vamos a reemplazar por los términos y condiciones
+     —a mostrar en un globo estilizado con botón de aceptar— que debe leerse y
+     aceptarse para poder continuar la primera vez; la cuenta no se crea y
+     activa sin esto: es nuestro gate de aprobación legal»*.
+
+     El descargo no se pierde: es uno de los trece puntos de los términos, y
+     sigue estando a la vista en la pantalla de entrar.
+
+     ⚠️ LA CONSTANCIA VA AL SERVIDOR ANTES DE DEJAR JUGAR (migración 0063). Un
+     gate que solo marca una casilla en el teléfono no demuestra nada y no se
+     puede volver a pedir: aquí queda QUE VERSION se aceptó y CUANDO, con el
+     reloj del servidor. */
+  var terminosPuestos = false;      // aceptados en esta sesión de la puerta
+
+  function laVersionDeLosTerminos() {
+    var t = document.getElementById('tpl-terminos');
+    return (t && t.dataset.version) || '0';
+  }
+
+  /* El texto vive en el HTML y no aquí: es lo que hay que poder leer y corregir
+     sin tocar código. */
+  function elTextoDeLosTerminos() {
+    var t = document.getElementById('tpl-terminos');
+    if (!t) return '<p>No se pudieron cargar los términos.</p>';
+    return t.innerHTML;
+  }
+
+  var BLOQUE_TERMINOS =
+    '<div class="tarjeta terminos-caja" id="c-terminos">' +
+      '<p class="chico"><b>Términos y condiciones</b></p>' +
+      '<p class="chico suave" id="c-terminos-estado">Léelos y acéptalos para poder jugar.</p>' +
+      '<button class="boton boton--suave boton--bloque" data-accion="ver-terminos" ' +
+        'style="margin-top:var(--e-3)">Leer y aceptar</button>' +
+    '</div>';
+
+  function pintarEstadoTerminos() {
+    var caja = $('#c-terminos');
+    if (!caja) return;
+    caja.dataset.listo = terminosPuestos ? '1' : '';
+    var est = $('#c-terminos-estado');
+    var bot = caja.querySelector('[data-accion="ver-terminos"]');
+    if (est) est.textContent = terminosPuestos
+      ? 'Aceptados. Ya puedes jugar.'
+      : 'Léelos y acéptalos para poder jugar.';
+    if (bot) bot.textContent = terminosPuestos ? 'Volver a leerlos' : 'Leer y aceptar';
+  }
+
+  /** Abre el globo del gate. `alAceptar` corre cuando se acepta de verdad. */
+  function abrirTerminos(disparador, alAceptar) {
+    if (!disparador || !window.ATWI.globo) return;
+    window.ATWI.globo.abrir(disparador, { titulo: 'Términos y condiciones' }, {
+      tinte: 'lavanda',
+      etiqueta: 'Términos y condiciones',
+      /* ⚠️ FIJO: no se cierra tocando fuera, ni con Escape, ni con el atrás. Un
+         gate que se va solo no es un gate. La salida existe y es explícita: el
+         botón de abajo. */
+      fijo: true,
+      /* `globo__cede` es lo que hace que esto quepa SIEMPRE: el globo mide el
+         hueco visible y le da al cuerpo el alto que sobra, con scroll. */
+      cuerpo: '<div class="globo__cede legal-globo" id="t-scroll">' +
+        elTextoDeLosTerminos() + '</div>' +
+        '<p class="chico" id="t-error" style="color:var(--peligro);margin-top:var(--e-2)"></p>',
+      acciones:
+        '<button class="boton boton--bloque" data-puerta="acepto" disabled>Acepto</button>' +
+        '<button class="boton boton--bloque boton--suave boton--punteado" data-puerta="ahora-no">' +
+          'Ahora no</button>'
+    });
+    alAceptarTerminos = alAceptar || null;
+    vigilarLectura();
+  }
+
+  var alAceptarTerminos = null;
+
+  /* ⚠️ «DEBE LEERSE», Y ESO SE COMPRUEBA: el botón de aceptar nace apagado y se
+     enciende al llegar al final del texto. Si el texto cabe entero sin scroll
+     —una pantalla alta— ya está leído y se enciende solo, o el gate sería
+     imposible de pasar. */
+  function vigilarLectura() {
+    var caja = $('#t-scroll');
+    var bot = document.querySelector('.globo [data-puerta="acepto"]');
+    if (!caja || !bot) return;
+    function mirar() {
+      var alFinal = caja.scrollTop + caja.clientHeight >= caja.scrollHeight - 24;
+      if (alFinal) { bot.disabled = false; bot.textContent = 'Acepto'; }
+      else { bot.disabled = true; bot.textContent = 'Baja para leerlos'; }
+    }
+    caja.addEventListener('scroll', mirar);
+    mirar();
+  }
+
+  /* SIN ACEPTAR NO SE JUEGA, PERO HAY QUE PODER IRSE. Un gate sin salida deja a
+     la persona encerrada en una pantalla, y eso no lo arregla ningún término:
+     se cierra la sesión y se vuelve a la puerta, que es donde estaba antes de
+     entrar. Lo que NO hace es dejar pasar. */
+  function rechazarTerminos() {
+    if (window.ATWI.globo) window.ATWI.globo.cerrarFijo();
+    terminosPuestos = false;
+    alAceptarTerminos = null;
+    var p = $('#puerta');
+    auth.salir().catch(function () {}).then(function () {
+      datos.actualizar({ nombre: '' });
+      estado.paso = 'entrar';
+      if (p) p.hidden = false;
+      pintar();
+      error('Para jugar hay que aceptar los términos.');
+    });
+  }
+
+  function aceptarTerminosYa() {
+    var bot = document.querySelector('.globo [data-puerta="acepto"]');
+    var err = $('#t-error');
+    if (bot) { bot.disabled = true; bot.textContent = 'Guardando…'; }
+    if (err) err.textContent = '';
+    return auth.aceptarTerminos(laVersionDeLosTerminos())
+      .then(function () {
+        terminosPuestos = true;
+        if (window.ATWI.globo) window.ATWI.globo.cerrarFijo();
+        pintarEstadoTerminos();
+        if (alAceptarTerminos) { var f = alAceptarTerminos; alAceptarTerminos = null; f(); }
+      })
+      .catch(function (e) {
+        if (bot) { bot.disabled = false; bot.textContent = 'Acepto'; }
+        if (err) err.textContent = 'No se pudo guardar tu aceptación: ' + porQue(e);
+      });
+  }
+
+
   /* --- Pintado --------------------------------------------------------------- */
   function pintar() {
     var caja = $('#puerta .modal__cuerpo');
@@ -256,8 +385,9 @@ window.ATWI = window.ATWI || {};
                 'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
                 'Que puedas recordar. No hace falta que sea rara.') +
           ERROR +
-        '</div>' + AVISO_IA;
+        '</div>' + BLOQUE_TERMINOS;
       enfocar('#c-clave', true);
+      pintarEstadoTerminos();
       boton.textContent = 'Guardar y jugar';
 
     } else if (p === 'entrar') {
@@ -280,8 +410,14 @@ window.ATWI = window.ATWI || {};
            campo y cambiar la pantalla entera para hacerla era lo que hacía
            confusa la puerta. */
         '<button class="boton boton--fantasma boton--bloque" data-accion="soy-nuevo" style="margin-top:var(--e-4)">' +
-          '¡Soy nuevo!</button>' +
-        AVISO_IA;
+          '¡Soy nuevo!</button>';
+      /* ⚠️ Y AQUI NO VA EL DESCARGO DE IA (titular, 2026-09-19: «quita este
+         disclaimer del login»). Estuvo unas horas: al quedarse ésta como única
+         pantalla de la puerta se movió aquí para que no desapareciera de la
+         vista. Lo que lo hace innecesario es el gate: el descargo es uno de los
+         trece puntos de los términos, y **nadie juega sin haberlos aceptado**,
+         así que ya no hace falta repetirlo donde solo entra quien ya los
+         aceptó. */
       montarCaptcha();
       avisarSiFaltaElCaptcha();
       enfocar('#c-correo2', !estado.correo);
@@ -552,6 +688,13 @@ window.ATWI = window.ATWI || {};
     var malElNombre = datos.errorDeNombre(nombre);
     if (malElNombre) return error(malElNombre);
     if (clave.length < 8) return error('La contraseña necesita al menos 8 caracteres.');
+    /* EL GATE. No se crea la cuenta sin esto: si no los aceptó, se le abren aquí
+       mismo y al aceptar sigue el alta sola, sin tener que volver a pulsar. */
+    if (!terminosPuestos) {
+      error('Falta aceptar los términos y condiciones.');
+      abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), guardarContrasena);
+      return;
+    }
     error('');
     ocupado(true);
 
@@ -627,6 +770,11 @@ window.ATWI = window.ATWI || {};
     var alta = ev.target.closest('.globo [data-puerta="enviar"]');
     if (alta) { if (!estado.enviando) mandarEnlace(); return; }
 
+    var acep = ev.target.closest('.globo [data-puerta="acepto"]');
+    if (acep) { aceptarTerminosYa(); return; }
+    var noAhora = ev.target.closest('.globo [data-puerta="ahora-no"]');
+    if (noAhora) { rechazarTerminos(); return; }
+
     var acc = ev.target.closest('#puerta [data-accion]');
     if (!acc || estado.enviando) return;
     var a = acc.dataset.accion;
@@ -636,6 +784,8 @@ window.ATWI = window.ATWI || {};
       else if (estado.paso === 'entrar') entrar();
     } else if (a === 'soy-nuevo') {
       abrirAlta(acc, false);
+    } else if (a === 'ver-terminos') {
+      abrirTerminos(acc, null);
     }
   });
 
@@ -712,6 +862,17 @@ window.ATWI = window.ATWI || {};
              Se trae del servidor y se repinta. */
           auth.miPerfil().then(function (perfil) {
             if (!perfil) return;
+            /* ⚠️ Y TAMBIEN A QUIEN YA ESTABA DENTRO (titular, 2026-09-19). Si
+               esto es el gate legal, las cuentas de antes tampoco han aceptado
+               nada nunca; y el día que los términos cambien, la versión nueva
+               vuelve a pedirse a todo el mundo sin tocar una línea. El globo va
+               `fijo` sobre la app: su velo ya captura los clics, así que por
+               debajo no se puede jugar mientras esté puesto. */
+            terminosPuestos = perfil.terminos_version === laVersionDeLosTerminos();
+            if (!terminosPuestos) {
+              var colgarDe = document.querySelector('.cabecera__titulo');
+              if (colgarDe) setTimeout(function () { abrirTerminos(colgarDe, null); }, 400);
+            }
             var local = datos.perfil();
             if (local.nombre === perfil.nombre && local.avatar === (perfil.avatar || local.avatar)) return;
             datos.actualizar({ nombre: perfil.nombre || '', avatar: perfil.avatar || local.avatar });

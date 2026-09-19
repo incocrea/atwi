@@ -5021,6 +5021,60 @@ body.app {
   .globo-velo { transition-duration: 100ms; }
 }
 
+/* --- El gate legal: los términos dentro del globo -------------------------- */
+/* ⚠️ ESTE TEXTO VA A LA IZQUIERDA, Y ES LA EXCEPCION A «todo lo de dentro de un
+   globo va centrado». La regla se escribió para piezas de dos frases y un
+   formulario de un campo; un documento de trece puntos centrado no se lee: cada
+   renglón empieza en un sitio distinto y el ojo pierde el principio de línea.
+   Lo que se centra sigue siendo el título y los botones. */
+.legal-globo {
+  text-align: left;
+  font-size: var(--t-chico);
+  line-height: 1.5;
+  color: var(--tinta);
+}
+.legal-globo p { margin: 0 0 var(--e-3); }
+.legal-globo h3 {
+  margin: var(--e-4) 0 var(--e-2);
+  font-size: var(--t-chico);
+  font-weight: 800;
+  color: var(--realce, var(--lavanda));
+}
+.legal-globo .legal__fecha {
+  font-size: .78rem; color: var(--tinta-suave); margin-bottom: var(--e-3);
+}
+.legal-globo .legal__corto {
+  background: var(--crema-hondo);
+  border-radius: var(--radio-chip);
+  padding: var(--e-3);
+}
+/* LO QUE FALTA POR DECIDIR SE VE, no se esconde en un comentario del código:
+   mientras queden huecos, quien los lee sabe que este texto no está terminado
+   —y el día del lanzamiento no puede quedar ni uno—. */
+.legal-globo .legal__pendiente {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 2px 6px;
+  border-radius: var(--radio-chip);
+  background: color-mix(in srgb, var(--peligro) 12%, transparent);
+  color: var(--peligro);
+  font-weight: 700;
+}
+.legal-globo a { color: var(--lavanda); }
+
+/* La tarjeta del alta que lleva al gate. Con los términos ya aceptados se pone
+   en verde: es el único sitio de esa pantalla donde hay algo que hacer antes de
+   poder pulsar «Guardar y jugar», así que tiene que verse hecho. */
+.terminos-caja {
+  margin-top: var(--e-5);
+  background: var(--crema-hondo);
+  box-shadow: none;
+  text-align: left;
+}
+.terminos-caja[data-listo="1"] {
+  background: color-mix(in srgb, var(--menta-clara) 30%, var(--crema-hondo));
+}
+
 /* ⚠️ SIN ANILLO DE FOCO CUANDO EL FOCO ES PROGRAMATICO. El globo lleva
    `tabIndex = -1` para poder recibirlo al abrirse —eso es lo que hace que
    Escape lo cierre y que un lector de pantalla lo lea—, y el navegador le dibuja

@@ -168,7 +168,12 @@
        que se abrió: con el atrás cerrando la pantalla de debajo, el globo se
        quedaba flotando sobre otra cosa —vive fuera de la vista, así que un
        cambio de pantalla no se lo lleva—. */
-    if (globoAbierto) {
+    if (globoAbierto && globoAbierto.fijo) {
+      /* El atrás tampoco lo quita. Se le devuelve su entrada —como hace la sala
+         cuando alguien dice que no quiere salir— o el siguiente atrás se
+         llevaría la pantalla de debajo con el gate todavía puesto encima. */
+      apilarPaso();
+    } else if (globoAbierto) {
       globoEnHistoria = false;
       quitarGlobo();
     } else if (revelacion) {
@@ -5300,7 +5305,14 @@
     disparador.dataset.globoAbierto = '1';
     nodo.focus();
 
-    globoAbierto = { nodo: nodo, disparador: disparador, velo: velo, recolocar: recolocar };
+    /* ⚠️ UN GLOBO `fijo` NO SE VA SOLO, y es lo contrario de lo que hacen todos
+       los demás: éste es el gate de los términos, y un gate que se cierra
+       tocando fuera no es un gate. No lo cierran el toque fuera, ni Escape, ni
+       el atrás del navegador —solo el botón que contesta—. Lo demás no cambia:
+       el velo ya capturaba los clics, así que la pantalla de debajo tampoco se
+       puede tocar mientras está puesto. */
+    globoAbierto = { nodo: nodo, disparador: disparador, velo: velo, recolocar: recolocar,
+                     fijo: !!o.fijo };
     window.addEventListener('resize', recolocar);
     /* ⚠️ EL TECLADO NO DISPARA `resize` EN TODOS LOS NAVEGADORES: en iOS no
        cambia el tamaño de la ventana, encoge el viewport VISIBLE. Sin esto, el
@@ -5314,13 +5326,15 @@
   /* Se cierra tocando fuera y con Escape. El clic de dentro no cuenta —hay
      enlaces ahí— y el del propio disparador tampoco, que ya lo alterna él. */
   document.addEventListener('pointerdown', function (e) {
-    if (!globoAbierto) return;
+    if (!globoAbierto || globoAbierto.fijo) return;
     if (globoAbierto.nodo.contains(e.target)) return;
     if (globoAbierto.disparador.contains(e.target)) return;
     cerrarGlobo();
   }, true);
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && globoAbierto) { e.stopPropagation(); cerrarGlobo(); }
+    if (e.key === 'Escape' && globoAbierto && !globoAbierto.fijo) {
+      e.stopPropagation(); cerrarGlobo();
+    }
   }, true);
 
   /* LO QUE CRECE DENTRO DE UN GLOBO NO SE COLOCA SOLO. El globo se mide y se
@@ -5330,7 +5344,17 @@
      otra vez. */
   function recolocarGlobo() { if (globoAbierto) globoAbierto.recolocar(); }
 
-  window.ATWI.globo = { abrir: abrirGlobo, cerrar: cerrarGlobo, recolocar: recolocarGlobo };
+  /* `cerrarFijo` es la ÚNICA salida de un globo `fijo`, y por eso está aparte:
+     lo llama quien contestó lo que el gate preguntaba. `cerrar` a secas no lo
+     toca, que es justamente lo que lo hace un gate. */
+  window.ATWI.globo = {
+    abrir: abrirGlobo, cerrar: cerrarGlobo, recolocar: recolocarGlobo,
+    cerrarFijo: function () {
+      if (!globoAbierto) return;
+      globoAbierto.fijo = false;
+      cerrarGlobo();
+    }
+  };
 
   /* ======================================================================
      Pintado y eventos
