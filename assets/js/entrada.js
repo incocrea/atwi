@@ -41,7 +41,67 @@ window.ATWI = window.ATWI || {};
   var estado = { paso: 'entrar', nombre: '', correo: '', captcha: '',
                  /* Lo último que dijo Turnstile cuando no dio token. Vacío
                     mientras todo va bien. */
-                 captchaFallo: '', enviando: false };
+                 captchaFallo: '', enviando: false,
+                 /* La invitación que trajo la llave del correo, si está viva, y
+                    lo que hay que decir cuando no lo está. */
+                 invitacion: null, avisoInvitacion: '' };
+
+  /* --- Lo que sobrevive a que el enlace se gaste -----------------------------
+     EL ENLACE DEL CORREO ES DE UN SOLO USO Y NO HAY MANERA DE QUE NO LO SEA:
+     lo canjea el servidor de Supabase en el momento en que alguien lo abre, y
+     desde aquí no se puede deshacer. Lo que sí se puede es que gastarlo no sea
+     un callejón, y para eso hacen falta dos cosas guardadas en el aparato:
+
+     · EL CORREO, para que «Mándamelo otra vez» sea un toque y no volver a
+       escribirlo. Es el correo de quien está delante, en su propio teléfono, y
+       ya conviven ahí la sesión entera y el perfil; «Salir» lo barre con todo
+       lo demás porque `datos.olvidar()` va por prefijo.
+     · EL ALTA A MEDIAS, porque la pantalla de apodo y contraseña solo se
+       alcanzaba en el mismo ciclo de carga que consumía el fragmento: un
+       refresco justo ahí —o una carga a medias, que es lo que le pasó al
+       invitado— dejaba la cuenta creada, SIN CONTRASEÑA y con el apodo
+       provisional, y sin ninguna vía de vuelta: a partir de ahí solo se podía
+       entrar pidiendo otro enlace, cada vez. Con la marca puesta, esa pantalla
+       vuelve a salir hasta que el alta se termina. */
+  var CLAVE_CORREO = 'atwi.correo.v1';
+  var CLAVE_ALTA   = 'atwi.alta.pendiente';
+  var CLAVE_INVITA = 'atwi.invitacion.llave';
+  function recordarCorreo(c) { try { localStorage.setItem(CLAVE_CORREO, c || ''); } catch (e) { /* incógnito */ } }
+  function elCorreoRecordado() { try { return localStorage.getItem(CLAVE_CORREO) || ''; } catch (e) { return ''; } }
+  function altaPendiente(si) {
+    try {
+      if (si === undefined) return !!localStorage.getItem(CLAVE_ALTA);
+      if (si) localStorage.setItem(CLAVE_ALTA, '1'); else localStorage.removeItem(CLAVE_ALTA);
+    } catch (e) { /* incógnito: se pierde la red, no el camino */ }
+    return !!si;
+  }
+
+  /* --- La llave de la invitación (0074) --------------------------------------
+     El correo enlaza a `/app/?inv=<llave>`. La llave se guarda en el aparato y
+     SE QUITA DE LA BARRA en cuanto se lee, por dos motivos: no dejarla escrita
+     en el historial del navegador, y que sobreviva a todo lo que viene después
+     —el gate de los términos, un refresco, entrar con contraseña— sin tener que
+     arrastrarla por la URL. Se borra sola cuando la invitación deja de estar
+     viva: aceptada, rechazada o caducada. */
+  function laLlaveDeLaUrl() {
+    var llave = '';
+    try {
+      var u = new URL(location.href);
+      llave = u.searchParams.get('inv') || '';
+      if (llave) {
+        u.searchParams.delete('inv');
+        history.replaceState(null, '', u.pathname + (u.search || ''));
+      }
+    } catch (e) { /* URL rara: se sigue con lo guardado */ }
+    if (llave) { try { localStorage.setItem(CLAVE_INVITA, llave); } catch (e) {} return llave; }
+    try { return localStorage.getItem(CLAVE_INVITA) || ''; } catch (e) { return ''; }
+  }
+  function olvidarLaLlave() { try { localStorage.removeItem(CLAVE_INVITA); } catch (e) {} }
+
+  function nombreDeModo(m) {
+    var f = (cfg.modos || {})[m];
+    return (f && f.nombre) || 'ATWI';
+  }
   var alTerminar = null;
 
   /* --- Turnstile ------------------------------------------------------------ */
@@ -448,6 +508,35 @@ window.ATWI = window.ATWI || {};
       pintarEstadoTerminos();
       boton.textContent = 'Guardar y jugar';
 
+    } else if (p === 'invitado') {
+      /* EL ALTA DE QUIEN LLEGA INVITADO (titular, 2026-09-19: «a alguien que no
+         tiene cuenta deben ser links directos al registro donde la persona solo
+         pone su apodo y clave»). Aquí no se pide el correo: ya lo sabemos —es
+         aquel al que llegó la invitación— y por eso no hace falta un segundo
+         correo con un enlace mágico, que es lo que se moría. Se enseña tapado
+         para que se vea a qué cuenta se está dando de alta. */
+      var inv = estado.invitacion || {};
+      caja.innerHTML =
+        '<div class="invita-cabeza">' +
+          '<p class="invita-cabeza__quien">' + esc(inv.propone_nombre || 'Alguien') + ' te invita a jugar</p>' +
+          '<p class="invita-cabeza__que">' + esc(nombreDeModo(inv.modo)) + ' · ' +
+            esc(String(inv.turnos || 2)) + (Number(inv.turnos) === 1 ? ' turno' : ' turnos') + ' cada uno</p>' +
+          (inv.enunciado ? '<p class="invita-cabeza__tema">«' + esc(inv.enunciado) + '»</p>' : '') +
+        '</div>' +
+        '<div class="apilado-5">' +
+          campo('c-nombre3', 'Tu apodo en el juego',
+                'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
+                'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
+                'Una sola palabra, y tiene que estar libre.') +
+          campo('c-clave3', 'Contraseña',
+                'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
+                inv.correo_tapado
+                  ? 'Tu cuenta se crea con ' + esc(inv.correo_tapado) + ', el correo donde te llegó la invitación.'
+                  : 'Que puedas recordar. No hace falta que sea rara.') +
+        '</div>' + BLOQUE_TERMINOS;
+      pintarEstadoTerminos();
+      boton.textContent = 'Crear mi cuenta y jugar';
+
     } else if (p === 'entrar') {
       /* LA UNICA PANTALLA DE LA PUERTA (titular, 2026-09-19). Antes esto era
          «Hola otra vez», la alternativa a la de registrarse; ahora es la
@@ -456,6 +545,16 @@ window.ATWI = window.ATWI || {};
          al quedarse ésta sola, sin él el descargo no se leía en ningún sitio
          antes de jugar. */
       caja.innerHTML =
+        /* VENGO DE UNA INVITACIÓN Y YA TENGO CUENTA (caso 2). La cinta dice a
+           qué vengo, que si no el login es el mismo de siempre y la partida
+           parece haberse perdido por el camino. Al entrar se va derecho a
+           ella: la llave sigue guardada. */
+        (estado.invitacion && estado.invitacion.estado === 'viva'
+          ? '<p class="invita-cinta">' +
+              esc(estado.invitacion.propone_nombre || 'Alguien') + ' te espera en una partida de ' +
+              esc(nombreDeModo(estado.invitacion.modo)) + '. Entra y te llevamos.' +
+            '</p>'
+          : '') +
         '<div class="portal">' +
           '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
           '<p class="portal__eslogan">' + CHISPA +
@@ -565,6 +664,17 @@ window.ATWI = window.ATWI || {};
    * fue `captcha_failed` en localhost, donde Turnstile ni siquiera dibuja el
    * widget porque la clave de sitio solo admite atwi.app.
    */
+  /* Lo que pasó con el enlace del correo, dicho en español y sin culpar a quien
+     lo abrió. Los tres motivos —ya se usó, caducó, lo tocó antes un antivirus
+     de correo— se arreglan igual: pedir otro. */
+  function loQuePasoConElEnlace(e) {
+    if (e && e.gastado) {
+      return 'Ese enlace ya no vale: se abre una sola vez y caduca en una hora. ' +
+             'Te mandamos otro ahora mismo.';
+    }
+    return (e && e.message) || 'No se pudo entrar con ese enlace.';
+  }
+
   function porQue(e) {
     var codigo = (e.cuerpo && e.cuerpo.error_code) || '';
     if (e.estado === 429 || codigo === 'over_request_rate_limit') {
@@ -751,6 +861,7 @@ window.ATWI = window.ATWI || {};
     if (!valeCorreo(correo)) return errorAlta('Ese correo no parece válido.');
 
     estado.correo = correo;
+    recordarCorreo(correo);
     errorAlta('');
     ocupadoAlta(true);
     return mandarElCorreo(correo);
@@ -825,12 +936,70 @@ window.ATWI = window.ATWI || {};
       })
       .then(function (perfil) {
         datos.actualizar({ nombre: (perfil && perfil.nombre) || nombre });
+        /* El alta terminó: ya hay contraseña, así que esta pantalla deja de
+           reclamarse y se entra como todo el mundo. */
+        altaPendiente(false);
         ocupado(false, '');
         cerrar();
       })
       .catch(function (e) {
         ocupado(false, 'Guardar y jugar');
         error(e.message || 'No se pudo guardar.');
+      });
+  }
+
+  /* EL ALTA DE QUIEN LLEGA INVITADO. Un solo viaje: la función de borde crea la
+     cuenta ya confirmada —la llave prueba que el correo es suyo—, le pone el
+     apodo y la constancia de los términos, y devuelve la sesión hecha. Al
+     terminar no se cierra la puerta y ya: se va a la invitación, que es a lo
+     que vino. */
+  function crearDesdeInvitacion() {
+    var nombre = datos.limpiarNombre($('#c-nombre3').value);
+    var clave = $('#c-clave3').value || '';
+    var malElNombre = datos.errorDeNombre(nombre);
+    if (malElNombre) return error(malElNombre);
+    if (clave.length < 8) return error('La contraseña necesita al menos 8 caracteres.');
+    if (!terminosPuestos) {
+      abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), crearDesdeInvitacion, true);
+      return;
+    }
+    estado.nombre = nombre;
+    error('');
+    ocupado(true);
+
+    auth.apodoLibre(nombre)
+      .then(function (libre) {
+        if (!libre) throw new Error('Ese apodo ya está en uso. Prueba otro.');
+        return auth.altaConInvitacion(laLlaveDeLaUrl(), nombre, clave, laVersionDeLosTerminos());
+      })
+      .then(function (r) {
+        if (!r || !r.sesion) throw new Error((r && r.error) || 'No se pudo crear la cuenta.');
+        datos.actualizar({ nombre: nombre });
+        altaPendiente(false);
+        ocupado(false, '');
+        /* `cerrar()` es quien lleva a la invitación: los dos caminos que abren
+           la app desde la puerta acaban ahí y no hace falta decirlo dos veces. */
+        cerrar();
+      })
+      .catch(function (e) {
+        ocupado(false, 'Crear mi cuenta y jugar');
+        var clase = (e.cuerpo && e.cuerpo.clase) || '';
+        var dicho = (e.cuerpo && e.cuerpo.error) || e.message;
+        if (clase === 'ya_tienes_cuenta') {
+          /* No es un fallo: es que esta persona ya estaba. Se le manda al login
+             con la cinta de la invitación, que es el caso 2. */
+          estado.paso = 'entrar';
+          pintar();
+          return error('Ya tienes una cuenta con ese correo. Entra con tu contraseña y te llevamos a la partida.');
+        }
+        if (clase === 'caducada' || clase === 'aceptada' || clase === 'no_existe') {
+          olvidarLaLlave();
+          estado.invitacion = null;
+          estado.paso = 'entrar';
+          pintar();
+          return error('Esa invitación ya no está disponible.');
+        }
+        error(dicho || 'No se pudo crear la cuenta.');
       });
   }
 
@@ -871,6 +1040,14 @@ window.ATWI = window.ATWI || {};
     var p = $('#puerta');
     if (p) p.hidden = true;
     if (alTerminar) alTerminar();
+    /* CASO 2: acaba de entrar con su contraseña y venía de una invitación. La
+       app ya está montada, así que la invitación se abre encima en vez de
+       dejarlo en la portada buscando la campana. Va aquí y no en `entrar()`
+       porque los dos caminos que cierran la puerta —contraseña y alta de
+       invitado— terminan en el mismo sitio. */
+    if (estado.invitacion && window.ATWI.irALaInvitacion) {
+      setTimeout(function () { window.ATWI.irALaInvitacion(estado.invitacion); }, 60);
+    }
   }
 
   /* --- Eventos ---------------------------------------------------------------- */
@@ -892,6 +1069,7 @@ window.ATWI = window.ATWI || {};
     if (a === 'continuar') {
       if (estado.paso === 'datos') jugarSinServidor();
       else if (estado.paso === 'contrasena') guardarContrasena();
+      else if (estado.paso === 'invitado') crearDesdeInvitacion();
       else if (estado.paso === 'entrar') entrar();
     } else if (a === 'soy-nuevo') {
       abrirAlta(acc, false);
@@ -946,6 +1124,12 @@ window.ATWI = window.ATWI || {};
        quede vieja — que es exactamente lo que ya pasó con el descargo. */
     valeCorreo: valeCorreo,
 
+    /* LA LLAVE SE APAGA CUANDO LA INVITACIÓN DEJA DE ESTAR VIVA, y quien sabe
+       eso es la app: la borra al aceptarla, al rechazarla y cuando la base dice
+       que caducó. Mientras tanto se queda puesta y el enlace del correo sigue
+       sirviendo tantas veces como haga falta, que es lo que se pidió. */
+    olvidarLaInvitacion: olvidarLaLlave,
+
     /** Abre la puerta si hace falta. Llama a `hecho` cuando se puede jugar. */
     exigir: function (hecho) {
       alTerminar = hecho;
@@ -966,21 +1150,74 @@ window.ATWI = window.ATWI || {};
       var recogida = null;
       var fallo = null;
       try { recogida = auth.recogerDelEnlace(); }
-      catch (e) { fallo = e.message; }
+      catch (e) { fallo = e; }
 
+      /* ¿Y venimos de una invitación? Se pregunta ANTES de decidir qué pintar,
+         porque de la respuesta salen los tres caminos: sin cuenta al alta, con
+         cuenta al login, y con sesión derecho a la partida. Si no hay red la
+         llave se queda guardada y se vuelve a mirar en el arranque siguiente:
+         eso es justamente lo que se pidió, que una caída no la mate. */
+      var llave = laLlaveDeLaUrl();
+      if (llave && !estado.invitacion) {
+        return auth.invitacionPorLlave(llave)
+          .then(function (inv) {
+            if (inv && inv.estado === 'viva') { estado.invitacion = inv; return; }
+            /* Aceptada, caducada o inventada: la llave ya no sirve y no se
+               vuelve a preguntar por ella en cada arranque. */
+            olvidarLaLlave();
+            if (inv && inv.estado === 'caducada') estado.avisoInvitacion = 'Esa invitación caducó: las partidas esperan 24 horas.';
+            else if (inv && inv.estado === 'aceptada') estado.avisoInvitacion = 'Esa invitación ya se aceptó.';
+            else estado.avisoInvitacion = 'Esa invitación ya no existe.';
+          })
+          .catch(function () { /* sin red: la llave sigue guardada para el próximo arranque */ })
+          .then(function () { seguir(); });
+      }
+      return seguir();
+
+      function seguir() {
       if (recogida) {
+        /* El alta empieza aquí y no termina hasta que hay apodo y contraseña.
+           Si esta carga se cae en medio, la marca hace que se pueda retomar. */
+        altaPendiente(true);
         p.hidden = false;
         estado.paso = 'contrasena';
         pintar();
         /* El correo llega dentro del usuario, no del fragmento. */
-        auth.quienSoy().then(function (u) { if (u) estado.correo = u.email || ''; });
+        auth.quienSoy().then(function (u) {
+          if (u && u.email) { estado.correo = u.email; recordarCorreo(u.email); }
+        }).catch(function () { /* el correo es para el texto del globo, no para entrar */ });
         return;
       }
 
       auth.listo().then(function (s) {
         if (s) {
+          /* ⚠️ EL ALTA A MEDIAS MANDA SOBRE ENTRAR. Con sesión pero sin
+             contraseña, dejar pasar a la app es dejar la cuenta atrapada en
+             los enlaces de un solo uso para siempre. */
+          if (altaPendiente()) {
+            p.hidden = false;
+            estado.paso = 'contrasena';
+            if (!estado.correo) estado.correo = elCorreoRecordado();
+            pintar();
+            auth.quienSoy().then(function (u) {
+              if (u && u.email) { estado.correo = u.email; recordarCorreo(u.email); pintar(); }
+            }).catch(function () { /* con el recordado basta */ });
+            return;
+          }
           p.hidden = true;
           hecho();
+          /* El enlace falló Y había sesión: antes esto no se decía nunca —el
+             aviso vivía después del `return` de esta rama— así que quien
+             volviera de un enlace gastado con la sesión puesta entraba sin
+             enterarse de nada. Se dice, y con eso basta: ya está dentro. */
+          if (fallo) error(loQuePasoConElEnlace(fallo));
+          if (estado.avisoInvitacion) { error(estado.avisoInvitacion); estado.avisoInvitacion = ''; }
+          /* CASO 3: con sesión y con invitación viva, a la partida. La app se
+             acaba de montar con `hecho()`, así que la invitación se abre encima
+             de la portada en vez de tener que ir a buscarla al buzón. */
+          if (estado.invitacion && window.ATWI.irALaInvitacion) {
+            setTimeout(function () { window.ATWI.irALaInvitacion(estado.invitacion); }, 60);
+          }
           /* El perfil vive en el servidor y el aparato solo lo copia. Si la
              copia local se perdió —otro teléfono, datos borrados, incógnito—
              había que volver a registrarse para que el nombre reapareciera.
@@ -1006,14 +1243,29 @@ window.ATWI = window.ATWI || {};
           return;
         }
         p.hidden = false;
-        estado.paso = 'entrar';
+        /* CASO 1 Y CASO 2. Lo único que los separa es si ese correo ya tiene
+           cuenta, y eso lo dice la propia invitación: sin cuenta va al alta
+           directa —apodo y contraseña, sin más correos— y con cuenta al login
+           de siempre, con la cinta que dice a qué viene. */
+        estado.paso = (estado.invitacion && !estado.invitacion.hay_cuenta) ? 'invitado' : 'entrar';
+        if (!estado.correo) estado.correo = elCorreoRecordado();
         pintar();
+        if (estado.avisoInvitacion) { error(estado.avisoInvitacion); estado.avisoInvitacion = ''; }
+        /* SIN SESIÓN Y CON EL ENLACE GASTADO SE ABRE EL GLOBO, no un toast.
+           Un aviso que dice «pide otro» y deja a la persona mirando la pantalla
+           de entrar la obliga a encontrar sola el «¡Soy nuevo!»; el globo ES el
+           sitio donde se pide otro, y viene con el correo puesto. */
         if (fallo) {
-          error(/invalid or has expired/i.test(fallo)
-            ? 'El enlace caducó. Pide otro y ábrelo antes de una hora.'
-            : fallo);
+          if (fallo.gastado) {
+            var donde = $('[data-accion="soy-nuevo"]');
+            abrirAlta(donde || null, false);
+            errorAlta(loQuePasoConElEnlace(fallo));
+          } else {
+            error(loQuePasoConElEnlace(fallo));
+          }
         }
       });
+      }
     }
   };
 })();

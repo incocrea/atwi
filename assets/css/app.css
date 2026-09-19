@@ -5134,6 +5134,40 @@ body.app {
   background: var(--linea);
 }
 
+/* --- Llegar invitado: la puerta dice a qué vienes -------------------------- */
+/* La cabecera del alta de invitado y la cinta del login son la misma idea en
+   dos tamaños: quien abre el enlace del correo tiene que ver la partida a la
+   que viene ANTES de escribir nada, o la puerta parece la de siempre y la
+   invitación, perdida por el camino. Lleva el lavanda de la marca y no el color
+   del modo: esto es la puerta, y aquí todavía no se ha entrado a ningún modo. */
+.invita-cabeza {
+  text-align: center;
+  padding: var(--e-4);
+  margin-bottom: var(--e-4);
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--lavanda) 10%, #fff);
+}
+.invita-cabeza__quien {
+  margin: 0; font-weight: 800; font-size: var(--t-medio); color: var(--lavanda);
+}
+.invita-cabeza__que {
+  margin: var(--e-1) 0 0; font-size: .78rem; color: var(--tinta-suave);
+}
+.invita-cabeza__tema {
+  margin: var(--e-3) 0 0; font-weight: 700; line-height: 1.35; color: var(--tinta);
+}
+.invita-cinta {
+  margin: 0 0 var(--e-4);
+  padding: var(--e-3) var(--e-4);
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--lavanda) 12%, #fff);
+  color: var(--tinta);
+  font-size: var(--t-chico);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+}
+
 /* --- El gate legal: los términos dentro del globo -------------------------- */
 /* ⚠️ ESTE TEXTO VA A LA IZQUIERDA, Y ES LA EXCEPCION A «todo lo de dentro de un
    globo va centrado». La regla se escribió para piezas de dos frases y un

@@ -490,6 +490,9 @@
     var n = window.ATWI.nube;
     n.aceptarInvitacion(id, avatar || p.avatar, color || p.avatarBorde).then(function (fila) {
       invitaciones = invitaciones.filter(function (x) { return x.id !== id; });
+      /* Aceptada: la llave del correo ya cumplió y se apaga —en la base lo hace
+         el disparador de la 0074, aquí se quita la copia del aparato—. */
+      olvidarLaInvitacion();
       cerrarGlobo();
       cerrarModales(['m-buzon']);
       historialCaducado = true;
@@ -517,9 +520,50 @@
     });
   }
 
+  /**
+   * LLEGAR POR EL ENLACE DEL CORREO ES LLEGAR A LA PARTIDA (titular,
+   * 2026-09-19: «entrar a una partida con invitación debe ser lo más ágil
+   * posible»). Hasta hoy el correo dejaba a la persona en la portada y la
+   * invitación había que ir a buscarla a la campana; ahora el enlace trae su
+   * llave (0074) y esto abre el buzón con la invitación arriba, lista para
+   * aceptar de un toque. Vale para los tres casos —recién registrado, recién
+   * entrado y ya dentro— porque los tres acaban con la app montada.
+   *
+   * ⚠️ NO ACEPTA SOLA, y es decisión del titular: aceptar es de quien recibe.
+   * Basta con abrir un enlace para llegar aquí, y eso no puede meter a nadie en
+   * una partida con su plazo corriendo.
+   */
+  function irALaInvitacion(inv) {
+    var id = inv && inv.debate;
+    var n = window.ATWI.nube;
+    if (!id || !n || !n.hay || !n.hay()) return;
+    n.invitaciones().then(function (l) {
+      invitaciones = l || [];
+      refrescarPunto();
+      var mia = invitaciones.filter(function (x) { return x.id === id; })[0];
+      if (mia) return abrirBuzon();
+      /* La sesión es de otra cuenta, o la invitación se retiró mientras tanto.
+         Se dice a quién iba —tapado— para que se sepa qué hacer. */
+      olvidarLaInvitacion();
+      if (window.ATWI.aviso) {
+        window.ATWI.aviso(inv && inv.correo_tapado
+          ? 'Esa invitación es para ' + inv.correo_tapado + '. Sal y entra con esa cuenta.'
+          : 'Esa invitación ya no está disponible.');
+      }
+    }).catch(function () { /* sin red: la llave sigue guardada para el próximo arranque */ });
+  }
+
+  /* La llave del correo vale hasta que la invitación deja de estar viva. */
+  function olvidarLaInvitacion() {
+    if (window.ATWI.entrada && window.ATWI.entrada.olvidarLaInvitacion) {
+      window.ATWI.entrada.olvidarLaInvitacion();
+    }
+  }
+
   function rechazarInvitacion(id) {
     window.ATWI.nube.rechazarInvitacion(id).then(function () {
       invitaciones = invitaciones.filter(function (x) { return x.id !== id; });
+      olvidarLaInvitacion();
       refrescarPunto();
       pintarBuzon();
     }).catch(function (e) {
@@ -5768,6 +5812,10 @@
   /* Para quien llegue de fuera con datos nuevos: la puerta, cuando se trae el
      perfil del servidor después de arrancar. */
   window.ATWI.repintar = function () { pintar(vistaActual); };
+
+  /* La llama la puerta en los tres caminos de una invitación: recién
+     registrado, recién entrado con contraseña, y ya dentro. */
+  window.ATWI.irALaInvitacion = irALaInvitacion;
 
   /* --- EL AVISO QUE NO BLOQUEA -------------------------------------------------
      Petición del titular (2026-09-15), al salir de la sala. Ahí había un

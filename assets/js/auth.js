@@ -66,6 +66,23 @@ window.ATWI = window.ATWI || {};
     programarRefresco();
   }
 
+  /* La sesión y el fallo del enlace se van de la barra de direcciones; lo demás
+     se queda. ⚠️ No vale con `location.pathname + location.search`: eso deja
+     puesto el `?error=…` del enlace gastado, que es exactamente lo que hay que
+     borrar. Y no vale con `location.pathname` a secas: se llevaría por delante
+     `?invitacion=`, `?demo=1` y `?local=1`, que son de la app y tienen que
+     sobrevivir a la recogida. */
+  function limpiarLaBarra() {
+    try {
+      var u = new URL(location.href);
+      ['error', 'error_code', 'error_description', 'code', 'token_hash', 'type']
+        .forEach(function (k) { u.searchParams.delete(k); });
+      history.replaceState(null, '', u.pathname + (u.search || '') );
+    } catch (e) {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  }
+
   function caducada() {
     var s = sesion();
     if (!s || !s.expires_at) return false;
@@ -248,17 +265,38 @@ window.ATWI = window.ATWI || {};
      * pueda copiar del historial.
      */
     recogerDelEnlace: function () {
-      var h = (location.hash || '').replace(/^#/, '');
-      if (!h) return null;
       var d = {};
-      h.split('&').forEach(function (par) {
-        var i = par.indexOf('=');
-        if (i > 0) d[decodeURIComponent(par.slice(0, i))] = decodeURIComponent(par.slice(i + 1));
+      var h = (location.hash || '').replace(/^#/, '');
+      if (h) {
+        h.split('&').forEach(function (par) {
+          var i = par.indexOf('=');
+          if (i > 0) d[decodeURIComponent(par.slice(0, i))] = decodeURIComponent(par.slice(i + 1));
+        });
+      }
+      /* ⚠️ EL FALLO VIENE POR LA QUERY, NO POR EL FRAGMENTO, y aquí solo se
+         miraba el fragmento: un enlace gastado dejaba a la persona en la
+         pantalla de entrar SIN UNA PALABRA, con
+         `?error=access_denied&error_code=otp_expired` colgando de la barra.
+         GoTrue reparte el resultado entre los dos sitios —la sesión siempre en
+         el fragmento, el fallo según la configuración— así que se leen los dos.
+         Y se mira `error`/`error_code` además de la descripción: no todas las
+         variantes traen texto. */
+      var q = null;
+      try { q = new URLSearchParams(location.search); } catch (_) { q = null; }
+      if (q) ['error', 'error_code', 'error_description'].forEach(function (k) {
+        if (!d[k] && q.get(k)) d[k] = q.get(k);
       });
-      if (d.error_description) {
-        history.replaceState(null, '', location.pathname + location.search);
-        var e = new Error(d.error_description);
+
+      if (d.error || d.error_code || d.error_description) {
+        limpiarLaBarra();
+        var e = new Error(d.error_description || d.error_code || d.error);
         e.esDelEnlace = true;
+        e.codigo = d.error_code || d.error || '';
+        /* De un solo uso: se gastó, caducó o alguien lo abrió antes (los
+           antivirus de correo tocan los enlaces). Los tres se arreglan igual
+           —pedir otro— así que para la pantalla son el mismo caso. */
+        e.gastado = /expired|invalid|not.?found|access_denied|otp/i
+          .test(e.codigo + ' ' + e.message);
         throw e;
       }
       if (!d.access_token) return null;
@@ -271,7 +309,7 @@ window.ATWI = window.ATWI || {};
         user: null
       };
       guardarSesion(s);
-      history.replaceState(null, '', location.pathname + location.search);
+      limpiarLaBarra();
       return s;
     },
 
@@ -342,6 +380,42 @@ window.ATWI = window.ATWI || {};
     /* EL APODO ES ÚNICO (migración 0053). Se pregunta ANTES de guardar --al
        registrarse todavía no hay sesión, por eso `apodo_libre` admite anon-- y
        el índice de la base es la red si dos lo piden a la vez. */
+    /**
+     * La invitación que abre la llave del correo (0074). Va sin sesión a
+     * propósito: quien llega invitado puede no tener cuenta todavía, y ésta es
+     * la consulta que le dice a qué viene. No devuelve el correo —solo tapado—
+     * ni la llave.
+     */
+    invitacionPorLlave: function (llave) {
+      return pedir('/rest/v1/rpc/invitacion_por_llave', {
+        method: 'POST',
+        headers: cabeceras(Boolean(sesion() && sesion().access_token)),
+        body: JSON.stringify({ p_llave: llave })
+      });
+    },
+
+    /**
+     * El alta de quien llega invitado: apodo y contraseña, y dentro. La hace la
+     * función de borde porque crea la cuenta YA CONFIRMADA —la prueba de que el
+     * correo es suyo es la llave, que solo estaba en ese correo— y eso pide la
+     * clave de servicio. Devuelve la sesión hecha: no hay un segundo viaje
+     * entre crear la cuenta y ver la invitación.
+     */
+    altaConInvitacion: function (llave, apodo, clave, versionTerminos) {
+      return pedir('/functions/v1/entrar_con_invitacion', {
+        method: 'POST',
+        headers: cabeceras(false),
+        body: JSON.stringify({ llave: llave, apodo: apodo, clave: clave, terminos: versionTerminos })
+      }).then(function (r) {
+        if (r && r.sesion && r.sesion.access_token) {
+          var s = r.sesion;
+          s.expires_at = s.expires_at || (Math.floor(Date.now() / 1000) + Number(s.expires_in || 3600));
+          guardarSesion(s);
+        }
+        return r;
+      });
+    },
+
     apodoLibre: function (apodo) {
       return pedir('/rest/v1/rpc/apodo_libre', {
         method: 'POST',
