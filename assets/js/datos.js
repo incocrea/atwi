@@ -302,6 +302,13 @@ window.ATWI = window.ATWI || {};
     try { localStorage.setItem(CLAVE_TEMAS, JSON.stringify(listaTemas)); } catch (e) {}
   }
 
+  /** Un tema propio a la cuenta, sin esperar (0055). */
+  function subirPropio(t) {
+    var n = window.ATWI.nube;
+    if (!n || !n.hay || !n.hay() || !n.guardarTemaPropio) return;
+    n.guardarTemaPropio(t).catch(function () {});
+  }
+
   /** Un tema del catálogo con la reescritura de esta relación encima. */
   function conReescritura(t) {
     var r = cargarTemas().reescritos[t.id];
@@ -473,6 +480,10 @@ window.ATWI = window.ATWI || {};
       });
       if (!existente) lista.propios.push(tema);
       guardarTemas();
+      /* Y A LA CUENTA (0055): el tema es de quien lo escribio, no del telefono.
+         Se escribe sin esperar; si falla, la copia local sigue y la proxima
+         sincronizacion lo vuelve a intentar. */
+      subirPropio(tema);
       return tema;
     },
 
@@ -480,6 +491,52 @@ window.ATWI = window.ATWI || {};
       var lista = cargarTemas();
       lista.propios = lista.propios.filter(function (t) { return t.id !== id; });
       guardarTemas();
+      var n = window.ATWI.nube;
+      if (n && n.hay && n.hay() && n.borrarTemaPropio) n.borrarTemaPropio(id).catch(function () {});
+    },
+
+    /**
+     * Los temas propios viven en la cuenta desde la 0055 (antes solo en
+     * `localStorage`, o sea en el telefono). Al entrar se traen los del
+     * servidor y MANDAN; los que solo estan aqui --escritos antes de hoy, o sin
+     * red-- se suben una vez. Devuelve una promesa con cuantos cambiaron.
+     */
+    sincronizarPropios: function () {
+      var n = window.ATWI.nube;
+      if (!n || !n.hay || !n.hay() || !n.temasPropios) return Promise.resolve(0);
+      return n.temasPropios().then(function (deLaCuenta) {
+        if (!deLaCuenta) return 0;
+        var lista = cargarTemas();
+        var locales = lista.propios.slice();
+        var porId = {};
+        deLaCuenta.forEach(function (f) { porId[f.id] = f; });
+        var cambios = 0;
+        /* Lo del servidor, con la forma de siempre. */
+        var nuevos = deLaCuenta.map(function (f) {
+          var local = locales.filter(function (t) { return t.id === f.id; })[0];
+          var t = Object.assign({}, local || { categoria: MIS_TEMAS, emoji: '✍️', propio: true }, {
+            id: f.id, titulo: f.titulo, enunciado: f.enunciado,
+            publico: f.publico || 'pareja', clase: f.clase || 'tema',
+            intensidad: f.intensidad || '', propio: true, editado: f.editado
+          });
+          if (!local || local.titulo !== t.titulo || local.enunciado !== t.enunciado) cambios++;
+          return t;
+        });
+        /* Lo que solo esta aqui: si NUNCA estuvo en la cuenta se sube y se
+           queda; si ya estuvo (`enCuenta`) y ya no esta, lo borraron desde otro
+           telefono y aqui tambien se va. Sin esa marca, un telefono viejo
+           resucitaria cada tema borrado en el otro. */
+        locales.forEach(function (t) {
+          if (porId[t.id]) return;
+          if (t.enCuenta) { cambios++; return; }
+          nuevos.push(t);
+          subirPropio(t);
+        });
+        nuevos.forEach(function (t) { t.enCuenta = true; });
+        lista.propios = nuevos;
+        guardarTemas();
+        return cambios;
+      }).catch(function () { return 0; });
     },
 
     cuantosPropios: function () { return propiosDeAhora().length; },

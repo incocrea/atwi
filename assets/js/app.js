@@ -336,6 +336,48 @@
     document.addEventListener('visibilitychange', function () { if (!document.hidden) sondear(); });
   }
 
+  /* --- Enviar vidas a otro apodo ---------------------------------------- */
+  function abrirEnviarVidas(disparador) {
+    var cuerpo =
+      '<div class="correo-editor">' +
+        '<input class="campo" id="v-apodo" type="text" maxlength="' + datos.NOMBRE_MAX + '" ' +
+          'autocomplete="off" spellcheck="false" placeholder="Apodo de quien las recibe">' +
+        '<input class="campo" id="v-cuantas" type="number" inputmode="numeric" min="1" step="1" ' +
+          'placeholder="Cuántas" style="margin-top:var(--e-2)">' +
+        '<p class="chico tenue">Salen de las tuyas y le llegan al instante. Tienes ' +
+          esc(($('#dato-vidas') || {}).textContent || '') + '.</p>' +
+        '<p class="chico" id="v-error" style="color:var(--peligro)"></p>' +
+      '</div>';
+    abrirGlobo(disparador, { titulo: 'Enviar vidas' },
+      { tinte: 'lavanda', signo: 'corazon', signoTam: 64, etiqueta: 'Enviar vidas', cuerpo: cuerpo,
+        acciones: '<button class="boton boton--bloque" data-accion="enviar-vidas-ya">Enviar</button>' });
+    setTimeout(function () { var n = $('#v-apodo'); if (n) n.focus(); }, 60);
+  }
+
+  function enviarVidasYa() {
+    var apodo = ($('#v-apodo').value || '').trim();
+    var n = Number($('#v-cuantas').value);
+    var err = $('#v-error');
+    if (!apodo) { err.textContent = 'Escribe el apodo.'; return; }
+    if (!(n >= 1) || n !== Math.floor(n)) { err.textContent = 'Escribe cuántas, un número entero.'; return; }
+    var b = $('[data-accion="enviar-vidas-ya"]');
+    if (b) b.disabled = true;
+    window.ATWI.nube.enviarVidas(apodo, n).then(function (quedan) {
+      cerrarGlobo();
+      pintarVidas(quedan);
+      var pv = $('#perfil-vidas');
+      if (pv) pv.textContent = String(quedan);
+      if (window.ATWI.aviso) window.ATWI.aviso('Le mandaste ' + n + (n === 1 ? ' vida' : ' vidas') + ' a ' + apodo + '. Te quedan ' + quedan + '.');
+    }).catch(function (e) {
+      if (b) b.disabled = false;
+      var m = String(e && e.message || '');
+      err.textContent = m === 'sin_vidas' ? 'No tienes tantas.'
+        : /apodo/.test(m) ? 'No hay nadie con ese apodo.'
+        : /a ti/.test(m) ? 'Ese apodo es el tuyo.'
+        : 'No se pudo enviar: ' + (m || 'inténtalo otra vez');
+    });
+  }
+
   /* --- La propuesta que espera: se mira y, si hace falta, se retira --------- */
   function abrirPropuesta(d) {
     var tarjeta = $('#v-historial [data-partida="' + d.id + '"]');
@@ -2843,6 +2885,21 @@
         contador(p.acuerdos, 'Acuerdos', 'acuerdo') +
         contador(p.semanasActivas, 'Semanas', 'premio') +
       '</div>' +
+
+      /* LAS VIDAS (titular, 2026-09-18): son de cada cuenta, se gastan al abrir
+         una partida --salvo QuienGane-- y SE PUEDEN MANDAR a otro apodo: «si
+         tengo 10 te mando 5». El numero es el mismo de la cabecera. */
+      (dentro
+        ? '<div class="cuenta" style="margin-top:var(--e-4)">' +
+            '<span class="cuenta__quien">' +
+              '<span class="cuenta__eti">Vidas</span>' +
+              '<span class="cuenta__correo"><b id="perfil-vidas">' + esc(($('#dato-vidas') || {}).textContent || '') + '</b> ' +
+                'para abrir partidas. QuiénGane no gasta.</span>' +
+            '</span>' +
+            '<button class="boton boton--suave cuenta__salir" data-accion="enviar-vidas">' +
+              icono('corazon', 22) + 'Enviar</button>' +
+          '</div>'
+        : '') +
 
       /* Aquí había una tarjeta explicando que no hay marcador entre jugadores.
          La REGLA sigue en pie y no se negocia —contadores separados, jamás lado
@@ -5357,6 +5414,8 @@
     else if (a === 'ficha-invitado') { abrirFicha('invitado', acc); }
     else if (a === 'invitar-correo') { abrirCorreo(acc); }
     else if (a === 'guardar-correo') { guardarCorreo(); }
+    else if (a === 'enviar-vidas') { abrirEnviarVidas(acc); }
+    else if (a === 'enviar-vidas-ya') { enviarVidasYa(); }
     /* Mi personaje desde «Antes de empezar»: la misma ficha del perfil, y al
        guardar queda para el juego entero, no solo para esta partida. */
     else if (a === 'ficha-mia') { abrirFicha('yo', acc); }
@@ -5557,6 +5616,14 @@
     /* Y la app pregunta por novedades (0055): invitaciones, turnos del otro,
        resultados y vidas. Cada medio minuto en primer plano y al volver. */
     arrancarSondeo();
+    /* Los temas propios bajan de la cuenta (0055): los de este teléfono que
+       aún no estén allá se suben una vez. Si algo cambió y se está mirando el
+       catálogo, se repinta. */
+    if (datos.sincronizarPropios) {
+      datos.sincronizarPropios().then(function (cambios) {
+        if (cambios && vistaActual === 'catalogo') pintarCatalogo();
+      });
+    }
   }
   /* La sala la llama cuando una partida en línea se cerró debajo de ella. */
   window.ATWI.refrescarHistorial = function () {
