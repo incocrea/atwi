@@ -4275,8 +4275,10 @@ body.app {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   overflow: hidden;
 }
-/* Y «Cargar más» es una tarjeta igual: entra en el reparto y en el snap. */
-.ruleta .partida-mas { height: 153px; margin: 0; }
+/* Y «Cargar más» ocupa una casilla igual —para que el reparto y el snap
+   cuadren— con el botón centrado dentro y de su tamaño de siempre. */
+.ruleta .partida-mas { height: 153px; display: grid; place-items: center; }
+.ruleta .partida-mas .boton { margin-bottom: var(--canto); }
 
 /* EL TINTE POR FAMILIA, y MUY suave (decision del titular, 2026-09-15). Los
    cinco estados hacen falta para saber que pasa al tocar; tres son los que se

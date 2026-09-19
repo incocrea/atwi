@@ -2146,10 +2146,18 @@
          —el deslizamiento acaba en él— en vez de quedarse colgando al final de
          un contenedor que no scrollea. */
       (hayMasHistorial && lista.length
-        ? '<button class="boton boton--bloque boton--suave boton--punteado partida-mas" ' +
-            'data-accion="mas-historial"' + (trayendoMas ? ' disabled' : '') + '>' +
-            (trayendoMas ? 'Trayendo…' : 'Cargar más') +
-          '</button>'
+        /* ⚠️ EL HUECO ES DEL TAMAÑO DE UNA TARJETA, EL BOTÓN NO (titular,
+           2026-09-18: «el botón ocupa el área pero es de tamaño normal»).
+           Poniéndole el alto al propio botón salía uno de 153 px, que es medio
+           teléfono de botón. Lo que necesita medir una tarjeta es la CASILLA
+           —para que el reparto y el snap cuadren—, y dentro el botón va
+           centrado con su alto de siempre. */
+        ? '<div class="partida-mas">' +
+            '<button class="boton boton--bloque boton--suave boton--punteado" ' +
+              'data-accion="mas-historial"' + (trayendoMas ? ' disabled' : '') + '>' +
+              (trayendoMas ? 'Trayendo…' : 'Cargar más') +
+            '</button>' +
+          '</div>'
         : '') +
       (lista.length ? '</div>' : '');
 
