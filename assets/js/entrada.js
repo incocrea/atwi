@@ -41,7 +41,10 @@ window.ATWI = window.ATWI || {};
   var estado = { paso: 'entrar', nombre: '', correo: '', captcha: '',
                  /* Lo último que dijo Turnstile cuando no dio token. Vacío
                     mientras todo va bien. */
-                 captchaFallo: '', enviando: false,
+                 captchaFallo: '',
+                 /* Y si además está roto SIN ARREGLO —ya se reintentó, o el
+                    navegador no puede—: lo único que se enseña en pantalla. */
+                 captchaMuerto: '', enviando: false,
                  /* La invitación que trajo la llave del correo, si está viva, y
                     lo que hay que decir cuando no lo está. */
                  invitacion: null, avisoInvitacion: '' };
@@ -121,6 +124,10 @@ window.ATWI = window.ATWI || {};
       return;
     }
     hueco.innerHTML = '';
+    /* Se monta de nuevo: lo que dijera el intento anterior deja de valer hasta
+       que este conteste. Si vuelve a fallar, lo dirá él. */
+    estado.captchaMuerto = '';
+    quitarFalloCaptcha();
     window.turnstile.render(hueco, {
       sitekey: cfg.turnstileSiteKey,
       language: 'es',
@@ -146,7 +153,19 @@ window.ATWI = window.ATWI || {};
          vacío y Supabase contesta `captcha_failed`: es el «falló la primera y a
          la segunda entré» que reportó el titular el 2026-09-15. */
       'refresh-expired': 'auto',
-      callback: function (t) { estado.captcha = t; estado.captchaFallo = ''; },
+      /* ⚠️ Y AL LLEGAR EL TOKEN SE BORRA LO QUE SE DIJO, que es lo que faltaba
+         (lo vio el titular, 2026-09-19: «Antirrobots: 600010» EN ROJO debajo de
+         un widget que decía «¡Operación exitosa!»). El rótulo lo pintaba el
+         `error-callback` y no lo quitaba nadie: el reto falló una vez, la app
+         reintentó sola, a la segunda salió bien —con su token y todo— y el
+         aviso se quedó puesto. La app estaba lista para entrar y en pantalla
+         ponía que estaba rota. */
+      callback: function (t) {
+        estado.captcha = t;
+        estado.captchaFallo = '';
+        estado.captchaMuerto = '';
+        quitarFalloCaptcha();
+      },
       /* Y SI AUN ASI CADUCA, SE PIDE OTRO SIN QUE NADIE HAGA NADA. Antes esto
          solo vaciaba el token y se quedaba esperando a que la persona fallara
          para renovarlo. */
@@ -160,25 +179,40 @@ window.ATWI = window.ATWI || {};
            300xxx / 600xxx  el reto fallo o la interaccion fallo
            400xxx  problema del navegador --extension, reloj en hora falsa--
          Sin el numero, todo esto se parece a «no funciona». */
+      /* ⚠️ UN FALLO QUE SE RECUPERA SOLO NO SE CUENTA (titular, 2026-09-19). El
+         código se guarda y va a la consola SIEMPRE —es todo el diagnóstico—
+         pero en pantalla no sale nada mientras quede un reintento: la mayoría
+         de los 600xxx son el reto que se atragantó una vez y entra a la
+         segunda, así que decirlo es asustar por algo que ya se arregló solo.
+         Si el reintento TAMBIÉN falla, entonces sí: ahí la persona no va a
+         poder entrar y tiene derecho a saberlo. */
       'error-callback': function (codigo) {
         estado.captcha = '';
         estado.captchaFallo = String(codigo || 'sin codigo');
         if (window.console) console.warn('[ATWI] Turnstile error-callback: ' + estado.captchaFallo);
-        pintarFalloCaptcha();
-        reintentarCaptcha();
+        if (yaReintente) { estado.captchaMuerto = 'error'; pintarFalloCaptcha(); }
+        else reintentarCaptcha();
       },
       /* Y LOS OTROS DOS CAMINOS, que no son el mismo. `timeout` es que el reto
          caduco sin resolverse; `unsupported` es que este navegador no puede
          hacerlo --pasa en navegadores dentro de otras apps--. Los dos acababan
          en el mismo silencio. */
+      /* El reto caducó sin resolverse: se pide otro y no se dice nada, porque
+         no hay nada que la persona tenga que hacer. */
       'timeout-callback': function () {
         estado.captcha = '';
-        estado.captchaFallo = 'caduco (timeout)';
-        pintarFalloCaptcha();
+        estado.captchaFallo = 'timeout';
+        if (yaReintente) { estado.captchaMuerto = 'error'; pintarFalloCaptcha(); }
+        else reintentarCaptcha();
       },
+      /* Éste SÍ se dice a la primera, y es el único que no se arregla
+         reintentando: el navegador no puede hacer el reto —pasa en los que van
+         dentro de otra app, los de Instagram o Facebook— y lo único que sirve
+         es abrirlo en un navegador de verdad. */
       'unsupported-callback': function () {
         estado.captcha = '';
-        estado.captchaFallo = 'navegador no admitido (unsupported)';
+        estado.captchaFallo = 'unsupported';
+        estado.captchaMuerto = 'unsupported';
         pintarFalloCaptcha();
       }
     });
@@ -217,12 +251,30 @@ window.ATWI = window.ATWI || {};
     setTimeout(function () { montarCaptcha(); }, 800);
   }
 
-  /* SE ENSEÑA EN PANTALLA, no solo en consola. Quien no puede entrar esta en un
-     telefono, donde no hay consola que abrir; y quien puede arreglarlo necesita
-     el numero. Va debajo del hueco del captcha, en chico. */
+  function quitarFalloCaptcha() {
+    var n = document.getElementById('captcha-fallo');
+    if (n && n.parentNode) n.parentNode.removeChild(n);
+  }
+
+  /* LO QUE SE DICE ES QUÉ HACER, NO EL NÚMERO (titular, 2026-09-19: «¿estos
+     errores necesitamos mostrarlos o pueden ser de manejo interno para no
+     asustar al user?»). Aquí ponía «Antirrobots: 600010», que a quien juega no
+     le dice nada y parece una avería grave; y salía también cuando el reto ya
+     se había arreglado solo.
+
+     La regla que queda es la del proyecto de siempre —un aviso que dice algo
+     falso se aprende a ignorar— partida en dos:
+       · lo que se recupera solo NO SE DICE. Va a la consola y ya.
+       · lo que deja a la persona sin poder entrar SE DICE EN PALABRAS, con lo
+         que puede hacer, y con el código entre paréntesis al final: sin él, el
+         día que alguien escriba «no puedo entrar» no hay por dónde empezar.
+
+     Y SIGUE PEGADO AL WIDGET y no en un toast: el diagnóstico de la cosa que
+     falló tiene que estar donde está la cosa que falló. */
   function pintarFalloCaptcha() {
     var hueco = $('#captcha');
-    if (!hueco || !estado.captchaFallo) return;
+    if (!hueco) return;
+    if (!estado.captchaMuerto) return quitarFalloCaptcha();
     var n = document.getElementById('captcha-fallo');
     if (!n) {
       n = document.createElement('p');
@@ -231,7 +283,10 @@ window.ATWI = window.ATWI || {};
       n.style.cssText = 'color:var(--peligro);margin-top:var(--e-2);text-align:center';
       hueco.parentNode.insertBefore(n, hueco.nextSibling);
     }
-    n.textContent = 'Antirrobots: ' + estado.captchaFallo;
+    var codigo = estado.captchaFallo ? ' (' + estado.captchaFallo + ')' : '';
+    n.textContent = estado.captchaMuerto === 'unsupported'
+      ? 'Este navegador no puede hacer la verificación. Abre atwi.app en Chrome, Safari o Firefox.' + codigo
+      : 'No se pudo comprobar que no eres un robot. Recarga la página e inténtalo otra vez.' + codigo;
   }
 
   function refrescarCaptcha() {
@@ -730,8 +785,15 @@ window.ATWI = window.ATWI || {};
     if (!cfg.turnstileSiteKey) return;
     setTimeout(function () {
       if (estado.captcha) return;
+      /* ⚠️ YA NO SE BUSCA UN `iframe`, Y POR ESO ESTO DISPARABA SIEMPRE
+         (2026-09-19). Turnstile dejó de meter un iframe directo en el hueco:
+         lo que crea al renderizar es un `<div>` y un
+         `<input name="cf-turnstile-response">`, así que `querySelector('iframe')`
+         no encontraba nada NUNCA y el widget se daba por no dibujado estando a
+         la vista y pidiendo el toque. En localhost eso salía en cada carga.
+         El `input` sí es señal de que el widget se montó: lo pone `render()`. */
       var hueco = $('#captcha');
-      if (hueco && hueco.querySelector('iframe')) return;   // se dibujó: va lento, no roto
+      if (hueco && hueco.querySelector('iframe, input[name="cf-turnstile-response"]')) return;
       /* Y SI TURNSTILE NO SE QUEJÓ, NO SE DECLARA ROTO. Sin `error-callback`,
          sin `timeout` y sin `unsupported`, lo único que sabemos es que todavía
          no hay token --puede estar esperando un toque, o la red del móvil--.
@@ -758,6 +820,10 @@ window.ATWI = window.ATWI || {};
           '. Con el captcha obligatorio en Supabase Auth, entrar va a fallar ' +
           'con captcha_failed.');
       }
+      /* Aquí no hay reintento que valga: a los cuatro segundos no hay ni token
+         ni iframe, así que el widget no llegó a montarse. Eso es de los que se
+         dicen. */
+      estado.captchaMuerto = 'sin-token';
       pintarFalloCaptcha();
       error(enLocalhost()
         ? 'Aviso de local: el antirrobots no dio token para «localhost», así que ' +
