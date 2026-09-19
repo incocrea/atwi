@@ -391,6 +391,10 @@ window.ATWI = window.ATWI || {};
         P.cierreNegociacion = lqd.cierre || null;
       }
     }
+    /* EN LÍNEA, ABRIR LA PARTIDA CERRADA CUMPLE SU AVISO (0060): «resultado» y
+       «la negociación se cerró» se van del buzón al abrirla, no al leerlos. En
+       Negociación no hay fila en `resultados` que sellar y aun así hace falta. */
+    if (P.enLinea && window.ATWI.nube && window.ATWI.nube.marcarVisto) window.ATWI.nube.marcarVisto(d.id);
     if (op.estrenar) {
       /* SE SELLA AL ABRIR Y NO AL CERRAR. Quien abre la revelación ya la vio; y
          esperar al final dejaría sin sellar justo a quien cierra la app a mitad
@@ -2927,6 +2931,7 @@ window.ATWI = window.ATWI || {};
       P.cerrada = true;
       P.acuerdo = e.acta.tipo === 'acuerdo' ? { texto: e.acta.texto } : null;
       if (window.ATWI.olvidarActas) window.ATWI.olvidarActas();
+      if (window.ATWI.nube.marcarVisto) window.ATWI.nube.marcarVisto(P.debate);
       return revelar();
     }
     if (e.fase === 'sin_votar') { P.voto = null; return votar(); }
@@ -3218,6 +3223,10 @@ window.ATWI = window.ATWI || {};
     pararJuez();
     cerrarReproductor();
     m.hidden = true;
+    /* En línea, ver el resultado desde la sala también cumple el aviso (0060). */
+    if (P.enLinea && P.debate && !P.ensayo && window.ATWI.nube && window.ATWI.nube.marcarVisto) {
+      window.ATWI.nube.marcarVisto(P.debate);
+    }
     var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto) : null;
     /* Por abandono (0056): la pantalla del juez lo dice antes del desglose. */
     if (real && P.abandono) real.abandono = P.abandono;

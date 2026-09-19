@@ -1785,7 +1785,6 @@
        cabecera, en vivo y sin cambiar de pantalla. */
 
     datos.catalogo().then(function (cat) {
-      var buscando = busqueda.trim() !== '' || filtro !== 'todos';
 
       /* LA ÚNICA COLECCIÓN QUE SIGUE ABRIÉNDOSE APARTE SON LOS TEMAS PROPIOS, y
          no es una categoría que se salvó: es de quien juega, se escribe desde
@@ -1892,12 +1891,13 @@
            fijos de letra chica en la primera pantalla son dos renglones que se
            leen una vez y se saltan siempre. */
         barraBusqueda() +
-        /* La cuenta solo sale cuando se acotó algo. Fija era una descripción;
-           así es la respuesta a lo que acabas de pedir. */
-        (buscando
-          ? '<p class="chico suave" style="margin:var(--e-3) 0 0">' +
-              temas.length + ' de ' + cat.total + ' temas</p>'
-          : '') +
+        /* ⚠️ Y AQUÍ IBA «3 de 455 temas», que salía al buscar o al filtrar
+           (titular, 2026-09-18: «esta label no debe aparecer nunca, quítala»).
+           Se defendía como «la respuesta a lo que acabas de pedir», y la
+           respuesta es la LISTA: si no hay nada, el estado vacío lo dice con
+           todas las letras, y si hay algo, contarlo no cambia lo que se va a
+           hacer con ello. Encima empujaba la ruleta hacia abajo justo cuando
+           más sitio hace falta, que es con el buscador desplegado. */
 
         /* El catálogo es una plantilla: lo que no está, se escribe. Va ARRIBA
            de la lista, porque escribir el tema propio es lo que hace que la
