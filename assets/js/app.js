@@ -4748,9 +4748,11 @@
       }
       historialCaducado = true;
       sondear();
+      /* Centrado en vertical y con la campana en el eje (titular, 2026-09-18):
+         `.enviada` es una columna flex que reparte el alto del cuerpo. */
       $('#m-invitar .modal__cuerpo').innerHTML =
-        '<div class="centrado" style="padding:var(--e-6) 0">' +
-          '<div style="margin-bottom:var(--e-3)">' + icono('buzon', 76) + '</div>' +
+        '<div class="enviada">' +
+          '<div class="enviada__signo">' + icono('buzon', 76) + '</div>' +
           '<h2 style="margin-bottom:var(--e-2)">Invitación enviada</h2>' +
           '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
             /* El correo y el título, separados. Pegados —«a mona@correo.com Mi
@@ -4760,14 +4762,13 @@
             esc(m.nombre || propuesta.modo) + '</strong>, ' + turnos +
             ' turno' + (turnos === 1 ? '' : 's') + ' cada uno.' +
           '</p>' +
-        '</div>' +
         '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
           '<p class="chico suave">' +
             'La verá en su buzón al entrar a ATWI con ese correo. Tiene 24 horas para ' +
             'aceptar; si no, la partida se anula y tu vida vuelve. Te avisamos aquí ' +
             'cuando conteste, y la partida espera en tu Historial.' +
           '</p>' +
-        '</div>';
+        '</div></div>';
       cerrarModales(['m-preparar', 'm-tema']);
       abrirModal('m-invitar');
     });

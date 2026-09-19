@@ -5406,3 +5406,16 @@ body[data-demo] { background: var(--crema); }
      y no por detrás. */
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 70px);
 }
+
+/* «INVITACIÓN ENVIADA» (modo en línea, 0055): todo centrado, también en vertical
+   (titular, 2026-09-18). El cuerpo del modal es una caja de alto fijo, así que
+   una columna flex con `justify-content: center` lo reparte sola; la campana va
+   en el eje como `flex` para que su hueco transparente no la descentre. */
+.enviada {
+  min-height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; text-align: center;
+  gap: var(--e-3); padding: var(--e-4) 0;
+}
+.enviada__signo { display: flex; justify-content: center; }
+.enviada__signo .ico { display: block; }
+.enviada .tarjeta { width: 100%; margin-top: var(--e-3); text-align: left; }
