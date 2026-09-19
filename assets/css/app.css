@@ -4270,7 +4270,11 @@ body.app {
    cortada: dos renglones de enunciado y lo que sobre se recorta. Medido antes:
    las tarjetas salían a 153 o a 170 según el tema, y esos 17 px son la tercera
    línea. El enunciado entero sigue estando en la partida. */
-.ruleta .partida-fila { height: 153px; }
+/* ⚠️ Y SIN SU MARGEN: el hueco lo pone el `gap` de la ruleta, y el
+   `margin-bottom` que la tarjeta trae de cuando la lista era una pila se SUMABA
+   —36 del gap más 12 del margen— así que el paso real eran 201 px y el reparto
+   contaba 189: la tercera tarjeta se salía 24 px del hueco calculado. */
+.ruleta .partida-fila { height: 153px; margin: 0; }
 .ruleta .partida__tema {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   overflow: hidden;

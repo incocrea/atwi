@@ -1217,6 +1217,15 @@
     if (!uno) return;
     var alto = uno.offsetHeight;
     if (!alto) return;
+    /* ⚠️ EL PASO SE MIDE ENTRE DOS TARJETAS, NO SE CALCULA. Sumar el alto y el
+       `gap` da por hecho que no hay nada más entre ellas, y una tarjeta con
+       `margin-bottom` propio —la del historial lo traía de cuando la lista era
+       una pila— mete 12 px que el reparto no ve: el paso real eran 201 y la
+       cuenta decía 189, así que la última visible se salía 24 px del hueco
+       calculado. Con dos hermanas en pantalla, la distancia entre sus bordes de
+       arriba es el paso, lleve lo que lleve en medio. */
+    var dos = uno.nextElementSibling;
+    var pasoReal = dos ? dos.offsetTop - uno.offsetTop : 0;
 
     /* Se mide SIN el margen de la vez anterior, o cada repintado lo acumularía:
        el margen es el resultado de esta cuenta, no un dato de entrada. */
@@ -1228,8 +1237,15 @@
        entera. */
     var libre = caja.bottom - arriba - AIRE_PIE;
 
+    /* Lo que la tarjeta trae pegado y no se puede quitar desde aquí. Se
+       descuenta el hueco QUE HAY PUESTO en este momento, no el mínimo: la
+       primera medida se toma con el `gap` del CSS —12— y restando 8 salía un
+       «margen propio» de 4 px que no existe, y con él la caja se iba 8 px por
+       encima de lo que mide su contenido. */
+    var gapAhora = parseFloat(getComputedStyle(r).rowGap) || 0;
+    var extra = Math.max(0, pasoReal - alto - gapAhora);
     /* Cuántas caben DE VERDAD, con el hueco más apretado que se admite. */
-    var n = Math.floor((libre + HUECO_MIN) / (alto + HUECO_MIN));
+    var n = Math.floor((libre + HUECO_MIN) / (alto + extra + HUECO_MIN));
     /* Con menos temas que sitio, la caja mide lo que hay: una ruleta con aire
        debajo se lee como una lista que se quedó corta. */
     n = Math.min(n, MAX_VISIBLES, r.children.length);
@@ -1242,15 +1258,15 @@
        El snap no se entera de nada de esto: va por tarjeta, no por una
        distancia escrita. */
     var hueco = n > 1
-      ? Math.max(HUECO_MIN, Math.min(HUECO_MAX, (libre - n * alto) / (n - 1)))
+      ? Math.max(HUECO_MIN, Math.min(HUECO_MAX, (libre - n * alto) / (n - 1) - extra))
       : HUECO_MIN;
     hueco = Math.round(hueco);
-    var altura = n * alto + (n - 1) * hueco;
+    var altura = n * alto + (n - 1) * (hueco + extra);
     r.style.rowGap = hueco + 'px';
     r.style.height = altura + 'px';
     r.style.marginTop = Math.max(0, Math.round((libre - altura) / 2)) + 'px';
-    darLaVuelta(r, alto + hueco, n);
-    girarRuleta(r, alto + hueco);
+    darLaVuelta(r, alto + hueco + extra, n);
+    girarRuleta(r, alto + hueco + extra);
   }
 
   /* ======================================================================
@@ -2710,6 +2726,11 @@
         'quedaron. Es un recordatorio, no un contrato.');
       return;
     }
+    /* LAS ACTAS VAN EN LA MISMA RULETA QUE LAS PARTIDAS (titular, 2026-09-18:
+       «aplícalo también en las cards de acuerdos»). Usan la misma tarjeta desde
+       el 2026-09-15, así que heredan el reparto, el snap y las tarjetas enteras
+       sin nada propio; lo único que no llevan es el botón de cargar más, porque
+       las actas vienen de una sola consulta. */
     caja.innerHTML = cabecera +
       /* SE DICE LO QUE ES, Y ES LA REGLA 1 DEL PRODUCTO. `docs/02` §9.4.7
          prohíbe prometer que un tema queda resuelto: el acta es un recordatorio
@@ -2718,6 +2739,13 @@
       '<p class="chico tenue" style="margin-bottom:var(--e-4)">Un recordatorio de lo ' +
         'que quedaron, no un contrato: nadie está obligado a cumplirlo, y si deja de ' +
         'servirles lo vuelven a hablar.</p>' +
+      /* ⚠️ LA RULETA EMPIEZA EN LA PRIMERA TARJETA, y el renglón de arriba se
+         queda fuera: `ajustarRuleta` mide el PRIMER HIJO para saber el paso, y
+         con el párrafo dentro medía 39 px —el alto del texto— y repartía la
+         pantalla en casillas de 75. El resultado: una sola acta a la vista con
+         un hueco enorme encima. Lo que va dentro son las piezas que se
+         deslizan; lo que las presenta es cabecera. */
+      '<div class="ruleta">' +
       /* MISMA TARJETA QUE EL HISTORIAL (titular, 2026-09-15): `.tarjeta` con
          `.partida` dentro, la cabecera de estado y fecha, y el enunciado de
          cuerpo. Lo que no lleva es la papelera, porque un acta no se borra por
@@ -2751,7 +2779,8 @@
               esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'negociacion') + '.png" ' +
               'alt="" aria-hidden="true">' +
           '</div>';
-      }).join('');
+      }).join('') + '</div>';
+    ajustarRuleta();
   }
 
   /* ¿Esta partida tiene acta? Lo lee de la lista en memoria, que se trae JUNTO
