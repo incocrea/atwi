@@ -1209,7 +1209,9 @@
   var HUECO_MIN = 8, HUECO_MAX = 36, AIRE_PIE = 8;
 
   function ajustarRuleta() {
-    var r = $('#v-catalogo .ruleta');
+    /* LA DE LA PANTALLA QUE SE ESTÁ VIENDO: el catálogo y el historial tienen
+       la suya, y las dos se miden igual. */
+    var r = $('.vista[data-activa] .ruleta');
     if (!r) return;
     var uno = r.firstElementChild;
     if (!uno) return;
@@ -1272,6 +1274,7 @@
   var VUELTAS_MIN = 3, TARJETAS_MIN = 60;
 
   function darLaVuelta(r, paso, n) {
+    if (!pintaVuelta(r)) return;
     if (r.dataset.vuelta) return;            /* ya montada en este pintado */
     var cuantas = r.children.length;
     if (cuantas < n + 2) return;
@@ -1762,7 +1765,7 @@
           '</div>' +
 
           (temas.length
-            ? '<div class="ruleta">' + temas.map(tarjetaTema).join('') + '</div>'
+            ? '<div class="ruleta ruleta--vuelta">' + temas.map(tarjetaTema).join('') + '</div>'
             /* Y EL DIBUJO DEL HUECO ES EL MISMO «MÁS», y se toca: aquí solo hay
                una cosa que hacer, así que el sitio donde se mira es el sitio
                donde hay que poder tocar. */
@@ -1862,7 +1865,7 @@
         '</button>' +
 
         (temas.length
-          ? '<div class="ruleta">' + temas.map(tarjetaTema).join('') + '</div>'
+          ? '<div class="ruleta ruleta--vuelta">' + temas.map(tarjetaTema).join('') + '</div>'
           : estadoVacio(icono('lupa', 76), 'Nada por aquí', 'Prueba con otra palabra o cambia el filtro.'));
       ajustarRuleta();
       devolverFoco();
@@ -2009,6 +2012,17 @@
             'eligiendo «Con invitación».')
         : estadoVacio(icono('historial', 76), 'Ninguna partida en este teléfono',
             'Aquí van las que juegan los dos sentados en el mismo móvil.'))) +
+      /* LA MISMA RULETA QUE EL CATÁLOGO (titular, 2026-09-18), y por lo mismo:
+         el título y los tres chips son los MANDOS de la lista y se quedan
+         quietos; lo que se desliza es la lista, con sus tarjetas siempre
+         enteras y el hueco repartido.
+         ⚠️ PERO AQUÍ NO DA LA VUELTA: *«no será ruleta infinita, sino
+         desplazamiento normal hasta terminar lista o encontrar el botón de
+         cargar más»*. Y es la decisión correcta: el catálogo es un fichero de
+         455 fichas donde nadie busca «la última», y esto es un registro con
+         principio y final —el final significa algo, y dar la vuelta lo
+         borraría—. La marca es `ruleta--vuelta`, que solo lleva el catálogo. */
+      (lista.length ? '<div class="ruleta">' : '') +
       lista.map(function (d) {
         var t = d.turnos_grabados || [];
         /* EL ESTADO VA ARRIBA DEL TODO y no en el pie: es el motivo por el que
@@ -2127,12 +2141,19 @@
          que se lee es «cargar más» encima de «todavía no hay partidas».
          La cuenta que manda es la de lo que se VE: si la pestaña no tiene nada,
          no hay nada que alargar. */
+      /* Y «CARGAR MÁS» ES LA ÚLTIMA TARJETA de la lista, no algo debajo de
+         ella: así entra en el mismo reparto y en el mismo snap que las demás
+         —el deslizamiento acaba en él— en vez de quedarse colgando al final de
+         un contenedor que no scrollea. */
       (hayMasHistorial && lista.length
-        ? '<button class="boton boton--bloque boton--suave boton--punteado" ' +
+        ? '<button class="boton boton--bloque boton--suave boton--punteado partida-mas" ' +
             'data-accion="mas-historial"' + (trayendoMas ? ' disabled' : '') + '>' +
             (trayendoMas ? 'Trayendo…' : 'Cargar más') +
           '</button>'
-        : '');
+        : '') +
+      (lista.length ? '</div>' : '');
+
+    ajustarRuleta();
   }
 
   /* LA TANDA SIGUIENTE. Se pide saltándose las que ya están, y se añaden al
@@ -4322,6 +4343,10 @@
       }, espera);
     })();
   }
+
+  /* La vuelta es cosa del catálogo: el historial tiene final y darle la vuelta
+     lo borraría. */
+  function pintaVuelta(r) { return r.classList.contains('ruleta--vuelta'); }
 
   function pararRuleta() {
     if (rodando) { clearTimeout(rodando); rodando = 0; }

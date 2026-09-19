@@ -1308,12 +1308,14 @@ body.app {
    Es la trampa de siempre en este archivo —la especificidad manda sobre el
    orden— y la regla que deja: **una regla que toca el `display` de una vista
    tiene que llevar `[data-activa]`**, o está decidiendo qué pantalla se ve. */
+#v-historial[data-activa]:has(.ruleta),
 #v-catalogo[data-activa]:has(.ruleta) {
   display: flex; flex-direction: column;
   overflow: hidden;
 }
 /* `min-height: 0` o el hijo con scroll no puede encoger: el mínimo de una caja
    flexible es el de su contenido, y aquí el contenido son 305 tarjetas. */
+#v-historial[data-activa]:has(.ruleta) > *,
 #v-catalogo[data-activa]:has(.ruleta) > * { flex: none; }
 .ruleta {
   display: grid; gap: var(--e-3);
@@ -4225,7 +4227,11 @@ body.app {
   position: relative;
   margin-bottom: var(--e-3);
   overflow: hidden;            /* recorta la peana por el radio de la tarjeta */
-  background: var(--velo-carta);
+  /* MÁS SÓLIDAS QUE EL VELO DE LAS CARTAS (titular, 2026-09-18): 0,4 contra el
+     0,2 de `--velo-carta`. Aquí dentro hay texto que se lee entero —el
+     enunciado, los dos nombres, el estado— y no un rótulo dibujado, así que el
+     fondo tiene que dejar pasar menos. */
+  background: rgba(255, 255, 255, .4);
   /* ⚠️ LA SOMBRA LLEGABA A LA TARJETA DE ABAJO Y LAS UNÍA (titular, 2026-09-18:
      «reduce la sombra inferior unos 5 px, que está alcanzando a quedar bajo la
      siguiente card»). Eran 10 px de caída, 5 de desenfoque y **5 de
@@ -4260,6 +4266,17 @@ body.app {
 /* Y el enunciado se aparta de ella, o el renglon de abajo le pasaria por
    debajo. Solo el enunciado: las dos filas de cabecera terminan mucho antes. */
 .partida__tema { padding-right: 42px; }
+/* TODAS MIDEN LO MISMO, que es lo que la ruleta necesita para que ninguna quede
+   cortada: dos renglones de enunciado y lo que sobre se recorta. Medido antes:
+   las tarjetas salían a 153 o a 170 según el tema, y esos 17 px son la tercera
+   línea. El enunciado entero sigue estando en la partida. */
+.ruleta .partida-fila { height: 153px; }
+.ruleta .partida__tema {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+/* Y «Cargar más» es una tarjeta igual: entra en el reparto y en el snap. */
+.ruleta .partida-mas { height: 153px; margin: 0; }
 
 /* EL TINTE POR FAMILIA, y MUY suave (decision del titular, 2026-09-15). Los
    cinco estados hacen falta para saber que pasa al tocar; tres son los que se
