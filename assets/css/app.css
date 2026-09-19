@@ -99,7 +99,18 @@ body.app {
   transition: background var(--dur-media) var(--suave);
 }
 .cabecera > div:first-child { min-width: 0; }
-.cabecera__titulo { font-family: var(--display); font-size: var(--t-h2); font-weight: 800; }
+/* ES UN BOTÓN, ASÍ QUE HAY QUE DESVESTIRLO: un `button` trae borde, relleno,
+   fondo y su propia tipografía de la hoja del navegador, y aquí lo único que
+   se ve es la imagen de dentro. `display: block` porque el de serie es
+   `inline-block` y dejaba la línea base del texto por debajo. */
+.cabecera__titulo {
+  display: block; border: 0; padding: 0; background: none;
+  font-family: var(--display); font-size: var(--t-h2); font-weight: 800;
+  color: inherit; cursor: pointer;
+  transition: transform var(--dur-corta) var(--suave);
+}
+.cabecera__titulo:active { transform: scale(.94); }
+@media (prefers-reduced-motion: reduce) { .cabecera__titulo:active { transform: none; } }
 /* EL ESLOGAN. No describe el producto —«juego de debate» ya lo dice el
    logotipo— sino lo que promete: que se puede arreglar algo sin dejar de
    pasarlo bien. «Jugando» va aparte, en lavanda, porque es el giro de la
