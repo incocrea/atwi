@@ -2308,7 +2308,9 @@
     if (d.en_linea && d.estado === 'propuesto') return 'propuesta';
     if (d.en_linea && d.abandono && d.modo === 'negociacion') return 'abandonada';
     if (!hechos) return 'sin-empezar';
-    if (hechos < total) return 'en-curso';
+    /* Una Controversia abandonada llega con menos intervenciones de las
+       pactadas y AUN ASI tiene veredicto (o lo espera): no esta en curso. */
+    if (hechos < total && !(d.en_linea && d.abandono)) return 'en-curso';
     /* UNA NEGOCIACION CON LAS INTERVENCIONES Y SIN ACTA NO ESTA TERMINADA
        (2026-09-18): le falta cerrarse --elegir una propuesta y firmarla, marcar
        «Ninguna», o que el mediador la haya parado--, y eso deja fila en
@@ -2537,6 +2539,10 @@
       return actas.length ? (COMO_ACABO_PACTO[actas[0].tipo] || '') : '';
     }
     var r = d.resultado;
+    if (r && d.en_linea && d.abandono && r.ganador_lado) {
+      var q = d[r.ganador_lado + '_nombre'];
+      return q ? 'Ganó ' + q + ' por abandono' : 'Ganó por abandono';
+    }
     if (!r || !r.tipo_resultado) return '';
     if (r.tipo_resultado === 'empate_tecnico') return 'Empate';
     if (r.tipo_resultado === 'sin_resultado_blando') return 'Sin veredicto';

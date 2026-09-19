@@ -382,10 +382,10 @@ window.ATWI = window.ATWI || {};
         ? ((acta.lo_que_dijo && acta.lo_que_dijo.parada === 'dura') ? 'dura' : 'blanda') : null;
       var lqd = acta && acta.lo_que_dijo;
       if (lqd && lqd.parada !== 'dura') {
-        var yo = indiceDeLaCuenta();
+        /* P1 = quien propone = `jugadores[0]`, sea yo o no (0055). */
         P.loQueDijoNegociacion = [
-          { nombre: P.jugadores[yo].nombre, texto: lqd.p1 || '' },
-          { nombre: P.jugadores[1 - yo].nombre, texto: lqd.p2 || '' }
+          { nombre: P.jugadores[0].nombre, texto: lqd.p1 || '' },
+          { nombre: P.jugadores[1].nombre, texto: lqd.p2 || '' }
         ].filter(function (q) { return q.texto; });
         P.cierreNegociacion = lqd.cierre || null;
       }
@@ -549,6 +549,9 @@ window.ATWI = window.ATWI || {};
       enLinea: true,
       miLado: miLado,
       plazo: d.plazo || null,
+      /* Quien no contesto en 24 h (0056): con esto la ronda esta cerrada
+         aunque falten intervenciones, y lo que toca es el veredicto. */
+      abandono: d.abandono || null,
       debate: d.id
     };
     separarFichas();
@@ -578,7 +581,7 @@ window.ATWI = window.ATWI || {};
   /** En línea, después de la revelación o de un refresco: grabar, esperar o el resultado. */
   function loQueToca() {
     var total = P.turnos * 2;
-    if (P.intervenciones.length >= total) {
+    if (P.abandono || P.intervenciones.length >= total) {
       if (P.cerrando && P.juicio) return;   // ya se pidió al mandar el último
       P.cerrando = true;
       if (P.modo === 'negociacion') { P.juicio = pedirPropuestas(); return deliberar(); }
@@ -632,15 +635,18 @@ window.ATWI = window.ATWI || {};
     n.partida(id).then(function (d) {
       if (!P || !P.enLinea || P.debate !== id || P.estado !== 'espera' || !d) return;
       var t = turnosDe(d);
-      if (t.length <= P.intervenciones.length && !d.cerrado) return;
+      if (t.length <= P.intervenciones.length && !d.cerrado && !d.abandono) return;
       var mesa = mesaDelDebate(d, t);
       P.intervenciones = mesa.intervenciones;
       P.plazo = d.plazo || null;
-      if (d.cerrado && d.abandono) {
-        /* Se cerró por abandono mientras esperaba: la tarjeta del historial lo
-           dice; aquí se sale sin ceremonia. */
+      if (d.abandono) {
+        /* Se cerró por abandono mientras esperaba. En Controversia hay
+           veredicto (victoria técnica) y se va a esperarlo; en Negociación no
+           hay nada que revelar: se sale y la tarjeta lo dice. */
+        P.abandono = d.abandono;
+        if (P.modo === 'debate') return loQueToca();
         cerrar();
-        if (window.ATWI.aviso) window.ATWI.aviso('La partida se cerró: la otra parte no contestó a tiempo.');
+        if (window.ATWI.aviso) window.ATWI.aviso('La negociación quedó abandonada: la otra parte no contestó a tiempo.');
         if (window.ATWI.refrescarHistorial) window.ATWI.refrescarHistorial();
         return;
       }
@@ -2528,10 +2534,11 @@ window.ATWI = window.ATWI || {};
          párrafo de cada uno habría salido con el nombre del otro. Es el mismo
          fallo que `mesaDelDebate()` tuvo con el veredicto, por el otro lado. */
       if (d.lo_que_dijo) {
-        var yo = indiceDeLaCuenta();
+        /* `jugadores[0]` ES quien propone, no «yo»: en línea puedo ser el
+           invitado (0055) y ahí `indiceDeLaCuenta()` da 1. */
         P.loQueDijoNegociacion = [
-          { nombre: P.jugadores[yo].nombre, texto: d.lo_que_dijo.p1 || '' },
-          { nombre: P.jugadores[1 - yo].nombre, texto: d.lo_que_dijo.p2 || '' }
+          { nombre: P.jugadores[0].nombre, texto: d.lo_que_dijo.p1 || '' },
+          { nombre: P.jugadores[1].nombre, texto: d.lo_que_dijo.p2 || '' }
         ].filter(function (q) { return q.texto; });
         /* El cierre viaja dentro de `lo_que_dijo` (mediador v2.1, S12). */
         P.cierreNegociacion = d.lo_que_dijo.cierre || null;
@@ -2970,8 +2977,11 @@ window.ATWI = window.ATWI || {};
      lados vienen como `propone`/`invitado` y aquí son personas con nombre: la
      cuenta es siempre `propone`, la otra ficha es el invitado. */
   function delArbitro(res) {
-    var yo = indiceDeLaCuenta();
-    var quien = { propone: P.jugadores[yo], invitado: P.jugadores[1 - yo] };
+    /* POR LADO, NO POR «YO»: `jugadores[0]` es siempre quien propuso. Aquí se
+       leía con `indiceDeLaCuenta()`, que daba 0 mientras la única cuenta era la
+       de quien propone; en línea (0055) el invitado también abre su veredicto
+       y con ese índice habría visto los nombres al revés. */
+    var quien = { propone: P.jugadores[0], invitado: P.jugadores[1] };
     var persona = function (lado) { return quien[lado] || { nombre: '?' }; };
     var tipo = res.tipo_resultado;
     var d = res.desglose;

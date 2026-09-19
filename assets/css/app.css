@@ -267,8 +267,17 @@ body.app {
    justo debajo del logotipo y se ve la costura. Nada scrollea por debajo de
    ella --es su propia fila de la rejilla-- asi que dejarla transparente no tapa
    nada. */
+/* ⚠️ Y HAY QUE ACORDARSE DE AÑADIR LA PANTALLA NUEVA (lo vio el titular,
+   2026-09-18: «el top quedó con un fondo diferente»). Esta lista se escribió
+   con las dos pantallas que tenían fondo, y el día que el historial estrenó el
+   suyo la cabecera se quedó con su color encima: una franja celeste sobre el
+   lila del dibujo, cortando justo debajo del logotipo. Es el mismo fallo
+   latente que este archivo tiene anotado con los modos y con los iconos —una
+   lista escrita a mano se queda coja a la primera que entra—, y aquí la red es
+   mirar esta regla cada vez que una vista estrena `--fondo`. */
 .marco:has(#v-jugar[data-activa]) > .cabecera,
-.marco:has(#v-catalogo[data-activa]) > .cabecera { background: transparent; }
+.marco:has(#v-catalogo[data-activa]) > .cabecera,
+.marco:has(#v-historial[data-activa]) > .cabecera { background: transparent; }
 
 /* LA SALA TIENE EL SUYO, uno por modo. Va en `#m-partida` y no en su cuerpo por
    lo mismo que el del tema: el pie trae color propio y cortaria el dibujo en
