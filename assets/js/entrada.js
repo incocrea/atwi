@@ -427,7 +427,6 @@ window.ATWI = window.ATWI || {};
                 'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
                 'Una sola palabra.') +
         '</div>' + AVISO_IA;
-      enfocar('#c-nombre', !estado.nombre);
       boton.textContent = 'Jugar';
 
     } else if (p === 'contrasena') {
@@ -443,7 +442,9 @@ window.ATWI = window.ATWI || {};
                 'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
                 'Que puedas recordar. No hace falta que sea rara.') +
         '</div>' + BLOQUE_TERMINOS;
-      enfocar('#c-clave', true);
+      /* Tampoco aquí, y es el mismo caso con un agravante: esta pantalla se
+         abre SOLA al volver del enlace del correo, y el foco caía en el SEGUNDO
+         campo —la contraseña— con el apodo todavía vacío encima. */
       pintarEstadoTerminos();
       boton.textContent = 'Guardar y jugar';
 
@@ -493,7 +494,13 @@ window.ATWI = window.ATWI || {};
          aceptó. */
       montarCaptcha();
       avisarSiFaltaElCaptcha();
-      enfocar('#c-correo2', !estado.correo);
+      /* ⚠️ SIN AUTOFOCO (titular, 2026-09-19: «evita el autofocus en el campo
+         email al entrar al login, esto abre el teclado de forma automática y es
+         molesto; que el user sea quien decida dónde va a escribir»). En un
+         teléfono el foco no es una sugerencia: **levanta el teclado**, que se
+         come media pantalla y tapa justo lo que se acaba de rediseñar para que
+         se viera. Y encima elige por la persona: quien viene con el correo
+         recordado quiere ir a la contraseña. */
       boton.textContent = 'Entrar a jugar';
       /* LA RAYA Y EL «¡SOY NUEVO!» VAN EN EL PIE, debajo del botón: son la
          segunda puerta y el mockup los pone juntos. En el cuerpo se irían con
@@ -505,10 +512,15 @@ window.ATWI = window.ATWI || {};
       if (pie && !alta) {
         var raya = document.createElement('p');
         raya.className = 'o-bien';
-        raya.textContent = 'o';
+        raya.setAttribute('aria-hidden', 'true');
         var b = document.createElement('button');
         b.type = 'button';
-        b.className = 'boton boton--bloque boton--suave boton--punteado';
+        /* ⚠️ `boton--grande` COMO EL DE ARRIBA (titular, 2026-09-19: «los botones
+           deben tener el mismo tamaño, el de soy nuevo está más pequeño»). Es la
+           regla de los pares apilados del proyecto: son dos caminos, no una
+           acción con su alternativa menor, y uno más bajo que el otro dice lo
+           contrario de lo que son. Lo que los separa es el color. */
+        b.className = 'boton boton--bloque boton--grande boton--suave';
         b.dataset.accion = 'soy-nuevo';
         b.textContent = '¡Soy nuevo!';
         pie.appendChild(raya);
@@ -521,11 +533,6 @@ window.ATWI = window.ATWI || {};
       var sobra2 = $('#puerta [data-accion="soy-nuevo"]');
       if (sobra2) sobra2.remove();
     }
-  }
-
-  function enfocar(sel, si) {
-    if (!si) return;
-    setTimeout(function () { var e = $(sel); if (e) e.focus(); }, 60);
   }
 
   function error(texto) {
@@ -895,10 +902,15 @@ window.ATWI = window.ATWI || {};
       var c = $('#c-clave2');
       if (!c) return;
       var oculta = c.type === 'password';
+      /* ⚠️ EL FOCO SOLO VUELVE SI YA ESTABA. Cambiar `type` lo pierde, así que
+         hay que devolverlo a quien estaba escribiendo; pero devolvérselo a
+         quien NO lo tenía es abrirle el teclado por tocar un ojo, que es lo
+         mismo que el autofoco por otra puerta. */
+      var escribiendo = document.activeElement === c;
       c.type = oculta ? 'text' : 'password';
       acc.innerHTML = iconoSVG(oculta ? 'ojo-no' : 'ojo', 24);
       acc.setAttribute('aria-label', oculta ? 'Ocultar la contraseña' : 'Ver la contraseña');
-      c.focus();
+      if (escribiendo) c.focus();
     }
   });
 

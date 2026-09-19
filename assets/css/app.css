@@ -5125,13 +5125,12 @@ body.app {
 
 /* LA RAYA CON SU «O». Separa dos caminos que no son lo mismo —entrar y darse de
    alta— sin que el segundo parezca un botón apagado del primero. */
+/* LA RAYA SE QUEDA SIN SU «O» (titular, 2026-09-19). Con los dos botones del
+   mismo tamaño, la letra en medio era una pieza más para decir lo que la
+   separación ya dice. Queda la línea, que es lo que marca que debajo empieza
+   otro camino. */
 .o-bien {
-  display: flex; align-items: center; gap: var(--e-3);
-  margin: var(--e-4) 0 var(--e-3);
-  color: var(--tinta-suave); font-size: var(--t-chico); font-weight: 700;
-}
-.o-bien::before, .o-bien::after {
-  content: ''; flex: 1 1 auto; height: 1px;
+  height: 1px; margin: var(--e-4) 0 var(--e-3);
   background: var(--linea);
 }
 
