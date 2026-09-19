@@ -241,7 +241,8 @@ window.ATWI = window.ATWI || {};
       'debate:debates!inner(id,enunciado,modo,creado)';
     return fetch(cfg.supabaseUrl + '/rest/v1/acuerdos' +
         '?select=' + encodeURIComponent(campos) +
-        '&debate.or=(propone.eq.' + yo.id + ',aceptado_por.eq.' + yo.id + ')' +
+        '&debate.or=(and(propone.eq.' + yo.id + ',oculta_propone.is.null),' +
+                    'and(aceptado_por.eq.' + yo.id + ',oculta_invitado.is.null))' +
         '&order=creado.desc&limit=' + (cuantos || 50), {
       headers: {
         'apikey': cfg.supabaseAnon,
@@ -751,7 +752,10 @@ window.ATWI = window.ATWI || {};
        evita que el día de la remota el invitado no encuentre sus partidas. */
     var yo = auth.sesion().user;
     if (!yo || !yo.id) return Promise.resolve([]);
-    var mias = 'or=(propone.eq.' + yo.id + ',aceptado_por.eq.' + yo.id + ')';
+    /* Y SIN LO QUE YO QUITE (0061): en linea cada quien borra su historial, y
+       «borrar» es ocultar de mi lado. La partida sigue existiendo para el otro. */
+    var mias = 'or=(and(propone.eq.' + yo.id + ',oculta_propone.is.null),' +
+               'and(aceptado_por.eq.' + yo.id + ',oculta_invitado.is.null))';
 
     /* CUÁNTO CUESTA ESTA LISTA, en el registro del navegador. Se puso al
        preguntar el titular por qué tarda en refrescar (2026-09-18): sin un

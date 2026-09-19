@@ -692,7 +692,11 @@ body.app {
      deja pasar el dibujo de la pantalla y a la vez levanta la carta un punto
      sobre él. Sin nada, el texto se leía directamente sobre el fondo. */
   background: var(--velo-carta);
-  box-shadow: 0 10px 5px 5px rgba(46, 42, 63, .10);
+  /* LA CAIDA BAJA DE 10 A 3 (titular, 2026-09-19): con 10 la mancha se
+     despegaba del canto de abajo y las tres cartas se leian flotando una
+     encima de otra. Con 3 el halo queda cenido por los cuatro lados, que es
+     lo que la regla de al lado dice que hace el `spread`. */
+  box-shadow: 0 3px 5px 5px rgba(46, 42, 63, .10);
   cursor: pointer; transition: transform var(--dur-corta) var(--suave);
 }
 .carta-modo:active { transform: scale(.985); }

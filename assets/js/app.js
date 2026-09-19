@@ -2305,6 +2305,16 @@
     if (actaDe(id)) {
       texto += ' Y se va el acuerdo que firmaron, el de «Lo que acordaron».';
     }
+    /* EN LINEA SE BORRA DE MI HISTORIAL, NO DEL DEL OTRO (titular, 2026-09-19;
+       0061). La partida es de dos cuentas: la mia se va y la suya sigue; solo
+       cuando los dos la quitan desaparece de verdad. Se dice, porque «se van
+       las intervenciones» aqui seria mentira a medias. */
+    if (esEnLinea(d) && d.aceptado_por) {
+      var otroNombre = miLadoEn(d) === 'invitado' ? d.propone_nombre : d.invitado_nombre;
+      texto = 'Se va de tu historial' + (actaDe(id) ? ', con su acuerdo' : '') + '. ' +
+        (otroNombre ? esc(otroNombre) : 'La otra parte') + ' la conserva en el suyo; ' +
+        'cuando los dos la quiten, desaparece del todo.';
+    }
 
     /* LOS DOS DEL MISMO TAMAÑO Y EL BLANCO PUNTEADO, como todos los pares del
        juego. El globo se cierra tocando fuera, así que «dejarla donde está»
