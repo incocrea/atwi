@@ -5388,6 +5388,18 @@
     var partida = e.target.closest('[data-partida]');
     if (partida && !partida.disabled) { abrirPartida(partida.dataset.partida); return; }
 
+    /* UN AVISO QUE HABLA DE UNA PARTIDA LLEVA A ESA PARTIDA (titular, 2026-09-18:
+       «la notificación de que es mi turno debe ser link directo a la partida en
+       curso»). El atributo existía desde que se escribió el buzón y no lo
+       atendía nadie. Se cierra el buzón antes: la sala se abre encima y al
+       volver de ella el buzón ya no tiene por qué seguir ahí. */
+    var avisoDe = e.target.closest('[data-ir-debate]');
+    if (avisoDe && avisoDe.dataset.irDebate) {
+      cerrarModales(['m-buzon']);
+      abrirPartida(avisoDe.dataset.irDebate);
+      return;
+    }
+
     var tema = e.target.closest('[data-tema]');
     if (tema) { elegirTema(tema.dataset.tema); return; }
 
