@@ -2128,9 +2128,12 @@ window.ATWI = window.ATWI || {};
       cayó con «la partida no terminó» (faltaba justo este turno). */
   function volverAlCierre() {
     P.estado = 'recibo';
-    P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
+    /* El juicio de antes cayó con «la partida no terminó» --faltaba justo este
+       turno-- así que se pide otra vez. Pero NO desde aquí: el turno se está
+       subiendo ahora mismo y volveríamos a preguntar demasiado pronto, que es
+       el fallo que esto arregla. Lo arranca `arrancarElJuicio()` al guardarse. */
+    P.juicio = null;
     pintarSala({ dice: '', pie: botonDeResultado() });
-    esperarElResultado();
   }
 
   /* EL BOTON NO SE ENCIENDE HASTA QUE EL RESULTADO ESTA (titular, 2026-09-18:
@@ -2145,7 +2148,8 @@ window.ATWI = window.ATWI || {};
                  : principal('p-seguir', 'Deliberando\u2026', '', true);
   }
   function esperarElResultado() {
-    var cuando = P.juicio || Promise.resolve(null);
+    var cuando = P.juicio;
+    if (!cuando) return;   // todavía no se pidió: ver `arrancarElJuicio`
     cuando.then(function () {
       if (!P || P.estado !== 'recibo') return;
       if (noContesto()) {
@@ -2291,6 +2295,7 @@ window.ATWI = window.ATWI || {};
           v.conVoz = true;
           v.preparando = false;
           marcarRueda(orden);
+          arrancarElJuicio();
         });
       } else if (r.abogado === false) {
         /* SIN ABOGADO NO HAY VOZ QUE ESPERAR, y eso NO es un fallo. Se queda la
@@ -2307,12 +2312,35 @@ window.ATWI = window.ATWI || {};
           aviso: 'se transcribió pero no llegó la voz del personaje' });
       }
       marcarRueda(orden);
+      arrancarElJuicio();
     }, function (e) {
       /* El rechazo de la promesa también: si no se atrapa, el reloj se queda
          girando igual que con la excepción síncrona. */
       noSubio(v, orden, { clase: 'red', reintentar: true,
         aviso: 'falló la subida: ' + (e && e.message || e) });
     });
+  }
+
+  /* EL JUICIO SE PIDE CUANDO LA RONDA ESTÁ COMPLETA DE VERDAD, y este es el
+     único sitio que lo sabe: el turno acaba de guardarse en el servidor.
+     Tres guardas, y las tres hacen falta:
+       · `P.cerrando` --era el último turno--, que lo puso `acusarRecibo`;
+       · `!P.juicio` --no se pide dos veces--, porque por aquí se pasa también
+         al regrabar y al volver de un fallo;
+       · la sala sigue en el recibo: si alguien ya se fue de esta pantalla, lo
+         que toque lo decide `seguir()` o el historial, no esto.
+     Y repinta el pie, porque el botón dice «Deliberando…» hasta que llega. */
+  function arrancarElJuicio() {
+    if (!P || !P.cerrando || P.juicio) return;
+    /* Las dos pantallas donde se puede estar esperando: el recibo --con el
+       botón en «Deliberando…»-- y la de deliberar, si ya se tocó. En cualquier
+       otra (el historial, la revelación) lo que toque lo decide quien esté
+       allí, no esto. */
+    if (P.estado !== 'recibo' && P.estado !== 'deliberando') return;
+    P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
+    if (P.estado === 'deliberando') return deliberar();
+    pie().innerHTML = botonDeResultado();
+    esperarElResultado();
   }
 
   /* EL SERVIDOR NO ACEPTÓ EL TURNO, Y DICE DE QUÉ CLASE FUE (2026-09-18). Tres
@@ -2482,19 +2510,22 @@ window.ATWI = window.ATWI || {};
     var f = P.cerrando ? fraseDeCierre() : fraseEntreTurnos();
 
     if (P.cerrando) {
-      /* EL JUEZ EMPIEZA A LEER AHORA, no cuando la persona toque «Ver el
-         resultado». Tarda un minuto largo, y ese minuto se solapa con la frase
-         de cierre, con oír la última intervención, con lo que sea: lo que se
-         espera después es solo lo que falte. La promesa se guarda en P y la
-         recoge `seguir()`. */
-      /* Y CADA MODO LLAMA AL SUYO. Esto era siempre `pedirVeredicto()`, que en
-         Negociación devuelve null a propósito --no hay árbitro ahí-- así que
-         `propuestasListas` no se ponía nunca y la partida acababa SIEMPRE en
-         «No llegó la respuesta», con un botón de reintentar que tampoco podía
-         funcionar. Era el agujero que dejaba el modo entero sin cerrar. */
-      P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
+      /* EL JUEZ EMPIEZA A LEER EN CUANTO EL ÚLTIMO TURNO ESTÁ GUARDADO, no
+         aquí (titular, 2026-09-19: «carga al juez diciendo que va a deliberar
+         pero inmediatamente dice que no llegó respuesta»).
+         ⚠️ POR QUÉ ESTABA MAL: `acusarRecibo` corre ANTES que `subirTurno` --se
+         llaman en ese orden, y subir tarda lo que tardan Deepgram, el abogado y
+         Azure-- así que pedir el juicio aquí era pedirlo con el último turno
+         todavía sin fila. El servidor contestaba lo correcto, «la partida no
+         terminó: 3 de 4 intervenciones» (visto en `sucesos` el 2026-09-19 a las
+         17:07), el cliente lo leía como un fallo de la llamada y pintaba «No
+         llegó la respuesta» **un segundo después de mandar el turno**, con el
+         botón de volver a pedirlo. Un fallo real y un «todavía no» no son lo
+         mismo, y aquí se veían igual.
+         Ahora esto solo PINTA la espera --el juez pensando y el botón apagado--
+         y quien arranca el juicio es el camino de subida, en su `.then`, que es
+         el primer instante en que la ronda está completa de verdad. */
       pintarSala({ dice: '', pie: botonDeResultado() });
-      esperarElResultado();
       juezDice(f.texto, f.archivo);
       return;
     }
@@ -2737,7 +2768,14 @@ window.ATWI = window.ATWI || {};
     rotarPosturas();
     if (fallado) return;
 
-    var cuando = P.juicio || Promise.resolve(null);
+    /* ⚠️ SIN JUICIO PEDIDO NO HAY NADA QUE CONCLUIR (2026-09-19). Esto era
+       `P.juicio || Promise.resolve(null)`, o sea que si nadie había pedido el
+       veredicto todavía --porque el último turno se está subiendo-- la promesa
+       resolvía en el acto, `noContesto()` decía que sí y la pantalla anunciaba
+       «No llegó la respuesta» sin que nadie hubiera preguntado nada. Se queda
+       el juez pensando; quien pida el juicio repinta (`arrancarElJuicio`). */
+    var cuando = P.juicio;
+    if (!cuando) return;
     cuando.then(function () {
       if (P.estado !== 'deliberando') return;
       /* SI NO HUBO RESPUESTA, NO SE REVELA NADA: se queda aquí y se ofrece

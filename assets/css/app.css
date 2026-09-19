@@ -5624,7 +5624,10 @@ body[data-demo] { background: var(--crema); }
   background: var(--superficie); border-radius: var(--r-2);
   padding: var(--e-2) var(--e-3); box-shadow: var(--sombra-1);
 }
-.bloqueados__apodo { font-weight: 800; margin-right: auto; }
+.bloqueados__apodo { font-weight: 800; margin-right: auto; display: grid; }
+/* El apodo con el que se bloqueo, cuando ya no es el mismo: la unica forma de
+   reconocer a quien se renombro para volver a molestar. */
+.bloqueados__antes { font-weight: 400; font-size: .78rem; color: var(--tinta-tenue); }
 
 /* Los motivos del reporte: chips de los de siempre, y el puesto en solido, como
    los del historial. Van centrados porque todo lo de dentro de un globo lo va. */

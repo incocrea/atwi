@@ -3202,8 +3202,17 @@
         return;
       }
       c.innerHTML = '<ul class="bloqueados">' + lista.map(function (b) {
+        /* ⚠️ SI SE CAMBIÓ EL APODO, SE DICE CON CUÁL LO BLOQUEASTE (titular,
+           2026-09-19). El bloqueo es de la CUENTA --se guarda el id, no el
+           nombre-- así que renombrarse no lo levanta; pero con solo el nombre
+           nuevo en la lista, quien bloqueó a «Pepe» ve un día a «Vecino» y no
+           sabe de dónde salió. La base manda el apodo de entonces solo cuando
+           es distinto del de hoy. */
         return '<li class="bloqueados__uno">' +
-            '<span class="bloqueados__apodo">' + esc(b.apodo) + '</span>' +
+            '<span class="bloqueados__apodo">' + esc(b.apodo) +
+              (b.antes ? '<span class="bloqueados__antes">Lo bloqueaste como ' +
+                          esc(b.antes) + '</span>' : '') +
+            '</span>' +
             '<button class="enlace" data-accion="desbloquear" data-apodo="' + esc(b.apodo) + '">' +
               'Desbloquear</button>' +
           '</li>';
