@@ -284,22 +284,44 @@ window.ATWI = window.ATWI || {};
     caja.dataset.listo = terminosPuestos ? '1' : '';
     var est = $('#c-terminos-estado');
     var bot = caja.querySelector('[data-accion="ver-terminos"]');
+    /* Sin aceptar se dice que se puede volver: quien cerró el globo sin aceptar
+       necesita saber que no perdió nada y por dónde volver a abrirlo. */
     if (est) est.textContent = terminosPuestos
       ? 'Aceptados. Ya puedes jugar.'
       : 'Léelos y acéptalos para poder jugar.';
     if (bot) bot.textContent = terminosPuestos ? 'Volver a leerlos' : 'Leer y aceptar';
   }
 
-  /** Abre el globo del gate. `alAceptar` corre cuando se acepta de verdad. */
-  function abrirTerminos(disparador, alAceptar) {
+  /* ⚠️ EL MISMO GATE EN DOS SITIOS, Y NO SE COMPORTA IGUAL (titular, 2026-09-19:
+     *«si le digo ahora no, me cancela el registro y me manda al login; NO quiero
+     eso: si cierro el modal permanecemos esperando y permitimos revisarlos de
+     nuevo, no sacamos al user de la pantalla de registro»*).
+
+     EN EL REGISTRO no hace falta encerrar a nadie: la cuenta todavía no está
+     hecha --falta la contraseña-- y quien cierre el globo se queda donde estaba,
+     con la tarjeta diciendo que faltan y el botón para volver a leerlos. El gate
+     sigue siendo un gate porque **«Guardar y jugar» lo vuelve a abrir**: sin
+     aceptar no se crea la cuenta. Sacarlo a la puerta era cobrarle el precio más
+     caro posible --perder la sesión del enlace del correo-- por cerrar un modal.
+
+     DENTRO DE LA APP es otra cosa: ahí ya hay cuenta y se puede jugar, así que
+     un globo que se va solo dejaría jugar sin aceptar, que es exactamente lo que
+     el gate existe para impedir. Ahí sigue `fijo` y «Ahora no» cierra la sesión.
+
+     @param enElRegistro  true en la puerta (paso «contrasena»), false en la app. */
+  var gateEnElRegistro = false;
+
+  function abrirTerminos(disparador, alAceptar, enElRegistro) {
     if (!disparador || !window.ATWI.globo) return;
+    gateEnElRegistro = !!enElRegistro;
     window.ATWI.globo.abrir(disparador, { titulo: 'Términos y condiciones' }, {
       tinte: 'lavanda',
       etiqueta: 'Términos y condiciones',
-      /* ⚠️ FIJO: no se cierra tocando fuera, ni con Escape, ni con el atrás. Un
-         gate que se va solo no es un gate. La salida existe y es explícita: el
-         botón de abajo. */
-      fijo: true,
+      /* Dentro de la app no se cierra tocando fuera, ni con Escape, ni con el
+         atrás: un gate que se va solo no es un gate, y la salida es el botón.
+         En el registro sí se cierra por donde sea: no hay nada detrás que
+         proteger, porque sin aceptar no se pasa de esa pantalla. */
+      fijo: !enElRegistro,
       /* `globo__cede` es lo que hace que esto quepa SIEMPRE: el globo mide el
          hueco visible y le da al cuerpo el alto que sobra, con scroll. */
       cuerpo: '<div class="globo__cede legal-globo" id="t-scroll">' +
@@ -309,7 +331,10 @@ window.ATWI = window.ATWI || {};
         '<button class="boton boton--bloque boton--suave boton--punteado" data-puerta="ahora-no">' +
           'Ahora no</button>'
     });
-    alAceptarTerminos = alAceptar || null;
+    /* LO QUE SE ESTABA HACIENDO NO SE PIERDE AL CERRAR Y VOLVER A ABRIR: quien
+       pulsó «Guardar y jugar», cerró el globo y después lo reabre desde la
+       tarjeta, al aceptar sigue guardando sin tener que pulsar otra vez. */
+    alAceptarTerminos = alAceptar || (enElRegistro ? alAceptarTerminos : null);
     vigilarLectura();
   }
 
@@ -333,12 +358,22 @@ window.ATWI = window.ATWI || {};
   }
 
   /* SIN ACEPTAR NO SE JUEGA, PERO HAY QUE PODER IRSE. Un gate sin salida deja a
-     la persona encerrada en una pantalla, y eso no lo arregla ningún término:
-     se cierra la sesión y se vuelve a la puerta, que es donde estaba antes de
-     entrar. Lo que NO hace es dejar pasar. */
+     la persona encerrada en una pantalla, y eso no lo arregla ningún término.
+     Lo que cambia es A DÓNDE se va, y son dos respuestas distintas: */
   function rechazarTerminos() {
     if (window.ATWI.globo) window.ATWI.globo.cerrarFijo();
     terminosPuestos = false;
+
+    /* EN EL REGISTRO NO SE VA A NINGÚN SITIO: se queda donde estaba, con la
+       tarjeta esperando. No se cierra la sesión --la del enlace del correo, que
+       cuesta otro correo recuperar-- ni se borra lo que llevara escrito. */
+    if (gateEnElRegistro) {
+      pintarEstadoTerminos();
+      return;
+    }
+
+    /* Dentro de la app sí: ahí hay cuenta y se podría jugar, así que la única
+       manera de no aceptar es salir. */
     alAceptarTerminos = null;
     var p = $('#puerta');
     auth.salir().catch(function () {}).then(function () {
@@ -761,7 +796,7 @@ window.ATWI = window.ATWI || {};
          cuando se intenta jugar por primera vez»). El gate se abre solo y se
          explica solo: decir además «falta aceptar los términos» encima del
          globo que los enseña es contar dos veces lo que ya se está viendo. */
-      abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), guardarContrasena);
+      abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), guardarContrasena, true);
       return;
     }
     error('');
@@ -854,7 +889,8 @@ window.ATWI = window.ATWI || {};
     } else if (a === 'soy-nuevo') {
       abrirAlta(acc, false);
     } else if (a === 'ver-terminos') {
-      abrirTerminos(acc, null);
+      /* La tarjeta solo existe en el paso de la contraseña: siempre es registro. */
+      abrirTerminos(acc, null, true);
     } else if (a === 'ver-clave') {
       var c = $('#c-clave2');
       if (!c) return;
