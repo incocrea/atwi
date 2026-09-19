@@ -644,7 +644,7 @@ window.ATWI = window.ATWI || {};
            cada persona que no podía entrar se fue a revisar su wifi. Cuando el
            aviso no sabe de quién es la culpa, no la reparte. */
         : 'No pudimos cargar la verificación antirrobots, así que no podemos ' +
-          'dejarte entrar todavía. Probá a recargar la página. Si sigue igual, ' +
+          'dejarte entrar todavía. Prueba a recargar la página. Si sigue igual, ' +
           'puede ser un bloqueador tuyo o un problema nuestro: no es algo que ' +
           'puedas arreglar desde aquí.');
       /* DOCE SEGUNDOS Y NO CUATRO. El plazo viejo medía una red de escritorio:

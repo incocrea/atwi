@@ -3295,8 +3295,28 @@ window.ATWI = window.ATWI || {};
     cerrarReproductor();
     window.ATWI.grabadora.soltar('se revela el resultado');
     m.hidden = true;
-    /* En línea, ver el resultado desde la sala también cumple el aviso (0060). */
-    if (P.enLinea && P.debate && !P.ensayo && window.ATWI.nube && window.ATWI.nube.marcarVisto) {
+    /* VER LA REVELACIÓN ES HABERLA VISTO, JUEGUE DONDE JUEGUE (titular,
+       2026-09-19: «jugué una partida local en la cual vi el resultado en
+       directo… al ir al historial tenía campanita y al dar clic me mostró
+       automáticamente el resultado en vez de abrirla para reproducción»).
+       Aquí decía `P.enLinea &&`, y se escribió mirando los AVISOS —lo que la
+       0060 quiere es que abrir la partida cumpla el aviso del buzón, que solo
+       existe en línea—: el sello de `resultados.visto` se coló dentro de esa
+       condición sin que nadie lo pensara. El resultado era que **la única
+       manera de sellar una partida local era abrirla desde el historial**, o
+       sea que quien la veía en vivo —el caso normal— la dejaba marcada como
+       sin estrenar, con su campana y con la revelación entera esperándole.
+       Un estreno que se le hace a quien ya lo vio no es una ceremonia: es un
+       botón que no lleva donde dice.
+       Sigue siendo AL ABRIR y no al cerrar, por lo de siempre: esperar al
+       final dejaría sin sellar justo a quien cierra la app a mitad del redoble.
+       Y es idempotente (`where visto is null`), así que volver a revelar desde
+       el repaso no hace nada.
+       ⚠️ El ensayo del probador y la demo de la landing quedan fuera: en la
+       demo no hay sesión y su `debate` es una etiqueta congelada, y pedirle
+       algo a Supabase desde ahí rompería el «cero llamadas» que esa página
+       tiene medido. */
+    if (P.debate && !P.ensayo && !P.demo && window.ATWI.nube && window.ATWI.nube.marcarVisto) {
       window.ATWI.nube.marcarVisto(P.debate);
     }
     var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto) : null;

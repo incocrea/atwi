@@ -284,9 +284,9 @@
      NO están en la tabla `avisos` —los calcula el cliente mirando el historial—
      y el buzón solo leía esa tabla. */
   var LO_QUE_ESPERA = {
-    'sin-ver':         ['Tu resultado está listo', 'premio', 'Tocá para verlo'],
-    'falta-veredicto': ['Falta el resultado', 'curso', 'Tocá para pedirlo otra vez'],
-    'falta-acuerdo':   ['Falta cerrar la negociación', 'curso', 'Tocá para elegir y firmar'],
+    'sin-ver':         ['Tu resultado está listo', 'premio', 'Toca para verlo'],
+    'falta-veredicto': ['Falta el resultado', 'curso', 'Toca para pedirlo otra vez'],
+    'falta-acuerdo':   ['Falta cerrar la negociación', 'curso', 'Toca para elegir y firmar'],
     'en-curso':        ['Partida sin terminar', 'curso', '']
   };
 
@@ -2065,7 +2065,7 @@
     var titulo = tituloVista('Historial', 'margin-bottom:var(--e-4)');
 
     if (!window.ATWI.nube || !window.ATWI.nube.hay()) {
-      caja.innerHTML = titulo + estadoVacio(icono('historial', 76), 'Entrá con tu cuenta',
+      caja.innerHTML = titulo + estadoVacio(icono('historial', 76), 'Entra con tu cuenta',
         'El historial vive en el servidor, para que lo tengas en cualquier teléfono. ' +
         'Sin sesión no hay nada que traer.');
       return;
@@ -2472,7 +2472,7 @@
            guardado en `ultimoFallo` y se estaba tirando. Ahora se enseña en
            pequeño y ademas se anota en la bitacora, que para eso esta. */
         var porque = window.ATWI.nube.ultimoFallo && window.ATWI.nube.ultimoFallo();
-        aviso.innerHTML = 'No se pudo borrar, y no se borró nada. Probá otra vez.' +
+        aviso.innerHTML = 'No se pudo borrar, y no se borró nada. Prueba otra vez.' +
           (porque ? '<br><span class="tenue">' + esc(porque) + '</span>' : '');
         if (window.ATWI.nube.anotar) {
           window.ATWI.nube.anotar('borrar_fallo', { debate: id, detalle: porque || '' });
