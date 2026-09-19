@@ -72,6 +72,19 @@
        pintada dejaría la lista saltando mientras se escribe en el buscador o se
        toca un filtro, que es lo contrario de poder elegir. */
     if (nombre === 'catalogo' && vistaActual !== 'catalogo') barajar();
+    /* Y AL ENTRAR AL HISTORIAL SE VUELVE A PREGUNTAR (titular, 2026-09-19: una
+       partida en linea que la otra persona borro --con su cuenta-- seguia en la
+       lista y dejaba entrar; solo se fue al recargar el sitio entero).
+       LO QUE FALTABA NO ERA UN AVISO, ERA LA PREGUNTA. La lista solo se repedia
+       cuando algo de esta app la marcaba caducada --mandar un turno, borrar,
+       aceptar-- o cuando el sondeo traia novedades, y **una partida borrada no
+       puede aparecer en `novedades()`**: no hay fila, asi que no hay nada que
+       informe de ella. Un borrado es la unica clase de cambio del que no llega
+       noticia, y por eso era justo el que se quedaba puesto para siempre.
+       Cuesta una consulta por ingreso --~250 ms, y la lista vieja se sigue
+       viendo mientras llega-- y es el mismo trato que ya recibe el catalogo un
+       renglon mas arriba: entrar a una pantalla es el momento de ponerla al dia. */
+    if (nombre === 'historial' && vistaActual !== 'historial') historialCaducado = true;
     /* Salir de la portada cuesta una entrada de historial: así el atrás del
        teléfono devuelve a la portada en vez de cerrar la app. Saltar entre las
        otras pestañas no apila más, porque desde cualquiera de ellas el atrás
@@ -2132,7 +2145,12 @@
      y la nueva la reemplaza cuando llega: lo único que cambia entre las dos es
      una tarjeta. */
   var historialCaducado = false;
-  var refrescando = false;
+  /* LA PROMESA, NO UN BOOLEANO: ademas de impedir dos consultas a la vez, deja
+     que `abrirPartida` ESPERE al refresco en vuelo en vez de abrir con la lista
+     vieja. Cierra la ventana entre entrar al historial y que llegue la lista
+     --~250 ms en los que la tarjeta de una partida ya borrada sigue puesta y se
+     puede tocar-- sin anadir ni un viaje: aprovecha el que ya esta en marcha. */
+  var refrescoEnVuelo = null;
 
   function pintarHistorial() {
     var caja = $('#v-historial');
@@ -2175,19 +2193,24 @@
     /* LO VIEJO SE SIGUE VIENDO MIENTRAS LLEGA LO NUEVO. Se pide TODO lo que ya
        estaba cargado —no solo la primera tanda— o volver de una partida
        encogería una lista que la persona acababa de desplegar. */
-    if (historialCaducado && !refrescando) {
-      refrescando = true;
+    if (historialCaducado && !refrescoEnVuelo) {
       historialCaducado = false;
       var pedidas = Math.max(POR_TANDA, historial.length);
-      window.ATWI.nube.historial(pedidas).then(function (l) {
-        refrescando = false;
+      refrescoEnVuelo = window.ATWI.nube.historial(pedidas).then(function (l) {
+        refrescoEnVuelo = null;
+        /* ⚠️ UNA CONSULTA QUE FALLO NO ES UNA CUENTA SIN PARTIDAS. `historial()`
+           devuelve `[]` en los dos casos, asi que sin mirar la marca un fallo de
+           red vaciaba la lista en pantalla --y `anotarTanda` dejaba las dos
+           orillas en cero--. Se deja lo que habia: es lo ultimo que se sabe que
+           era verdad, y el ingreso siguiente lo vuelve a intentar. */
+        if (l && l.fallo) return;
         if (l) historial = l;
         /* ⚠️ Y SE VUELVEN A CONTAR LAS DOS ORILLAS. Sin esto, borrar la última
            partida en línea dejaba `totalDe.linea` en su valor viejo y el botón
            reaparecía en una pestaña ya vacía. */
         anotarTanda(l, null, pedidas);
         if (vistaActual === 'historial') pintarHistorial();
-      }).catch(function () { refrescando = false; });
+      }).catch(function () { refrescoEnVuelo = null; });
     }
 
     if (!historial.length) {
@@ -2898,7 +2921,18 @@
 
   /* UNA SOLA PUERTA PARA TODAS, y cada estado entra por donde le toca. Antes
      esto siempre abría el repaso, que era lo único que había. */
-  function abrirPartida(id) {
+  function abrirPartida(id, yaEsperado) {
+    /* SI EL HISTORIAL SE ESTA PONIENDO AL DIA, SE ESPERA. Entrar a la pestana
+       dispara la consulta y la lista vieja se sigue viendo mientras llega, asi
+       que durante ese cuarto de segundo se puede tocar una tarjeta que el
+       servidor esta a punto de quitar. Esperar aqui no cuesta ningun viaje
+       --es el que ya esta en vuelo-- y lo que se gana es que nunca se entre a
+       una partida que ya no existe. `yaEsperado` corta el reintento: cuando el
+       `then` corre, `refrescoEnVuelo` ya es null, pero una guarda explicita es
+       mas barata que confiar en el orden de dos microtareas. */
+    if (refrescoEnVuelo && !yaEsperado) {
+      return refrescoEnVuelo.then(function () { abrirPartida(id, true); });
+    }
     var d = (historial || []).filter(function (x) { return x.id === id; })[0];
     /* SI NO ESTÁ EN LA LISTA, SE PIDE. El historial trae DIEZ por tanda y las
        actas llegan hasta 50: una partida vieja puede tener acta y no estar
@@ -2908,9 +2942,22 @@
     if (!d) {
       if (!window.ATWI.nube || !window.ATWI.nube.partida) return;
       window.ATWI.nube.partida(id).then(function (traida) {
-        if (!traida) return;
+        /* ESTE `return` ERA MUDO: se tocaba una tarjeta y no pasaba nada, ni la
+           pantalla cambiaba ni se decia por que. Ahora se dice.
+           Y NO SE QUITA DE LA LISTA A MANO, porque desde aqui no se sabe si la
+           partida desaparecio o si la consulta no llego --`historial()` devuelve
+           lo mismo en los dos casos--. Quitarla por si acaso seria borrar de la
+           vista algo que quiza sigue ahi. Lo que se hace es caducar la lista:
+           si la borraron, se va sola en el pintado siguiente; si fue la red,
+           vuelve. El aviso dice las dos cosas sin afirmar ninguna. */
+        if (!traida) {
+          historialCaducado = true;
+          if (vistaActual === 'historial') pintarHistorial();
+          return window.ATWI.aviso('No se pudo abrir esa partida. Si la otra ' +
+                                   'persona la borró, desaparece de la lista sola.');
+        }
         historial = (historial || []).concat([traida]);
-        abrirPartida(id);
+        abrirPartida(id, true);
       });
       return;
     }

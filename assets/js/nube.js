@@ -915,7 +915,24 @@ window.ATWI = window.ATWI || {};
         if (cuenta != null) lista.total = cuenta;
         return lista;
       });
-    }).catch(function (e) { apuntar(e.message); return []; });
+    }).catch(function (e) {
+      apuntar(e.message);
+      /* ⚠️ VACIO Y MARCADO, NO VACIO A SECAS. Aqui caen las dos cosas que no
+         se parecen en nada: «esta cuenta no tiene partidas» y «no se pudo
+         preguntar». Devolviendo `[]` pelado, quien recibe la lista no puede
+         distinguirlas, y lo que hace con ella --reemplazar la que tenia-- es
+         correcto para lo primero y destructivo para lo segundo: entrar al
+         historial sin cobertura borraba de la pantalla las partidas y dejaba
+         «Todavia no hay nada» sobre una cuenta llena.
+         No se notaba porque el refresco solo corria cuando algo cambiaba; desde
+         que corre en CADA ingreso, seria la primera vez que falle la red.
+         La marca va colgada del array, como `total`, y con el mismo aviso: no
+         sobrevive a un `map`. Esta no pasa por ninguno --se devuelve tal cual--
+         y quien no la mire recibe la lista vacia de siempre. */
+      var vacia = [];
+      vacia.fallo = true;
+      return vacia;
+    });
   }
 
   /**

@@ -123,12 +123,22 @@ window.ATWI = window.ATWI || {};
       }
       return;
     }
+    /* ⚠️ SE DESMONTA ANTES DE VACIAR EL HUECO. Vaciar el `innerHTML` se lleva
+       el iframe pero NO le dice nada a Turnstile, que se queda con el widget
+       registrado y avisa por consola —«Cannot find Widget …, consider using
+       turnstile.remove()»— cada vez que quiere hablar con uno que ya no está.
+       Y la puerta se repinta varias veces por carga, así que se acumulan.
+       `remove()` con un id que ya no existe lanza: por eso va en `try`. */
+    if (idCaptcha && window.turnstile.remove) {
+      try { window.turnstile.remove(idCaptcha); } catch (e) { /* ya no estaba */ }
+    }
+    idCaptcha = null;
     hueco.innerHTML = '';
     /* Se monta de nuevo: lo que dijera el intento anterior deja de valer hasta
        que este conteste. Si vuelve a fallar, lo dirá él. */
     estado.captchaMuerto = '';
     quitarFalloCaptcha();
-    window.turnstile.render(hueco, {
+    idCaptcha = window.turnstile.render(hueco, {
       sitekey: cfg.turnstileSiteKey,
       language: 'es',
       theme: 'light',
@@ -244,6 +254,9 @@ window.ATWI = window.ATWI || {};
      casi siempre va a la segunda --es lo que le pasó al titular a mano-- así que
      lo hace la app en vez de hacerlo la persona. Uno solo: si el segundo
      tampoco, es un problema de verdad y reintentar en bucle solo lo esconde. */
+  /* El id que devuelve `render()`: hace falta para desmontarlo antes de
+     volver a montarlo. */
+  var idCaptcha = null;
   var yaReintente = false;
   function reintentarCaptcha() {
     if (yaReintente || !window.turnstile) return;
@@ -326,6 +339,41 @@ window.ATWI = window.ATWI || {};
       '<path d="M4 7h7M2.6 15h6M4 23h7"/></svg>';
 
   /** Un campo con su signo dentro, sin rótulo encima. */
+  /* El campo del rediseño de la invitación: rótulo encima, signo dentro y pista
+     debajo. Es `campo()` y `campoConSigno()` juntos, y no sustituye a ninguno:
+     en la pantalla de entrar el rótulo sobra —el sobre y el candado lo dicen— y
+     aquí hace falta, porque «Tu apodo en el juego» no lo dibuja ningún icono. */
+  function campoConRotulo(id, etiqueta, signo, atributos, pista, extra) {
+    return '<label class="campo-rotulado">' +
+        '<span class="campo-rotulado__eti">' + esc(etiqueta) + '</span>' +
+        '<span class="campo-icono' + (extra ? ' ' + extra : '') + '">' +
+          '<span class="campo-icono__signo">' + iconoSVG(signo, 22) + '</span>' +
+          '<input class="campo" id="' + id + '" ' + atributos + '>' +
+        '</span>' +
+        (pista ? '<span class="campo-rotulado__pista">' + pista + '</span>' : '') +
+      '</label>';
+  }
+
+  /* EL OJO SE MONTA APARTE porque es un botón dentro de un `<label>`: metido en
+     la cadena de HTML, el navegador lo trata como parte de la etiqueta y
+     tocarlo enfocaría el campo además de alternar. Y lleva a QUÉ campo mira
+     (`data-para`): desde que hay dos contraseñas en la puerta —la de entrar y
+     la del alta de invitado— buscar `#c-clave2` a mano dejaba el segundo ojo
+     alternando el campo de la otra pantalla. */
+  function montarElOjo(idCampo) {
+    var cajaClave = $('#' + idCampo);
+    cajaClave = cajaClave && cajaClave.closest('.campo-icono--clave');
+    if (!cajaClave || cajaClave.querySelector('.campo-icono__ojo')) return;
+    var ojo = document.createElement('button');
+    ojo.type = 'button';
+    ojo.className = 'campo-icono__ojo';
+    ojo.dataset.accion = 'ver-clave';
+    ojo.dataset.para = idCampo;
+    ojo.setAttribute('aria-label', 'Ver la contraseña');
+    ojo.innerHTML = iconoSVG('ojo', 24);
+    cajaClave.appendChild(ojo);
+  }
+
   function campoConSigno(id, signo, atributos, extra) {
     return '<label class="campo-icono' + (extra ? ' ' + extra : '') + '">' +
         '<span class="solo-lectores">' + esc(signo === 'sobre' ? 'Tu correo' : 'Contraseña') + '</span>' +
@@ -392,6 +440,20 @@ window.ATWI = window.ATWI || {};
       '<button class="boton boton--suave boton--bloque" data-accion="ver-terminos" ' +
         'style="margin-top:var(--e-3)">Leer y aceptar</button>' +
     '</div>';
+
+  /* La misma tarjeta con el documento al lado (rediseño del titular,
+     2026-09-19): en el alta de invitado no hay botón, porque la tarjeta ENTERA
+     es el disparador. Con el formulario, el logotipo y el tema por encima, un
+     botón más en esa columna era la cuarta cosa pulsable de la pantalla. */
+  var BLOQUE_TERMINOS_FICHA =
+    '<button type="button" class="tarjeta terminos-caja terminos-caja--fila" id="c-terminos" ' +
+      'data-accion="ver-terminos">' +
+      '<span class="terminos-caja__signo">' + iconoSVG('documento', 26) + '</span>' +
+      '<span class="terminos-caja__texto">' +
+        '<b>Términos y condiciones</b>' +
+        '<span class="chico suave" id="c-terminos-estado">Léelos y acéptalos para poder jugar.</span>' +
+      '</span>' +
+    '</button>';
 
   function pintarEstadoTerminos() {
     var caja = $('#c-terminos');
@@ -586,24 +648,51 @@ window.ATWI = window.ATWI || {};
          correo con un enlace mágico, que es lo que se moría. Se enseña tapado
          para que se vea a qué cuenta se está dando de alta. */
       var inv = estado.invitacion || {};
+      var modoInv = (cfg.modos || {})[inv.modo] ? inv.modo : 'debate';
       caja.innerHTML =
-        '<div class="invita-cabeza">' +
-          '<p class="invita-cabeza__quien">' + esc(inv.propone_nombre || 'Alguien') + ' te invita a jugar</p>' +
-          '<p class="invita-cabeza__que">' + esc(nombreDeModo(inv.modo)) + ' · ' +
-            esc(String(inv.turnos || 2)) + (Number(inv.turnos) === 1 ? ' turno' : ' turnos') + ' cada uno</p>' +
-          (inv.enunciado ? '<p class="invita-cabeza__tema">«' + esc(inv.enunciado) + '»</p>' : '') +
+        /* EL LOGOTIPO MANDA, COMO EN LA PUERTA. Aquí no lleva eslogan: lo que
+           tiene que leerse debajo es quién invita y a qué, no la marca otra
+           vez. */
+        '<div class="portal portal--corto">' +
+          '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
         '</div>' +
-        '<div class="apilado-5">' +
-          campo('c-nombre3', 'Tu apodo en el juego',
-                'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
-                'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
-                'Una sola palabra, y tiene que estar libre.') +
-          campo('c-clave3', 'Contraseña',
-                'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
-                inv.correo_tapado
-                  ? 'Tu cuenta se crea con ' + esc(inv.correo_tapado) + ', el correo donde te llegó la invitación.'
-                  : 'Que puedas recordar. No hace falta que sea rara.') +
-        '</div>' + BLOQUE_TERMINOS;
+        /* TODO LO DE LA INVITACIÓN VA EN UNA SOLA FICHA (mockup del titular,
+           2026-09-19): quién invita, a qué, el tema, los dos campos y los
+           términos. Es UNA cosa —esta invitación— y partirla en bloques sueltos
+           sobre el fondo la leía como tres pantallas apiladas. El botón se
+           queda fuera, en el pie, que es donde vive en toda la app. */
+        '<div class="invita-ficha">' +
+          '<p class="invita-ficha__quien">' + esc(inv.propone_nombre || 'Alguien') + ' te invita a jugar</p>' +
+          '<p class="invita-ficha__que">' + esc(nombreDeModo(modoInv)) + ' · ' +
+            esc(String(inv.turnos || 2)) + (Number(inv.turnos) === 1 ? ' turno' : ' turnos') + ' cada uno</p>' +
+          /* EL TEMA VA EN UN GLOBO, CON LA ESCENA DEL MODO AL LADO. Y esas tres
+             piezas son las que se quedaron huérfanas cuando el detalle del tema
+             salió del flujo (2026-09-17): siguen publicadas y en el manifiesto,
+             así que esto no baja un byte nuevo y deja de haber arte pagada que
+             no pinta nadie. Los dos bocadillos dicen «aquí se discute» mejor
+             que cualquier rótulo. */
+          (inv.enunciado
+            ? '<div class="invita-tema">' +
+                '<img class="invita-tema__escena" src="../assets/img/iconos/escena-' + esc(modoInv) + '.png" ' +
+                  'alt="" width="88" height="88">' +
+                '<p class="invita-tema__globo">«' + esc(inv.enunciado) + '»</p>' +
+              '</div>'
+            : '') +
+          '<div class="invita-ficha__campos">' +
+            campoConRotulo('c-nombre3', 'Tu apodo en el juego', 'persona',
+              'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
+              'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
+              'Una sola palabra, y tiene que estar libre.') +
+            campoConRotulo('c-clave3', 'Contraseña', 'candado',
+              'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
+              inv.correo_tapado
+                ? 'Tu cuenta se crea con <b>' + esc(inv.correo_tapado) + '</b>, el correo donde te llegó la invitación.'
+                : 'Que puedas recordar. No hace falta que sea rara.',
+              'campo-icono--clave') +
+          '</div>' +
+          BLOQUE_TERMINOS_FICHA +
+        '</div>';
+      montarElOjo('c-clave3');
       pintarEstadoTerminos();
       boton.textContent = 'Crear mi cuenta y jugar';
 
@@ -644,16 +733,7 @@ window.ATWI = window.ATWI || {};
       /* EL OJO SE PONE APARTE porque es un botón dentro de un `<label>`: metido
          en la cadena de arriba, el navegador lo trata como parte de la etiqueta
          y tocarlo enfocaría el campo además de alternar. */
-      var caja2 = $('.campo-icono--clave');
-      if (caja2) {
-        var ojo = document.createElement('button');
-        ojo.type = 'button';
-        ojo.className = 'campo-icono__ojo';
-        ojo.dataset.accion = 'ver-clave';
-        ojo.setAttribute('aria-label', 'Ver la contraseña');
-        ojo.innerHTML = iconoSVG('ojo', 24);
-        caja2.appendChild(ojo);
-      }
+      montarElOjo('c-clave2');
       /* ⚠️ Y AQUI NO VA EL DESCARGO DE IA (titular, 2026-09-19: «quita este
          disclaimer del login»). Estuvo unas horas: al quedarse ésta como única
          pantalla de la puerta se movió aquí para que no desapareciera de la
@@ -1159,7 +1239,7 @@ window.ATWI = window.ATWI || {};
          enlace y el invitado con su llave—: siempre es registro. */
       abrirTerminos(acc, null, true);
     } else if (a === 'ver-clave') {
-      var c = $('#c-clave2');
+      var c = $('#' + (acc.dataset.para || 'c-clave2'));
       if (!c) return;
       var oculta = c.type === 'password';
       /* ⚠️ EL FOCO SOLO VUELVE SI YA ESTABA. Cambiar `type` lo pierde, así que

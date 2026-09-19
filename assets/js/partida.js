@@ -622,10 +622,24 @@ window.ATWI = window.ATWI || {};
     var hasta = P.plazo ? ' Tiene hasta ' + cuandoVence(P.plazo) + '.' : '';
     pintarSala({
       dice: 'Le toca a ' + otro.nombre + '.' + hasta + ' Te avisamos cuando conteste.',
-      pie: '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
-             'data-accion="p-espera-volver">Volver al inicio</button>' +
+      /* AQUÍ NO HAY NADA QUE PULSAR, ASÍ QUE NO HAY BOTÓN (titular, 2026-09-19:
+         «en la pantalla de quien espera al otro, en vez de volver al inicio
+         aquí pones "Esperando…"»). «Volver al inicio» era la única pieza grande
+         de la pantalla y proponía irse, que es lo contrario de lo que esta
+         pantalla cuenta: que la partida sigue viva y que ya avisamos. El estado
+         ocupa su sitio —mismo alto, mismo radio— y late, que es lo que dice que
+         esto no está colgado. La salida sigue estando donde está siempre, en el
+         atrás de la cabecera, y la nota de abajo la nombra. */
+      pie: esperandoHTML() +
            '<p class="chico centrado pie-nota">Puedes cerrar la app: la partida sigue en el Historial.</p>'
     });
+  }
+
+  /** El indicador de espera: la forma de un botón sin serlo. */
+  function esperandoHTML(texto) {
+    return '<p class="esperando" aria-live="polite">' + (texto || 'Esperando') +
+             '<span class="esperando__puntos" aria-hidden="true"><i></i><i></i><i></i></span>' +
+           '</p>';
   }
 
   /* El plazo, en palabras que se leen de un vistazo: la hora si vence hoy, el
@@ -1134,7 +1148,8 @@ window.ATWI = window.ATWI || {};
             return '<button type="button" class="rueda' +
                      (n === total - 1 ? ' rueda--ultima' : '') +
                      (v.preparando ? ' rueda--preparando' : '') +
-                     (v.falloLaNube ? ' rueda--sinvoz' : '') + '"' +
+                     (v.falloLaNube ? ' rueda--sinvoz' : '') +
+                     (porOir(n, v) ? ' rueda--por-oir' : '') + '"' +
                    ' style="--voz:' + esc(tono(j.color)) + '"' +
                    ' data-oir="i' + n + '" data-rueda="i' + n + '"' +
                    ' aria-label="' + (v.preparando
@@ -1489,6 +1504,11 @@ window.ATWI = window.ATWI || {};
            contestar no tiene que oírla otra vez para que se le abra el micro. */
         if (P.enLinea && P.debate) {
           try { localStorage.setItem('atwi.oidas.' + P.debate, JSON.stringify(P.escuchadas)); } catch (e) {}
+          /* Y EL DORADO SE APAGA EN EL ACTO. El halo dice «esto está sin oír»,
+             así que el momento en que deja de ser verdad es éste y no el
+             siguiente repintado: una llamada que sigue puesta después de
+             atenderla es de las que enseñan a ignorar el aviso. */
+          apagarPorOir(Number(String(sonando).slice(1)));
         }
       }
       a.currentTime = 0; encadenar();
@@ -1901,16 +1921,42 @@ window.ATWI = window.ATWI || {};
      el otro acaba de hablar delante. Aquí el otro habló en su teléfono hace
      horas, y contestar sin oírlo es contestar a lo que uno se imagina.
      Devuelve el índice de la intervención que falta oír, o -1. */
+  /** Lo escuchado en esta partida, traído del teléfono la primera vez. */
+  function lasEscuchadas() {
+    if (!P.escuchadas && P.debate) {
+      try { P.escuchadas = JSON.parse(localStorage.getItem('atwi.oidas.' + P.debate) || '{}'); }
+      catch (e) { P.escuchadas = {}; }
+    }
+    return P.escuchadas || {};
+  }
+
+  /* ¿ESTA CASILLA ESTÁ PIDIENDO QUE LA OIGAN? (titular, 2026-09-19). Es del
+     otro, está lista y no se ha oído. `faltaOir()` mira solo la ANTERIOR
+     —porque es la que bloquea grabar— y aquí se marcan TODAS las suyas sin oír:
+     al retomar una partida de ayer pueden ser dos, y dejar una apagada sería
+     decir que ésa ya está. Solo en línea: en local el otro acaba de hablar
+     delante y no hay nada que recuperar. */
+  function porOir(n, v) {
+    if (!P || !P.enLinea || !v) return false;
+    if (v.preparando || v.falloLaNube) return false;
+    if (v.jugador === indiceDeLaCuenta()) return false;
+    return !lasEscuchadas()[n];
+  }
+
+  /** Quita el halo de una casilla sin repintar la sala: repintar cortaría el
+      audio que se acaba de oír y la figura que lo acompaña. */
+  function apagarPorOir(n) {
+    var b = document.querySelector('#m-partida [data-rueda="i' + n + '"]');
+    if (b) b.classList.remove('rueda--por-oir');
+  }
+
   function faltaOir() {
     if (!P || !P.enLinea || P.regrabando != null) return -1;
     var i = P.i;
     if (i <= 0) return -1;                       // abro yo: no hay nada que oír
     var anterior = P.intervenciones[i - 1];
     if (!anterior || anterior.jugador === indiceDeLaCuenta()) return -1;
-    if (!P.escuchadas && P.debate) {
-      try { P.escuchadas = JSON.parse(localStorage.getItem('atwi.oidas.' + P.debate) || '{}'); } catch (e) { P.escuchadas = {}; }
-    }
-    return (P.escuchadas && P.escuchadas[i - 1]) ? -1 : i - 1;
+    return lasEscuchadas()[i - 1] ? -1 : i - 1;
   }
 
   function pedirQueOiga(cual, disparador) {
@@ -3029,9 +3075,9 @@ window.ATWI = window.ATWI || {};
         '<p class="acta__pregunta">Falta que ' + esc(otro) + ' elija. Te avisamos cuando lo haga: ' +
           'si coinciden, queda firmado; si no, cada uno ver\u00e1 lo del otro y podr\u00e1 cambiarse.</p>' +
       '</div>';
-    pie().innerHTML =
-      '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
-        'data-accion="p-espera-volver">Volver al inicio</button>';
+    /* La misma decisión que en la espera del turno: aquí no hay nada que
+       pulsar, así que lo que va es el estado. */
+    pie().innerHTML = esperandoHTML();
   }
 
   /* Eligieron distinto: lo del otro a la vista y una decision. */
@@ -3452,7 +3498,8 @@ window.ATWI = window.ATWI || {};
     if (a === 'p-remandar') { remandar(Number(b.dataset.orden)); return; }
     if (a === 'p-oir-todo') { oir('i0'); return; }
     if (a === 'p-listo') { if (P.demo) demoLaRonda(); else if (P.enLinea) loQueToca(); else pintarTurno(); }
-    if (a === 'p-espera-volver') { cerrar(); }
+    /* `p-espera-volver` se fue con «Volver al inicio»: las dos pantallas de
+       espera llevan ahora el estado «Esperando…» y la salida es el atrás. */
     if (a === 'p-voto-quedarme' || a === 'p-voto-aceptar') { votarEnLinea(Number(b.dataset.eleccion)); return; }
     else if (a === 'p-grabar') empezarAGrabar(false);
     else if (a === 'p-agregar') empezarAGrabar(true);

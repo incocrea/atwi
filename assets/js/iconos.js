@@ -62,6 +62,17 @@ window.ATWI = window.ATWI || {};
        realce de la pantalla— y apagarse con él. Una pegatina traería su color
        quemado y competiría con lo que se está escribiendo. */
     sobre: '<rect x="3.2" y="5.4" width="17.6" height="13.2" rx="2.6"/><path d="m3.9 7.2 7.3 5.2a1.4 1.4 0 0 0 1.6 0l7.3-5.2"/>',
+    /* ⚠️ Y UNA PERSONA, que este archivo tenía prohibida… PARA LA BARRA. La
+       regla de `docs/03` es que el icono de la pestaña Perfil no sea una figura
+       humana —ahí va una insignia—, y no dice nada de un campo de texto: aquí
+       lo que hay que decir es «tu nombre», que es justo lo que un busto dice
+       sin una palabra. Va de trazo como el sobre y el candado, y por lo mismo:
+       vive dentro del campo y toma el color de su borde.
+       El apodo del alta de invitado es el único sitio que lo usa. */
+    persona: '<circle cx="12" cy="8.2" r="3.6"/><path d="M5.2 19.4a6.8 6.8 0 0 1 13.6 0"/>',
+    /* El documento de la tarjeta de términos: tres renglones escritos y la
+       esquina doblada. Lo mismo —dentro de una tarjeta que lleva el realce. */
+    documento: '<path d="M6.2 3.6h7l4.6 4.6v11.8a1.4 1.4 0 0 1-1.4 1.4H6.2a1.4 1.4 0 0 1-1.4-1.4V5a1.4 1.4 0 0 1 1.4-1.4Z"/><path d="M13 3.8v4.6h4.6"/><path d="M8.4 13h7M8.4 16.6h4.6"/>',
     /* El ojo abierto y el tachado son el MISMO dibujo con una raya encima: si
        fueran dos siluetas distintas, el botón saltaría al alternarlos. */
     ojo: '<path d="M2.4 12s3.6-6 9.6-6 9.6 6 9.6 6-3.6 6-9.6 6-9.6-6-9.6-6Z"/><circle cx="12" cy="12" r="2.7"/>',

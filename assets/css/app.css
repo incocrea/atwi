@@ -3034,6 +3034,34 @@ body.app {
 
 .pie-nota { color: var(--ctx-tenue-2); margin-top: var(--e-2); }
 
+/* ESPERANDO AL OTRO: LA FORMA DE UN BOTÓN SIN SERLO (titular, 2026-09-19).
+   Ocupa el sitio que ocupaba «Volver al inicio» —mismo alto y mismo radio, para
+   que la pantalla no dé un salto— pero no se puede pulsar porque no hay nada
+   que pulsar: lo único que pasa aquí es que le toca al otro. Lo que dice que
+   esto no está colgado son los puntos, que laten. */
+.esperando {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 60px; margin: 0; border-radius: 999px;
+  background: var(--ctx-halo);
+  color: var(--ctx-tenue-2);
+  font-family: var(--display); font-weight: 800; font-size: 1.05rem;
+}
+.esperando__puntos { display: inline-flex; gap: 4px; }
+.esperando__puntos i {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: currentColor; opacity: .3;
+  animation: esperando-late 1.4s ease-in-out infinite;
+}
+.esperando__puntos i:nth-child(2) { animation-delay: .18s; }
+.esperando__puntos i:nth-child(3) { animation-delay: .36s; }
+@keyframes esperando-late {
+  0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .esperando__puntos i { animation: none; opacity: .6; }
+}
+
 /* --- Las pistas: todo lo que se puede volver a escuchar -------------------------
    El mismo componente para el borrador sin mandar (grande, manda en la
    pantalla) y para las intervenciones ya entregadas (compactas, en lista). Un
@@ -3257,6 +3285,38 @@ body.app {
 }
 @media (prefers-reduced-motion: reduce) {
   .rueda--nueva { animation: none; }
+}
+
+/* LO QUE DIJO EL OTRO Y TODAVÍA NO HAS OÍDO (titular, 2026-09-19: «cuando una
+   nueva intervención de la otra parte se muestre, esta debe tener animación de
+   movimiento y glow dorado para indicar que debes escucharla antes de seguir
+   con tu turno; cada nueva intervención de contraparte será así hasta que se
+   escucha»). En línea el otro habló en su teléfono hace horas, y la regla de
+   que no se graba sin haberlo oído ya existía —pero solo se descubría al tocar
+   el micrófono y chocar con un globo—. Esto lo dice ANTES, y señala exactamente
+   dónde hay que tocar.
+   ⚠️ VA EN DORADO Y NO EN EL COLOR DE SU VOZ: el dorado es el único color del
+   juego que no significa ni modo ni mesa —es el de premio, el mismo del halo
+   del historial— y aquí significa «hay algo para ti». Con `--voz` se leería
+   como un adorno de esa ficha y no como una llamada.
+   Y SE MUEVE DISTINTO que `rueda--nueva`: aquella crece y encoge en el sitio
+   porque dice «esto acaba de nacer»; ésta se balancea, que es lo que se hace
+   para llamar la atención de alguien. */
+.rueda--por-oir {
+  box-shadow: inset 0 0 0 2.5px rgba(255,255,255,.55),
+              0 0 0 3px var(--premio), 0 0 16px 3px var(--premio);
+  animation: rueda-por-oir 1.8s ease-in-out infinite;
+}
+@keyframes rueda-por-oir {
+  0%, 55%, 100% { transform: translateY(0) rotate(0); }
+  15% { transform: translateY(-4px) rotate(-6deg); }
+  30% { transform: translateY(-4px) rotate(6deg); }
+  45% { transform: translateY(0) rotate(0); }
+}
+/* Con el movimiento apagado se queda el halo, que es la información; lo que se
+   va es la animación. Misma decisión que la campana del historial. */
+@media (prefers-reduced-motion: reduce) {
+  .rueda--por-oir { animation: none; }
 }
 
 /* Los turnos que faltan: la sombra del sitio que van a ocupar. Van en el mismo
@@ -5132,6 +5192,90 @@ body.app {
 .o-bien {
   height: 1px; margin: var(--e-4) 0 var(--e-3);
   background: var(--linea);
+}
+
+/* --- El alta de invitado: una sola ficha (mockup del titular, 2026-09-19) ----
+   Todo lo de la invitación vive dentro de la misma tarjeta translúcida —quién
+   invita, a qué, el tema, los campos y los términos— porque es UNA cosa. El
+   velo es el mismo recurso de las cartas del historial: deja pasar el fondo
+   dibujado en vez de taparlo con un blanco. */
+.portal--corto { margin-bottom: var(--e-4); }
+.invita-ficha {
+  padding: var(--e-5) var(--e-4) var(--e-4);
+  border-radius: var(--r-4);
+  background: rgba(255, 255, 255, .62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  text-align: center;
+}
+@supports not ((backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px))) {
+  .invita-ficha { background: rgba(255, 255, 255, .86); }
+}
+.invita-ficha__quien {
+  margin: 0;
+  font-family: var(--display); font-weight: 800;
+  font-size: 1.45rem; line-height: 1.15;
+  color: var(--lavanda);
+}
+.invita-ficha__que {
+  margin: var(--e-2) 0 0;
+  font-size: var(--t-chico); color: var(--tinta-suave);
+}
+
+/* El tema, en el globo que le corresponde: es lo que alguien dijo. La escena
+   del modo asoma por la izquierda, medio fuera, como una pegatina pegada al
+   globo —el mismo recurso que el signo de los globos de sistema—. */
+.invita-tema {
+  position: relative;
+  margin: var(--e-4) 0 var(--e-5);
+  padding-left: 30px;
+}
+.invita-tema__escena {
+  position: absolute; left: -14px; top: 50%;
+  width: 88px; height: auto; transform: translateY(-50%);
+  pointer-events: none;
+}
+.invita-tema__globo {
+  margin: 0;
+  padding: var(--e-4) var(--e-4) var(--e-4) 62px;
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--lavanda) 9%, #fff);
+  font-weight: 700; line-height: 1.35; color: var(--tinta);
+  text-align: center;
+}
+.invita-ficha__campos { display: grid; gap: var(--e-4); text-align: left; }
+
+/* El rótulo encima, el signo dentro y la pista debajo. */
+.campo-rotulado { display: block; }
+.campo-rotulado__eti {
+  display: block; margin-bottom: 6px;
+  font-size: var(--t-chico); font-weight: 700; color: var(--tinta);
+}
+.campo-rotulado .campo-icono { display: block; }
+.campo-rotulado__pista {
+  display: block; margin-top: 6px;
+  font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.4;
+}
+
+/* La tarjeta de términos como fila: el documento, y al lado lo que hay que
+   hacer. La tarjeta entera es el botón. */
+.terminos-caja--fila {
+  display: flex; align-items: center; gap: var(--e-3);
+  width: 100%; margin-top: var(--e-4);
+  text-align: left; cursor: pointer;
+  border: 0; font: inherit; color: inherit;
+}
+.terminos-caja--fila .terminos-caja__signo {
+  flex: 0 0 auto; display: grid; place-items: center;
+  width: 42px; height: 42px; border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--lavanda) 12%, #fff);
+  color: var(--lavanda);
+}
+.terminos-caja--fila .terminos-caja__texto { display: grid; gap: 2px; }
+/* Aceptados: la misma señal verde que ya tenía la tarjeta, en su versión fila. */
+.terminos-caja--fila[data-listo="1"] .terminos-caja__signo {
+  background: color-mix(in srgb, var(--negociacion) 18%, #fff);
+  color: var(--negociacion);
 }
 
 /* --- Llegar invitado: la puerta dice a qué vienes -------------------------- */
