@@ -965,7 +965,15 @@ window.ATWI = window.ATWI || {};
          traían «sin ceder su postura». Va primero: es lo que cambia la lectura
          de todo lo demás. */
       var forma = (v.forma || {})[r.forma] || '';
-      dice = (forma ? '<p class="dice__linea dice__linea--forma">' + esc(forma) + '</p>' : '') +
+      /* VICTORIA POR ABANDONO (modo en línea, 0056): el juez leyó lo que hubo y
+         puntuó, pero el ganador lo puso el reloj. Se dice antes que nada, o el
+         desglose de abajo se leería como si hubiera decidido él. */
+      var abandono = r.abandono && r.ganador
+        ? (v.abandono || 'La otra parte no contestó en 24 horas: {ganador} gana por abandono. Lo de abajo es lo que el juez leyó.')
+            .replace('{ganador}', r.ganador)
+        : '';
+      dice = (abandono ? '<p class="dice__linea dice__linea--forma">' + esc(abandono) + '</p>' : '') +
+      (forma ? '<p class="dice__linea dice__linea--forma">' + esc(forma) + '</p>' : '') +
       (r.empate ? '<p class="dice__linea">' +
                          esc(e[r.motivoEmpate] || e.generico || '') + '</p>' : '') +
       (r.loMejor || []).map(function (q) {

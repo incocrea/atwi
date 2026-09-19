@@ -102,7 +102,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '0ed8a5c',
+  version: '6e1b3ec',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -368,6 +368,12 @@ window.ATWI.config = {
       sin_postura: 'Alguien no llegó a fijar una posición sobre el tema. El juez puntuó ' +
                    'solo lo que sí se sostuvo.'
     },
+    /* LA VICTORIA POR ABANDONO (modo en línea, 2026-09-18): «el juez evalúa
+       pero declara ganador por abandono a quien intervino de último». Se dice
+       primero, porque el desglose de abajo es lo que el juez leyó y no lo que
+       decidió. `{ganador}` es el nombre. */
+    abandono: 'La otra parte no contestó en 24 horas: {ganador} gana por abandono. ' +
+              'Lo de abajo es lo que el juez leyó de la ronda.',
     empate: {
       /* LOS 8 PUNTOS LOS DICE LA PANTALLA, NO EL JUEZ (v2.3, S16): la regla de
          los 8 la aplica el codigo con los totales, asi que el modelo escribe la

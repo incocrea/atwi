@@ -362,6 +362,7 @@ window.ATWI = window.ATWI || {};
          el lado de quien propuso, con los nombres al revés para mí. */
       enLinea: Boolean(d.en_linea),
       miLado: miLadoEn(d),
+      abandono: d.abandono || null,
       debate: d.id
     };
     /* EN NEGOCIACIÓN EL RESULTADO ES EL ACTA (2026-09-18). El repaso de una
@@ -3037,6 +3038,8 @@ window.ATWI = window.ATWI || {};
     cerrarReproductor();
     m.hidden = true;
     var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto) : null;
+    /* Por abandono (0056): la pantalla del juez lo dice antes del desglose. */
+    if (real && P.abandono) real.abandono = P.abandono;
     veredicto.revelar(Object.assign({
       /* AQUÍ SE SORTEABA UN GANADOR A CARA O CRUZ, Y SE FUE (decisión del
          titular, 2026-09-15). Cuando el árbitro no contestaba, la app elegía un
