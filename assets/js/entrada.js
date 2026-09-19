@@ -203,6 +203,22 @@ window.ATWI = window.ATWI || {};
       '</div>';
   }
 
+  /* TRES RAYAS A CADA LADO DEL ESLOGAN, como en el mockup. Se giran con el
+     mismo path para no tener dos dibujos que mantener. */
+  var CHISPA =
+    '<svg class="portal__chispa" width="22" height="30" viewBox="0 0 22 30" fill="none" ' +
+      'stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true">' +
+      '<path d="M4 7h7M2.6 15h6M4 23h7"/></svg>';
+
+  /** Un campo con su signo dentro, sin rótulo encima. */
+  function campoConSigno(id, signo, atributos, extra) {
+    return '<label class="campo-icono' + (extra ? ' ' + extra : '') + '">' +
+        '<span class="solo-lectores">' + esc(signo === 'sobre' ? 'Tu correo' : 'Contraseña') + '</span>' +
+        '<span class="campo-icono__signo">' + iconoSVG(signo, 24) + '</span>' +
+        '<input class="campo" id="' + id + '" ' + atributos + '>' +
+      '</label>';
+  }
+
   function campo(id, etiqueta, atributos, pista) {
     return '<label style="display:block">' +
         '<span class="chico" style="font-weight:700">' + esc(etiqueta) + '</span>' +
@@ -404,18 +420,35 @@ window.ATWI = window.ATWI || {};
          al quedarse ésta sola, sin él el descargo no se leía en ningún sitio
          antes de jugar. */
       caja.innerHTML =
-        cabeza(null, 'Entra a jugar', 'Tu correo y tu contraseña.') +
-        '<div class="apilado-5">' +
-          campo('c-correo2', 'Tu correo',
-                'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"') +
-          campo('c-clave2', 'Contraseña', 'type="password" autocomplete="current-password" placeholder="Tu contraseña"') +
-          '<div class="captcha"><div id="captcha"></div></div>' +
+        '<div class="portal">' +
+          '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
+          '<p class="portal__eslogan">' + CHISPA +
+            '<span>¡Resuélvelo Jugando!</span>' +
+            '<span style="transform:scaleX(-1);display:flex">' + CHISPA + '</span>' +
+          '</p>' +
         '</div>' +
-        /* EL ALTA NO CAMBIA DE PANTALLA, ABRE UN GLOBO: es una pregunta de un
-           campo y cambiar la pantalla entera para hacerla era lo que hacía
-           confusa la puerta. */
-        '<button class="boton boton--fantasma boton--bloque" data-accion="soy-nuevo" style="margin-top:var(--e-4)">' +
-          '¡Soy nuevo!</button>';
+        '<div style="margin-top:var(--e-5)">' +
+          campoConSigno('c-correo2', 'sobre',
+            'type="email" autocomplete="email" inputmode="email" ' +
+            'placeholder="tu@correo.com" value="' + esc(estado.correo) + '"') +
+          campoConSigno('c-clave2', 'candado',
+            'type="password" autocomplete="current-password" placeholder="Tu contraseña"',
+            'campo-icono--clave') +
+          '<div class="captcha" style="margin-top:var(--e-3)"><div id="captcha"></div></div>' +
+        '</div>';
+      /* EL OJO SE PONE APARTE porque es un botón dentro de un `<label>`: metido
+         en la cadena de arriba, el navegador lo trata como parte de la etiqueta
+         y tocarlo enfocaría el campo además de alternar. */
+      var caja2 = $('.campo-icono--clave');
+      if (caja2) {
+        var ojo = document.createElement('button');
+        ojo.type = 'button';
+        ojo.className = 'campo-icono__ojo';
+        ojo.dataset.accion = 'ver-clave';
+        ojo.setAttribute('aria-label', 'Ver la contraseña');
+        ojo.innerHTML = iconoSVG('ojo', 24);
+        caja2.appendChild(ojo);
+      }
       /* ⚠️ Y AQUI NO VA EL DESCARGO DE IA (titular, 2026-09-19: «quita este
          disclaimer del login»). Estuvo unas horas: al quedarse ésta como única
          pantalla de la puerta se movió aquí para que no desapareciera de la
@@ -426,7 +459,32 @@ window.ATWI = window.ATWI || {};
       montarCaptcha();
       avisarSiFaltaElCaptcha();
       enfocar('#c-correo2', !estado.correo);
-      boton.textContent = 'Entrar';
+      boton.textContent = 'Entrar a jugar';
+      /* LA RAYA Y EL «¡SOY NUEVO!» VAN EN EL PIE, debajo del botón: son la
+         segunda puerta y el mockup los pone juntos. En el cuerpo se irían con
+         el scroll justo cuando hace falta verlos.
+         Se montan a mano y no en `caja.innerHTML` porque el pie es del modal y
+         no se repinta con el cuerpo. */
+      var pie = $('#puerta .modal__pie');
+      var alta = $('#puerta [data-accion="soy-nuevo"]');
+      if (pie && !alta) {
+        var raya = document.createElement('p');
+        raya.className = 'o-bien';
+        raya.textContent = 'o';
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'boton boton--bloque boton--suave boton--punteado';
+        b.dataset.accion = 'soy-nuevo';
+        b.textContent = '¡Soy nuevo!';
+        pie.appendChild(raya);
+        pie.appendChild(b);
+      }
+    } else {
+      /* Las demás pantallas de la puerta no llevan la segunda puerta. */
+      var sobra = $('#puerta .o-bien');
+      if (sobra) sobra.remove();
+      var sobra2 = $('#puerta [data-accion="soy-nuevo"]');
+      if (sobra2) sobra2.remove();
     }
   }
 
@@ -797,6 +855,14 @@ window.ATWI = window.ATWI || {};
       abrirAlta(acc, false);
     } else if (a === 'ver-terminos') {
       abrirTerminos(acc, null);
+    } else if (a === 'ver-clave') {
+      var c = $('#c-clave2');
+      if (!c) return;
+      var oculta = c.type === 'password';
+      c.type = oculta ? 'text' : 'password';
+      acc.innerHTML = iconoSVG(oculta ? 'ojo-no' : 'ojo', 24);
+      acc.setAttribute('aria-label', oculta ? 'Ocultar la contraseña' : 'Ver la contraseña');
+      c.focus();
     }
   });
 

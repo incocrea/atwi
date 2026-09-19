@@ -56,6 +56,16 @@ window.ATWI = window.ATWI || {};
     cerrar: '<path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5"/>',
     listo: '<path d="M5 12.6 9.7 17 19 6.8"/>',
     candado: '<rect x="4.8" y="10.5" width="14.4" height="9.2" rx="2.6"/><path d="M8.4 10.5V8a3.6 3.6 0 0 1 7.2 0v2.5"/>',
+    /* EL SOBRE Y EL OJO, para los campos de la puerta (rediseño del titular,
+       2026-09-19). Van de TRAZO y no de pegatina a propósito: viven DENTRO de
+       un campo de texto, así que tienen que tomar el color de su borde —el
+       realce de la pantalla— y apagarse con él. Una pegatina traería su color
+       quemado y competiría con lo que se está escribiendo. */
+    sobre: '<rect x="3.2" y="5.4" width="17.6" height="13.2" rx="2.6"/><path d="m3.9 7.2 7.3 5.2a1.4 1.4 0 0 0 1.6 0l7.3-5.2"/>',
+    /* El ojo abierto y el tachado son el MISMO dibujo con una raya encima: si
+       fueran dos siluetas distintas, el botón saltaría al alternarlos. */
+    ojo: '<path d="M2.4 12s3.6-6 9.6-6 9.6 6 9.6 6-3.6 6-9.6 6-9.6-6-9.6-6Z"/><circle cx="12" cy="12" r="2.7"/>',
+    'ojo-no': '<path d="M2.4 12s3.6-6 9.6-6 9.6 6 9.6 6-3.6 6-9.6 6-9.6-6-9.6-6Z"/><circle cx="12" cy="12" r="2.7"/><path d="M4.5 4.5 19.5 19.5"/>',
     aviso: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.8v4.6M12 15.9v.2"/>',
     /* La interrogación, que no la había: `aviso` es una EXCLAMACIÓN --la misma
        raya y el mismo punto-- y sirve para advertir, no para ofrecer ayuda. Va

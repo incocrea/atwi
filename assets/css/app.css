@@ -5021,6 +5021,120 @@ body.app {
   .globo-velo { transition-duration: 100ms; }
 }
 
+/* --- LA PUERTA (rediseño del titular, 2026-09-19) --------------------------
+   El mockup cambia tres cosas de fondo, y las tres tienen su porqué:
+   el FONDO DIBUJADO en vez del crema pelado —la puerta era la única pantalla
+   del juego que no se veía como el juego—, los CAMPOS CON SU SIGNO DENTRO
+   —sin rótulo encima: un sobre y un candado dicen «correo» y «contraseña» sin
+   gastar dos renglones— y el «¡Soy nuevo!» como BOTON con contorno en vez de
+   texto suelto, separado por una raya con su «o».
+   ⚠️ EL FONDO LO PINTA `.marco`, NO EL MODAL. `--fondo` ya se elige por vista
+   (`marco:has(#v-jugar[data-activa])`); aquí se elige por modal abierto, y
+   para que se vea hay que quitarle el color al propio modal: si no, la puerta
+   tapa el dibujo con su crema. */
+/* ⚠️ Y LO PINTA EL PROPIO MODAL, NO `.marco`. El primer intento fue poner
+   `--fondo` en el marco y dejar el modal transparente, y entonces se veía LA
+   APP DE DEBAJO —la cabecera con su logotipo y la barra— a través de la
+   puerta: `--fondo` se pinta en `.marco::before`, que está por debajo de todo,
+   y lo que tapaba la app era justamente el color del modal. Pintándolo aquí, la
+   puerta sigue cubriendo y además enseña el dibujo. */
+#puerta {
+  background: var(--crema) url(../img/fondos/home.webp) center / cover no-repeat;
+}
+/* Y el pie sin su raya ni su color: aquí no separa dos zonas, parte el dibujo
+   del fondo en dos justo donde el mockup no tiene nada. */
+#puerta .modal__pie { background: transparent; border-top: 0; box-shadow: none; }
+
+/* ⚠️ EL «¡SOY NUEVO!» VA CON CONTORNO CONTINUO Y NO PUNTEADO, que es la
+   excepción a la regla de los pares apilados. Esa regla existe para que un
+   botón blanco pegado a uno de color no se lea como un botón APAGADO; aquí lo
+   que los separa es la raya con su «o», que ya dice que son dos caminos
+   distintos y no una acción con su alternativa menor. */
+#puerta [data-accion="soy-nuevo"] {
+  border: 2px solid color-mix(in srgb, var(--lavanda) 45%, transparent);
+  border-style: solid;
+}
+
+/* EL CUERPO SE REPARTE EN VERTICAL, que es lo que pide el mockup: la marca
+   arriba con su aire, los campos en el medio y el botón abajo. Con el bloque
+   pegado al techo quedaba un hueco muerto de media pantalla entre el captcha y
+   el botón. Es el mismo `space-evenly` de «Antes de empezar», por el mismo
+   motivo y con el mismo límite: cuando NO sobra alto, no inventa hueco y el
+   cuerpo scrollea. */
+#puerta .modal__cuerpo:has(.portal) {
+  display: flex; flex-direction: column; justify-content: center;
+  gap: var(--e-5);
+}
+.portal { text-align: center; }
+/* EL LOGOTIPO MANDA Y EL TITULO SE VA. «Entra a jugar» encima del logotipo era
+   decir dos veces dónde estás, con la de arriba diciendo menos: es la misma
+   decisión que ya se tomó en el versus con el rótulo del modo. */
+.portal__logo { width: min(268px, 72%); height: auto; margin: 0 auto; display: block; }
+.portal__eslogan {
+  margin: var(--e-3) auto 0;
+  font-family: var(--display); font-weight: 800;
+  /* ⚠️ EN UNA SOLA LINEA, Y POR ESO EL TAMANO SALE DE UNA CUENTA Y NO DEL
+     GUSTO: con las dos chispas (22 px cada una más su hueco) quedan ~338 px
+     para veinte caracteres en la display extrabold, y a 2rem no caben —se
+     partía en «¡Resuélvelo / Jugando!», que es justo lo que el mockup no
+     hace—. Con 5,6vw mide ~265 a 430 px de marco y ~230 a 375: cabe en los
+     dos. El `nowrap` es la red: antes que partirse, se sale y se ve. */
+  font-size: clamp(1.1rem, 5.6vw, 1.75rem); line-height: 1.1;
+  white-space: nowrap;
+  color: var(--lavanda-oscuro);
+  display: flex; align-items: center; justify-content: center; gap: var(--e-2);
+}
+/* Los destellos del mockup. Van en CSS y no en una lámina nueva: son tres
+   rayas: dibujarlas cuesta menos que bajar un PNG a cada teléfono. */
+.portal__chispa { flex: 0 0 auto; color: var(--sol); }
+
+/* EL SIGNO VA DENTRO DEL CAMPO, así que el campo le hace sitio con relleno y el
+   signo se coloca encima sin quitarle el clic: `pointer-events: none` o tocar
+   el sobre no enfocaría el campo. */
+.campo-icono { position: relative; display: block; }
+.campo-icono + .campo-icono { margin-top: var(--e-3); }
+.campo-icono .campo {
+  padding-left: 52px;
+  height: 58px;
+  border-radius: var(--radio-pastilla);
+  background: var(--superficie);
+  text-align: left;
+}
+.campo-icono--clave .campo { padding-right: 52px; }
+.campo-icono__signo {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center;
+  color: var(--realce, var(--lavanda));
+  pointer-events: none;
+}
+/* EL OJO SI SE TOCA, así que es un botón de verdad y no un adorno: enseña y
+   esconde la contraseña, que es lo que pide cualquiera que la escribe a ciegas
+   en un teléfono. */
+.campo-icono__ojo {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: 0; padding: 0; background: none; cursor: pointer;
+  color: var(--realce, var(--lavanda));
+  border-radius: var(--radio-pastilla);
+}
+.campo-icono__ojo:active { transform: translateY(-50%) scale(.9); }
+@media (prefers-reduced-motion: reduce) {
+  .campo-icono__ojo:active { transform: translateY(-50%); }
+}
+
+/* LA RAYA CON SU «O». Separa dos caminos que no son lo mismo —entrar y darse de
+   alta— sin que el segundo parezca un botón apagado del primero. */
+.o-bien {
+  display: flex; align-items: center; gap: var(--e-3);
+  margin: var(--e-4) 0 var(--e-3);
+  color: var(--tinta-suave); font-size: var(--t-chico); font-weight: 700;
+}
+.o-bien::before, .o-bien::after {
+  content: ''; flex: 1 1 auto; height: 1px;
+  background: var(--linea);
+}
+
 /* --- El gate legal: los términos dentro del globo -------------------------- */
 /* ⚠️ ESTE TEXTO VA A LA IZQUIERDA, Y ES LA EXCEPCION A «todo lo de dentro de un
    globo va centrado». La regla se escribió para piezas de dos frases y un
