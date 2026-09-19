@@ -1208,7 +1208,7 @@
      tres cosas sueltas. */
   var HUECO_MIN = 8, HUECO_MAX = 36, AIRE_PIE = 8;
 
-  function ajustarRuleta() {
+  function ajustarRuleta(vueltas) {
     /* LA DE LA PANTALLA QUE SE ESTÁ VIENDO: el catálogo y el historial tienen
        la suya, y las dos se miden igual. */
     var r = $('.vista[data-activa] .ruleta');
@@ -1230,6 +1230,7 @@
     /* Se mide SIN el margen de la vez anterior, o cada repintado lo acumularía:
        el margen es el resultado de esta cuenta, no un dato de entrada. */
     r.style.marginTop = '';
+    if (!vueltas) delete r.dataset.tope;
     var caja = r.parentNode.getBoundingClientRect();
     var arriba = r.getBoundingClientRect().top;
     /* Lo que queda de pantalla por debajo de los mandos, menos el aire del pie:
@@ -1249,6 +1250,8 @@
     /* Con menos temas que sitio, la caja mide lo que hay: una ruleta con aire
        debajo se lee como una lista que se quedó corta. */
     n = Math.min(n, MAX_VISIBLES, r.children.length);
+    /* Lo que dijo la comprobación de la pasada anterior, si la hubo. */
+    if (r.dataset.tope) n = Math.min(n, parseInt(r.dataset.tope, 10) || n);
     if (n < 1) { r.style.height = ''; r.style.rowGap = ''; return; }
 
     /* EL ALTO QUE SOBRA SE REPARTE ENTRE LAS TARJETAS, hasta el tope del hueco;
@@ -1265,6 +1268,27 @@
     r.style.rowGap = hueco + 'px';
     r.style.height = altura + 'px';
     r.style.marginTop = Math.max(0, Math.round((libre - altura) / 2)) + 'px';
+
+    /* ⚠️ Y DESPUÉS SE COMPRUEBA, PORQUE LA CUENTA SE HACE CON LO QUE HAY EN ESE
+       INSTANTE (lo vio el titular en su teléfono, 2026-09-18: la tercera
+       tarjeta cortada donde aquí salían tres enteras). Lo que hay ENCIMA de la
+       ruleta —el título, los chips, el renglón del recordatorio— puede cambiar
+       de alto después de medir: las fuentes del juego no están autoalojadas, y
+       mientras llegan el navegador pinta con la de respaldo, que mide otra
+       cosa. Cuando eso pasa, `libre` valía más de lo que acabó valiendo y la
+       última tarjeta se sale.
+       Medir el resultado y corregirlo es lo único que no depende de acertar el
+       momento: si la caja se pasó del hueco, se quita una tarjeta y se vuelve a
+       repartir. Dos pasadas bastan —cada una quita una— y el tope evita que un
+       layout que no se estabiliza deje esto dando vueltas. */
+    if (!vueltas) vueltas = 0;
+    if (vueltas < 2) {
+      var sobresale = r.getBoundingClientRect().bottom - r.parentNode.getBoundingClientRect().bottom;
+      if (sobresale > 1 && n > 1) {
+        r.dataset.tope = String(n - 1);
+        return ajustarRuleta(vueltas + 1);
+      }
+    }
     darLaVuelta(r, alto + hueco + extra, n);
     girarRuleta(r, alto + hueco + extra);
   }
@@ -1317,13 +1341,19 @@
      teclado o —en escritorio— estirar la ventana cambian el alto disponible, y
      una ruleta calculada para el de antes es exactamente lo que se quería
      evitar: la última tarjeta cortada. */
-  window.addEventListener('resize', ajustarRuleta);
+  window.addEventListener('resize', function () { ajustarRuleta(); });
+  /* LAS FUENTES LLEGAN DESPUÉS Y MUEVEN LO QUE HAY ENCIMA. No están
+     autoalojadas (`site/assets/fonts/LEEME.txt`), así que la primera pintada va
+     con la de respaldo y el título y los chips miden otra cosa. */
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { ajustarRuleta(); });
+  }
   /* ⚠️ Y EN EL MÓVIL EL SITIO CAMBIA SIN QUE HAYA `resize`: la barra de
      direcciones del navegador se esconde al deslizar y el viewport VISIBLE
      crece, igual que con el teclado. Es el mismo aviso que ya costó el globo:
      lo que hay que escuchar es `visualViewport`. */
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', ajustarRuleta);
+    window.visualViewport.addEventListener('resize', function () { ajustarRuleta(); });
   }
 
   /* EL CLAC DE LA RULETA (titular, 2026-09-18). El sonido ya existía y estaba
