@@ -154,6 +154,14 @@ body.app {
   box-shadow: var(--sombra-1);
 }
 .vidas .ico { width: 22px; height: 22px; }
+/* ⚠️ Y `[hidden]` HAY QUE DECIRLO, que es la lección de `.micro-prueba` otra vez
+   y aquí costaba caro: el `display: none` del atributo lo pone la hoja del
+   NAVEGADOR, así que cualquier clase con `display` propio le gana. Estos dos
+   discos declaran `display: grid`, o sea que `hidden` no los escondía —el botón
+   del probador se pintaba con su atributo puesto, para todas las cuentas y
+   desde siempre—. Lo vio el titular, con el JS ya arreglado y el disco todavía
+   en pantalla. Medido: 34×34 px de botón con `hidden` en true. */
+.vidas[hidden], .ayuda-cabecera[hidden] { display: none; }
 
 /* EL SIGNO DE AYUDA, TAMBIÉN EN LA CABECERA (titular, 2026-09-17) y el primero
    de los tres. Es un BOTÓN —los otros dos son indicadores— así que lo único que
