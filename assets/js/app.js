@@ -403,8 +403,11 @@
   function abrirPropuesta(d) {
     var tarjeta = $('#v-historial [data-partida="' + d.id + '"]');
     var caduca = d.invitacion_caduca ? new Date(d.invitacion_caduca) : null;
-    var texto = 'Le propusiste a <b>' + esc(d.invitado_correo || 'alguien') + '</b> jugar ' +
-      '<b>«' + esc(d.enunciado) + '»</b>. Lo verá en su buzón al entrar con ese correo' +
+    /* Por apodo se enseña el apodo (la fila lleva el id, no el correo); por
+       correo, el correo. */
+    var texto = 'Le propusiste a <b>' + esc(d.invitado_nombre || d.invitado_correo || 'alguien') + '</b> jugar ' +
+      '<b>«' + esc(d.enunciado) + '»</b>. Lo verá en su buzón al entrar' +
+      (d.invitado_perfil ? ' con su cuenta' : ' con ese correo') +
       (caduca && !isNaN(caduca.getTime())
         ? ', y la invitación vale hasta ' + esc(cuandoCaduca(caduca)) + '.'
         : '.') +
@@ -3313,14 +3316,19 @@
      con su rótulo y su explicación, o sea tres piezas del formulario para un
      dato que casi siempre se escribe una vez. Ahora sale de la columna vacía,
      que es la que pregunta por él. */
+  /* POR CORREO O POR APODO (titular, 2026-09-19). Un solo campo: si trae «@»
+     es un correo; si no, es un apodo y se le pregunta a la base quién es. Lo
+     que se guarda del apodo es el ID de esa cuenta --el apodo se puede
+     cambiar-- y lo que se enseña es el apodo y su ficha. */
   function abrirCorreo(disparador) {
+    var puesto = propuesta.invitadoNombre || propuesta.correo || '';
     var cuerpo =
       '<div class="correo-editor">' +
-        '<input class="campo" id="p-correo" type="email" inputmode="email" ' +
-          'autocomplete="email" spellcheck="false" maxlength="254" ' +
-          'placeholder="mona@correo.com" value="' + esc(propuesta.correo || '') + '">' +
-        '<p class="chico tenue">Le llega un enlace para entrar a esta partida. ' +
-          'Elige su personaje al entrar.</p>' +
+        '<input class="campo" id="p-correo" type="text" inputmode="email" ' +
+          'autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="254" ' +
+          'placeholder="Su apodo o su correo" value="' + esc(puesto) + '">' +
+        '<p class="chico tenue">Si ya juega en ATWI, con su apodo basta. ' +
+          'Le llega un aviso y un correo; elige su personaje al entrar.</p>' +
         '<p class="chico" id="p-correo-error" style="color:var(--peligro)"></p>' +
       '</div>';
     abrirGlobo(disparador, { titulo: '¿A quién invitas?' },
@@ -3336,11 +3344,38 @@
 
   function guardarCorreo() {
     var v = ($('#p-correo').value || '').trim();
-    if (!window.ATWI.entrada.valeCorreo(v)) {
-      $('#p-correo-error').textContent = 'Ese correo no parece válido.';
-      return;
+    var err = $('#p-correo-error');
+    var boton = document.querySelector('.globo [data-accion="guardar-correo"]');
+    if (!v) { err.textContent = 'Escribe su apodo o su correo.'; return; }
+    if (v.indexOf('@') >= 0) {
+      if (!window.ATWI.entrada.valeCorreo(v)) { err.textContent = 'Ese correo no parece válido.'; return; }
+      propuesta.correo = v;
+      propuesta.invitadoPerfil = null; propuesta.invitadoNombre = ''; propuesta.invitadoFicha = null;
+      return cerrarInvitar();
     }
-    propuesta.correo = v;
+    /* Apodo: la misma regla del nombre que la ficha, y se pregunta a la base. */
+    var apodo = datos.limpiarNombre(v);
+    if (datos.errorDeNombre(apodo)) { err.textContent = 'Un apodo es una sola palabra. Si es un correo, lleva «@».'; return; }
+    if (apodo.toLowerCase() === datos.limpiarNombre(datos.perfil().nombre).toLowerCase()) {
+      err.textContent = 'Ese es tu apodo.'; return;
+    }
+    if (!window.ATWI.nube || !window.ATWI.nube.hay()) { err.textContent = 'Para invitar por apodo hace falta entrar con tu cuenta.'; return; }
+    err.textContent = '';
+    if (boton) { boton.disabled = true; boton.textContent = 'Buscando…'; }
+    window.ATWI.nube.perfilPorApodo(apodo).then(function (q) {
+      if (boton) { boton.disabled = false; boton.textContent = 'Listo'; }
+      if (!q || !q.id) { err.textContent = 'No hay nadie con el apodo «' + esc(apodo) + '». Revísalo o invítale por correo.'; return; }
+      propuesta.correo = '';
+      propuesta.invitadoPerfil = q.id;
+      propuesta.invitadoNombre = q.nombre;
+      propuesta.invitadoFicha = { avatar: q.avatar, color: q.color };
+      cerrarInvitar();
+    }).catch(function (e) {
+      if (boton) { boton.disabled = false; boton.textContent = 'Listo'; }
+      err.textContent = 'No se pudo buscar ese apodo. ' + ((e && e.message) || '');
+    });
+  }
+  function cerrarInvitar() {
     cerrarGlobo();
     var b = $('#m-preparar [data-accion="invitar-correo"]');
     if (b) b.outerHTML = huecoDeInvitar();
@@ -4054,16 +4089,22 @@
      rellenar por mí: el personaje de quien juegue ese lado **lo elige quien
      juegue ese lado**, en su teléfono. Lo único mío es a quién se lo mando. */
   function huecoDeInvitar() {
-    var hay = Boolean(propuesta.correo);
+    var porApodo = Boolean(propuesta.invitadoPerfil);
+    var hay = porApodo || Boolean(propuesta.correo);
+    var f = propuesta.invitadoFicha || {};
     return perfilEnDuo({
       accion: 'invitar-correo',
-      vacio: true,
-      retrato: '<span class="avatar avatar--duelo perfil-duo__hueco">' +
-                 iconoSVG(hay ? 'listo' : 'mas', 34) + '</span>',
-      quien: hay ? propuesta.correo : 'Invitar',
-      como: hay ? 'Le llega un enlace' : 'Elige su personaje al entrar',
-      tocar: hay ? 'Cambiar' : 'Escribir el correo',
-      etiqueta: hay ? 'Cambiar a quién invitas' : 'Escribir el correo de quien invitas'
+      vacio: !porApodo,
+      /* Con apodo ya se sabe quién es: su ficha, la de su perfil. Al entrar
+         puede cambiarla solo para esta partida si choca con la mía. */
+      retrato: porApodo && f.avatar
+        ? avatarHTML({ avatar: f.avatar, avatarBorde: f.color }, 'avatar avatar--duelo')
+        : '<span class="avatar avatar--duelo perfil-duo__hueco">' +
+            iconoSVG(hay ? 'listo' : 'mas', 34) + '</span>',
+      quien: porApodo ? propuesta.invitadoNombre : (hay ? propuesta.correo : 'Invitar'),
+      como: porApodo ? 'Le llega un aviso y un correo' : (hay ? 'Le llega un enlace' : 'Elige su personaje al entrar'),
+      tocar: hay ? 'Cambiar' : 'Apodo o correo',
+      etiqueta: hay ? 'Cambiar a quién invitas' : 'Escribir el apodo o el correo de quien invitas'
     });
   }
 
@@ -4622,7 +4663,7 @@
     if (dondeSeJuega() === 'linea') {
       /* El correo vive en la propuesta desde que su globo lo guarda; aquí ya no
          hay campo que leer. */
-      b.disabled = !window.ATWI.entrada.valeCorreo(propuesta.correo || '');
+      b.disabled = !propuesta.invitadoPerfil && !window.ATWI.entrada.valeCorreo(propuesta.correo || '');
       return;
     }
     /* Solo por el invitado: el propio viene del perfil, que ya pasó por esta
@@ -4821,20 +4862,20 @@
        seguía usando los de antes. Es el mismo fallo que la landing tenía por
        siete sitios — nada avisa de que un texto dejó de ser verdad. */
     var m = cfg.modos[propuesta.modo] || {};
-    var campo = $('#p-correo');
-    var quien = ((campo && campo.value) || propuesta.correo || '').trim();
+    var porApodo = Boolean(propuesta.invitadoPerfil);
+    var quien = porApodo ? propuesta.invitadoNombre : (propuesta.correo || '').trim();
     var turnos = propuesta.turnos || cfg.reglas.turnosPorDefecto;
     /* SE COMPRUEBA AL PULSAR Y NO SOLO AL ESCRIBIR, con la misma regla que apaga
-       el botón: un campo rellenado por el navegador o un repintado a destiempo
-       pueden dejar el botón encendido con algo que no es una dirección. */
-    if (!window.ATWI.entrada.valeCorreo(quien)) {
+       el botón: un repintado a destiempo puede dejar el botón encendido con
+       algo que no es una dirección. Por apodo ya está resuelto a su id. */
+    if (!porApodo && !window.ATWI.entrada.valeCorreo(quien)) {
       var err = $('#p-error');
       if (err) err.textContent = 'Ese correo no parece válido.';
       return;
     }
     var yoMismo = window.ATWI.auth && window.ATWI.auth.sesion();
     yoMismo = yoMismo && yoMismo.user && yoMismo.user.email;
-    if (yoMismo && quien.toLowerCase() === String(yoMismo).toLowerCase()) {
+    if (!porApodo && yoMismo && quien.toLowerCase() === String(yoMismo).toLowerCase()) {
       var err2 = $('#p-error');
       if (err2) err2.textContent = 'Ese es tu propio correo.';
       return;
@@ -4852,7 +4893,7 @@
     var b = $('#m-preparar [data-accion="proponer"]');
     if (b) { b.disabled = true; b.textContent = 'Enviando…'; }
     window.ATWI.nube.abrirPartida({
-      donde: 'linea', correo: quien,
+      donde: 'linea', correo: porApodo ? '' : quien, invitadoPerfil: propuesta.invitadoPerfil || null,
       tema: t, modo: propuesta.modo, turnos: turnos, juez: propuesta.juez || juezPorDefecto(),
       yo: { nombre: datos.limpiarNombre(p.nombre), avatar: p.avatar, color: p.avatarBorde }
     }).then(function (id) {

@@ -341,6 +341,15 @@ window.ATWI = window.ATWI || {};
   }
 
   /** Ya vi el sorteo de esta partida: que no se me vuelva a enseñar. */
+  /* ¿QUIÉN ES ESE APODO? (titular, 2026-09-19: «la invitación se puede hacer por
+     email o por apodo; validar si existe»). Devuelve id, apodo y ficha, o null;
+     NUNCA el correo, que quien invita por apodo no tiene por qué conocer. Lo que
+     se guarda en la propuesta es el ID: el apodo se puede cambiar. */
+  function perfilPorApodo(apodo) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('perfil_por_apodo', { p_apodo: String(apodo || '').trim() });
+  }
+
   function marcarIntroVista(debate) {
     if (!debate || !hayNube()) return;
     rpc('marcar_intro_visto', { p_debate: debate }).catch(function () {});
@@ -466,7 +475,10 @@ window.ATWI = window.ATWI || {};
     };
     if (enLinea) {
       cuerpo.en_linea = true;
-      cuerpo.invitado_correo = String(p.correo || '').trim().toLowerCase();
+      /* Por cuenta (apodo, resuelto a su id) o por correo: uno de los dos. La
+         base rechaza la fila si no va ninguno y si es uno mismo. */
+      if (p.invitadoPerfil) cuerpo.invitado_perfil = p.invitadoPerfil;
+      else cuerpo.invitado_correo = String(p.correo || '').trim().toLowerCase();
       cuerpo.invitacion_caduca = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
     } else {
       cuerpo.invitado_nombre = String(p.invitado && p.invitado.nombre || '').slice(0, 16);
@@ -713,7 +725,7 @@ window.ATWI = window.ATWI || {};
     var campos = 'id,creado,cerrado,modo,enunciado,tema_catalogo,turnos,juez,propone,' +
       /* Lo del modo en línea (0055): con quién, si aceptaron, hasta cuándo, si
          ya vi el sorteo y quién abandonó. `estado` dice si sigue propuesta. */
-      'estado,en_linea,aceptado_por,invitado_correo,invitacion_caduca,plazo,' +
+      'estado,en_linea,aceptado_por,invitado_correo,invitado_perfil,invitacion_caduca,plazo,' +
       'intro_visto_propone,intro_visto_invitado,abandono,' +
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
@@ -1000,6 +1012,7 @@ window.ATWI = window.ATWI || {};
     invitaciones: conTokenVivo(invitaciones),
     aceptarInvitacion: conTokenVivo(aceptarInvitacion),
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
+    perfilPorApodo: conTokenVivo(perfilPorApodo),
     marcarIntroVista: conTokenVivo(marcarIntroVista),
     votar: conTokenVivo(votar),
     estadoVotacion: conTokenVivo(estadoVotacion),
