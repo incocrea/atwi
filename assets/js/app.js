@@ -1957,11 +1957,52 @@
      Diez es lo que cabe de sobra en la primera pantalla; el resto se pide
      tocando, que es cuando se sabe que hace falta. */
   var POR_TANDA = 10;
-  /* Si la última tanda vino LLENA, puede haber más. Es lo único que se puede
-     saber sin pedir la cuenta entera al servidor, y pedirla sería otra consulta
-     para decidir si enseñar un botón. */
+  /* ⚠️ «CARGAR MÁS» NO ADIVINA: PREGUNTA CUÁNTAS HAY (titular, 2026-09-19).
+     Aquí decía que «si la última tanda vino llena, puede haber más» era lo
+     único que se podía saber sin otra consulta, y era falso: el total viene
+     en la MISMA respuesta (`Prefer: count=exact`). Adivinando fallaba por los
+     dos lados —con exactamente diez partidas y ninguna más, la tanda venía
+     llena y el botón salía a no traer nada— y sobre todo la cuenta era de
+     TODAS, mientras que la lista que se mira es la de una pestaña: con una
+     sola partida en línea y once locales, «En línea» enseñaba una tarjeta y
+     debajo un botón que no podía alargar esa lista.
+     `totalDe` guarda lo que el servidor contestó para cada orilla, y es nulo
+     mientras no se le haya preguntado por ella. */
+  var totalHistorial = null;              // todas las mías, sin filtrar
+  var totalDe = { local: null, linea: null };
+  /* El respaldo de cuando el servidor no manda la cuenta. */
   var hayMasHistorial = true;
   var trayendoMas = false;
+
+  /** Lo que devuelve una tanda: se anota su cuenta y se deja la regla vieja de
+      respaldo por si no vino. `donde` es la orilla que se pidió, o nulo, y
+      `pedidas` cuántas se pidieron —solo en una tanda que empieza en cero—. */
+  function anotarTanda(l, donde, pedidas) {
+    var n = (l && l.length) || 0;
+    if (l && l.total != null) {
+      if (donde) totalDe[donde] = l.total;
+      else totalHistorial = l.total;
+    }
+    /* UNA TANDA SIN FILTRO QUE VINO A MEDIAS SON TODAS LAS QUE HAY, así que las
+       dos orillas se cuentan aquí mismo y quedan exactas sin preguntar nada.
+       Es el caso normal: quien tiene menos de diez partidas nunca ve el botón,
+       ni en la pestaña de en línea con una sola. */
+    if (!donde && l && pedidas && n < pedidas) {
+      totalDe.linea = l.filter(esEnLinea).length;
+      totalDe.local = n - totalDe.linea;
+      if (totalHistorial == null) totalHistorial = n;
+    }
+    hayMasHistorial = n >= POR_TANDA;
+  }
+
+  /** ¿Queda algo por traer para la pestaña `p`, que ahora mismo enseña `ve`
+      tarjetas? Si se le preguntó por esa orilla, la respuesta es exacta; si no,
+      sirve el total de todas —que al menos dice «ya están todas»—. */
+  function hayMasEn(p, ve) {
+    if (totalDe[p] != null) return ve < totalDe[p];
+    if (totalHistorial != null) return (historial || []).length < totalHistorial;
+    return hayMasHistorial;
+  }
   /* CADUCA, NO SE BORRA (2026-09-18, al mirar por qué «tarda en refrescar»).
      Terminar una partida o borrar una ponía `historial = null`, así que al
      volver a la pantalla no había nada que pintar y salía «Buscando tus
@@ -1988,7 +2029,7 @@
       caja.innerHTML = titulo + '<p class="chico tenue">Buscando tus partidas…</p>';
       window.ATWI.nube.historial(POR_TANDA).then(function (l) {
         historial = l || [];
-        hayMasHistorial = historial.length >= POR_TANDA;
+        anotarTanda(l, null, POR_TANDA);
         /* Lo nuevo ya está aquí: si algo lo había marcado caducado, deja de
            estarlo. Sin esto, el primer repintado lanzaba OTRA consulta encima
            —medido: dos viajes de 642 y 279 ms para la misma lista—. */
@@ -2017,9 +2058,14 @@
     if (historialCaducado && !refrescando) {
       refrescando = true;
       historialCaducado = false;
-      window.ATWI.nube.historial(Math.max(POR_TANDA, historial.length)).then(function (l) {
+      var pedidas = Math.max(POR_TANDA, historial.length);
+      window.ATWI.nube.historial(pedidas).then(function (l) {
         refrescando = false;
         if (l) historial = l;
+        /* ⚠️ Y SE VUELVEN A CONTAR LAS DOS ORILLAS. Sin esto, borrar la última
+           partida en línea dejaba `totalDe.linea` en su valor viejo y el botón
+           reaparecía en una pestaña ya vacía. */
+        anotarTanda(l, null, pedidas);
         if (vistaActual === 'historial') pintarHistorial();
       }).catch(function () { refrescando = false; });
     }
@@ -2213,7 +2259,7 @@
          ella: así entra en el mismo reparto y en el mismo snap que las demás
          —el deslizamiento acaba en él— en vez de quedarse colgando al final de
          un contenedor que no scrollea. */
-      (hayMasHistorial && lista.length
+      (lista.length && hayMasEn(vistaHistorial, lista.length)
         /* ⚠️ EL HUECO ES DEL TAMAÑO DE UNA TARJETA, EL BOTÓN NO (titular,
            2026-09-18: «el botón ocupa el área pero es de tamaño normal»).
            Poniéndole el alto al propio botón salía uno de 153 px, que es medio
@@ -2239,13 +2285,21 @@
      y está en la tanda 3 no puede saltar a la primera pantalla sin traerla, y
      traerla es justamente lo que esto viene a no hacer de golpe. */
   function masHistorial() {
-    if (trayendoMas || !hayMasHistorial || !historial) return;
+    if (trayendoMas || !historial) return;
+    /* LA TANDA ES DE LA PESTAÑA QUE SE ESTÁ MIRANDO, no de todas: pedir diez
+       cualesquiera para alargar «En línea» puede traer diez locales y dejar la
+       lista igual que estaba. Y el `offset` se cuenta sobre esa misma orilla. */
+    var donde = vistaHistorial === 'linea' ? 'linea' : 'local';
+    var yaEstan = (historial || []).filter(function (d) {
+      return esEnLinea(d) === (donde === 'linea');
+    }).length;
+    if (!hayMasEn(donde, yaEstan)) return;
     trayendoMas = true;
     pintarHistorial();
-    window.ATWI.nube.historial(POR_TANDA, null, historial.length).then(function (l) {
+    window.ATWI.nube.historial(POR_TANDA, null, yaEstan, donde).then(function (l) {
       trayendoMas = false;
       var nuevas = l || [];
-      hayMasHistorial = nuevas.length >= POR_TANDA;
+      anotarTanda(l, donde);
       /* Sin repetidas: entre una tanda y otra puede haberse terminado una
          partida, y entonces el `offset` deja pasar dos veces la misma. */
       var yaEstan = {};
@@ -3441,7 +3495,7 @@
     var conHist = (historial || !hayNube) ? Promise.resolve() :
       n.historial(POR_TANDA).then(function (l) {
         historial = l || [];
-        hayMasHistorial = historial.length >= POR_TANDA;
+        anotarTanda(l, null, POR_TANDA);
         historialCaducado = false;
       }).catch(function () {});
     Promise.all([datos.avisos(), conInv, conHist]).then(function (par) {

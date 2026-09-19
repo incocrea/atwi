@@ -677,8 +677,19 @@ window.ATWI = window.ATWI || {};
   /** @param uno  si viene, trae SOLO ese debate. Lo usa `partida()`. */
   /** Las partidas de quien está dentro. `desde` es cuántas saltarse: la lista
    *  se trae de diez en diez y el botón «Cargar más» pide la tanda siguiente,
-   *  así que la primera pantalla no espera por partidas que nadie va a mirar. */
-  function historial(cuantas, uno, desde) {
+   *  así que la primera pantalla no espera por partidas que nadie va a mirar.
+   *
+   *  `donde` acota a una orilla —'local' o 'linea'— y sale de la pestaña del
+   *  historial. Sin él la tanda viene mezclada, que es lo que hace la primera
+   *  carga; con él, «Cargar más» pide más DE LO QUE SE ESTÁ MIRANDO en vez de
+   *  traer diez locales para una pestaña de partidas en línea.
+   *
+   *  Y DEVUELVE CUÁNTAS HAY EN TOTAL, en `.total` del propio array
+   *  (`Prefer: count=exact` → cabecera `Content-Range`). Es lo que deja que
+   *  «Cargar más» diga la verdad en vez de adivinar: ver `hayMasEn()`. No
+   *  cuesta un viaje —viaja en la misma respuesta— y el COUNT sobre una lista
+   *  de partidas de una persona no se nota. */
+  function historial(cuantas, uno, desde, donde) {
     if (!hayNube()) return Promise.resolve([]);
     /* Y EL RESULTADO ANIDADO, que hasta el 2026-09-15 no se traía: el historial
        enseñaba las partidas sin saber si habían llegado a tener veredicto, así
@@ -797,17 +808,33 @@ window.ATWI = window.ATWI || {};
              más de una hora-- borraba justo lo que ahora hay que conservar. Se
              cambió en la misma tanda. */
           (uno ? '&id=eq.' + uno : '') +
+          /* LA ORILLA. `not.is.true` y no `is.false` porque `en_linea` puede
+             venir nulo en las partidas anteriores a la 0055: con `is.false`
+             esas desaparecerían de su propia pestaña. */
+          (donde === 'linea' ? '&en_linea=is.true' :
+           donde === 'local' ? '&en_linea=not.is.true' : '') +
           '&order=creado.desc&limit=' + (cuantas || 20) +
           (desde ? '&offset=' + desde : ''), {
         headers: {
           'apikey': cfg.supabaseAnon,
           'Authorization': 'Bearer ' + conSesion(),
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          /* CUÁNTAS HAY EN TOTAL, en la misma respuesta. */
+          'Prefer': 'count=exact'
         }
       }).then(function (r) {
         if (!r.ok) return r.text().then(function (t) {
           throw new Error('historial (' + r.status + '): ' + t.slice(0, 160));
         });
+        /* `Content-Range: 0-9/37` —lo de después de la barra es el total—. Si
+           el servidor no lo manda, `cuantasHay` queda nulo y quien lo lee
+           vuelve a la regla vieja de «la tanda vino llena». */
+        var cuantasHay = null;
+        try {
+          var cr = String(r.headers.get('content-range') || '');
+          var tot = cr.split('/')[1];
+          if (tot && /^[0-9]+$/.test(tot)) cuantasHay = Number(tot);
+        } catch (e) {}
         /* Se lee el texto para poder PESARLO. `r.json()` hace lo mismo por dentro
            —lee el cuerpo entero y lo parsea— así que esto no añade trabajo. */
         return r.text().then(function (txt) {
@@ -815,10 +842,19 @@ window.ATWI = window.ATWI || {};
             console.debug('ATWI · historial: %s KB en %s ms',
               Math.round(txt.length / 1024), Date.now() - arranque);
           } catch (e) {}
-          return JSON.parse(txt);
+          var v = JSON.parse(txt);
+          /* El total viaja colgado del array: quien no lo mire recibe la misma
+             lista de siempre y no se entera. */
+          if (v && cuantasHay != null) v.total = cuantasHay;
+          return v;
         });
       }).then(function (filas) {
-        return (filas || []).map(function (d) {
+        /* ⚠️ EL TOTAL SE REPONE DESPUÉS DEL `map`, que devuelve un array NUEVO y
+           se llevaba por delante la propiedad colgada —la lista llegaba bien y
+           `.total` salía `undefined`, sin que nada fallara—. Una propiedad
+           pegada a un array no sobrevive a transformarlo. */
+        var cuenta = filas && filas.total;
+        var lista = (filas || []).map(function (d) {
           /* PostgREST no promete el orden de la tabla anidada. Se ordena aqui:
              una partida contada al reves no es una partida. */
           d.turnos_grabados = (d.turnos_grabados || [])
@@ -833,6 +869,8 @@ window.ATWI = window.ATWI || {};
           d.resultado = Array.isArray(res) ? (res[0] || null) : (res || null);
           return d;
         });
+        if (cuenta != null) lista.total = cuenta;
+        return lista;
       });
     }).catch(function (e) { apuntar(e.message); return []; });
   }
