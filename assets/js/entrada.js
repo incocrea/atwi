@@ -449,6 +449,21 @@ window.ATWI = window.ATWI || {};
   function aceptarTerminosYa() {
     var bot = document.querySelector('.globo [data-puerta="acepto"]');
     if (bot) { bot.disabled = true; bot.textContent = 'Guardando…'; }
+    /* ⚠️ EN EL ALTA DE INVITADO TODAVIA NO HAY CUENTA A LA QUE COLGAR LA
+       CONSTANCIA, así que pedirla aquí es un 401 y el gate se queda puesto
+       para siempre —comprobado en el navegador—. `aceptar_terminos` saca el
+       dueño del JWT y aquí no hay JWT de nadie: la cuenta nace dos pasos más
+       adelante. La constancia la escribe el servidor igual, con su fecha, pero
+       dentro de `entrar_con_invitacion`, que es quien crea el perfil. Lo que se
+       acepta se lleva en la misma petición, así que no hay hueco por el que
+       alguien entre sin haber aceptado. */
+    if (estado.paso === 'invitado') {
+      terminosPuestos = true;
+      if (window.ATWI.globo) window.ATWI.globo.cerrarFijo();
+      pintarEstadoTerminos();
+      if (alAceptarTerminos) { var g = alAceptarTerminos; alAceptarTerminos = null; g(); }
+      return Promise.resolve();
+    }
     return auth.aceptarTerminos(laVersionDeLosTerminos())
       .then(function () {
         terminosPuestos = true;
@@ -1074,7 +1089,8 @@ window.ATWI = window.ATWI || {};
     } else if (a === 'soy-nuevo') {
       abrirAlta(acc, false);
     } else if (a === 'ver-terminos') {
-      /* La tarjeta solo existe en el paso de la contraseña: siempre es registro. */
+      /* La tarjeta solo existe en los dos pasos de alta —la contraseña tras el
+         enlace y el invitado con su llave—: siempre es registro. */
       abrirTerminos(acc, null, true);
     } else if (a === 'ver-clave') {
       var c = $('#c-clave2');
