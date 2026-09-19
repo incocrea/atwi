@@ -1061,11 +1061,30 @@
       pasos: [
         '<b>Verificar primero el cupo y la tarifa</b>, que están sin comprobar desde el ' +
           'primer día: si el recurso está en nivel S0 y no F0, no hay cupo gratuito y se ' +
-          'cobra desde el primer carácter.',
+          'cobra desde el primer carácter. Se ve en el recurso de Speech, en ' +
+          '<b>Pricing tier</b>.',
         'Si el cupo es real y se agota: subir a S0 y pagar por carácter, o dejar de ' +
-          'locutar al abogado hasta el mes siguiente.'
+          'locutar al abogado hasta el mes siguiente.',
+        /* ⚠️ DOS SITIOS DISTINTOS, Y NO DAN EL MISMO NÚMERO (titular, 2026-09-19,
+           al preguntar si Cost Management era el sitio). Lo que esta barra mide
+           son CARACTERES, y Cost Management enseña DÓLARES: los caracteres solo
+           salen en las métricas del recurso (`Synthesized Characters`). El de
+           dinero sirve para lo otro que esta ficha dice sin comprobar --si hay
+           cupo gratis o si se está cobrando desde el primer carácter--: si en
+           Cost Management aparece gasto de Speech, el nivel es S0 y el cupo de
+           0,5 M no existe. */
+        '<b>Los caracteres y el dinero se miran en sitios distintos</b>: esta barra cuenta ' +
+          'caracteres y sale de lo que anotamos nosotros; el portal los enseña en las ' +
+          'métricas del recurso. En Cost Management solo hay dólares — y eso responde la ' +
+          'otra pregunta: <b>si ahí aparece gasto de Speech, el recurso no es gratuito</b> ' +
+          'y el cupo de 0,5 M de esta ficha no existe.'
       ],
-      enlaces: [['Precios de Azure Speech', 'https://azure.microsoft.com/pricing/details/cognitive-services/speech-services/']]
+      /* Sin el id de suscripción en la URL: esta página se publica en atwi.app y
+         no hay por qué dejar ahí un identificador de la cuenta de Azure. Sin
+         `scope`, el portal abre con la suscripción de quien entra. */
+      enlaces: [['Caracteres (métricas del recurso)', 'https://portal.azure.com/#browse/Microsoft.CognitiveServices%2Faccounts'],
+                ['Gasto (Cost Management)', 'https://portal.azure.com/#view/Microsoft_Azure_CostManagement/Menu/~/costanalysis'],
+                ['Precios de Azure Speech', 'https://azure.microsoft.com/pricing/details/cognitive-services/speech-services/']]
     },
     invocaciones: {
       cuando: 'Cuando pase del 70 % (1,4 M en el mes)',
@@ -1086,7 +1105,8 @@
         'Poner método de pago antes de llegar, y comprobar el precio por minuto entonces: ' +
           'el que usamos se verificó en septiembre de 2026.'
       ],
-      enlaces: [['Consola de Deepgram', 'https://console.deepgram.com/usage']]
+      enlaces: [['Consola de Deepgram', 'https://console.deepgram.com/usage'],
+                ['Facturación de Deepgram', 'https://console.deepgram.com/billing']]
     },
     anthropic: {
       cuando: 'Siempre: es prepago y no hay cupo que avise',
@@ -1097,7 +1117,8 @@
         'Activar el aviso de saldo bajo en la consola: es lo único que avisa.',
         'A ~$0,13 la partida de Controversia, 20 USD dan para unas 150 partidas.'
       ],
-      enlaces: [['Facturación de Anthropic', 'https://console.anthropic.com/settings/billing']]
+      enlaces: [['Facturación de Anthropic', 'https://console.anthropic.com/settings/billing'],
+                ['Uso por día', 'https://console.anthropic.com/settings/usage']]
     },
     egress: {
       cuando: 'No se puede medir desde aquí: hay que mirarlo en el panel',
