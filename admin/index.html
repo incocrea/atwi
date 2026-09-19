@@ -60,6 +60,11 @@
   h2:first-child { margin-top: 0; }
   .chico { font-size: 12px; color: var(--suave); }
   .mal { color: var(--mal); } .bien { color: var(--bien); } .ojo { color: var(--ojo); }
+  /* Borrar una cuenta: rojo, chico y sin relleno; que se vea que es otra cosa. */
+  button.peligro { font: inherit; font-size: 12px; font-weight: 700; color: var(--mal);
+    background: none; border: 1px solid var(--mal); border-radius: 999px; padding: 2px 10px;
+    cursor: pointer; }
+  button.peligro:disabled { opacity: .5; cursor: default; }
   .pastilla { display: inline-block; padding: 1px 7px; border-radius: 99px;
               background: #efecf8; color: var(--marca); font-size: 11px; font-weight: 700; }
   .aviso { background: #fff7e6; border: 1px solid #f0dcae; color: #6b5316;
@@ -194,7 +199,7 @@
   </div>
 </div>
 
-<script src="../assets/js/config.js?v=e113600"></script>
-<script src="tablero.js?v=e113600"></script>
+<script src="../assets/js/config.js?v=401f3c6"></script>
+<script src="tablero.js?v=401f3c6"></script>
 </body>
 </html>

@@ -706,7 +706,7 @@
           tarjeta('Partidas', String(debates.length), '') +
         '</div>' +
         '<h2>Cuentas</h2>' +
-        tabla(['Nombre', 'Personaje', 'Nivel', 'Partidas', 'Gastado', 'Alta', 'Id'],
+        tabla(['Nombre', 'Personaje', 'Nivel', 'Partidas', 'Gastado', 'Alta', 'Id', ''],
           gente.map(function (p) {
             var d = porPersona[p.id] || { partidas: 0, usd: 0 };
             return [esc(p.nombre || '—') +
@@ -716,12 +716,64 @@
                     d.partidas,
                     usd(d.usd),
                     fecha(p.creado),
-                    '<span class="chico">' + esc(String(p.id).slice(0, 8)) + '</span>'];
-          }), [false, false, true, true, true, false, false]) +
+                    '<span class="chico">' + esc(String(p.id).slice(0, 8)) + '</span>',
+                    /* BORRAR UNA CUENTA ENTERA, solo el super admin y nunca la
+                       propia (titular, 2026-09-19). El boton solo se pinta si
+                       quien mira es el super admin; la funcion de borde lo
+                       vuelve a comprobar con el JWT, que es lo que manda. */
+                    (esSuperAdmin() && p.id !== (sesion.user && sesion.user.id)
+                      ? '<button class="peligro" data-borrar-cuenta="' + esc(p.id) +
+                        '" data-apodo="' + esc(p.nombre || '') + '">Borrar</button>'
+                      : '')];
+          }), [false, false, true, true, true, false, false, false]) +
+        '<p class="chico" style="margin-top:10px"><b>Borrar</b> se lleva la cuenta entera: ' +
+        'sus partidas —también del historial de quien jugó con ella—, los audios de esas ' +
+        'partidas, sus temas, sus vidas y la cuenta de acceso. No se deshace. Los consumos ' +
+        'se quedan sin nombre, para que la factura cuadre.</p>' +
         '<p class="chico" style="margin-top:10px">El gasto por persona solo cuenta lo que ' +
         'se pudo atribuir: el invitado de una partida local no tiene cuenta, así que su ' +
         'consumo cuelga de quien la creó.</p>';
     }).catch(fallo);
+  }
+
+  var SUPER_ADMIN = 'leoncitobravo2013@gmail.com';   // el mismo que app.js y borrar_cuenta
+  function esSuperAdmin() {
+    var c = sesion && sesion.user && sesion.user.email;
+    return String(c || '').trim().toLowerCase() === SUPER_ADMIN;
+  }
+
+  /* Se confirma escribiendo el apodo: un «¿seguro?» se acepta sin leer, y esto
+     no se deshace. `prompt` nativo, que aqui no hay globos y es una pantalla
+     del titular. */
+  function borrarCuenta(id, apodo) {
+    var escrito = window.prompt('Vas a borrar la cuenta «' + apodo + '» con TODO lo suyo, ' +
+      'también las partidas que otros jugaron con ella. No se deshace.\n\n' +
+      'Escribe el apodo tal cual para confirmar:');
+    if (escrito === null) return;
+    if (String(escrito).trim().toLowerCase() !== String(apodo).trim().toLowerCase()) {
+      window.alert('El apodo no coincide. No se borró nada.');
+      return;
+    }
+    var b = document.querySelector('[data-borrar-cuenta="' + id + '"]');
+    if (b) { b.disabled = true; b.textContent = 'Borrando…'; }
+    fetch(cfg.supabaseUrl + '/functions/v1/borrar_cuenta', {
+      method: 'POST',
+      headers: {
+        apikey: cfg.supabaseAnon,
+        Authorization: 'Bearer ' + sesion.access_token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ perfil: id })
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (!x.ok || !x.j || !x.j.borrada) throw new Error((x.j && x.j.error) || 'no se pudo borrar');
+        window.alert('Cuenta «' + (x.j.apodo || apodo) + '» borrada: ' + x.j.partidas +
+          ' partida(s) y ' + x.j.audios + ' audio(s).');
+        pintar();
+      }).catch(function (e) {
+        window.alert('No se borró: ' + e.message);
+        if (b) { b.disabled = false; b.textContent = 'Borrar'; }
+      });
   }
 
   /* --- PARTIDAS -------------------------------------------------------------- */
@@ -1151,6 +1203,8 @@
       }).catch(function () {});
       return;
     }
+    var bc = e.target.closest('[data-borrar-cuenta]');
+    if (bc) return borrarCuenta(bc.dataset.borrarCuenta, bc.dataset.apodo);
     var d = e.target.closest('[data-detalle]');
     if (d) return abrirDetalle(d.dataset.detalle);
     var c = e.target.closest('#detalle .pestanas button');
