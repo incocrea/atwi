@@ -568,13 +568,44 @@ window.ATWI = window.ATWI || {};
     pausada: function () { return Boolean(grabadora && grabadora.state === 'paused'); },
     segundos: segundos,
 
-    /** Suelta el micrófono. Solo al terminar la partida entera. */
+    /**
+     * SUELTA EL MICRÓFONO EN CUANTO DEJA DE HACER FALTA (titular, 2026-09-19:
+     * «el browser marca el micrófono como en uso pero la interfaz actual no lo
+     * usa»). Hasta hoy el flujo solo se soltaba al cerrar la sala --un único
+     * llamador en todo el proyecto-- y `probar()` lo dejaba abierto a propósito
+     * «porque es el mismo que va a usar la sala»: verdad cuando el sorteo lanza
+     * la ronda, falso en todos los demás caminos. Si la prueba no pasaba, si se
+     * mandaba una invitación o si la partida terminaba, el micrófono se quedaba
+     * abierto y sobrevivía a navegar por toda la app.
+     *
+     * NO ES LO MISMO QUE `cerrar()`: esto suelta la captura y NO tira lo
+     * grabado. Por eso se puede llamar generosamente desde cualquier pantalla
+     * que no grabe, que es lo que evita que el fallo vuelva con la pantalla
+     * siguiente.
+     *
+     * ⚠️ NO TOCA NADA SI HAY UNA GRABADORA VIVA, y esa guarda es la que hace
+     * seguro llamarlo de más: mientras se revisa un turno para «agregar algo
+     * más» el MediaRecorder está en `paused` --no inactivo-- porque agregar es
+     * reanudar la MISMA grabación, y soltarle el flujo por debajo la partiría
+     * en dos archivos. Con `inactive` el audio ya está en la mano.
+     *
+     * Y SOLTAR NO CUESTA UN PERMISO: `abrir()` vuelve a pedirlo, y con el
+     * permiso ya concedido el navegador no pregunta nada.
+     */
+    soltar: function (porque) {
+      if (grabadora && grabadora.state !== 'inactive') return false;
+      pararVigilancia();
+      if (!flujo) return false;
+      try { flujo.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+      flujo = null;
+      apuntar('microfono soltado', porque || '');
+      return true;
+    },
+
+    /** Suelta el micrófono Y tira lo grabado. Al terminar la partida entera. */
     cerrar: function () {
       this.descartar();
-      if (flujo) {
-        flujo.getTracks().forEach(function (t) { t.stop(); });
-        flujo = null;
-      }
+      this.soltar('se cierra la sala');
     }
   };
 })();

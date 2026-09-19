@@ -329,6 +329,8 @@ window.ATWI = window.ATWI || {};
     op = op || {};
     var t = turnosDe(d);
     if (!t.length) return;
+    /* Al repaso se viene a OÍR. Nada de esta pantalla graba. */
+    window.ATWI.grabadora.soltar('repaso');
 
     var mesa = mesaDelDebate(d, t);
     P = {
@@ -609,6 +611,10 @@ window.ATWI = window.ATWI || {};
   /** Le toca al otro: se dice a quién, hasta cuándo, y se sale sin perder nada. */
   function pintarEspera() {
     P.estado = 'espera';
+    /* AQUÍ NO SE GRABA Y PUEDE TARDAR UN DÍA: le toca al otro. Sin esto, mandar
+       el turno en una partida en línea dejaba el micrófono abierto hasta que
+       alguien cerrara la sala. */
+    window.ATWI.grabadora.soltar('en línea: le toca al otro');
     var cab = $('#t-partida');
     if (cab) cab.textContent = 'La sala';
     if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
@@ -2743,6 +2749,9 @@ window.ATWI = window.ATWI || {};
      revela sea también el que desbloquea el audio del redoble. */
   function deliberar(fallado) {
     P.estado = 'deliberando';
+    /* La ronda está entera: ya no queda nada que grabar, y entre esto, la
+       revelación y el veredicto pasan minutos. */
+    window.ATWI.grabadora.soltar('la ronda ya está entera');
     avisarSiSeVan();
     pararJuez();
     cerrarReproductor();
@@ -3263,6 +3272,7 @@ window.ATWI = window.ATWI || {};
        sala que no. Lo encontró el titular con el ejercicio 1 (2026-09-16). */
     pararJuez();
     cerrarReproductor();
+    window.ATWI.grabadora.soltar('se revela el resultado');
     m.hidden = true;
     /* En línea, ver el resultado desde la sala también cumple el aviso (0060). */
     if (P.enLinea && P.debate && !P.ensayo && window.ATWI.nube && window.ATWI.nube.marcarVisto) {

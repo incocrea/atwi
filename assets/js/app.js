@@ -58,6 +58,16 @@
 
   function irA(nombre) {
     if (VISTAS.indexOf(nombre) === -1) return;
+    /* EL MICRÓFONO NO VIAJA ENTRE PESTAÑAS. Es la red general del arreglo del
+       2026-09-19: los sitios concretos que lo sueltan están nombrados uno a
+       uno --y una lista escrita a mano se queda coja a la primera pantalla
+       nueva, que es un fallo que este proyecto ya tiene anotado cuatro veces
+       con los iconos y los modos--. Aquí no hace falta acertar la lista: si se
+       cambia de pestaña, no se está grabando. `soltar()` no hace nada si hay
+       una grabadora viva, así que llamarlo de más es gratis. */
+    if (window.ATWI.grabadora && window.ATWI.grabadora.soltar) {
+      window.ATWI.grabadora.soltar('se cambió de pestaña');
+    }
     /* AL ENTRAR AL CATÁLOGO SE BARAJA, y solo al entrar. Rebarajar en cada
        pintada dejaría la lista saltando mientras se escribe en el buscador o se
        toca un filtro, que es lo contrario de poder elegir. */
@@ -4900,7 +4910,12 @@
      en `sessionStorage`, que muere con la pestaña: en la siguiente visita se
      vuelve a comprobar, que es cuando pueden haber cambiado el permiso. */
   var probandoMicro = false;
-  function conMicrofono(sigue, queHace) {
+  /* `graba` dice si el camino que viene DE VERDAD va a grabar ahora mismo. En
+     el sorteo sí --la sala abre a continuación y el flujo abierto es el que va
+     a usar--, pero al mandar una invitación no: la partida empieza cuando la
+     otra persona acepte, que puede ser mañana. Ese era uno de los caminos por
+     los que el micrófono se quedaba encendido sin que nada lo cerrara. */
+  function conMicrofono(sigue, queHace, graba) {
     var g = window.ATWI.grabadora;
     if (!g || !g.probar) return sigue();
     if (probandoMicro) return;
@@ -4934,6 +4949,9 @@
              titular). `ok` deja el color, que dice que se oyó, y para el
              temblor, que dice que está escuchando AHORA. */
           if (disco) { disco.dataset.suena = 'ok'; disco.style.setProperty('--nivel', '.5'); }
+          /* Pasó la prueba, pero si de aquí no se va a grabar, el micrófono se
+             suelta: lo que se quería saber ya se sabe. */
+          if (graba === false && g.soltar) g.soltar('probado, pero aquí no se graba');
           /* UN SEGUNDO Y MEDIO ANTES DE LANZAR (titular, 2026-09-18). Sin la
              pausa, el «Te oí» y el sorteo caen en el mismo fotograma: nadie
              llega a ver que el micrófono respondió y la pantalla cambia como si
@@ -4950,6 +4968,12 @@
            esta pantalla decide. El micrófono se esconde con él: lo que tiene
            que quedar en pantalla es el botón, listo para volver a tocarlo. */
         if (caja) caja.hidden = true;
+        /* LA PRUEBA QUE NO PASA TAMBIÉN SUELTA, y este era el caso más visible:
+           con `silencio` el micrófono SÍ llegó a abrirse --se abrió y no captó
+           nada-- así que quedaba encendido mientras la persona se iba a otra
+           pantalla. Comprobado el 2026-09-19 con un micrófono falso: la pista
+           seguía `live` después de recorrer catálogo, historial y perfil. */
+        if (g.soltar) g.soltar('la prueba no pasó: ' + r.motivo);
         window.ATWI.aviso(
           /* BLOQUEADO NO ES RECHAZADO, y no se arreglan igual. `denied` es el
              navegador negándose a PREGUNTAR —ahí no hay diálogo que aceptar y
@@ -5987,9 +6011,9 @@
     else if ((a === 'proponer' || a === 'sortear') && propuesta.modo === 'competencia') {
       window.ATWI.aviso('QuiénGane está en desarrollo: falta elegir el minijuego. Muy pronto.');
     }
-    else if (a === 'proponer') { conMicrofono(proponer, 'enviar'); }
+    else if (a === 'proponer') { conMicrofono(proponer, 'enviar', false); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
-    else if (a === 'sortear') { conMicrofono(sortearYJugar, 'empezar'); }
+    else if (a === 'sortear') { conMicrofono(sortearYJugar, 'empezar', true); }
     else if (a === 'editar-ficha') { abrirFicha('yo', acc); }
     else if (a === 'guardar-ficha') { guardarFicha(); }
     else if (a === 'tema-nuevo') { abrirEscribir(null, acc); }
