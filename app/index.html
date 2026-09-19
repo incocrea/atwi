@@ -27,6 +27,17 @@
 
      el preconnect no sirve de nada. -->
 
+<!-- LA POLÍTICA DE CONTENIDO VA EN UN `meta` PORQUE GITHUB PAGES NO DEJA PONER
+     CABECERAS (docs/07, fase 5). No arregla ningún fallo de hoy --no hay XSS
+     explotable: los 60+ `innerHTML` pasan por `esc()`-- sino que convierte el
+     próximo en uno contenido: con esto, un script inyectado no puede cargarse
+     desde fuera ni mandar nada a ningún sitio que no sea Supabase.
+     ⚠️ `style-src` NECESITA 'unsafe-inline': el juego escribe `style="--voz:…"`
+     por todas partes --el color del personaje, el nivel del micrófono-- y sin
+     eso la app se ve en blanco y negro.
+     ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
+     los `<script src>` relativos a su servidor. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <link rel="preconnect" href="https://vauarfofsfgwnuyjfpni.supabase.co" crossorigin>
   <!-- Y el respaldo para quien no entienda `preconnect`: al menos que resuelva
        el nombre. Aquí no es un adorno —medido el 2026-09-18 en la máquina del
@@ -34,11 +45,11 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=3800018">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=3800018">
-<link rel="stylesheet" href="../assets/css/base.css?v=3800018">
-<link rel="stylesheet" href="../assets/css/app.css?v=3800018">
-<link rel="stylesheet" href="../assets/css/modal.css?v=3800018">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=1a42249">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1a42249">
+<link rel="stylesheet" href="../assets/css/base.css?v=1a42249">
+<link rel="stylesheet" href="../assets/css/app.css?v=1a42249">
+<link rel="stylesheet" href="../assets/css/modal.css?v=1a42249">
 </head>
 
 <body class="app">
@@ -436,36 +447,39 @@
 
   <h3>11. Borrar tus datos</h3>
   <p>Cada partida se borra desde el historial, con sus grabaciones del personaje y su
-    acta. Para borrar la cuenta entera, escríbenos.
-    <span class="legal__pendiente">PENDIENTE: correo de contacto.</span></p>
+    acta. Para borrar la cuenta entera, escríbenos a
+    <a href="mailto:hola@atwi.app">hola@atwi.app</a> y lo hacemos.</p>
 
   <h3>12. Si estas condiciones cambian</h3>
   <p>Te las volvemos a enseñar y hay que aceptarlas otra vez para seguir jugando.</p>
 
-  <h3>13. Ley y contacto</h3>
-  <p><span class="legal__pendiente">PENDIENTE: quién presta el servicio (persona o
-    empresa), país, ley aplicable y correo de contacto.</span></p>
+  <h3>13. Quién está detrás, y cómo escribirnos</h3>
+  <p>ATWI lo presta <b>Incocrea SAS</b>. Para cualquier cosa —una duda, un problema, borrar
+    tu cuenta o ejercer tus derechos sobre tus datos— escríbenos a
+    <a href="mailto:hola@atwi.app">hola@atwi.app</a>.</p>
+  <p><span class="legal__pendiente">PENDIENTE: país de constitución de Incocrea SAS y ley
+    aplicable a estas condiciones.</span></p>
 </template>
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=3800018"></script>
-<script src="../assets/js/precarga.js?v=3800018"></script>
-<script src="../assets/js/iconos.js?v=3800018"></script>
-<script src="../assets/js/personajes.js?v=3800018"></script>
-<script src="../assets/js/datos.js?v=3800018"></script>
-<script src="../assets/js/sonido.js?v=3800018"></script>
-<script src="../assets/js/veredicto.js?v=3800018"></script>
-<script src="../assets/js/grabadora.js?v=3800018"></script>
-<script src="../assets/js/partida.js?v=3800018"></script>
-<script src="../assets/js/auth.js?v=3800018"></script>
-<script src="../assets/js/entrada.js?v=3800018"></script>
-<script src="../assets/js/nube.js?v=3800018"></script>
+<script src="../assets/js/config.js?v=1a42249"></script>
+<script src="../assets/js/precarga.js?v=1a42249"></script>
+<script src="../assets/js/iconos.js?v=1a42249"></script>
+<script src="../assets/js/personajes.js?v=1a42249"></script>
+<script src="../assets/js/datos.js?v=1a42249"></script>
+<script src="../assets/js/sonido.js?v=1a42249"></script>
+<script src="../assets/js/veredicto.js?v=1a42249"></script>
+<script src="../assets/js/grabadora.js?v=1a42249"></script>
+<script src="../assets/js/partida.js?v=1a42249"></script>
+<script src="../assets/js/auth.js?v=1a42249"></script>
+<script src="../assets/js/entrada.js?v=1a42249"></script>
+<script src="../assets/js/nube.js?v=1a42249"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=3800018"></script>
-<script src="../assets/js/app.js?v=3800018"></script>
+<script src="../assets/js/demo.js?v=1a42249"></script>
+<script src="../assets/js/app.js?v=1a42249"></script>
 </body>
 </html>

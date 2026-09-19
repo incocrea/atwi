@@ -10,6 +10,22 @@
    ========================================================================== */
 window.ATWI = window.ATWI || {};
 
+/* NADIE NOS METE EN UN MARCO AJENO (docs/07, fase 5). `frame-ancestors` es la
+   forma correcta y se IGNORA en un `meta`, así que en GitHub Pages --donde no
+   se pueden poner cabeceras-- lo que queda es comprobarlo desde dentro.
+   ⚠️ CON EXCEPCIÓN DE MISMO ORIGEN: la landing embebe `/app/?demo=1` para
+   enseñar el juego, así que rechazar todo marco rompería su visor.
+   `location.origin` del padre no se puede leer si es de otro sitio --y ese
+   fallo ES la respuesta: si no se puede leer, no es nuestro--. */
+(function () {
+  if (window.top === window.self) return;
+  var mismo = false;
+  try { mismo = window.top.location.origin === window.location.origin; } catch (e) { mismo = false; }
+  if (mismo) return;
+  try { window.top.location = window.location.href; }
+  catch (e) { document.documentElement.innerHTML = ''; }
+})();
+
 window.ATWI.config = {
   /* LOS DOS MODOS, CON SU JUEGO DE PALABRAS.
      Las dos palabras esconden «IA» y se resalta: negoc·IA·ción y controvers·IA.
@@ -102,7 +118,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '3800018',
+  version: '1a42249',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al

@@ -31,6 +31,11 @@ img, svg { max-width: 100%; display: block; }
    además son botones, se veía una raya dentro de la pastilla.
    Se mantiene en el foco de teclado, que sí necesita marcarse. */
 a { color: var(--lavanda-oscuro); text-decoration: none; }
+/* UN BOTÓN CON FORMA DE ENLACE. Lo es de verdad --hace algo, no lleva a otro
+   sitio-- y por eso es `button`: con un `<a href="#">` el teclado y el lector
+   de pantalla anunciarían un destino que no existe. */
+.enlace { font: inherit; color: var(--lavanda-oscuro); background: none; border: 0;
+  padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 a:focus-visible { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
 
 :focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; border-radius: 6px; }

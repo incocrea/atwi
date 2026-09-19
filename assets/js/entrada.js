@@ -30,8 +30,11 @@ window.ATWI = window.ATWI || {};
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    /* LA COMILLA SIMPLE TAMBIÉN (2026-09-19, docs/07). Hoy ningún atributo del
+       juego va entre comillas simples, así que no se explotaba; el día que
+       alguien escriba uno, esto ya está puesto. */
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
 

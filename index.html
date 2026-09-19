@@ -15,11 +15,22 @@
 <title>ATWI · El juego de debate para parejas, amigos y familia</title>
 <meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<link rel="stylesheet" href="assets/css/fuentes.css?v=3800018">
-<link rel="stylesheet" href="assets/css/tokens.css?v=3800018">
-<link rel="stylesheet" href="assets/css/base.css?v=3800018">
-<link rel="stylesheet" href="assets/css/landing.css?v=3800018">
-<link rel="stylesheet" href="assets/css/modal.css?v=3800018">
+<!-- LA POLÍTICA DE CONTENIDO VA EN UN `meta` PORQUE GITHUB PAGES NO DEJA PONER
+     CABECERAS (docs/07, fase 5). No arregla ningún fallo de hoy --no hay XSS
+     explotable: los 60+ `innerHTML` pasan por `esc()`-- sino que convierte el
+     próximo en uno contenido: con esto, un script inyectado no puede cargarse
+     desde fuera ni mandar nada a ningún sitio que no sea Supabase.
+     ⚠️ `style-src` NECESITA 'unsafe-inline': el juego escribe `style="--voz:…"`
+     por todas partes --el color del personaje, el nivel del micrófono-- y sin
+     eso la app se ve en blanco y negro.
+     ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
+     los `<script src>` relativos a su servidor. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=1a42249">
+<link rel="stylesheet" href="assets/css/tokens.css?v=1a42249">
+<link rel="stylesheet" href="assets/css/base.css?v=1a42249">
+<link rel="stylesheet" href="assets/css/landing.css?v=1a42249">
+<link rel="stylesheet" href="assets/css/modal.css?v=1a42249">
 </head>
 
 <body class="landing">
@@ -268,6 +279,8 @@
     </ul>
 
     <h3>Quién procesa qué</h3>
+    <p>De tus datos responde <strong>Incocrea SAS</strong>, que es quien presta ATWI. Escríbenos a
+      <a href="mailto:hola@atwi.app">hola@atwi.app</a> para lo que haga falta.</p>
     <p>ATWI no tiene un servidor propio: usa servicios de terceros, y cada uno recibe solo lo que necesita
       para su parte.</p>
     <ul>
@@ -305,9 +318,8 @@
         acabaron.</li>
       <li><strong>Borrar:</strong> cada partida, desde su papelera, en el momento.</li>
       <li><strong>Cambiar el apodo:</strong> desde Perfil; tus partidas siguen siendo tuyas.</li>
-      <li><strong>Borrar la cuenta entera</strong> o pedir una copia de tus datos: escríbenos y lo hacemos.
-        <!-- ⚠️ PENDIENTE DEL TITULAR: la dirección de contacto. -->
-        <em>El correo de contacto se publica aquí en cuanto esté.</em></li>
+      <li><strong>Borrar la cuenta entera</strong> o pedir una copia de tus datos: escríbenos a
+        <a href="mailto:hola@atwi.app">hola@atwi.app</a> y lo hacemos.</li>
     </ul>
 
     <h3>Para quién es</h3>
@@ -326,6 +338,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=3800018"></script>
+<script src="assets/js/landing.js?v=1a42249"></script>
 </body>
 </html>

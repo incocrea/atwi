@@ -418,6 +418,19 @@ window.ATWI = window.ATWI || {};
        cerrar sesión en la PC dejaba al teléfono con un refresh token muerto
        intentando renovarlo (ver arriba). `scope=local` cierra solo la sesión de
        este refresh token; las demás siguen. */
+    /* TODAS LAS SESIONES DE LA CUENTA, en todos los aparatos: `scope=global`
+       revoca los refresh tokens del servidor, que es lo único que sirve cuando
+       una sesión se escapó. `salir` (local) es lo normal; esto es el botón de
+       emergencia de Perfil. */
+    salirDeTodo: function () {
+      var s = sesion();
+      if (!s) return Promise.resolve();
+      return fetch(url('/auth/v1/logout?scope=global'), {
+        method: 'POST',
+        headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + s.access_token }
+      }).catch(function () {}).then(function () { guardarSesion(null); refreshMuerto = ''; });
+    },
+
     salir: function () {
       var s = sesion();
       guardarSesion(null);

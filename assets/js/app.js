@@ -21,8 +21,11 @@
   var $$ = function (sel, raiz) { return Array.prototype.slice.call((raiz || document).querySelectorAll(sel)); };
 
   function esc(s) {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    /* LA COMILLA SIMPLE TAMBIÉN (2026-09-19, docs/07). Hoy ningún atributo del
+       juego va entre comillas simples, así que no se explotaba; el día que
+       alguien escriba uno, esto ya está puesto. */
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
 
@@ -652,11 +655,36 @@
      pruebas—: la puerta de trabajo se estaba llevando por delante la regla.
      Con alguien dentro manda el correo y no hay excepción.
      ======================================================================== */
-  var SUPER_ADMIN = 'leoncitobravo2013@gmail.com';
+  /* ⚠️ EL CORREO NO VA EN CLARO (docs/07, BAJO). Estaba escrito aquí y el
+     bundle es público: era publicar la dirección de la cuenta de mayor
+     privilegio del proyecto, que es media suplantación regalada a quien mire
+     el JS. Va su SHA-256, que no dice a quién nombra y compara igual de bien.
+     Esto NO es un control de acceso —el probador es una pantalla, y lo que de
+     verdad protege los datos es el RLS y `es_admin()` en la base—: es no dar
+     el nombre de la puerta. */
+  var HUELLA_SUPER = '111bdd65bd48df29465ac1db2072b14e2fb7c8592e7347ba1e56882cb8e2abf6';
+  var esSuper = null;        // null mientras no se sabe; luego true/false
+  var huellaDe = '';         // el correo para el que ya se calculó
+
+  function mirarSiEsSuper(correo) {
+    if (huellaDe === correo) return;
+    huellaDe = correo;
+    if (!window.crypto || !crypto.subtle || !window.TextEncoder) { esSuper = false; return; }
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(correo)).then(function (b) {
+      var hex = Array.prototype.map.call(new Uint8Array(b), function (x) {
+        return ('0' + x.toString(16)).slice(-2);
+      }).join('');
+      var antes = esSuper;
+      esSuper = hex === HUELLA_SUPER;
+      /* Se calcula después de pintar, así que cuando la respuesta cambia la
+         respuesta hay que repintar el disco. */
+      if (antes !== esSuper) refrescarProbadorCabecera();
+    }).catch(function () { esSuper = false; });
+  }
 
   function puedeProbar() {
     var correo = window.ATWI.auth ? window.ATWI.auth.correo() : '';
-    if (correo) return String(correo).trim().toLowerCase() === SUPER_ADMIN;
+    if (correo) { mirarSiEsSuper(String(correo).trim().toLowerCase()); return esSuper === true; }
     var ent = window.ATWI.entrada;
     return !!(ent && ent.dePruebas && ent.dePruebas());
   }
@@ -3074,6 +3102,14 @@
                   icono('salir', 22) + 'Salir</button>'
               : '<button class="boton boton--suave cuenta__salir" data-accion="entrar">Entrar</button>') +
           '</div>' +
+          /* SALIR EN TODOS LOS APARATOS, y es lo único que corta una sesión
+             robada (docs/07): «Salir» es `scope=local` y solo cierra éste
+             —tiene que serlo, o cerrar en la PC echaría del teléfono a media
+             partida—, así que sin esto no hay forma de revocar nada. */
+          (dentro
+            ? '<p class="chico centrado" style="margin-top:var(--e-2)">' +
+                '<button class="enlace" data-accion="salir-de-todo">Cerrar sesión en todos los aparatos</button></p>'
+            : '') +
           /* Qué se guarda y qué no, a un toque desde donde está la cuenta. Abre
              en pestaña nueva: es la página pública, fuera del juego. */
           '<p class="chico centrado" style="margin-top:var(--e-2)">' +
@@ -5782,6 +5818,11 @@
       }
     }
     else if (a === 'entrar') { location.href = location.pathname; }
+    else if (a === 'salir-de-todo') {
+      if (!window.confirm('Se cerrará tu sesión en todos los aparatos, también en éste. ' +
+                          'Tendrás que volver a entrar con tu contraseña.')) return;
+      window.ATWI.auth.salirDeTodo().then(function () { location.reload(); });
+    }
     else if (a === 'salir') {
       /* Se cierra la sesión Y se borra lo que quedó en el aparato: si no, el
          siguiente en entrar vería el nombre y los contadores del anterior. */
