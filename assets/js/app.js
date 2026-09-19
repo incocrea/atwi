@@ -293,6 +293,7 @@
      ---------------------------------------------------------------------- */
   var invitaciones = [];          // lo último que trajo el buzón o el sondeo
   var ultimaNovedad = null;       // marca `ahora` del último sondeo
+  var ultimoSinLeer = -1;         // avisos sin leer en el último sondeo
   var aceptando = null;           // {debate, host} mientras se elige ficha para aceptar
 
   function pintarVidas(n) {
@@ -311,6 +312,11 @@
       pintarVidas(r.vidas);
       var tocadas = r.partidas_tocadas || [];
       var cambioInv = Number(r.invitaciones || 0) !== invitaciones.length;
+      /* Y si el buzón ENCOGIÓ —un «te toca» que el servidor quitó al cumplirse
+         el turno (0058)— la campana también tiene que enterarse. */
+      var sinLeer = Number(r.sin_leer || 0);
+      var cambioBuzon = sinLeer !== ultimoSinLeer;
+      ultimoSinLeer = sinLeer;
       if (!primera && (tocadas.length || cambioInv || Number(r.avisos_nuevos || 0) > 0)) {
         /* El historial caduca —se repinta con lo viejo mientras llega lo
            nuevo— y la sala, si está esperando, se entera por su cuenta. */
@@ -322,8 +328,11 @@
       }
       if (cambioInv) {
         n.invitaciones().then(function (l) { invitaciones = l || []; refrescarPunto(); });
-      } else if (Number(r.avisos_nuevos || 0) > 0) {
+      } else if (Number(r.avisos_nuevos || 0) > 0 || cambioBuzon) {
         refrescarPunto();
+        /* Con el buzón abierto, se repinta: un aviso que ya no vale no puede
+           seguir en pantalla mandando a una partida donde ya no toca. */
+        if (cambioBuzon && $('#m-buzon') && !$('#m-buzon').hidden) pintarBuzon();
       }
     });
   }
@@ -483,7 +492,7 @@
     window.ATWI.nube.rechazarInvitacion(id).then(function () {
       invitaciones = invitaciones.filter(function (x) { return x.id !== id; });
       refrescarPunto();
-      abrirBuzon();
+      pintarBuzon();
     }).catch(function (e) {
       if (window.ATWI.aviso) window.ATWI.aviso('No se pudo rechazar: ' + (e.message || e));
     });
@@ -3391,11 +3400,28 @@
     var caja = $('#m-buzon .modal__cuerpo');
     caja.innerHTML = '<p class="chico tenue centrado" style="padding:var(--e-6) 0">Un momento…</p>';
     abrirModal('m-buzon');
+    pintarBuzon();
+  }
+
+  /* Se pinta aparte de abrirse: el sondeo lo repinta con el modal ya abierto
+     cuando un aviso deja de valer, sin apilar el modal por segunda vez. */
+  function pintarBuzon() {
+    var caja = $('#m-buzon .modal__cuerpo');
 
     /* Las invitaciones se piden aquí mismo, frescas: es donde se aceptan. */
     var n = window.ATWI.nube;
-    var conInv = n && n.hay && n.hay() && n.invitaciones ? n.invitaciones() : Promise.resolve([]);
-    Promise.all([datos.avisos(), conInv]).then(function (par) {
+    var hayNube = Boolean(n && n.hay && n.hay());
+    var conInv = hayNube && n.invitaciones ? n.invitaciones() : Promise.resolve([]);
+    /* Y EL HISTORIAL, si todavía no se trajo: «las partidas que esperan» salen
+       de él, y quien abre el buzón sin haber pasado por la pestaña Historial se
+       encontraba un buzón vacío con una partida esperándole. */
+    var conHist = (historial || !hayNube) ? Promise.resolve() :
+      n.historial(POR_TANDA).then(function (l) {
+        historial = l || [];
+        hayMasHistorial = historial.length >= POR_TANDA;
+        historialCaducado = false;
+      }).catch(function () {});
+    Promise.all([datos.avisos(), conInv, conHist]).then(function (par) {
       var lista = par[0] || [];
       invitaciones = par[1] || [];
       /* LO QUE ESPERA VA ARRIBA, antes que el buzón. Estas son las partidas que

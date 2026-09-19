@@ -1458,7 +1458,21 @@ window.ATWI = window.ATWI || {};
     /* El avance se calcula sobre los segundos que contamos nosotros:
        `a.duration` de un WebM de MediaRecorder vale Infinity. */
     var total = duracionDe(sonando) || 1;
-    if (ev === 'ended') { a.currentTime = 0; encadenar(); }
+    if (ev === 'ended') {
+      /* ESCUCHADA ENTERA (modo en línea): la condición para poder grabar el
+         turno siguiente es haber oído la del otro, y «oída» es hasta el final,
+         no darle al play. Se anota por índice de intervención. */
+      if (String(sonando).charAt(0) === 'i') {
+        P.escuchadas = P.escuchadas || {};
+        P.escuchadas[Number(String(sonando).slice(1))] = true;
+        /* Y SE RECUERDA EN EL TELÉFONO: quien la oyó anoche y vuelve hoy a
+           contestar no tiene que oírla otra vez para que se le abra el micro. */
+        if (P.enLinea && P.debate) {
+          try { localStorage.setItem('atwi.oidas.' + P.debate, JSON.stringify(P.escuchadas)); } catch (e) {}
+        }
+      }
+      a.currentTime = 0; encadenar();
+    }
 
     var ic = $('#r-icono');
     if (ic) ic.innerHTML = iconoSVG(a.paused ? 'play' : 'pausa', 24);
@@ -1860,8 +1874,43 @@ window.ATWI = window.ATWI || {};
   /* Dos maneras de abrir el micro: empezar de cero y seguir sobre lo ya
      grabado. La segunda REANUDA la misma grabación en vez de abrir otra: dos
      archivos pegados no dan un archivo válido, una grabación reanudada sí. */
+  /* EN LÍNEA NO SE GRABA SIN HABER OÍDO AL OTRO (titular, 2026-09-18: «si la
+     persona no ha escuchado la intervención anterior de la otra persona no
+     podrá grabar su nuevo turno; es condicional haber escuchado al otro para
+     poder ejercer mi turno, excepto si soy el primero»). En local no hace falta:
+     el otro acaba de hablar delante. Aquí el otro habló en su teléfono hace
+     horas, y contestar sin oírlo es contestar a lo que uno se imagina.
+     Devuelve el índice de la intervención que falta oír, o -1. */
+  function faltaOir() {
+    if (!P || !P.enLinea || P.regrabando != null) return -1;
+    var i = P.i;
+    if (i <= 0) return -1;                       // abro yo: no hay nada que oír
+    var anterior = P.intervenciones[i - 1];
+    if (!anterior || anterior.jugador === indiceDeLaCuenta()) return -1;
+    if (!P.escuchadas && P.debate) {
+      try { P.escuchadas = JSON.parse(localStorage.getItem('atwi.oidas.' + P.debate) || '{}'); } catch (e) { P.escuchadas = {}; }
+    }
+    return (P.escuchadas && P.escuchadas[i - 1]) ? -1 : i - 1;
+  }
+
+  function pedirQueOiga(cual, disparador) {
+    var v = P.intervenciones[cual];
+    var quien = v && v.nombre || 'la otra parte';
+    var g = window.ATWI.globo;
+    if (!g || !g.abrir) return fallo('Primero escucha lo que dijo ' + quien + '.');
+    g.abrir(disparador || $('#m-partida [data-accion="p-grabar"]'),
+      { titulo: 'Primero escucha a ' + quien,
+        texto: 'Para contestar hay que haber oído su intervención entera. Toca su casilla ' +
+               'arriba —«lo que se dijo»— y, cuando termine, el micrófono se abre.' },
+      { tinte: P.modo, signo: 'micro', signoTam: 64, etiqueta: 'Escucha antes de grabar',
+        acciones: '<button class="boton boton--bloque boton--' + P.modo + '" data-oir-ahora="' + cual + '">' +
+                  'Oír a ' + esc(quien) + '</button>' });
+  }
+
   function empezarAGrabar(agregando) {
     if (abriendo || grabadora.grabando()) return;
+    var falta = faltaOir();
+    if (falta >= 0 && !agregando) return pedirQueOiga(falta);
     if (!grabadora.sePuede()) return fallo(grabadora.porQueNo());
 
     pararEscucha();
@@ -3145,6 +3194,14 @@ window.ATWI = window.ATWI || {};
   document.addEventListener('click', function (e) {
     var oirlo = e.target.closest('#m-partida [data-oir]');
     if (oirlo) return oir(oirlo.dataset.oir);
+
+    /* El botón del globo «Primero escucha a X»: vive fuera de la sala —el globo
+       cuelga del marco— así que no lleva el prefijo. Cierra el globo y suena. */
+    var ahora = e.target.closest('[data-oir-ahora]');
+    if (ahora && P) {
+      if (window.ATWI.globo && window.ATWI.globo.cerrar) window.ATWI.globo.cerrar();
+      return oir('i' + ahora.dataset.oirAhora);
+    }
 
     /* Marcar una propuesta no cierra nada: deja el botón de abajo encendido y
        se puede cambiar de idea hasta pulsarlo. */
