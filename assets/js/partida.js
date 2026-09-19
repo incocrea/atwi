@@ -585,8 +585,13 @@ window.ATWI = window.ATWI || {};
     if (P.abandono || P.intervenciones.length >= total) {
       if (P.cerrando && P.juicio) return;   // ya se pidió al mandar el último
       P.cerrando = true;
-      if (P.modo === 'negociacion') { P.juicio = pedirPropuestas(); return deliberar(); }
-      return deliberar(true);
+      /* SE PIDE Y SE ESPERA, en los dos modos. Aqui iba `deliberar(true)` --la
+         pantalla de «volver a pedirlo»-- copiada de `reanudar()`, y en linea el
+         veredicto casi siempre esta en camino por la cola: enseñar el fallo
+         antes de preguntar era enseñar al juez solo. `pedirVeredicto()` es
+         idempotente y sondea hasta que esta. */
+      P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
+      return deliberar();
     }
     P.i = P.intervenciones.length;
     var j = P.orden[P.i % 2];
@@ -630,6 +635,8 @@ window.ATWI = window.ATWI || {};
    */
   function tocada(id) {
     if (!P || !P.enLinea || P.debate !== id) return;
+    /* Esperando el voto del otro: se relee el estado de la votacion. */
+    if (P.estado === 'esperando-voto' || P.estado === 'distintos') return refrescarVoto();
     if (P.estado !== 'espera') return;
     var n = window.ATWI.nube;
     if (!n || !n.partida) return;
@@ -2115,7 +2122,31 @@ window.ATWI = window.ATWI || {};
   function volverAlCierre() {
     P.estado = 'recibo';
     P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
-    pintarSala({ dice: '', pie: principal('p-seguir', 'Ver el resultado') });
+    pintarSala({ dice: '', pie: botonDeResultado() });
+    esperarElResultado();
+  }
+
+  /* EL BOTON NO SE ENCIENDE HASTA QUE EL RESULTADO ESTA (titular, 2026-09-18:
+     «el boton de ver resultado no debe estar activo si no ha llegado; se debe
+     esperar y poner deliberando..., para no pasar a una pantalla donde este el
+     juez solo sin veredicto»). Mientras el juicio corre dice «Deliberando...» y
+     esta apagado; al llegar, «Ver el resultado». Si la llamada fallo, ahi si la
+     pantalla de deliberar con «volver a pedirlo», que es para eso. */
+  function botonDeResultado() {
+    var listo = P.modo === 'negociacion' ? P.propuestasListas : P.veredictoListo;
+    return listo ? principal('p-seguir', 'Ver el resultado')
+                 : principal('p-seguir', 'Deliberando\u2026', '', true);
+  }
+  function esperarElResultado() {
+    var cuando = P.juicio || Promise.resolve(null);
+    cuando.then(function () {
+      if (!P || P.estado !== 'recibo') return;
+      if (noContesto()) {
+        bitacora('veredicto_no_llego', { detalle: P.veredictoMotivo || '' });
+        return deliberar(true);
+      }
+      pie().innerHTML = botonDeResultado();
+    });
   }
 
   /** ¿Se puede volver al turno `orden` ahora mismo? Solo con la sala quieta:
@@ -2455,7 +2486,8 @@ window.ATWI = window.ATWI || {};
          «No llegó la respuesta», con un botón de reintentar que tampoco podía
          funcionar. Era el agujero que dejaba el modo entero sin cerrar. */
       P.juicio = P.modo === 'negociacion' ? pedirPropuestas() : pedirVeredicto();
-      pintarSala({ dice: '', pie: principal('p-seguir', 'Ver el resultado') });
+      pintarSala({ dice: '', pie: botonDeResultado() });
+      esperarElResultado();
       juezDice(f.texto, f.archivo);
       return;
     }
@@ -2569,8 +2601,9 @@ window.ATWI = window.ATWI || {};
          `recogeUno` y `recogeDos`. Es el mismo trabajo que hace `delArbitro()`
          con la fila del veredicto: la base guarda por lado y la pantalla pinta
          por persona. */
-      P.propuestas = (d.propuestas || []).map(function (p) {
-        return { texto: p.texto, recogeUno: p.recoge_a, recogeDos: p.recoge_b };
+      P.propuestas = (d.propuestas || []).map(function (p, k) {
+        /* `orden` (1..2) es lo que el voto en linea manda al servidor. */
+        return { texto: p.texto, recogeUno: p.recoge_a, recogeDos: p.recoge_b, orden: p.orden || (k + 1) };
       });
       if (!P.propuestas.length) P.propuestas = null;
       /* LOS DOS PÁRRAFOS DE LA PARADA BLANDA. Vienen de su propia llamada y son
@@ -2863,8 +2896,104 @@ window.ATWI = window.ATWI || {};
     /* Cerrada --firmada o «Ninguna»-- no se vuelve a votar: se enseña lo que
        quedó (repaso de una Negociación terminada). */
     if (P.cerrada) return revelar();
+    /* EN LINEA EL VOTO VIVE EN EL SERVIDOR (0059): si ya vote, no se vuelve a
+       preguntar; se enseña en que va. */
+    if (P.enLinea) return refrescarVoto();
     P.voto = null;
     return votar();
+  }
+
+  /* ==========================================================================
+     EL VOTO EN LINEA (titular, 2026-09-18: «me dejo votar y decidir el acuerdo
+     a mi solo desde esa cuenta; esa es una pantalla de espera que es el estado
+     de la partida hasta que los dos voten»). Cada quien vota desde su telefono
+     sin ver el del otro; el acta la escribe el servidor cuando coinciden. Si
+     eligen distinto, cada uno ve lo del otro y decide UNA vez: aceptar la suya
+     o quedarse con la propia; si siguen distintos, sin acuerdo. Sin editar el
+     texto antes de firmar: habria que ponerse de acuerdo tambien sobre eso.
+     ========================================================================== */
+  function refrescarVoto() {
+    var n = window.ATWI.nube;
+    if (!n || !n.estadoVotacion || !P.debate) return votar();
+    n.estadoVotacion(P.debate).then(function (e) {
+      if (!P || !P.enLinea) return;
+      pintarVoto(e);
+    });
+  }
+
+  function pintarVoto(e) {
+    if (!e) { P.voto = null; return votar(); }
+    if (e.fase === 'cerrada' && e.acta) {
+      P.cerrada = true;
+      P.acuerdo = e.acta.tipo === 'acuerdo' ? { texto: e.acta.texto } : null;
+      if (window.ATWI.olvidarActas) window.ATWI.olvidarActas();
+      return revelar();
+    }
+    if (e.fase === 'sin_votar') { P.voto = null; return votar(); }
+    if (e.fase === 'distintos') return pintarDistintos(e);
+    return pintarEsperaVoto(e);
+  }
+
+  function nombreDelOtro() { return P.jugadores[1 - indiceDeLaCuenta()].nombre; }
+  function textoDeEleccion(k) {
+    if (k === -1 || k == null) return (cfg.negociacion || {}).ninguna || 'Ninguna';
+    var p = (P.propuestas || []).filter(function (q) { return q.orden === k; })[0] || (P.propuestas || [])[k - 1];
+    return p ? p.texto : 'una propuesta';
+  }
+
+  /* Ya vote: la partida queda esperando al otro. Se sale sin perder nada y el
+     sondeo trae la novedad. */
+  function pintarEsperaVoto(e) {
+    P.estado = 'esperando-voto';
+    var otro = nombreDelOtro();
+    caja().innerHTML =
+      '<div class="votacion">' +
+        '<p class="votacion__quien">Tu elecci\u00f3n est\u00e1 guardada</p>' +
+        '<div class="acta__texto">' + esc(textoDeEleccion(e.mio)) + '</div>' +
+        '<p class="acta__pregunta">Falta que ' + esc(otro) + ' elija. Te avisamos cuando lo haga: ' +
+          'si coinciden, queda firmado; si no, cada uno ver\u00e1 lo del otro y podr\u00e1 cambiarse.</p>' +
+      '</div>';
+    pie().innerHTML =
+      '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
+        'data-accion="p-espera-volver">Volver al inicio</button>';
+  }
+
+  /* Eligieron distinto: lo del otro a la vista y una decision. */
+  function pintarDistintos(e) {
+    P.estado = 'distintos';
+    var otro = nombreDelOtro();
+    caja().innerHTML =
+      '<div class="votacion">' +
+        '<p class="votacion__quien">Eligieron distinto</p>' +
+        '<p class="sala__nota">T\u00fa elegiste:</p>' +
+        '<div class="acta__texto">' + esc(textoDeEleccion(e.mio)) + '</div>' +
+        '<p class="sala__nota" style="margin-top:var(--e-3)">' + esc(otro) + ' eligi\u00f3:</p>' +
+        '<div class="acta__texto">' + esc(textoDeEleccion(e.suyo)) + '</div>' +
+        '<p class="acta__pregunta">Puedes aceptar la de ' + esc(otro) + ' o quedarte con la tuya. ' +
+          'Si los dos se quedan, la negociaci\u00f3n termina sin acuerdo.</p>' +
+      '</div>';
+    pie().innerHTML =
+      '<button class="boton boton--suave boton--bloque boton--grande boton--punteado" ' +
+        'data-accion="p-voto-quedarme" data-eleccion="' + e.mio + '">Quedarme con la m\u00eda</button>' +
+      '<button class="boton boton--bloque boton--grande boton--' + P.modo + '" ' +
+        'data-accion="p-voto-aceptar" data-eleccion="' + e.suyo + '">Aceptar la de ' + esc(otro) + '</button>';
+  }
+
+  function votarEnLinea(eleccion) {
+    var n = window.ATWI.nube;
+    if (!n || !n.votar) return;
+    $$('#m-partida .modal__pie .boton').forEach(function (b) { b.disabled = true; });
+    n.votar(P.debate, eleccion).then(function (e) {
+      if (!P) return;
+      bitacora('voto_en_linea', { nivel: 'nota', detalle: String(eleccion) });
+      pintarVoto(e);
+    }).catch(function (err) {
+      $$('#m-partida .modal__pie .boton').forEach(function (b) { b.disabled = false; });
+      var m = String(err && err.message || '');
+      fallo('No se pudo guardar tu elecci\u00f3n: ' + (m || 'int\u00e9ntalo otra vez'));
+      /* «tu voto ya esta puesto»: alguien se adelanto; se relee el estado. */
+      if (/ya est/.test(m)) refrescarVoto();
+    });
   }
 
   function hayQueElegir() {
@@ -2923,6 +3052,9 @@ window.ATWI = window.ATWI || {};
      no hay texto que ajustar. */
   function cerrarVotacion() {
     if (P.voto === null) return;
+    /* En linea el voto va al servidor (0059): «ninguna» es -1 y una propuesta
+       su orden (1..2); el acta la escribe el cuando los dos coincidan. */
+    if (P.enLinea) return votarEnLinea(P.voto < 0 ? -1 : (P.propuestas[P.voto].orden || P.voto + 1));
     if (P.voto < 0) {
       P.acuerdo = null;
       /* SIN ACUERDO TAMBIÉN SE GUARDA, y es la mitad del sentido de la tabla.
@@ -3220,6 +3352,7 @@ window.ATWI = window.ATWI || {};
     if (a === 'p-oir-todo') { oir('i0'); return; }
     if (a === 'p-listo') { if (P.demo) demoLaRonda(); else if (P.enLinea) loQueToca(); else pintarTurno(); }
     if (a === 'p-espera-volver') { cerrar(); }
+    if (a === 'p-voto-quedarme' || a === 'p-voto-aceptar') { votarEnLinea(Number(b.dataset.eleccion)); return; }
     else if (a === 'p-grabar') empezarAGrabar(false);
     else if (a === 'p-agregar') empezarAGrabar(true);
     else if (a === 'p-parar') pausarGrabacion();

@@ -328,6 +328,17 @@ window.ATWI = window.ATWI || {};
     return rpc('rechazar_invitacion', { p_debate: debate });
   }
 
+  /** Mi voto en una Negociación en línea (0059): una propuesta (1..2) o -1. Devuelve el estado. */
+  function votar(debate, eleccion) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('votar_en_linea', { p_debate: debate, p_eleccion: Number(eleccion) });
+  }
+  /** En qué va la votación: sin_votar · esperando · distintos · cerrada. */
+  function estadoVotacion(debate) {
+    if (!hayNube()) return Promise.resolve(null);
+    return rpc('estado_votacion', { p_debate: debate }).catch(function () { return null; });
+  }
+
   /** Ya vi el sorteo de esta partida: que no se me vuelva a enseñar. */
   function marcarIntroVista(debate) {
     if (!debate || !hayNube()) return;
@@ -948,6 +959,8 @@ window.ATWI = window.ATWI || {};
     aceptarInvitacion: conTokenVivo(aceptarInvitacion),
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
     marcarIntroVista: conTokenVivo(marcarIntroVista),
+    votar: conTokenVivo(votar),
+    estadoVotacion: conTokenVivo(estadoVotacion),
     vidas: conTokenVivo(vidas),
     enviarVidas: conTokenVivo(enviarVidas),
     novedades: conTokenVivo(novedades),
