@@ -446,6 +446,7 @@
   function retirarInvitacion(id) {
     cerrarGlobo();
     window.ATWI.nube.rechazarInvitacion(id).then(function () {
+      unaMenos((historial || []).filter(function (x) { return x.id === id; })[0]);
       historial = (historial || []).filter(function (x) { return x.id !== id; });
       historialCaducado = true;
       if (vistaActual === 'historial') pintarHistorial();
@@ -2045,9 +2046,38 @@
       tarjetas? Si se le preguntó por esa orilla, la respuesta es exacta; si no,
       sirve el total de todas —que al menos dice «ya están todas»—. */
   function hayMasEn(p, ve) {
+    /* ⚠️ DOS CONDICIONES, Y LA PRIMERA MATA LA CLASE ENTERA (titular,
+       2026-09-19, con una lista de UNA tarjeta y el botón debajo: «antes de
+       aparecer debe verificar si hay 10 elementos mínimos cargados y si hay
+       realmente más elementos que cargar»).
+       1) SIN UN BLOQUE ENTERO CARGADO NO HAY NADA QUE PAGINAR. El servidor
+          manda de diez en diez: si lo que hay en memoria no llega a diez, es
+          que ya vinieron todas. Esto solo era verdad «casi siempre» cuando las
+          cuentas estaban al día, y ahí estaba el fallo --borrar una partida
+          quitaba la tarjeta y NO la cuenta, así que `ve < totalDe[p]` seguía
+          diciendo que sí--. Con esta línea, una cuenta vieja ya no puede pintar
+          un botón: la lista corta manda.
+       2) Y ADEMÁS, QUE DE VERDAD QUEDE MÁS EN ESTA PESTAÑA. Es por orilla
+          porque la lista que se mira es la de una pestaña: con una partida en
+          línea y once locales, «En línea» no tiene nada que alargar.
+       La cuenta se mira sobre lo CARGADO y no sobre lo visible, porque un
+       bloque trae de las dos orillas: se pueden tener diez cargadas y ver tres
+       en esta pestaña, y las otras siete de esta orilla estar en el bloque
+       siguiente. */
+    if ((historial || []).length < POR_TANDA) return false;
     if (totalDe[p] != null) return ve < totalDe[p];
     if (totalHistorial != null) return (historial || []).length < totalHistorial;
     return hayMasHistorial;
+  }
+
+  /** Una partida menos: las cuentas bajan con ella. Sin esto se quedaban en su
+      valor viejo hasta el siguiente refresco, y mientras tanto el botón salía
+      sobre una lista que ya no tenía nada más que traer. */
+  function unaMenos(d) {
+    if (!d) return;
+    var orilla = esEnLinea(d) ? 'linea' : 'local';
+    if (totalDe[orilla] != null) totalDe[orilla] = Math.max(0, totalDe[orilla] - 1);
+    if (totalHistorial != null) totalHistorial = Math.max(0, totalHistorial - 1);
   }
   /* CADUCA, NO SE BORRA (2026-09-18, al mirar por qué «tarda en refrescar»).
      Terminar una partida o borrar una ponía `historial = null`, así que al
@@ -2483,6 +2513,10 @@
          la persona acaba de decir que se vaya y verla desaparecer es la
          respuesta. Pedir el historial otra vez son dos segundos de tarjeta
          todavia ahi. */
+      /* Y LA CUENTA BAJA CON ELLA. Sin esto se quedaba en su valor viejo y
+         «Cargar más» salía sobre una lista que ya no tenía nada más que traer,
+         que es lo que vio el titular (2026-09-19). */
+      unaMenos((historial || []).filter(function (x) { return x.id === id; })[0]);
       historial = (historial || []).filter(function (x) { return x.id !== id; });
       /* Y EL ACTA CON ELLA, en memoria igual que en la base: `acuerdos.debate`
          es `on delete cascade`, así que la fila ya no está. Dejarla en la lista
