@@ -26,11 +26,11 @@
      ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
      los `<script src>` relativos a su servidor. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=1a42249">
-<link rel="stylesheet" href="assets/css/tokens.css?v=1a42249">
-<link rel="stylesheet" href="assets/css/base.css?v=1a42249">
-<link rel="stylesheet" href="assets/css/landing.css?v=1a42249">
-<link rel="stylesheet" href="assets/css/modal.css?v=1a42249">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=b95d56c">
+<link rel="stylesheet" href="assets/css/tokens.css?v=b95d56c">
+<link rel="stylesheet" href="assets/css/base.css?v=b95d56c">
+<link rel="stylesheet" href="assets/css/landing.css?v=b95d56c">
+<link rel="stylesheet" href="assets/css/modal.css?v=b95d56c">
 </head>
 
 <body class="landing">
@@ -309,6 +309,14 @@
     <p>Todo lo de una partida se conserva hasta que la borras. Cada partida del historial lleva su
       papelera: se van el tema, las intervenciones en texto, la voz del personaje, el resultado y el acta.
       Lo único que queda es la cuenta de lo que costó procesarla, sin saber de quién era.</p>
+    <!-- ⚠️ CADA FRASE DE AQUI TIENE QUE SEGUIR SIENDO VERDAD EN EL CODIGO. Esta
+         se anadio el 2026-09-19 al comprobar que no lo era: una partida en linea
+         es UNA fila y dos historiales, asi que borrarla de un lado no puede
+         borrarsela al otro (migracion 0061). La app lo dice en el globo de
+         borrar; la hoja no lo decia. -->
+    <p>En una partida <strong>en línea</strong> el borrado es de tu lado: se va de tu historial y la otra
+      persona la conserva en el suyo hasta que ella también la quite. Cuando los dos la han quitado,
+      desaparece del todo, con sus audios.</p>
     <p>Las partidas que se abren y nunca llegan a tener una intervención se borran en limpiezas
       periódicas.</p>
 
@@ -338,6 +346,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=1a42249"></script>
+<script src="assets/js/landing.js?v=b95d56c"></script>
 </body>
 </html>
