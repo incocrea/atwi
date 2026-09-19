@@ -3189,13 +3189,17 @@
           '<div id="bl-lista"></div>'
         : '') +
 
+      /* ⚠️ AQUÍ VIVÍA «BORRAR MIS DATOS DE ESTE DISPOSITIVO», Y SE FUE PORQUE
+         MENTÍA (titular, 2026-09-19: «no le veo el sentido»). Medido con la
+         sesión puesta: borraba el perfil local y los temas propios, y los dos
+         VOLVÍAN a los cinco segundos --el perfil lo rebaja `miPerfil()` y los
+         temas `sincronizarPropios()`, porque el servidor manda--; la sesión ni
+         la tocaba. Lo único que se iba de verdad era la lista de invitados
+         locales. Era un resto de cuando no había cuentas y `localStorage` ERA
+         la base de datos, y prometía algo que ya no podía cumplir.
+         Lo que cubría de verdad --«que no quede nada mío en este teléfono»-- lo
+         hace «Salir», que ahora barre todo lo del juego. */
       '<div class="apilado" style="margin-top:var(--e-6)">' +
-        '<button class="boton boton--fantasma boton--bloque" data-accion="olvidar">Borrar mis datos de este dispositivo</button>' +
-        /* BORRAR LA CUENTA ENTERA (titular, 2026-09-19). Debajo del borrado
-           local y no al lado: son dos cosas de tamaño muy distinto --uno limpia
-           este teléfono, el otro no deja nada en ninguna parte-- y ponerlas
-           como hermanas invita a confundirlas. La hoja de privacidad prometía
-           «escríbenos y lo hacemos»; ahora se hace desde aquí. */
         (dentro
           ? '<button class="boton boton--fantasma boton--bloque boton--borrar" ' +
               'data-accion="borrar-cuenta">Borrar mi cuenta para siempre</button>'
@@ -6125,8 +6129,11 @@
       window.ATWI.auth.salirDeTodo().then(function () { location.reload(); });
     }
     else if (a === 'salir') {
-      /* Se cierra la sesión Y se borra lo que quedó en el aparato: si no, el
-         siguiente en entrar vería el nombre y los contadores del anterior. */
+      /* SALIR ES DEJAR ESTE TELÉFONO: se cierra la sesión Y se borra todo lo
+         del juego que quedaba en él --apodo, personaje, temas propios, fichas
+         de invitados y preferencias--. No se pierde nada: al volver a entrar,
+         el perfil y los temas se rebajan del servidor. Y si no se borrara, el
+         siguiente en agarrar el aparato vería el nombre del anterior. */
       var salir = window.ATWI.auth ? window.ATWI.auth.salir() : Promise.resolve();
       salir.then(function () {
         datos.olvidar();
@@ -6135,12 +6142,7 @@
     }
     else if (a === 'borrar-cuenta') { abrirBorrarCuenta(acc); }
     else if (a === 'borrar-cuenta-ya') { borrarCuentaYa(); }
-    else if (a === 'olvidar') {
-      if (confirm('Se borrará tu perfil, tus partidas y tus actas de este dispositivo. No se puede deshacer.')) {
-        datos.olvidar();
-        pintarPerfil();
-      }
-    }
+    /* `olvidar` ya no es un botón: lo llama «Salir». */
   });
 
   /* Escribir en el buscador repinta, pero el campo se recrea en cada pintado:

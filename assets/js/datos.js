@@ -705,16 +705,24 @@ window.ATWI = window.ATWI || {};
     },
 
     /** Borra todo lo local. Solo lo llama el botón de ajustes. */
+    /* NO QUEDA NADA DEL JUEGO EN ESTE TELÉFONO, y se barre por PREFIJO en vez
+       de por una lista de claves (titular, 2026-09-19).
+       ⚠️ LA LISTA ESCRITA A MANO SE QUEDABA CORTA, que es el mismo fallo que
+       este proyecto lleva anotado con los modos y con los iconos: nombraba el
+       perfil, los temas, los invitados y el set del probador, y dejaba puestas
+       `atwi-mesa`, `atwi-modo`, `atwi-donde`, la vuelta de los jueces y una
+       `atwi.oidas.<partida>` por cada partida jugada. Ninguna es grave por sí
+       sola; juntas son el rastro de quién usó este aparato y qué jugó.
+       Con el prefijo, la clave que alguien añada mañana se va sola.
+       LO LLAMA «SALIR», y solo él: es lo que significa dejar este teléfono. */
     olvidar: function () {
       try {
-        localStorage.removeItem(CLAVE);
-        localStorage.removeItem(CLAVE_TEMAS);
-        localStorage.removeItem(CLAVE_INVITADOS);
-        /* Y el set del probador, que es de `app.js` --`CLAVE_PROBADOR`-- y se
-           nombra aquí a mano. No es una partida ni un acta, pero SE SIEMBRA CON
-           EL NOMBRE DEL PERFIL, así que dejarlo dejaría una copia del nombre
-           después de haber prometido borrarlo de este dispositivo. */
-        localStorage.removeItem('atwi.probador.v1');
+        var fuera = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var k = localStorage.key(i);
+          if (k && k.indexOf('atwi') === 0) fuera.push(k);
+        }
+        for (var j = 0; j < fuera.length; j++) localStorage.removeItem(fuera[j]);
       } catch (e) {}
       perfil = null;
       listaTemas = null;
