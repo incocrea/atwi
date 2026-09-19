@@ -213,7 +213,14 @@ window.ATWI = window.ATWI || {};
       '<span>' + cfg.descargo + cfg.gancho + '</span>' +
     '</div>';
 
-  var ERROR = '<p class="chico" id="c-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+  /* ⚠️ AQUI HABIA UN RENGLON ROJO Y SE FUE (titular, 2026-09-19: «quita los
+     mensajes en rojo del login, saca las notificaciones de error en toast»). Es
+     la misma decisión que ya se tomó con los fallos del micrófono: un párrafo
+     de dos renglones dentro del formulario **empuja lo de abajo** —el botón se
+     mueve justo cuando la mano va a pulsarlo— y se queda puesto hasta el
+     intento siguiente. El aviso flotante dice lo mismo, no mueve nada y se va
+     solo.
+     `ERROR` ya no existe: quien avisa es `error()`, que ahora es un toast. */
 
   /* --- El gate legal -----------------------------------------------------------
      EL DESCARGO DE IA DEJA SITIO A LOS TERMINOS (titular, 2026-09-19): *«este
@@ -277,8 +284,7 @@ window.ATWI = window.ATWI || {};
       /* `globo__cede` es lo que hace que esto quepa SIEMPRE: el globo mide el
          hueco visible y le da al cuerpo el alto que sobra, con scroll. */
       cuerpo: '<div class="globo__cede legal-globo" id="t-scroll">' +
-        elTextoDeLosTerminos() + '</div>' +
-        '<p class="chico" id="t-error" style="color:var(--peligro);margin-top:var(--e-2)"></p>',
+        elTextoDeLosTerminos() + '</div>',
       acciones:
         '<button class="boton boton--bloque" data-puerta="acepto" disabled>Acepto</button>' +
         '<button class="boton boton--bloque boton--suave boton--punteado" data-puerta="ahora-no">' +
@@ -321,15 +327,14 @@ window.ATWI = window.ATWI || {};
       estado.paso = 'entrar';
       if (p) p.hidden = false;
       pintar();
-      error('Para jugar hay que aceptar los términos.');
+      /* Tampoco aquí: quien acaba de pulsar «Ahora no» sabe perfectamente por
+         qué está de vuelta en la pantalla de entrar. */
     });
   }
 
   function aceptarTerminosYa() {
     var bot = document.querySelector('.globo [data-puerta="acepto"]');
-    var err = $('#t-error');
     if (bot) { bot.disabled = true; bot.textContent = 'Guardando…'; }
-    if (err) err.textContent = '';
     return auth.aceptarTerminos(laVersionDeLosTerminos())
       .then(function () {
         terminosPuestos = true;
@@ -339,7 +344,7 @@ window.ATWI = window.ATWI || {};
       })
       .catch(function (e) {
         if (bot) { bot.disabled = false; bot.textContent = 'Acepto'; }
-        if (err) err.textContent = 'No se pudo guardar tu aceptación: ' + porQue(e);
+        error('No se pudo guardar tu aceptación: ' + porQue(e));
       });
   }
 
@@ -367,7 +372,6 @@ window.ATWI = window.ATWI || {};
                 'type="text" data-nombre autocomplete="nickname" maxlength="' + datos.NOMBRE_MAX + '" ' +
                 'placeholder="Tu apodo" value="' + esc(estado.nombre) + '"',
                 'Una sola palabra.') +
-          ERROR +
         '</div>' + AVISO_IA;
       enfocar('#c-nombre', !estado.nombre);
       boton.textContent = 'Jugar';
@@ -384,7 +388,6 @@ window.ATWI = window.ATWI || {};
           campo('c-clave', 'Contraseña',
                 'type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres"',
                 'Que puedas recordar. No hace falta que sea rara.') +
-          ERROR +
         '</div>' + BLOQUE_TERMINOS;
       enfocar('#c-clave', true);
       pintarEstadoTerminos();
@@ -404,7 +407,6 @@ window.ATWI = window.ATWI || {};
                 'type="email" autocomplete="email" inputmode="email" placeholder="tu@correo.com" value="' + esc(estado.correo) + '"') +
           campo('c-clave2', 'Contraseña', 'type="password" autocomplete="current-password" placeholder="Tu contraseña"') +
           '<div class="captcha"><div id="captcha"></div></div>' +
-          ERROR +
         '</div>' +
         /* EL ALTA NO CAMBIA DE PANTALLA, ABRE UN GLOBO: es una pregunta de un
            campo y cambiar la pantalla entera para hacerla era lo que hacía
@@ -431,8 +433,12 @@ window.ATWI = window.ATWI || {};
   }
 
   function error(texto) {
-    var e = $('#c-error');
-    if (e) e.textContent = texto || '';
+    /* Sin texto no hay nada que decir: con un renglón fijo había que borrarlo,
+       con un toast simplemente no se saca. */
+    if (!texto) return;
+    if (window.ATWI && window.ATWI.aviso) return window.ATWI.aviso(texto);
+    /* Respaldo para el caso imposible de que la puerta corra sin `app.js`. */
+    if (window.console) console.warn('[ATWI] ' + texto);
   }
 
   function ocupado(si, textoQuieto) {
@@ -573,8 +579,7 @@ window.ATWI = window.ATWI || {};
       return '<p class="globo__texto">Te mandamos un enlace a <b>' + esc(estado.correo) + '</b>. ' +
         'Ábrelo en este mismo teléfono y entras solo.</p>' +
         '<p class="chico tenue" style="margin-top:var(--e-2)">¿No llega? Mira en el correo no ' +
-        'deseado. El enlace caduca en una hora.</p>' +
-        '<p class="chico" id="a-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+        'deseado. El enlace caduca en una hora.</p>';
     }
     return '<p class="globo__texto">Escribe tu correo y te mandamos un enlace para entrar. ' +
         'El apodo y la contraseña los eliges al volver.</p>' +
@@ -582,8 +587,7 @@ window.ATWI = window.ATWI || {};
         '<span class="solo-lectores">Tu correo</span>' +
         '<input class="campo" id="a-correo" type="email" autocomplete="email" inputmode="email" ' +
           'placeholder="tu@correo.com" value="' + esc(estado.correo) + '">' +
-      '</label>' +
-      '<p class="chico" id="a-error" style="color:var(--peligro);margin-top:var(--e-3)"></p>';
+      '</label>';
   }
 
   /** Abre el globo del alta, o lo repinta si ya está abierto.
@@ -623,10 +627,11 @@ window.ATWI = window.ATWI || {};
     if (!mandado) setTimeout(function () { var c = $('#a-correo'); if (c) c.focus(); }, 80);
   }
 
-  function errorAlta(texto) {
-    var e = $('#a-error');
-    if (e) e.textContent = texto || '';
-  }
+  /* ⚠️ TAMBIEN EN TOAST, Y AQUI HAY UN MOTIVO DE MAS: el globo se mide y se
+     coloca AL ABRIRSE, así que un renglón que aparece después lo deja mal
+     puesto hasta que alguien lo recoloque a mano. El aviso flotante vive fuera
+     del globo y no le cambia el alto. */
+  function errorAlta(texto) { error(texto); }
 
   function ocupadoAlta(si, textoQuieto) {
     estado.enviando = si;
@@ -691,7 +696,10 @@ window.ATWI = window.ATWI || {};
     /* EL GATE. No se crea la cuenta sin esto: si no los aceptó, se le abren aquí
        mismo y al aceptar sigue el alta sola, sin tener que volver a pulsar. */
     if (!terminosPuestos) {
-      error('Falta aceptar los términos y condiciones.');
+      /* SIN AVISO (titular, 2026-09-19: «esta no la pongas, esto es obvio
+         cuando se intenta jugar por primera vez»). El gate se abre solo y se
+         explica solo: decir además «falta aceptar los términos» encima del
+         globo que los enseña es contar dos veces lo que ya se está viendo. */
       abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), guardarContrasena);
       return;
     }
