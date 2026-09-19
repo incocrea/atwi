@@ -257,7 +257,8 @@
     $('#lienzo').innerHTML = '<p class="chico">Cargando…</p>';
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
        material: verMaterial, bitacora: verBitacora, navegadores: verNavegadores,
-       llamadas: verLlamadas, modelos: verModelos, limites: verLimites })[pestana]();
+       llamadas: verLlamadas, modelos: verModelos, limites: verLimites,
+       reportes: verReportes })[pestana]();
   }
 
   /* --- Las llamadas: lo que se pidió, lo que costó y lo que contestó ---------
@@ -779,6 +780,46 @@
       });
   }
 
+  /* --- REPORTES ---------------------------------------------------------------
+     Lo que alguien denuncio de otra cuenta (migracion 0071). Un reporte que no
+     lee nadie es teatro, asi que tiene su pestana desde el primer dia. Lo sin
+     ver sale arriba --lo ordena la funcion-- y se marca con un toque.
+     EL CONTEXTO LO PUSO EL SERVIDOR, no quien reporta: es el ultimo enunciado
+     que la persona reportada le mando. Es lo que hay que poder leer para
+     decidir, y no se puede falsear desde el cliente. */
+  function verReportes() {
+    pedir('rpc/reportes_del_tablero').then(function (filas) {
+      var sinVer = filas.filter(function (f) { return !f.visto; }).length;
+      $('#lienzo').innerHTML =
+        '<div class="tarjetas">' +
+          tarjeta('Sin revisar', String(sinVer), '') +
+          tarjeta('En total', String(filas.length), '') +
+        '</div>' +
+        (filas.length
+          ? tabla(['Cuándo', 'Quién reporta', 'A quién', 'Motivo', 'Lo que contó', 'Lo que le mandaron', ''],
+              filas.map(function (f) {
+                return [fecha(f.creado),
+                        esc(f.de),
+                        esc(f.reportado) + '<br><span class="chico">' + esc(String(f.reportado_id).slice(0, 8)) + '</span>',
+                        '<span class="pastilla">' + esc(f.motivo) + '</span>',
+                        f.texto ? esc(f.texto) : '<span class="chico">—</span>',
+                        f.contexto ? '«' + esc(f.contexto) + '»' : '<span class="chico">—</span>',
+                        f.visto
+                          ? '<span class="chico">revisado</span>'
+                          : '<button class="boton boton--chico" data-visto-reporte="' + f.id + '">Marcar revisado</button>'];
+              }), [false, false, false, false, false, false, false])
+          : '<p class="chico">Nadie ha reportado a nadie.</p>') +
+        '<p class="chico" style="margin-top:10px">Para actuar sobre una cuenta reportada, ' +
+        'la pestaña <b>Gente</b> tiene el borrado. Bloquear es de cada persona y no se hace desde aquí.</p>';
+    }).catch(fallo);
+  }
+
+  function marcarReporteVisto(id) {
+    guardar('reportes?id=eq.' + encodeURIComponent(id), { visto: new Date().toISOString() })
+      .then(function () { pintar(); })
+      .catch(function (e) { window.alert('No se pudo marcar: ' + e.message); });
+  }
+
   /* --- PARTIDAS -------------------------------------------------------------- */
   function verPartidas() {
     Promise.all([
@@ -1206,6 +1247,8 @@
       }).catch(function () {});
       return;
     }
+    var vr = e.target.closest('[data-visto-reporte]');
+    if (vr) return marcarReporteVisto(vr.dataset.vistoReporte);
     var bc = e.target.closest('[data-borrar-cuenta]');
     if (bc) return borrarCuenta(bc.dataset.borrarCuenta, bc.dataset.apodo);
     var d = e.target.closest('[data-detalle]');

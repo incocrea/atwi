@@ -3150,9 +3150,179 @@
         }).join('') +
       '</div>' +
 
+      /* BLOQUEAR Y REPORTAR, AL PIE (titular, 2026-09-19: «agrégalos en mi
+         perfil, parte inferior, y ahí mismo aparece la lista de apodos
+         bloqueados con la opción de desbloquear»).
+         ⚠️ POR QUÉ HACE FALTA, con precisión: en línea cualquiera que sepa tu
+         apodo te puede invitar, y con la invitación llega **texto que escribió
+         esa persona** --el enunciado, de 10 a 400 letras-- a tu buzón y a tu
+         correo. Lo que NO puede hacer es hacerte oír nada: sin aceptar no hay
+         audio (la política de `turnos` y el 409 de `turno` v56). Así que lo que
+         se corta es el canal de la invitación, que es el que se abre sin
+         permiso. Va aquí abajo porque no es algo que se use cada día: es el
+         sitio donde se busca cuando hace falta. */
+      (dentro
+        ? '<h2 style="margin:var(--e-6) 0 var(--e-3)">Bloquear y reportar</h2>' +
+          '<p class="chico suave" style="margin-bottom:var(--e-3)">' +
+            'Quien esté bloqueado no puede invitarte a jugar y sus invitaciones ' +
+            'pendientes se retiran. Reportar nos lo hace llegar a nosotros.</p>' +
+          '<div class="bloqueo-alta">' +
+            '<input class="campo" id="bl-apodo" type="text" maxlength="16" ' +
+              'autocomplete="off" autocapitalize="off" spellcheck="false" ' +
+              'placeholder="Su apodo" data-nombre>' +
+            '<div class="apilado">' +
+              '<button class="boton boton--bloque" data-accion="reportar">Reportar</button>' +
+              '<button class="boton boton--suave boton--punteado boton--bloque" data-accion="bloquear">Bloquear</button>' +
+            '</div>' +
+            '<p class="chico" id="bl-error" style="color:var(--peligro)"></p>' +
+          '</div>' +
+          '<div id="bl-lista"></div>'
+        : '') +
+
       '<div class="apilado" style="margin-top:var(--e-6)">' +
         '<button class="boton boton--fantasma boton--bloque" data-accion="olvidar">Borrar mis datos de este dispositivo</button>' +
       '</div>';
+
+    if (dentro) pintarBloqueados();
+  }
+
+  /* LA LISTA SE PIDE AL SERVIDOR CADA VEZ QUE SE PINTA PERFIL, y con el apodo de
+     HOY: bloquear guarda el id, así que si la otra persona se renombra el
+     bloqueo sigue puesto y aquí se ve su nombre nuevo (si guardáramos el apodo,
+     renombrarse sería saltarse el bloqueo). */
+  function pintarBloqueados() {
+    var caja = $('#bl-lista');
+    if (!caja || !window.ATWI.nube || !window.ATWI.nube.hay()) return;
+    window.ATWI.nube.misBloqueos().then(function (lista) {
+      var c = $('#bl-lista');
+      if (!c) return;
+      if (!lista || !lista.length) {
+        c.innerHTML = '<p class="chico tenue centrado" style="margin-top:var(--e-3)">' +
+                      'No tienes a nadie bloqueado.</p>';
+        return;
+      }
+      c.innerHTML = '<ul class="bloqueados">' + lista.map(function (b) {
+        return '<li class="bloqueados__uno">' +
+            '<span class="bloqueados__apodo">' + esc(b.apodo) + '</span>' +
+            '<button class="enlace" data-accion="desbloquear" data-apodo="' + esc(b.apodo) + '">' +
+              'Desbloquear</button>' +
+          '</li>';
+      }).join('') + '</ul>';
+    }).catch(function () { /* sin red, la lista se queda como esté */ });
+  }
+
+  function apodoParaBloquear() {
+    var c = $('#bl-apodo');
+    return datos.limpiarNombre((c && c.value) || '');
+  }
+  function errorBloqueo(t) { var e = $('#bl-error'); if (e) e.textContent = t || ''; }
+
+  function bloquearApodo() {
+    var apodo = apodoParaBloquear();
+    if (!apodo) return errorBloqueo('Escribe el apodo de quien quieres bloquear.');
+    errorBloqueo('');
+    var b = $('#v-perfil [data-accion="bloquear"]');
+    if (b) { b.disabled = true; b.textContent = 'Bloqueando…'; }
+    window.ATWI.nube.bloquear(apodo).then(function (r) {
+      if (b) { b.disabled = false; b.textContent = 'Bloquear'; }
+      var c = $('#bl-apodo'); if (c) c.value = '';
+      ATWI.aviso((r && r.bloqueado ? r.bloqueado : apodo) + ' ya no puede invitarte' +
+        (r && r.invitaciones_retiradas ? '. Se retiraron sus invitaciones pendientes.' : '.'));
+      pintarBloqueados();
+      /* Si tenía invitaciones puestas, el buzón y la campana cambian. */
+      historialCaducado = true;
+      sondear();
+    }).catch(function (e) {
+      if (b) { b.disabled = false; b.textContent = 'Bloquear'; }
+      errorBloqueo(porQueBloqueo(e));
+    });
+  }
+
+  function desbloquearApodo(apodo) {
+    window.ATWI.nube.desbloquear(apodo).then(function () {
+      ATWI.aviso(apodo + ' vuelve a poder invitarte.');
+      pintarBloqueados();
+    }).catch(function (e) { errorBloqueo(porQueBloqueo(e)); });
+  }
+
+  /* Los mensajes de la base son claves cortas; aquí se dicen en persona. */
+  function porQueBloqueo(e) {
+    var m = String((e && e.message) || '');
+    if (/no hay nadie con ese apodo/.test(m)) return 'No hay nadie con ese apodo. Revísalo: se escribe igual que se ve.';
+    if (/ti mismo/.test(m)) return 'Ese eres tú.';
+    if (/demasiados reportes/.test(m)) return 'Ya mandaste varios reportes hoy. Vuelve mañana.';
+    return m || 'No se pudo.';
+  }
+
+  /* REPORTAR ES UN GLOBO, como el resto de lo que pregunta algo. Lleva el motivo
+     --que es lo que nos deja ordenar lo que llega-- y un texto opcional.
+     Y OFRECE BLOQUEAR EN EL MISMO GESTO, en este orden y no al revés: el reporte
+     se queda con lo último que esa persona te mandó, y bloquear retira sus
+     invitaciones pendientes; bloqueando primero, el reporte llegaría sin el
+     texto que lo motivó. */
+  var motivoElegido = 'acoso';
+  var MOTIVOS = [
+    ['acoso', 'Me está acosando'],
+    ['spam', 'Spam o publicidad'],
+    ['sexual', 'Contenido sexual'],
+    ['amenaza', 'Amenazas'],
+    ['otro', 'Otra cosa']
+  ];
+
+  function abrirReportar(disparador) {
+    var apodo = apodoParaBloquear();
+    if (!apodo) return errorBloqueo('Escribe el apodo de quien quieres reportar.');
+    errorBloqueo('');
+    motivoElegido = 'acoso';
+    var cuerpo =
+      '<div class="globo__cede reporte">' +
+        '<p class="chico suave">Cuéntanos qué pasó con <b>' + esc(apodo) + '</b>. ' +
+          'Lo vemos nosotros; esa persona no se entera.</p>' +
+        '<div class="reporte__motivos">' +
+          MOTIVOS.map(function (m) {
+            return '<button class="chip" data-motivo="' + m[0] + '"' +
+                   (m[0] === motivoElegido ? ' aria-pressed="true"' : '') + '>' + m[1] + '</button>';
+          }).join('') +
+        '</div>' +
+        '<textarea class="campo" id="rp-texto" rows="3" maxlength="600" ' +
+          'placeholder="Si quieres, cuéntanos más (opcional)"></textarea>' +
+        '<p class="chico" id="rp-error" style="color:var(--peligro)"></p>' +
+      '</div>';
+    abrirGlobo(disparador, { titulo: 'Reportar a ' + apodo }, {
+      tinte: 'lavanda', signo: 'aviso', signoTam: 64, etiqueta: 'Reportar',
+      cuerpo: cuerpo,
+      acciones:
+        '<button class="boton boton--bloque" data-accion="reportar-ya" data-bloquear="1">' +
+          'Reportar y bloquear</button>' +
+        '<button class="boton boton--suave boton--punteado boton--bloque" data-accion="reportar-ya">' +
+          'Solo reportar</button>'
+    });
+  }
+
+  function reportarYa(tambienBloquear) {
+    var apodo = apodoParaBloquear();
+    var texto = ($('#rp-texto') || {}).value || '';
+    var bs = document.querySelectorAll('.globo [data-accion="reportar-ya"]');
+    for (var i = 0; i < bs.length; i++) bs[i].disabled = true;
+    window.ATWI.nube.reportar(apodo, motivoElegido, texto).then(function () {
+      if (!tambienBloquear) {
+        cerrarGlobo();
+        ATWI.aviso('Gracias. Lo vamos a mirar.');
+        return;
+      }
+      return window.ATWI.nube.bloquear(apodo).then(function () {
+        cerrarGlobo();
+        ATWI.aviso('Reportado y bloqueado. Ya no puede invitarte.');
+        var c = $('#bl-apodo'); if (c) c.value = '';
+        pintarBloqueados();
+        historialCaducado = true;
+        sondear();
+      });
+    }).catch(function (e) {
+      for (var j = 0; j < bs.length; j++) bs[j].disabled = false;
+      var er = $('#rp-error');
+      if (er) er.textContent = porQueBloqueo(e);
+    });
   }
 
   function contador(n, que, familia) {
@@ -5501,6 +5671,19 @@
      seguidas no puede costar diez viajes de ida y vuelta por el menú. */
   window.ATWI.alTerminarEnsayo = function () { abrirProbador(); };
 
+  /* Los motivos del reporte viven en el globo, que se cuelga del MARCO y no de
+     la vista: el manejador de `#v-perfil [data-accion]` no los alcanza. */
+  document.addEventListener('click', function (e) {
+    var mot = e.target.closest('.globo [data-motivo]');
+    if (!mot) return;
+    motivoElegido = mot.dataset.motivo;
+    var todos = document.querySelectorAll('.globo [data-motivo]');
+    for (var i = 0; i < todos.length; i++) {
+      if (todos[i] === mot) todos[i].setAttribute('aria-pressed', 'true');
+      else todos[i].removeAttribute('aria-pressed');
+    }
+  });
+
   document.addEventListener('click', function (e) {
     var b = e.target.closest('[data-vista]');
     if (b) {
@@ -5818,6 +6001,10 @@
       }
     }
     else if (a === 'entrar') { location.href = location.pathname; }
+    else if (a === 'bloquear') { bloquearApodo(); }
+    else if (a === 'desbloquear') { desbloquearApodo(acc.dataset.apodo); }
+    else if (a === 'reportar') { abrirReportar(acc); }
+    else if (a === 'reportar-ya') { reportarYa(acc.dataset.bloquear === '1'); }
     else if (a === 'salir-de-todo') {
       if (!window.confirm('Se cerrará tu sesión en todos los aparatos, también en éste. ' +
                           'Tendrás que volver a entrar con tu contraseña.')) return;

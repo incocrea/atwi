@@ -5609,3 +5609,32 @@ body[data-demo] { background: var(--crema); }
 .enviada__signo { display: flex; justify-content: center; }
 .enviada__signo .ico { display: block; }
 .enviada .tarjeta { width: 100%; margin-top: var(--e-3); text-align: left; }
+
+
+/* --- Bloquear y reportar (titular, 2026-09-19) -----------------------------
+   Al pie de Perfil. No es algo que se use cada dia: es el sitio donde se busca
+   cuando hace falta, asi que no compite con nada de arriba. */
+.bloqueo-alta { display: grid; gap: var(--e-3); }
+.bloqueo-alta .campo { text-align: center; }
+.bloqueo-alta .chico:empty { display: none; }
+
+.bloqueados { list-style: none; margin: var(--e-3) 0 0; padding: 0; display: grid; gap: var(--e-2); }
+.bloqueados__uno {
+  display: flex; align-items: center; gap: var(--e-3);
+  background: var(--superficie); border-radius: var(--r-2);
+  padding: var(--e-2) var(--e-3); box-shadow: var(--sombra-1);
+}
+.bloqueados__apodo { font-weight: 800; margin-right: auto; }
+
+/* Los motivos del reporte: chips de los de siempre, y el puesto en solido, como
+   los del historial. Van centrados porque todo lo de dentro de un globo lo va. */
+.reporte { display: grid; gap: var(--e-3); }
+.reporte__motivos { display: flex; flex-wrap: wrap; gap: var(--e-2); justify-content: center; }
+.reporte__motivos .chip {
+  border: 0; cursor: pointer; font-family: inherit;
+  background: var(--superficie); color: var(--tinta-suave); box-shadow: var(--sombra-1);
+}
+.reporte__motivos .chip[aria-pressed="true"] {
+  background: var(--lavanda-oscuro); color: var(--blanco); box-shadow: none;
+}
+.reporte textarea.campo { text-align: left; resize: vertical; }

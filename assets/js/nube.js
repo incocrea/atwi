@@ -350,6 +350,18 @@ window.ATWI = window.ATWI || {};
     return rpc('perfil_por_apodo', { p_apodo: String(apodo || '').trim() });
   }
 
+  /* BLOQUEAR Y REPORTAR (titular, 2026-09-19). Por APODO, que es lo único que
+     se ve del otro; la base lo resuelve a su id y lo guarda así, porque el
+     apodo se puede cambiar. */
+  function bloquear(apodo)   { if (!hayNube()) return Promise.reject(new Error('sin sesión')); return rpc('bloquear', { p_apodo: String(apodo || '').trim() }); }
+  function desbloquear(apodo){ if (!hayNube()) return Promise.reject(new Error('sin sesión')); return rpc('desbloquear', { p_apodo: String(apodo || '').trim() }); }
+  function misBloqueos()     { if (!hayNube()) return Promise.resolve([]); return rpc('mis_bloqueos', {}); }
+  function reportar(apodo, motivo, texto) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('reportar', { p_apodo: String(apodo || '').trim(), p_motivo: motivo,
+                             p_texto: String(texto || '').slice(0, 600) || null });
+  }
+
   function marcarIntroVista(debate) {
     if (!debate || !hayNube()) return;
     rpc('marcar_intro_visto', { p_debate: debate }).catch(function () {});
@@ -1013,6 +1025,10 @@ window.ATWI = window.ATWI || {};
     aceptarInvitacion: conTokenVivo(aceptarInvitacion),
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
     perfilPorApodo: conTokenVivo(perfilPorApodo),
+    bloquear: conTokenVivo(bloquear),
+    desbloquear: conTokenVivo(desbloquear),
+    misBloqueos: conTokenVivo(misBloqueos),
+    reportar: conTokenVivo(reportar),
     marcarIntroVista: conTokenVivo(marcarIntroVista),
     votar: conTokenVivo(votar),
     estadoVotacion: conTokenVivo(estadoVotacion),
