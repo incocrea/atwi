@@ -130,8 +130,15 @@
   var pilaModales = [];
   var profundidad = 0;      // entradas de historial nuestras, sin consumir
   var restaurando = false;  // dentro de retroceder(): no se apila nada
+  /* Una entrada nuestra que quedo sin dueno: la solto un globo que se cerro
+     porque la app se iba a otra pantalla. La usa el siguiente que apile, en vez
+     de poner otra encima. Ver `cerrarGloboAlNavegar`. */
+  var pasoCedido = false;
 
   function apilarPaso() {
+    /* La entrada ya esta puesta --la cedio un globo--, asi que la pantalla que
+       llega se queda con ella y el historial no crece de mas. */
+    if (pasoCedido) { pasoCedido = false; return; }
     profundidad++;
     try { history.pushState({ atwi: profundidad }, ''); } catch (e) { /* file:// */ }
   }
@@ -625,19 +632,25 @@
      qué tapa qué, cómo queda un nombre largo— y para eso el texto da igual con
      tal de que tenga el largo de uno real.
 
-     QUIÉN LO VE: la cuenta del titular, por correo, y el modo de pruebas. Lo
-     segundo no es una puerta abierta —`dePruebas()` exige localhost ADEMÁS de
-     `?local=1`, así que en atwi.app no existe— y hace falta: en local no hay
-     sesión, o sea que no hay correo que comparar, y sin esto el probador sería
-     invisible justo donde se prueba.
+     QUIÉN LO VE: la cuenta del titular y nadie más. El modo de pruebas
+     (`dePruebas()`, que exige localhost ADEMÁS de `?local=1`, así que en
+     atwi.app no existe) sigue abriéndolo, pero SOLO cuando no hay nadie dentro:
+     ahí no hay correo que comparar y sin esa rama el probador sería invisible
+     justo donde se trabaja.
+     ⚠️ Y EL ORDEN IMPORTA, que es lo que estaba mal (titular, 2026-09-19: «solo
+     debe ser visible para la cuenta de super admin; para las otras no se
+     muestra»). Con `dePruebas()` mirado PRIMERO, en localhost el disco salía
+     para cualquier cuenta que hubiera entrado —el titular lo vio con la de
+     pruebas—: la puerta de trabajo se estaba llevando por delante la regla.
+     Con alguien dentro manda el correo y no hay excepción.
      ======================================================================== */
   var SUPER_ADMIN = 'leoncitobravo2013@gmail.com';
 
   function puedeProbar() {
-    var ent = window.ATWI.entrada;
-    if (ent && ent.dePruebas && ent.dePruebas()) return true;
     var correo = window.ATWI.auth ? window.ATWI.auth.correo() : '';
-    return String(correo).trim().toLowerCase() === SUPER_ADMIN;
+    if (correo) return String(correo).trim().toLowerCase() === SUPER_ADMIN;
+    var ent = window.ATWI.entrada;
+    return !!(ent && ent.dePruebas && ent.dePruebas());
   }
 
   /* LOS FINALES POSIBLES, por modo. No es una lista de adorno: es la lista
@@ -4855,6 +4868,25 @@
     quitarGlobo();
   }
 
+  /* ⚠️ UN GLOBO QUE SE CIERRA PORQUE LA APP CAMBIA DE PANTALLA NO PUEDE
+     RETROCEDER (lo vio el titular, 2026-09-19: «Jugar ahora» del globo de modo
+     llevaba al catálogo y dejaba el globo puesto encima). `history.back()` es
+     ASÍNCRONO y la pantalla que viene apila su paso en el mismo tick, así que
+     las dos navegaciones se pisan: en el mejor caso el back se come la entrada
+     de la pantalla nueva, y en el peor el navegador descarta la que ya no
+     encaja —entonces el `popstate` no llega nunca, y como quien quita el nodo
+     es `quitarGlobo` desde `retroceder`, el globo se queda para siempre—.
+     Lo que hace es CEDER su entrada: el nodo se va en el acto, sin tocar el
+     historial, y el paso que el globo tenía apilado pasa a ser el de la
+     pantalla que llega. La pila queda igual de alta que antes de abrirlo, que
+     es justo lo que hay que dejar: el atrás desde el catálogo vuelve a la
+     portada de un solo toque. */
+  function cerrarGloboAlNavegar() {
+    if (!globoAbierto) return;
+    if (globoEnHistoria) { globoEnHistoria = false; pasoCedido = true; }
+    quitarGlobo();
+  }
+
   function quitarGlobo() {
     if (!globoAbierto) return;
     var g = globoAbierto;
@@ -5376,8 +5408,10 @@
     var crear = e.target.closest('[data-crear]');
     if (crear) {
       /* El globo vive fuera de la vista, así que un cambio de pantalla no se lo
-         lleva: hay que cerrarlo a mano o se queda flotando sobre el catálogo. */
-      cerrarGlobo();
+         lleva: hay que cerrarlo a mano o se queda flotando sobre el catálogo.
+         Y se cierra CEDIENDO su paso, no retrocediendo: ver
+         `cerrarGloboAlNavegar`. */
+      cerrarGloboAlNavegar();
       propuesta.modo = crear.dataset.crear;
       recordarModo(propuesta.modo);
       propuesta.turnos = cfg.reglas.turnosPorDefecto;
