@@ -2602,9 +2602,21 @@ window.ATWI = window.ATWI || {};
        que esperar a que el otro mande lo suyo; en un solo teléfono no hay nada
        que esperar. */
     P.i++;
-    /* EN LÍNEA ESO ES EXACTAMENTE LO QUE HAY: el otro está en su teléfono. Se
-       pasa a esperar, y el juez no le habla a quien no está delante. */
-    if (P.enLinea) return pintarEspera();
+    /* EN LÍNEA ESO ES EXACTAMENTE LO QUE HAY: el otro está en su teléfono, así
+       que se pasa a esperar en vez de al turno siguiente.
+       ⚠️ PERO EL JUEZ SÍ HABLA, Y AQUÍ NO HABLABA (titular, 2026-09-19: «el juez
+       no está dando la confirmación de te escuché, con su audio, cada vez que el
+       participante manda su turno»). El `return` cortaba antes de `juezDice`,
+       con este motivo escrito al lado: «el juez no le habla a quien no está
+       delante». Eso vale para ANUNCIAR el turno del otro —ése no está mirando—
+       y es falso para el acuse de recibo: **quien acaba de mandar su turno sí
+       está delante**, es la única persona que hay en esta pantalla, y lo que
+       espera es que le confirmen que se le escuchó. Las cinco frases dicen justo
+       eso y encajan igual («Te escuché. Veamos qué dice la otra parte»).
+       El orden es el mismo que en local —pintar y después hablar—: `juezDice`
+       necesita la burbuja en el DOM, y la pinta `pintarSala`, que es por donde
+       pasan las dos pantallas. */
+    if (P.enLinea) { pintarEspera(); juezDice(f.texto, f.archivo); return; }
     pintarTurno();
     juezDice(f.texto, f.archivo);
   }
