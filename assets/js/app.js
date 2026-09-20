@@ -520,10 +520,22 @@
       }
     }).catch(function (e) {
       var clave = String(e && e.message || '');
+      /* ⚠️ EL CANDADO DEL DOBLE TOQUE SE SUELTA AQUÍ, Y NO SOLTARLO BLOQUEABA
+         LA INVITACIÓN PARA SIEMPRE (titular, 2026-09-19: «en vez de seleccionar
+         un personaje cerré el globo, y quedó bloqueado el botón de aceptar»).
+         El manejador pone `disabled` al pulsar «Aceptar» —correcto: evita mandar
+         dos veces— y este camino no termina en la partida sino en un globo, así
+         que nadie lo devolvía. Cerrando el globo quedaba la invitación en el
+         buzón con su botón muerto y sin más salida que recargar.
+         Un candado de envío se suelta en cuanto la petición deja de estar en
+         vuelo, pase lo que pase después. Vale también para el aviso de error de
+         abajo, que tenía el mismo agujero por el otro lado. */
+      var bot = $('[data-aceptar-inv="' + id + '"]');
+      if (bot) bot.disabled = false;
       if (clave === 'mismo_personaje' || clave === 'mismo_color') {
         aceptando = { debate: id, host: d.propone_avatar, hostColor: d.propone_color,
                       soloColor: clave === 'mismo_color' };
-        return abrirFichaParaAceptar($('[data-aceptar-inv="' + id + '"]'));
+        return abrirFichaParaAceptar(bot);
       }
       if (window.ATWI.aviso) {
         window.ATWI.aviso(clave === 'invitacion_caducada'
@@ -602,9 +614,17 @@
         '<div class="caras-fila" role="group" aria-label="Personaje">' +
           window.ATWI.quienes().map(function (q) {
             var tomada = !soloColor && q.clave === aceptando.host;
+            /* ⚠️ SIN `disabled`, Y ESA ES LA PIEZA (titular, 2026-09-19: «la
+               advertencia solo debe aparecer si se da clic en el gris»). Un
+               `<button disabled>` no emite el clic —el navegador ni lo genera—,
+               así que con él no hay manera de saber que alguien intentó elegir
+               al ocupado, que es justo lo que hay que responder. Se queda gris
+               igual (la clase lo pinta) y `aria-disabled` lo dice a quien no ve
+               el color; lo que NO hace es cambiar la elección. */
             return '<button type="button" class="caras-fila__cara' +
               (tomada ? ' caras-fila__cara--tomada' : '') + '"' +
-              ' data-personaje="' + q.clave + '"' + (tomada ? ' disabled' : '') +
+              ' data-personaje="' + q.clave + '"' +
+              (tomada ? ' data-tomada="1" aria-disabled="true"' : '') +
               ' aria-pressed="' + (q.clave === personajeElegido) + '"' +
               ' aria-label="' + esc(q.nombre) + '" title="' + esc(q.nombre) + '"' +
               ' style="--pj:' + window.ATWI.colorPersonaje(colorElegido) + '">' +
@@ -620,9 +640,17 @@
               '<i style="background:' + c.tono + '"></i></button>';
           }).join('') +
         '</div>' +
-        '<p class="chico aviso-aro">' + (soloColor
+        /* EL RENGLÓN EMPIEZA DICIENDO QUÉ HACER, NO REGAÑANDO. La advertencia
+           salía puesta de entrada, o sea que lo primero que se leía en el globo
+           era un texto en rojo sobre algo que todavía no se había hecho; y al
+           ocupado ya lo dice el gris. Ahora la advertencia es la RESPUESTA a
+           tocarlo, y hasta entonces ahí va la instrucción.
+           En `soloColor` no cambia: ahí no hay ninguna cara gris que tocar —lo
+           que choca es el color— así que el renglón tiene que explicar solo por
+           qué se abrió este globo. */
+        '<p class="chico' + (soloColor ? ' aviso-aro' : ' suave') + '" id="f-aviso-ficha">' + (soloColor
           ? 'Los dos van con el mismo personaje y el mismo color. Elige otro color solo para esta partida.'
-          : 'Ese personaje ya lo lleva quien te invita. Elige otro solo para esta partida: tu ficha no cambia.') +
+          : 'Selecciona tu personaje') +
         '</p>' +
         '<p class="chico" id="f-error" style="color:var(--peligro)"></p>' +
       '</div>';
@@ -6104,6 +6132,19 @@
 
     var pj = e.target.closest('[data-personaje]');
     if (pj && !pj.disabled) {
+      /* EL GRIS CONTESTA EN VEZ DE NO HACER NADA. Es la misma regla que el gate
+         de términos de hoy: un control que se toca y no responde se lee como un
+         fallo. Aquí sí hay algo que decir, y este es el único momento en que
+         hace falta decirlo. */
+      if (pj.dataset.tomada) {
+        var av = $('#f-aviso-ficha');
+        if (av) {
+          av.textContent = 'Ese personaje ya lo lleva quien te invita. ' +
+            'Elige otro solo para esta partida: tu ficha no cambia.';
+          av.className = 'chico aviso-aro';
+        }
+        return;
+      }
       personajeElegido = pj.dataset.personaje;
       sincronizarFichaEditor();
       return;
