@@ -455,6 +455,26 @@ window.ATWI = window.ATWI || {};
       '</span>' +
     '</button>';
 
+  /* ⚠️ QUIEN ABRE EL GATE NO ESTA SIEMPRE EN EL MISMO SITIO (titular,
+     2026-09-19: «si aun no acepto terminos y doy clic a ese boton debe abrirme
+     los terminos para completarlos, sino el user cree que es falla del form»).
+     Son DOS tarjetas: en el paso de la contrasena el disparador es un boton
+     DENTRO de `#c-terminos`, y en el alta de invitado **la tarjeta entera es el
+     boton** --el rediseño del 2026-09-19 lo hizo asi a proposito, para no poner
+     una cuarta cosa pulsable en esa columna--. Buscando solo el descendiente
+     (`#c-terminos [data-accion=…]`, con espacio) el alta de invitado devolvia
+     null, y `abrirTerminos` se iba por su guarda **sin decir nada**: se pulsaba
+     «Crear mi cuenta y jugar» y no pasaba absolutamente nada.
+     Se mira la caja primero y despues dentro, asi que da igual cual de las dos
+     formas tenga hoy y cual tenga la que se escriba mañana. */
+  function disparadorDeTerminos() {
+    var caja = $('#c-terminos');
+    if (!caja) return null;
+    return caja.matches('[data-accion="ver-terminos"]')
+      ? caja
+      : caja.querySelector('[data-accion="ver-terminos"]');
+  }
+
   function pintarEstadoTerminos() {
     var caja = $('#c-terminos');
     if (!caja) return;
@@ -489,7 +509,17 @@ window.ATWI = window.ATWI || {};
   var gateEnElRegistro = false;
 
   function abrirTerminos(disparador, alAceptar, enElRegistro) {
-    if (!disparador || !window.ATWI.globo) return;
+    /* ⚠️ Y ESTA GUARDA NO PUEDE SER MUDA. El globo necesita de donde colgarse,
+       asi que sin ancla no hay nada que abrir --pero esto es el gate LEGAL: que
+       no se abra y no se diga por que es justo lo que el titular vio, un boton
+       que no hace nada. Se cae a la tarjeta, que existe siempre que exista el
+       bloque, y si tampoco esta se deja dicho en la consola: sin eso, «no pasa
+       nada» no se puede investigar. */
+    if (!disparador) disparador = $('#c-terminos');
+    if (!disparador || !window.ATWI.globo) {
+      console.warn('ATWI · no se pudo abrir el gate de términos: sin disparador');
+      return;
+    }
     gateEnElRegistro = !!enElRegistro;
     window.ATWI.globo.abrir(disparador, { titulo: 'Términos y condiciones' }, {
       tinte: 'lavanda',
@@ -1075,7 +1105,7 @@ window.ATWI = window.ATWI || {};
          cuando se intenta jugar por primera vez»). El gate se abre solo y se
          explica solo: decir además «falta aceptar los términos» encima del
          globo que los enseña es contar dos veces lo que ya se está viendo. */
-      abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), guardarContrasena, true);
+      abrirTerminos(disparadorDeTerminos(), guardarContrasena, true);
       return;
     }
     error('');
@@ -1121,7 +1151,7 @@ window.ATWI = window.ATWI || {};
     if (malElNombre) return error(malElNombre);
     if (clave.length < 8) return error('La contraseña necesita al menos 8 caracteres.');
     if (!terminosPuestos) {
-      abrirTerminos($('#c-terminos [data-accion="ver-terminos"]'), crearDesdeInvitacion, true);
+      abrirTerminos(disparadorDeTerminos(), crearDesdeInvitacion, true);
       return;
     }
     estado.nombre = nombre;
