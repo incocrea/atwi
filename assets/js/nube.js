@@ -758,6 +758,13 @@ window.ATWI = window.ATWI || {};
          ya vi el sorteo y quién abandonó. `estado` dice si sigue propuesta. */
       'estado,en_linea,aceptado_por,invitado_correo,invitado_perfil,invitacion_caduca,plazo,' +
       'intro_visto_propone,intro_visto_invitado,abandono,' +
+      /* ⚠️ Y SI EL OTRO LADO SE FUE (0061 + 2026-09-19). Estas dos columnas
+         existen desde que «borrar» en linea es ocultar de mi lado, y no las
+         pedia nadie: la consulta ya filtra la mia --si yo la oculte, no viene--
+         asi que la unica que puede llegar puesta es LA DEL OTRO. Sin ellas su
+         partida se seguia viendo «Sin empezar», con su boton, invitando a jugar
+         contra alguien que ya no esta. */
+      'oculta_propone,oculta_invitado,' +
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
       'invitado_nombre,invitado_avatar,invitado_color,' +

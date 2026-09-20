@@ -481,6 +481,19 @@ window.ATWI = window.ATWI || {};
       });
     },
 
+    /* QUITAR UNO DEL BUZON (titular, 2026-09-19: «agrega icono de eliminar a
+       las notificaciones para poder ir limpiando las que ya se vieron y ya no
+       tengan uso»). No hace falta RPC ni migracion: la politica «borro lo mio
+       del buzon» existe desde la 0009 y la 0070 la acoto a `authenticated`, asi
+       que RLS ya deja borrar SOLO los propios --el `id` que viaje aqui no puede
+       alcanzar el buzon de nadie mas--. */
+    borrarAviso: function (id) {
+      if (!id) return Promise.resolve();
+      return pedir('/rest/v1/avisos?id=eq.' + encodeURIComponent(id), {
+        method: 'DELETE', headers: cabeceras(true)
+      });
+    },
+
     correo: function () {
       var s = sesion();
       return (s && s.user && s.user.email) || '';

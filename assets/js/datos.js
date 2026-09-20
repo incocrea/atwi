@@ -694,6 +694,14 @@ window.ATWI = window.ATWI || {};
       return window.ATWI.auth.pedirBuzon().catch(function () { return []; });
     },
 
+    borrarAviso: function (id) {
+      if (!this.enLinea() || !window.ATWI.auth || !window.ATWI.auth.dentro()) {
+        demoAvisos.cache = (demoAvisos.cache || []).filter(function (a) { return a.id !== id; });
+        return Promise.resolve();
+      }
+      return window.ATWI.auth.borrarAviso(id);
+    },
+
     marcarLeidos: function (ids) {
       if (!this.enLinea() || !window.ATWI.auth || !window.ATWI.auth.dentro()) {
         (demoAvisos.cache || []).forEach(function (a) {

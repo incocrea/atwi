@@ -2689,6 +2689,11 @@
        trae resultado (victoria técnica) y sigue el camino normal; en Negociación
        no hay acta y se queda así. */
     if (d.en_linea && d.estado === 'propuesto') return 'propuesta';
+    /* EL OTRO SE FUE: la partida deja de poder jugarse y pasa a ser archivo.
+       Va ANTES que todo lo demás —incluso que `sin-empezar`— porque lo que
+       manda ya no es cuántas intervenciones hay sino que no hay con quién
+       seguir. Se puede oír lo grabado; lo que no se puede es continuar. */
+    if (seFueElOtro(d)) return 'se-fue';
     if (d.en_linea && d.abandono && d.modo === 'negociacion') return 'abandonada';
     if (!hechos) return 'sin-empezar';
     /* Una Controversia abandonada llega con menos intervenciones de las
@@ -2706,6 +2711,30 @@
     /* Cada quien estrena el suyo: el invitado con cuenta lleva su propia marca. */
     var visto = miLadoEn(d) === 'invitado' ? d.resultado.visto_invitado : d.resultado.visto;
     return visto ? 'terminada' : 'sin-ver';
+  }
+
+  /**
+   * ¿EL OTRO LADO SE FUE DE ESTA PARTIDA? (titular, 2026-09-19: «uno de los dos
+   * se salió y la borró de su lado… para el otro sigue apareciendo sin empezar y
+   * le deja entrar a jugar»).
+   *
+   * En línea «borrar» es ocultar de mi lado (0061), así que la fila sigue viva
+   * con la marca del que se fue. La consulta del historial ya filtra LA MÍA
+   * —si yo la oculté no me llega—, de modo que una marca puesta aquí solo puede
+   * ser la del otro.
+   *
+   * ⚠️ SOLO EN LINEA Y SOLO SI LA ACEPTARON: en una local no hay dos lados, y en
+   * una propuesta sin aceptar lo que hay es una invitación que se retira.
+   */
+  function seFueElOtro(d) {
+    if (!d || !d.en_linea || !d.aceptado_por) return false;
+    return miLadoEn(d) === 'propone' ? !!d.oculta_invitado : !!d.oculta_propone;
+  }
+
+  /** Cómo se llama la otra parte de una partida en línea, con su respaldo. */
+  function nombreDelOtro(d) {
+    var n = miLadoEn(d) === 'propone' ? d.invitado_nombre : d.propone_nombre;
+    return n || 'La otra persona';
   }
 
   /** De qué lado de una partida está esta cuenta: quien propuso, o el invitado con cuenta. */
@@ -2790,6 +2819,7 @@
   var FAMILIA = {
     'propuesta': 'curso',
     'abandonada': 'hecha',
+    'se-fue': 'hecha',
     'sin-empezar': 'curso',
     'en-curso': 'curso',
     'falta-veredicto': 'veredicto',
@@ -2898,6 +2928,11 @@
   var ROTULO_ESTADO = {
     'propuesta': ['Esperando respuesta', 'curso'],
     'abandonada': ['Abandonada', 'curso'],
+    /* El mismo rótulo que la que se cayó por plazo, y a propósito: para quien
+       mira la lista las dos son lo mismo —una partida que ya no va a seguir— y
+       dos palabras distintas para eso obligarían a aprenderse la diferencia.
+       Lo que las separa es POR QUÉ, y eso lo dice el renglón de debajo. */
+    'se-fue': ['Abandonada', 'curso'],
     'sin-empezar': ['Sin empezar', 'curso'],
     'en-curso': ['Sin terminar', 'curso'],
     'falta-veredicto': ['Falta el resultado', 'curso'],
@@ -2914,6 +2949,10 @@
      decir nada más. */
   var COMO_ACABO_PACTO = { acuerdo: 'Acuerdo firmado', desacuerdo: 'Sin acuerdo', parada: 'Detenida', aplazado: 'Aplazado' };
   function comoAcabo(d) {
+    /* QUIEN SE FUE MANDA SOBRE TODO LO DEMÁS. «Abandonada» dice que no sigue;
+       esto dice por qué, que es la única pregunta que queda al leerla. Va antes
+       que el acta y que el resultado porque describe el final de verdad. */
+    if (seFueElOtro(d)) return nombreDelOtro(d) + ' la borró';
     /* EN NEGOCIACIÓN LO DICE EL ACTA (S27, 2026-09-18): firmaron, marcaron
        «Ninguna» o el mediador paró. Las de Controversia lo decían y las de Pacto
        no decían nada. La última versión manda, como en el chip de actas. */
@@ -2996,6 +3035,25 @@
        una vez y espera al otro cuando no me toca. */
     if (e === 'propuesta') return abrirPropuesta(d);
     if (e === 'abandonada') return;
+    /* EL OTRO SE FUE: SE OYE, NO SE SIGUE (titular, 2026-09-19: «si trata de
+       entrar le aparece el toast de que el otro lado la ha borrado y no le
+       permite continuarla, es decir participar más, pero sí podrá reproducir el
+       avance logrado»). Va al repaso, que es exactamente eso: las
+       intervenciones para oírlas y ningún botón de grabar.
+       ⚠️ SIN NADA GRABADO NO SE ABRE: a partir de hoy eso no puede pasar —una
+       partida sin turnos se borra para los dos— pero las que se ocultaron antes
+       de este cambio siguen ahí, y abrir un repaso vacío sería prometer algo
+       que no está. Se dice y se ofrece la papelera. */
+    if (e === 'se-fue') {
+      var elOtro = nombreDelOtro(d);
+      if (!(d.turnos_grabados || []).length) {
+        return window.ATWI.aviso(elOtro + ' borró esta partida antes de empezar. ' +
+          'No hay nada que oír: puedes quitarla con la papelera.');
+      }
+      window.ATWI.aviso(elOtro + ' borró esta partida, así que no se puede seguir. ' +
+        'Lo que se grabó sigue aquí para oírlo.');
+      return window.ATWI.partida.repasar(d);
+    }
     if (esEnLinea(d) && (e === 'sin-empezar' || e === 'en-curso' || e === 'falta-veredicto' || e === 'falta-acuerdo')) {
       return window.ATWI.partida.enLinea(d);
     }
@@ -3947,6 +4005,24 @@
     vinculo: 'corazon', plataforma: 'aviso'
   };
 
+  /* SE VA EN EL ACTO Y DESPUÉS SE CUENTA. Quien toca la papelera acaba de decir
+     que ese aviso sobra: verlo desaparecer ES la respuesta, y esperar al viaje a
+     Oregón para quitarlo dejaría medio segundo en el que parece que no pasó
+     nada. Si el servidor no puede, vuelve y se dice —no se finge un borrado que
+     no ocurrió—. */
+  function quitarAviso(id, boton) {
+    if (!id) return;
+    var fila = boton && boton.closest('.aviso-fila');
+    if (fila) fila.hidden = true;
+    datos.borrarAviso(id).then(function () {
+      if (fila) fila.remove();
+      refrescarPunto();
+    }).catch(function () {
+      if (fila) fila.hidden = false;
+      if (window.ATWI.aviso) window.ATWI.aviso('No se pudo quitar ese aviso. Inténtalo otra vez.');
+    });
+  }
+
   function haceCuanto(iso) {
     var m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
     if (m < 1) return 'ahora mismo';
@@ -4041,7 +4117,13 @@
             esperan.map(filaQueEspera).join('') + '</div>'
           : '') +
         (lista.length ? '<div class="apilado">' + lista.map(function (a) {
-        return '<button class="aviso' + (a.leido ? '' : ' aviso--nuevo') + '" ' +
+        /* ⚠️ LA PAPELERA VA HERMANA DEL AVISO, NO DENTRO. El aviso ES un botón
+           —se toca entero para ir a su partida— y un `<button>` dentro de otro
+           no es HTML válido: el navegador lo desarma sin decir nada. Es la misma
+           solución que las cartas de modo, donde la carta es el botón y el signo
+           de ayuda va a su lado, encima con posición absoluta. */
+        return '<div class="aviso-fila">' +
+          '<button class="aviso' + (a.leido ? '' : ' aviso--nuevo') + '" ' +
             'data-tipo="' + esc(a.tipo) + '" ' +
             (a.debate ? 'data-ir-debate="' + esc(a.debate) + '"' : '') + '>' +
             '<span class="aviso__icono">' + icono(ICONO_AVISO[a.tipo] || 'aviso', 28) + '</span>' +
@@ -4050,7 +4132,15 @@
               (a.cuerpo ? '<span class="aviso__cuerpo">' + esc(a.cuerpo) + '</span>' : '') +
               '<span class="aviso__cuando">' + haceCuanto(a.creado) + '</span>' +
             '</span>' +
-          '</button>';
+          '</button>' +
+          /* SIN PREGUNTAR, y aquí sí se puede: lo que se quita es el aviso, no
+             lo que anunciaba. La partida, la invitación o el resultado siguen
+             donde estaban; por eso no lleva el globo de confirmación que sí
+             lleva la papelera del historial, que borra material. */
+          '<button class="aviso__tirar" data-tirar-aviso="' + esc(a.id) + '" ' +
+            'aria-label="Quitar este aviso" title="Quitar este aviso">' +
+            icono('papelera', 20) + '</button>' +
+        '</div>';
         }).join('') + '</div>' : '');
 
       /* Abrir el buzón es leerlo. Se marca todo lo que hay dentro.
@@ -6065,6 +6155,12 @@
 
     var pap = e.target.closest('[data-borrar]');
     if (pap) { abrirOlvidar(pap.dataset.borrar, pap); return; }
+
+    /* QUITAR UN AVISO. Va antes que cualquier cosa que mire `.aviso`, porque la
+       papelera vive encima del aviso y un toque en ella no puede además abrir lo
+       que el aviso anuncia. */
+    var tirar = e.target.closest('[data-tirar-aviso]');
+    if (tirar) { quitarAviso(tirar.dataset.tirarAviso, tirar); return; }
 
     /* El modo en línea (0055): aceptar o rechazar una invitación del buzón, y
        retirar una propuesta mía desde el historial. */

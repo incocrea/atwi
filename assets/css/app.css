@@ -2458,6 +2458,22 @@ body.app {
   --av: var(--lavanda); --av-tinte: var(--lavanda-tinte); --av-hondo: var(--lavanda-oscuro);
 }
 .aviso:active { transform: scale(.99); }
+
+/* LA PAPELERA DEL AVISO. La fila es el ancla —el botón del aviso ocupa el 100 %
+   y la papelera se coloca encima, contra el borde— y el sitio se lo reserva el
+   propio aviso con su relleno derecho: sin eso, el texto largo le pasaría por
+   debajo. Va tenue de serie, porque no es lo que se viene a hacer al buzón. */
+.aviso-fila { position: relative; }
+.aviso-fila .aviso { padding-right: 52px; }
+.aviso__tirar {
+  position: absolute; top: 50%; right: 6px; transform: translateY(-50%);
+  width: 36px; height: 36px; padding: 0;
+  border: 0; border-radius: 50%; background: none;
+  display: grid; place-items: center; cursor: pointer;
+  opacity: .5;
+}
+.aviso__tirar:hover { opacity: 1; background: var(--av-tinte); }
+.aviso__tirar:active { transform: translateY(-50%) scale(.9); }
 .aviso--nuevo { border-left: 4px solid var(--av); }
 
 .aviso[data-tipo="invitacion"] { --av: var(--lavanda); --av-tinte: var(--lavanda-tinte); --av-hondo: var(--lavanda-oscuro); }
