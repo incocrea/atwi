@@ -954,13 +954,25 @@ window.ATWI = window.ATWI || {};
    * primer toque suene: con la URL suelta, el navegador empieza a bajar CUANDO
    * se toca y el primer toque no hace nada.
    */
-  function oirDelAlmacen(ruta) {
+  /* ⚠️ TRES INTENTOS, NO UNO (titular, 2026-09-21). Un `fetch` suelto convierte
+     cualquier microcorte de red en «no se pudo bajar el audio guardado», que es
+     lo que la casilla acaba diciendo sobre un archivo que sigue en el almacén.
+     El token se relee en cada vuelta a propósito: si el primero falló porque la
+     sesión acababa de caducar, el de la segunda ya es el nuevo —`conTokenVivo`
+     lo habrá renovado— y ése es justo el caso que un solo intento no cubre. */
+  function oirDelAlmacen(ruta, queda) {
     if (!hayNube() || !ruta) return Promise.resolve(null);
+    queda = queda === undefined ? 3 : queda;
     return fetch(cfg.supabaseUrl + '/storage/v1/object/authenticated/audios/' + ruta, {
       headers: { 'Authorization': 'Bearer ' + conSesion() }
     }).then(function (r) { return r.ok ? r.blob() : null; })
       .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
-      .catch(function (e) { return apuntar('audio: ' + e.message); });
+      .catch(function (e) { return apuntar('audio: ' + e.message); })
+      .then(function (url) {
+        if (url || queda <= 1) return url;
+        return new Promise(function (listo) { setTimeout(listo, (4 - queda) * 700); })
+          .then(function () { return oirDelAlmacen(ruta, queda - 1); });
+      });
   }
 
   /**

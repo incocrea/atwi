@@ -2348,6 +2348,7 @@ window.ATWI = window.ATWI || {};
           v.preparando = false;
           marcarRueda(orden);
           arrancarElJuicio();
+          pasarAEsperar(orden);
         });
       } else if (r.abogado === false) {
         /* SIN ABOGADO NO HAY VOZ QUE ESPERAR, y eso NO es un fallo. Se queda la
@@ -2365,6 +2366,7 @@ window.ATWI = window.ATWI || {};
       }
       marcarRueda(orden);
       arrancarElJuicio();
+      pasarAEsperar(orden);
     }, function (e) {
       /* El rechazo de la promesa también: si no se atrapa, el reloj se queda
          girando igual que con la excepción síncrona. */
@@ -2436,6 +2438,30 @@ window.ATWI = window.ATWI || {};
     v.preparando = false;
     v.falloLaNube = true;
     marcarRueda(orden);
+    seOfreceOtraVez(v, orden);
+  }
+
+  /* NO SE ENTENDIÓ: OTRA OPORTUNIDAD EN EL ACTO (titular, 2026-09-21: «si esto
+     sucede, que no entendamos lo que el user dijo por ruido o volumen, debe
+     poder intentarlo nuevamente de una vez, no bloquearlo y solo notificar el
+     error»). Quien acaba de hablar está delante y lo único que necesita es el
+     botón de grabar otra vez; hacerle buscar la casilla roja, abrir su detalle
+     y encontrar ahí el botón son tres toques para repetir algo que dura medio
+     minuto.
+     ⚠️ Y SOLO DESDE EL RECIBO. Si ya se fue a otra pantalla —el historial, otra
+     partida— aparecerle de golpe la sala de grabar sería secuestrarle el sitio
+     donde está; ahí la casilla marcada y su detalle siguen siendo el camino.
+     Los fallos de RED no entran: ésos no se vuelven a grabar, se vuelven a
+     mandar, y para eso está el detalle con «Volver a mandar». */
+  function seOfreceOtraVez(v, orden) {
+    if (!P || P.estado !== 'recibo') return;
+    if (!v.regrabable || !puedeRegrabar(orden)) return;
+    if (window.ATWI.aviso) {
+      window.ATWI.aviso(v.clase === 'audio'
+        ? 'No se entendió bien: grábalo otra vez, cerca del micrófono.'
+        : 'Ese turno no se guardó: grábalo otra vez.');
+    }
+    regrabar(orden);
   }
 
   /** La casilla rechazada: qué pasó, y el botón que lo arregla. */
@@ -2497,11 +2523,32 @@ window.ATWI = window.ATWI || {};
 
   /** Se trae el audio de verdad y devuelve una URL local, o null si no se pudo.
       Sin esto, la casilla promete algo que todavía no está. */
+  /* ⚠️ Y SE REINTENTA ANTES DE DARLO POR PERDIDO (titular, 2026-09-21: «sobre
+     el error de descarga, más que notificar al user debemos hacer al menos un
+     par de retrys de descarga más»). Un `fetch` suelto convertía cualquier
+     microcorte —el ascensor, el cambio de celda, el wifi que salta a datos— en
+     un turno marcado en rojo que decía «no se pudo bajar el audio guardado»
+     sobre un archivo que estaba perfectamente ahí. Y aquí duele el doble: el
+     turno SÍ se guardó en el servidor, así que lo único que falló fue traerse
+     la voz de vuelta, y la casilla lo contaba como si la intervención se
+     hubiera perdido.
+     Tres intentos con espera creciente, que es lo que cubre un corte corto sin
+     dejar a nadie mirando una casilla que gira medio minuto. */
+  function conReintentos(pedir, veces, espera) {
+    return pedir().then(function (r) {
+      if (r || veces <= 1) return r;
+      return new Promise(function (listo) { setTimeout(listo, espera); })
+        .then(function () { return conReintentos(pedir, veces - 1, espera * 2); });
+    });
+  }
+
   function bajarLaVoz(url) {
-    return fetch(url)
-      .then(function (r) { return r.ok ? r.blob() : null; })
-      .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
-      .catch(function () { return null; });
+    return conReintentos(function () {
+      return fetch(url)
+        .then(function (r) { return r.ok ? r.blob() : null; })
+        .then(function (b) { return b && b.size ? URL.createObjectURL(b) : null; })
+        .catch(function () { return null; });
+    }, 3, 700);
   }
 
   /** La bitácora de la grabadora, para poder leerla EN EL APARATO. Aquí no hay
@@ -2601,7 +2648,6 @@ window.ATWI = window.ATWI || {};
        un toque por decirlo. Con dos teléfonos hará falta algo ahí, porque habrá
        que esperar a que el otro mande lo suyo; en un solo teléfono no hay nada
        que esperar. */
-    P.i++;
     /* EN LÍNEA ESO ES EXACTAMENTE LO QUE HAY: el otro está en su teléfono, así
        que se pasa a esperar en vez de al turno siguiente.
        ⚠️ PERO EL JUEZ SÍ HABLA, Y AQUÍ NO HABLABA (titular, 2026-09-19: «el juez
@@ -2616,9 +2662,41 @@ window.ATWI = window.ATWI || {};
        El orden es el mismo que en local —pintar y después hablar—: `juezDice`
        necesita la burbuja en el DOM, y la pinta `pintarSala`, que es por donde
        pasan las dos pantallas. */
-    if (P.enLinea) { pintarEspera(); juezDice(f.texto, f.archivo); return; }
+    /* ⚠️ Y EN LÍNEA NO SE PASA A ESPERAR HASTA QUE EL TURNO ESTÉ GUARDADO
+       (titular, 2026-09-21: «cuando me paró el turno que no se guardó quedé
+       bloqueado, el jugador quedó esperando un turno que nunca llegará porque
+       no completé el mío; tuve que salir y volver a entrar»).
+       ES EL MISMO FALLO QUE EL DEL VEREDICTO, POR EL OTRO LADO: `acusarRecibo`
+       corre ANTES que `subirTurno`, así que pintar aquí «Le toca a X» es
+       anunciar un turno que todavía puede ser rechazado —y si lo es, la
+       pantalla ya dijo lo contrario—. Peor: `pintarEspera` deja
+       `P.estado = 'espera'` y `puedeRegrabar()` solo admite `turno` o
+       `recibo`, así que el botón «Grabar de nuevo» **desaparecía** y el
+       detalle de la casilla decía que volviera cuando terminara de grabar algo
+       que no estaba grabando. Un callejón sin salida salvo recargar.
+       Ahora se queda en el recibo —el juez confirmando que escuchó— mientras
+       sube, y quien decide a dónde va es el `.then` de la subida, que es el
+       único que sabe si el turno existe. Lo mismo que se hizo con el juicio. */
+    if (P.enLinea) {
+      P.estado = 'recibo';
+      pintarSala({ dice: '', pie: esperandoHTML('Guardando tu turno') });
+      juezDice(f.texto, f.archivo);
+      return;
+    }
+    P.i++;
     pintarTurno();
     juezDice(f.texto, f.archivo);
+  }
+
+  /** Ya está guardado en el servidor: recién ahora se puede decir que le toca
+      al otro. Vale solo para la pantalla del recibo en línea; si quien jugó ya
+      se fue a otra parte, manda esa otra parte. */
+  function pasarAEsperar(orden) {
+    if (!P || !P.enLinea || P.cerrando) return;
+    if (P.estado !== 'recibo' || P.regrabando != null) return;
+    if (orden !== P.i) return;
+    P.i++;
+    pintarEspera();
   }
 
   function seguir() {

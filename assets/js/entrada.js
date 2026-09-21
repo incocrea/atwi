@@ -200,7 +200,7 @@ window.ATWI = window.ATWI || {};
         estado.captcha = '';
         estado.captchaFallo = String(codigo || 'sin codigo');
         if (window.console) console.warn('[ATWI] Turnstile error-callback: ' + estado.captchaFallo);
-        if (yaReintente) { estado.captchaMuerto = 'error'; pintarFalloCaptcha(); }
+        if (reintentosCaptcha >= REINTENTOS_CAPTCHA) { estado.captchaMuerto = 'error'; pintarFalloCaptcha(); }
         else reintentarCaptcha();
       },
       /* Y LOS OTROS DOS CAMINOS, que no son el mismo. `timeout` es que el reto
@@ -212,7 +212,7 @@ window.ATWI = window.ATWI || {};
       'timeout-callback': function () {
         estado.captcha = '';
         estado.captchaFallo = 'timeout';
-        if (yaReintente) { estado.captchaMuerto = 'error'; pintarFalloCaptcha(); }
+        if (reintentosCaptcha >= REINTENTOS_CAPTCHA) { estado.captchaMuerto = 'error'; pintarFalloCaptcha(); }
         else reintentarCaptcha();
       },
       /* Éste SÍ se dice a la primera, y es el único que no se arregla
@@ -250,18 +250,38 @@ window.ATWI = window.ATWI || {};
     });
   }
 
-  /* UN REINTENTO SOLO, Y AUTOMÁTICO. Un reto que falla por red o por caducidad
-     casi siempre va a la segunda --es lo que le pasó al titular a mano-- así que
-     lo hace la app en vez de hacerlo la persona. Uno solo: si el segundo
-     tampoco, es un problema de verdad y reintentar en bucle solo lo esconde. */
+  /* TRES INTENTOS AUTOMÁTICOS, NO UNO (titular, 2026-09-21: «seguimos teniendo
+     problemas con las verificaciones de Cloudflare, me preocupa esto», con un
+     `300010` en atwi.app).
+     Aquí ponía UNO, con este argumento: «si el segundo tampoco, es un problema
+     de verdad y reintentar en bucle solo lo esconde». La mitad sigue siendo
+     cierta —en bucle no— y la otra mitad la desmiente la familia del error: los
+     `300xxx` son el reto FALLANDO AL EJECUTARSE, que es lo que pasa cuando la
+     red se mueve debajo (el 4G cambiando de celda, el wifi que salta a datos),
+     y eso se arregla solo volviéndolo a intentar un momento después. Dos
+     reintentos con espera creciente cubren un corte de unos segundos y siguen
+     estando lejos de un bucle: al tercero se dice y se deja en paz.
+     ⚠️ **Y ESTO NO TOCA LA CAUSA**: el reto lo ejecuta Cloudflare en el
+     navegador y desde aquí no se puede hacer que no falle. Lo que sí se puede
+     es que fallar una vez no cueste una recarga. */
+  var REINTENTOS_CAPTCHA = 2;
   /* El id que devuelve `render()`: hace falta para desmontarlo antes de
      volver a montarlo. */
   var idCaptcha = null;
-  var yaReintente = false;
+  var reintentosCaptcha = 0;
   function reintentarCaptcha() {
-    if (yaReintente || !window.turnstile) return;
-    yaReintente = true;
-    setTimeout(function () { montarCaptcha(); }, 800);
+    if (reintentosCaptcha >= REINTENTOS_CAPTCHA || !window.turnstile) return;
+    reintentosCaptcha++;
+    setTimeout(function () { montarCaptcha(); }, 800 * reintentosCaptcha);
+  }
+
+  /** El reintento que pide la persona: vuelve a empezar la cuenta, porque esto
+      es una decisión suya y no un bucle del programa. */
+  function reintentarCaptchaAMano() {
+    reintentosCaptcha = 0;
+    estado.captchaMuerto = '';
+    quitarFalloCaptcha();
+    montarCaptcha();
   }
 
   function quitarFalloCaptcha() {
@@ -297,17 +317,35 @@ window.ATWI = window.ATWI || {};
       hueco.parentNode.insertBefore(n, hueco.nextSibling);
     }
     var codigo = estado.captchaFallo ? ' (' + estado.captchaFallo + ')' : '';
-    n.textContent = estado.captchaMuerto === 'unsupported'
+    /* ⚠️ Y EL AVISO TRAE SU BOTÓN EN VEZ DE MANDAR A RECARGAR (titular,
+       2026-09-21). «Recarga la página» es la respuesta más cara posible a algo
+       que se arregla remontando un widget: recargar vuelve a bajar la app, tira
+       lo escrito en los campos y, si la persona venía de una invitación, la
+       hace pasar otra vez por todo. `unsupported` no lleva botón porque ahí
+       reintentar no arregla nada: ese navegador no puede, y punto. */
+    n.innerHTML = '';
+    var texto = document.createElement('span');
+    texto.textContent = estado.captchaMuerto === 'unsupported'
       ? 'Este navegador no puede hacer la verificación. Abre atwi.app en Chrome, Safari o Firefox.' + codigo
-      : 'No se pudo comprobar que no eres un robot. Recarga la página e inténtalo otra vez.' + codigo;
+      : 'No se pudo comprobar que no eres un robot.' + codigo;
+    n.appendChild(texto);
+    if (estado.captchaMuerto !== 'unsupported') {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'boton boton--suave boton--punteado';
+      b.dataset.accion = 'reintentar-captcha';
+      b.style.cssText = 'margin-top:var(--e-2);min-height:40px;padding:0 var(--e-4)';
+      b.textContent = 'Reintentar la verificación';
+      n.appendChild(b);
+    }
   }
 
   function refrescarCaptcha() {
     estado.captcha = '';
     /* Un refresco PEDIDO --tras un fallo de entrada-- devuelve el derecho a un
-       reintento automático: el tope de uno es para no encadenar reintentos
-       solos, no para castigar a quien vuelve a intentarlo a mano. */
-    yaReintente = false;
+       reintento automático: el tope es para no encadenar reintentos solos, no
+       para castigar a quien vuelve a intentarlo a mano. */
+    reintentosCaptcha = 0;
     if (window.turnstile) montarCaptcha();
   }
 
@@ -1262,6 +1300,8 @@ window.ATWI = window.ATWI || {};
       else if (estado.paso === 'contrasena') guardarContrasena();
       else if (estado.paso === 'invitado') crearDesdeInvitacion();
       else if (estado.paso === 'entrar') entrar();
+    } else if (a === 'reintentar-captcha') {
+      reintentarCaptchaAMano();
     } else if (a === 'soy-nuevo') {
       abrirAlta(acc, false);
     } else if (a === 'ver-terminos') {
