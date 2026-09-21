@@ -26,11 +26,11 @@
      ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
      los `<script src>` relativos a su servidor. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=ec94a08">
-<link rel="stylesheet" href="assets/css/tokens.css?v=ec94a08">
-<link rel="stylesheet" href="assets/css/base.css?v=ec94a08">
-<link rel="stylesheet" href="assets/css/landing.css?v=ec94a08">
-<link rel="stylesheet" href="assets/css/modal.css?v=ec94a08">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=a0069d9">
+<link rel="stylesheet" href="assets/css/tokens.css?v=a0069d9">
+<link rel="stylesheet" href="assets/css/base.css?v=a0069d9">
+<link rel="stylesheet" href="assets/css/landing.css?v=a0069d9">
+<link rel="stylesheet" href="assets/css/modal.css?v=a0069d9">
 </head>
 
 <body class="landing">
@@ -337,8 +337,10 @@
     </ul>
 
     <h3>Para quién es</h3>
-    <p>ATWI es para personas adultas. Los temas son discusiones de pareja, de amigos y de familia; no hay
-      contenido para menores y no se pide la edad porque no se guarda ningún dato para comprobarla.</p>
+    <p>Hay que tener al menos <b>16 años</b> para abrir una cuenta, y es lo que se acepta al entrar.
+      No pedimos la fecha de nacimiento: no queremos guardar un dato más del que ya tenemos, así que
+      la edad se declara al aceptar las condiciones y no se comprueba. Los temas son discusiones de
+      pareja, de amigos y de familia; no hay contenido para menores.</p>
 
     <p class="fecha" style="margin-top:var(--e-6)">Si algo de esto deja de ser verdad, es un fallo
       nuestro y se corrige.</p>
@@ -352,6 +354,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=ec94a08"></script>
+<script src="assets/js/landing.js?v=a0069d9"></script>
 </body>
 </html>
