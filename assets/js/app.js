@@ -3568,6 +3568,33 @@
     });
   }
 
+  /* ⚠️ Y AQUÍ HABÍA OTRO `confirm()` DEL NAVEGADOR. Cerrar la sesión en todos
+     los aparatos es lo único que corta una sesión robada, así que es justo
+     donde el aviso tiene que leerse, y una caja gris del sistema es lo que
+     nadie lee. Va en el globo de siempre, colgado del enlace que se tocó.
+     NO SE PIDE ESCRIBIR NADA, al revés que borrar la cuenta: esto no destruye
+     nada --lo que se pierde es tener que volver a entrar-- y el peaje se
+     reserva para lo que no se deshace.
+     EL SIGNO ES EL MISMO DE «SALIR», que es la acción que este globo hace en
+     grande; la bombilla es de las ayudas y aquí no se explica nada. */
+  function preguntarSalirDeTodo(disparador) {
+    abrirGlobo(disparador,
+      { titulo: 'Cerrar sesión en todos lados',
+        texto: 'Se cierra tu sesión en todos los aparatos donde estés dentro, también en éste. ' +
+               'Tendrás que volver a entrar con tu correo y tu contraseña.',
+        clave: 'No se borra nada: tus partidas y tus temas te esperan.' },
+      /* 85 y no 96: medido el dibujo de las dos pegatinas, `salir` llena su
+         cuadro un 6 % más que la bombilla, así que a 96 pintaría un iconazo.
+         Es la misma cuenta que dejó la papelera en 83. */
+      { tinte: 'lavanda', etiqueta: 'Cerrar sesión en todos los aparatos',
+        signo: 'salir', signoTam: 85,
+        acciones:
+          '<button class="boton boton--bloque boton--suave boton--borrar" ' +
+            'data-accion="salir-de-todo-ya">Cerrar en todos</button>' +
+          '<button class="boton boton--bloque boton--suave boton--punteado" ' +
+            'data-cerrar-globo>Mejor no</button>' });
+  }
+
   /* BORRAR LA CUENTA: EL AVISO DICE LO QUE DE VERDAD PASA, incluido lo que le
      pasa al otro. Un borrado total se lleva las partidas EN LÍNEA también del
      historial de quien las jugó contigo --es una fila y dos historiales
@@ -4448,7 +4475,50 @@
         cuerpo: cuerpo,
         acciones: acciones });
 
+    /* Se guarda el HTML de los botones porque «Borrar este tema» los sustituye
+       por la pregunta, y «Mejor no» los tiene que devolver tal cual. */
+    escribiendo.acciones = acciones;
+    escribiendo.esPremio = esPremio;
+
     setTimeout(function () { var n = $('#e-titulo'); if (n && !t) n.focus(); }, 60);
+  }
+
+  /* ⚠️ AQUÍ HABÍA UN `confirm()` DEL NAVEGADOR, y encima ENCIMA DE UN GLOBO
+     (cabo que este archivo tenía anotado desde el 2026-09-18). Es lo que el
+     proyecto dice tres veces que no se hace: una caja gris del sistema con la
+     URL arriba, sobre una pieza dibujada, rompiendo el juego en el único
+     momento en que hay algo que no se deshace.
+     LA PREGUNTA SE HACE DONDE ESTÁN LOS BOTONES, y no abriendo otro globo:
+     `abrirGlobo` trata el disparador como un interruptor —el mismo signo lo
+     cierra— y el botón que pregunta vive DENTRO del globo que habría que
+     quitar, así que quedaría colgado de un nodo ya desconectado. Lo que cambia
+     es el pie; el formulario se queda arriba con lo escrito intacto, que es
+     además lo que deja ver QUÉ se está borrando. Mismo patrón que el globo del
+     alta («no se reabre para cambiarle el contenido: se repinta»). */
+  function preguntarBorrarTema() {
+    var pie = document.querySelector('.globo .globo__acciones');
+    if (!pie) return;
+    var cosa = escribiendo.esPremio ? 'premio' : 'tema';
+    /* Primero qué pasa y después la frase que protege, como el globo de borrar
+       una partida: al revés, lo primero que se lee es una alarma sobre algo que
+       todavía no se sabe qué es. */
+    pie.innerHTML =
+      '<p class="chico centrado">Se va este ' + cosa + ' de tu lista. ' +
+        'Lo ya jugado sigue en el historial.</p>' +
+      '<p class="globo__clave">«No se puede deshacer.»</p>' +
+      '<button class="boton boton--bloque boton--suave boton--borrar" ' +
+        'data-accion="borrar-tema-ya">Borrarlo</button>' +
+      '<button class="boton boton--bloque boton--suave boton--punteado" ' +
+        'data-accion="borrar-tema-no">Mejor no</button>';
+    /* Lo que crece dentro de un globo no se recoloca solo. */
+    if (window.ATWI.globo) window.ATWI.globo.recolocar();
+  }
+
+  function devolverAccionesDelTema() {
+    var pie = document.querySelector('.globo .globo__acciones');
+    if (!pie || !escribiendo.acciones) return;
+    pie.innerHTML = escribiendo.acciones;
+    if (window.ATWI.globo) window.ATWI.globo.recolocar();
   }
 
   /* El peso del tema —ligera, media, profunda— ya no se elige al escribirlo:
@@ -5682,8 +5752,15 @@
            la regla `.globo__signo` pisa el `width` que escribe `icono()`. El 82
            que había aquí no pintaba nada desde que la bombilla subió a 96. Lo
            que manda es `--globo-signo`, y lo declara `o.signoTam`. */
+        /* ⚠️ Y NO VA DIFERIDO, que es la lección del lápiz de las tarjetas por
+           un sitio nuevo: `icono()` escribe `loading="lazy"` para todo el juego
+           —correcto en una pantalla que se pinta entera— y aquí el signo es lo
+           PRIMERO que se ve de una pieza que acaba de aparecer. Medido: la
+           primera vez que se abre un globo con una pegatina que no estaba en
+           caché, el globo entra sin ella y el dibujo cae encima después. */
         window.ATWI.icono(o.signo || t.signo, 96)
-          .replace('class="ico"', 'class="ico globo__signo"') +
+          .replace('class="ico"', 'class="ico globo__signo"')
+          .replace('loading="lazy"', 'loading="eager"') +
         '<div class="globo__dicho">' +
           (dicho.titulo ? '<p class="globo__titulo">' + esc(dicho.titulo) + '</p>' : '') +
           /* UN CUERPO PROPIO, para los globos que no explican sino que dejan
@@ -6377,21 +6454,22 @@
       cerrarGlobo();
       pintarCatalogo();
     }
-    else if (a === 'borrar-tema') {
-      if (confirm('Se borra este tema de la lista de ustedes. Lo ya debatido sigue en el historial.')) {
-        datos.borrarTemaPropio(escribiendo.id);
-        cerrarGlobo();
-        pintarCatalogo();
-      }
+    else if (a === 'borrar-tema') { preguntarBorrarTema(); }
+    else if (a === 'borrar-tema-no') { devolverAccionesDelTema(); }
+    else if (a === 'borrar-tema-ya') {
+      datos.borrarTemaPropio(escribiendo.id);
+      cerrarGlobo();
+      pintarCatalogo();
     }
     else if (a === 'entrar') { location.href = location.pathname; }
     else if (a === 'bloquear') { bloquearApodo(); }
     else if (a === 'desbloquear') { desbloquearApodo(acc.dataset.apodo); }
     else if (a === 'reportar') { abrirReportar(acc); }
     else if (a === 'reportar-ya') { reportarYa(acc.dataset.bloquear === '1'); }
-    else if (a === 'salir-de-todo') {
-      if (!window.confirm('Se cerrará tu sesión en todos los aparatos, también en éste. ' +
-                          'Tendrás que volver a entrar con tu contraseña.')) return;
+    else if (a === 'salir-de-todo') { preguntarSalirDeTodo(acc); }
+    else if (a === 'salir-de-todo-ya') {
+      acc.disabled = true;
+      acc.textContent = 'Cerrando…';
       window.ATWI.auth.salirDeTodo().then(function () { location.reload(); });
     }
     else if (a === 'salir') {
