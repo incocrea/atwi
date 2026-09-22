@@ -48,12 +48,20 @@
     for (var c = 0; c < total; c++) patron.push(VACIA);
     /* ⚠️ LOS CUATRO COLORES SALEN TODOS, y eso no es un adorno: si el azar deja
        uno fuera, la paleta enseña un color que no está en el patrón y la ronda
-       se vuelve más fácil para quien lo note. Se reparten los primeros cuatro y
-       el resto se sortea. */
-    elegidas.sort(function (a, b) { return a - b; });
+       se vuelve más fácil para quien lo note.
+       ⚠️ PERO EL QUE SE LLEVA CADA UNO SE SORTEA, y esto costó reescribirlo: la
+       primera versión repartía los cuatro garantizados por ORDEN DE LECTURA
+       --la primera celda pintada siempre coral, la segunda azul, la tercera
+       verde, la cuarta morada-- así que quien lo notara solo tenía que
+       recordar las posiciones y el color de las tres últimas. La mitad del
+       juego, regalada. Ahora los colores obligatorios caen en cuatro de las
+       siete al azar. */
+    var reparto = [];
     for (var k = 0; k < elegidas.length; k++) {
-      patron[elegidas[k]] = k < n.colores ? k : az.entero(n.colores);
+      reparto.push(k < n.colores ? k : az.entero(n.colores));
     }
+    reparto = az.barajar(reparto);
+    for (var j = 0; j < elegidas.length; j++) patron[elegidas[j]] = reparto[j];
     return {
       cols: n.cols, filas: n.filas, colores: n.colores,
       muestraMs: n.muestraMs, patron: patron

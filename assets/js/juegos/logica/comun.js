@@ -39,7 +39,10 @@
      Cuenta (siempre 4x4), asi que la version SUBE: con la misma, un telefono
      con el JS de ayer generaria un tablero distinto del que el servidor repite
      y su ronda se rechazaria despues de jugada. */
-  J.VERSION_REGLAS = '0.4';
+  /* 0.5: el reparto de colores de Calco se sortea (antes los cuatro
+     garantizados caian por orden de lectura y eso regalaba medio juego), asi
+     que sus tableros cambian y la version SUBE. */
+  J.VERSION_REGLAS = '0.5';
 
   var MAX_JUGADAS = 600;
   var SAL_DEL_GEMELO = 0x67656D65;      // «geme»: la semilla hija del gemelo
