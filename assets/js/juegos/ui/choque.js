@@ -388,11 +388,31 @@
          —los dos lados llegan al centro a la vez, así que es UN sonido y no uno
          por fila—. Con `reduced-motion` no hay vuelo y tampoco golpe. */
       if (!quieto && s && s.hay()) timers.push(setTimeout(function () { s.choque(); }, 420));
-      /* Y el aviso de que terminó: el vuelo dura 900 ms y lo demás es tiempo de
-         leer las explicaciones, que ahora están todas juntas. */
-      timers.push(setTimeout(function () { fin(); }, quieto ? 2600 : 4200));
 
-      return function parar() { timers.forEach(clearTimeout); };
+      /* ⚠️ NO SE PASA SOLO AL RESULTADO (titular, 2026-09-21: «después de
+         presentar el choque no sigas automáticamente al resultado, agrega un
+         botón de ver resultado, por si el user quiere revisar las
+         comparaciones»). Con las tres rondas juntas hay algo que LEER —quién
+         ganó cada una y por qué—, y un temporizador decide por quien está
+         leyendo. El botón sale cuando el choque terminó, no antes: si estuviera
+         desde el primer fotograma se podría saltar la escena sin verla. */
+      var pie = document.querySelector('#m-partida .modal__pie');
+      function ponerBoton() {
+        if (!pie || !caja.isConnected) return;
+        pie.innerHTML = '<button type="button" class="boton boton--bloque boton--grande ' +
+          'boton--competencia jg-d__ver" data-el-ver>Ver el resultado</button>';
+        var b = pie.querySelector('[data-el-ver]');
+        if (b) b.addEventListener('click', function () { b.disabled = true; fin(); });
+      }
+      timers.push(setTimeout(ponerBoton, quieto ? 200 : 1100));
+
+      return function parar() {
+        timers.forEach(clearTimeout);
+        /* El botón vive en el pie, fuera de `caja`: si la escena se corta a
+           mitad no se va solo con el cuerpo y se quedaría sobre la pantalla
+           siguiente. */
+        if (pie) { var v = pie.querySelector('[data-el-ver]'); if (v) v.remove(); }
+      };
     }
   };
 })();
