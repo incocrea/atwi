@@ -900,7 +900,12 @@
   function botonReintento(quedan) {
     return '<button class="jg-reintento" type="button" data-jg="pedir-reintento" ' +
       'aria-label="Reintentar la ronda (' + (quedan === 1 ? 'queda 1 intento' : 'quedan ' + quedan + ' intentos') + ')">' +
-      window.ATWI.iconoSVG('repetir', 44) +
+      /* LA PEGATINA DE «CAMBIAR» (titular, 2026-09-22: «reutiliza el icono de
+         change que ya tenemos ilustrado, con el número dentro»): dos flechas
+         en círculo con el centro libre, que es donde va lo que queda. Sin
+         `loading="lazy"`: es lo que se ve en el instante en que sale el pie. */
+      '<img class="jg-reintento__dibujo" src="../assets/img/iconos/cambiar.png" width="64" height="64" ' +
+        'alt="" aria-hidden="true" decoding="async" draggable="false">' +
       '<span class="jg-reintento__n" aria-hidden="true">' + quedan + '</span>' +
     '</button>';
   }
