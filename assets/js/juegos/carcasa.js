@@ -432,10 +432,17 @@
        sale de él y sin él no hay tablero que generar. Nadie mira una ruedita:
        abrir tarda menos que leer esta pantalla. */
     var listo = Boolean(C.P.debate) || Boolean(C.P.ensayo) || !C.P.abriendo;
+    /* ⚠️ SIN PARTIDA EN EL SERVIDOR NO SE EMPIEZA (titular, 2026-09-22). Si la
+       creación ya volvió sin id, se dice AQUÍ, antes de jugar nada: dejarlo
+       pasar era jugar todas las rondas y enterarse al mandarlas («faltan
+       datos»), con la partida fuera del historial. En línea no aplica: allí la
+       partida ya existe antes de entrar. */
+    if (sinPartida()) return noSeCreo();
     pie().innerHTML = principal('comenzar', C.intento > 1 ? 'Volver a jugar la ronda' : 'Comenzar ronda', !listo);
     if (!listo && C.P.abriendo) {
       C.P.abriendo.then(function () {
         if (!C || C.estado !== 'presentacion') return;
+        if (sinPartida()) return noSeCreo();
         var b = $('#m-partida [data-jg="comenzar"]');
         if (b) b.disabled = false;
       });
@@ -1082,14 +1089,30 @@
      resuelve aquí, en el único sitio por el que pasan todos los fallos, y no
      llamador por llamador —que es la lista escrita a mano que este proyecto ya
      tiene anotada media docena de veces—. */
-  function fallar(texto, otraVez) {
+  /* ¿La creación de la partida volvió sin id? Solo en una partida local de
+     verdad: el ensayo no la crea y en línea ya existe. */
+  function sinPartida() {
+    return Boolean(C && !C.P.ensayo && !C.P.enLinea && !C.P.debate && C.P.abiertaSinId);
+  }
+  function noSeCreo() {
+    fallar('No se pudo crear la partida en el servidor, así que no se guardaría nada de lo que jueguen. ' +
+      'Revisa la conexión y vuelve a intentarlo.', function () {
+        if (!C) return;
+        caja().innerHTML = '<div class="sala sala--centrada jg"></div>';
+        pie().innerHTML = esperandoHTML('Creando la partida');
+        var p = C.P.reabrir ? C.P.reabrir() : Promise.resolve(null);
+        p.then(function () { if (C) pintarPresentacion(); });
+      }, 'No se pudo crear la partida');
+  }
+
+  function fallar(texto, otraVez, titulo) {
     if (!C) return;
     var recargar = texto === 'version_vieja' || /versión nueva/.test(texto);
     C.estado = 'fallo';
     C.otraVez = recargar ? function () { location.reload(); } : otraVez;
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--fallo">' +
-        '<p class="jg-relevo__t">' + (recargar ? 'Hay una versión nueva' : 'No se pudo mandar') + '</p>' +
+        '<p class="jg-relevo__t">' + esc(recargar ? 'Hay una versión nueva' : (titulo || 'No se pudo mandar')) + '</p>' +
         '<p class="chico centrado jg-aviso">' + esc(recargar
           ? 'El juego se actualizó mientras jugabas. Recarga la app y vuelve a elegir: no se guardó nada de esta ronda.'
           : texto) + '</p>' +

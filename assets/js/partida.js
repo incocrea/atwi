@@ -154,6 +154,17 @@ window.ATWI = window.ATWI || {};
        grabado --medio minuto largo-- el id ya llegó. Y si no llega, la partida
        sigue en local y lo único que falta es la voz del personaje. */
     P.debate = null;
+    /* ⚠️ Y SE PUEDE VOLVER A PEDIR (titular, 2026-09-22: una partida local de
+       QuiénGane jugada entera terminó en «No se pudo mandar · faltan datos» y
+       no salió en el historial). La creación había fallado --un permiso de la
+       0084, arreglado en la 0085-- y la partida siguió sin id: en QuiénGane
+       local eso es jugar todas las rondas sobre una partida que no existe. La
+       carcasa ya no deja empezar sin id (`abiertaSinId`) y ofrece `reabrir`. */
+    P.reabrir = abrirEnElServidor;
+    abrirEnElServidor();
+    function abrirEnElServidor() {
+    if (!P) return Promise.resolve(null);
+    P.abiertaSinId = false;
     if (window.ATWI.nube && window.ATWI.nube.hay()) {
       /* Y SE GUARDA LA PROMESA (`P.abriendo`): en QuiénGane la primera ronda
          genera su tablero con el id de la partida —la semilla local sale de
@@ -173,7 +184,10 @@ window.ATWI = window.ATWI || {};
            sitio quedan. Ver la migración 0031. */
         yo: P.jugadores[indiceDeLaCuenta()],
         abreLado: P.orden[0] === indiceDeLaCuenta() ? 'propone' : 'invitado'
-      }).then(function (id) { if (P) P.debate = id; return id; });
+      }).then(function (id) { if (P) { P.debate = id; P.abiertaSinId = !id; } return id; });
+      return P.abriendo;
+    }
+    return Promise.resolve(null);
     }
     abrir();
     /* Las poses del encuentro se piden YA, aunque falten cinco segundos para
