@@ -4220,11 +4220,22 @@ window.ATWI = window.ATWI || {};
                gana: r.gana, frase: r.frase || null };
     });
     P.pararDuelo = J.duelo(caja(), filas, [P.jugadores[0], P.jugadores[1]], function () {
+      /* Se para ANTES de soltarlo: las figuras cuelgan del modal y no de la
+         caja, así que si nadie llama a `parar()` se quedan dentro del modal
+         oculto hasta el ensayo siguiente. */
+      if (P.pararDuelo) P.pararDuelo();
       P.pararDuelo = null;
       /* Se sale por donde se entró: al probador, sin veredicto que enseñar.
          Montar además la ceremonia sería reproducir OTRA cosa, y para eso está
-         su propio atajo. */
+         su propio atajo.
+         ⚠️ `cerrar()` SOLO NO BASTA (titular, 2026-09-22: «cuando salgo de la
+         pantalla de comparación me envía al home, debe devolverme al panel de
+         simulación»). Cerrar la partida deja a la vista lo que hubiera debajo
+         --la portada--, y lo que reabre el probador es `alTerminarEnsayo`, que
+         es lo que ya hacen el atrás de un ensayo y el final de la revelación.
+         Este era el único camino que se lo saltaba. */
       cerrar();
+      if (window.ATWI.alTerminarEnsayo) window.ATWI.alTerminarEnsayo();
     });
   }
 
