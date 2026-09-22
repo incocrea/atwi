@@ -5549,9 +5549,17 @@
       sondear();
       /* Centrado en vertical y con la campana en el eje (titular, 2026-09-18):
          `.enviada` es una columna flex que reparte el alto del cuerpo. */
+      /* EL DISENO ES EL DE LA TERCERA PROPUESTA (mockup del titular,
+         2026-09-21): la campana grande dentro de un disco lavanda, el titulo,
+         el parrafo y el plazo en una tarjeta con su reloj al lado.
+         ⚠️ EL DISCO NO ES UN ARO. La campana es una pegatina con su propio
+         perfil blanco, y este archivo tiene anotado tres veces que ceñirle un
+         circulo le pone un segundo borde. Aqui no se ciñe: es una mancha
+         AMPLIA y suave por detras —como el fondo de los retratos—, asi que lo
+         que hace es sostenerla, no rodearla. */
       $('#m-invitar .modal__cuerpo').innerHTML =
         '<div class="enviada">' +
-          '<div class="enviada__signo">' + icono('buzon', 76) + '</div>' +
+          '<div class="enviada__signo">' + icono('buzon', 132) + '</div>' +
           '<h2 style="margin-bottom:var(--e-2)">Invitación enviada</h2>' +
           '<p class="suave chico" style="max-width:26rem;margin:0 auto">' +
             /* El correo y el título, separados. Pegados —«a mona@correo.com Mi
@@ -5561,13 +5569,19 @@
             esc(m.nombre || propuesta.modo) + '</strong>, ' + turnos +
             ' turno' + (turnos === 1 ? '' : 's') + ' cada uno.' +
           '</p>' +
-        '<div class="tarjeta" style="background:var(--crema-hondo);box-shadow:none">' +
-          '<p class="chico suave">' +
-            'La verá en su buzón al entrar a ATWI con ese correo. Tiene 24 horas para ' +
-            'aceptar; si no, la partida se anula y tu vida vuelve. Te avisamos aquí ' +
-            'cuando conteste, y la partida espera en tu Historial.' +
-          '</p>' +
-        '</div></div>';
+          /* EL RELOJ AL LADO Y NO ENCIMA: lo que la tarjeta cuenta es un PLAZO
+             —24 horas— y el signo lo dice antes de leerla. En fila, el texto
+             ocupa lo que le queda; apilado habria hecho la tarjeta mas alta
+             para decir lo mismo. */
+          '<div class="plazo">' +
+            '<span class="plazo__signo">' + iconoSVG('reloj', 24) + '</span>' +
+            '<p class="plazo__texto">' +
+              'La verá en su buzón al entrar a ATWI con ese correo. Tiene 24 horas para ' +
+              'aceptar; si no, la partida se anula y tu vida vuelve. Te avisamos aquí ' +
+              'cuando conteste, y la partida espera en tu Historial.' +
+            '</p>' +
+          '</div>' +
+        '</div>';
       cerrarModales(['m-preparar', 'm-tema']);
       abrirModal('m-invitar');
     });

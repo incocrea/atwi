@@ -62,6 +62,11 @@ window.ATWI = window.ATWI || {};
        realce de la pantalla— y apagarse con él. Una pegatina traería su color
        quemado y competiría con lo que se está escribiendo. */
     sobre: '<rect x="3.2" y="5.4" width="17.6" height="13.2" rx="2.6"/><path d="m3.9 7.2 7.3 5.2a1.4 1.4 0 0 0 1.6 0l7.3-5.2"/>',
+    /* EL RELOJ DEL PLAZO (mockup del titular, 2026-09-21). De trazo y no de
+       pegatina por lo mismo que el sobre y el candado: vive DENTRO de un disco
+       de color —el lavanda de la tarjeta— y tiene que tomar ese color; una
+       pegatina traería el suyo quemado. */
+    reloj: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.2V12l3.2 2"/>',
     /* ⚠️ Y UNA PERSONA, que este archivo tenía prohibida… PARA LA BARRA. La
        regla de `docs/03` es que el icono de la pestaña Perfil no sea una figura
        humana —ahí va una insignia—, y no dice nada de un campo de texto: aquí

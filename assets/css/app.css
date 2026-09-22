@@ -5117,6 +5117,20 @@ body.app {
 #puerta {
   background: var(--crema) url(../img/fondos/home.webp) center / cover no-repeat;
 }
+
+/* --- «Invitación enviada» con su fondo (lámina del titular, 2026-09-21) -----
+   ⚠️ LO PINTA EL PROPIO MODAL, como la puerta y por lo mismo: `--fondo` vive
+   en `.marco::before`, que está por DEBAJO de todo, así que ponerlo ahí y
+   dejar el modal transparente enseñaría la app de detrás —la cabecera y la
+   barra— a través de esta pantalla. Y aquí hay un motivo de más: esto es un
+   MODAL y no una vista, así que no hay `[data-activa]` del que colgar la
+   regla; se elige por modal abierto. */
+#m-invitar {
+  background: var(--crema) url(../img/fondos/invitacion.webp) center / cover no-repeat;
+}
+/* Y el pie sin raya ni color, que aquí no separa dos zonas: partiría el dibujo
+   en dos justo donde el mockup no tiene nada. */
+#m-invitar .modal__pie { background: transparent; border-top: 0; box-shadow: none; }
 /* Y el pie sin su raya ni su color: aquí no separa dos zonas, parte el dibujo
    del fondo en dos justo donde el mockup no tiene nada. */
 #puerta .modal__pie { background: transparent; border-top: 0; box-shadow: none; }
@@ -5800,9 +5814,41 @@ body[data-demo] { background: var(--crema); }
   align-items: center; justify-content: center; text-align: center;
   gap: var(--e-3); padding: var(--e-4) 0;
 }
-.enviada__signo { display: flex; justify-content: center; }
+
+/* LA CAMPANA SOBRE SU DISCO (mockup del titular, 2026-09-21, tercera
+   propuesta). ⚠️ NO ES UN ARO, y esa es la diferencia que hace que aquí sí se
+   pueda: la campana es una pegatina con su propio perfil blanco, y este
+   archivo tiene anotado tres veces que ceñirle un círculo le pone un segundo
+   borde. Este disco es una mancha AMPLIA —la pegatina ocupa poco más de la
+   mitad— y en lavanda muy suave, así que sostiene sin rodear, como el fondo de
+   los retratos. */
+.enviada__signo {
+  display: grid; place-items: center;
+  width: 216px; height: 216px; border-radius: 50%;
+  background: radial-gradient(circle,
+    color-mix(in srgb, var(--lavanda) 34%, #fff) 0%,
+    color-mix(in srgb, var(--lavanda) 26%, #fff) 60%,
+    color-mix(in srgb, var(--lavanda) 16%, #fff) 100%);
+}
 .enviada__signo .ico { display: block; }
-.enviada .tarjeta { width: 100%; margin-top: var(--e-3); text-align: left; }
+
+/* EL PLAZO, con su reloj al lado. Es la misma tarjeta translúcida de siempre
+   —no un color sólido— porque detrás hay dibujo: un crema opaco lo taparía
+   justo en la mitad de abajo de la pantalla. */
+.plazo {
+  display: flex; align-items: flex-start; gap: var(--e-3);
+  width: 100%; margin-top: var(--e-3);
+  padding: var(--e-4);
+  border-radius: var(--r-3);
+  background: color-mix(in srgb, var(--lavanda) 14%, rgba(255, 255, 255, .86));
+  text-align: left;
+}
+.plazo__signo {
+  flex: none; display: grid; place-items: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  background: #fff; color: var(--lavanda);
+}
+.plazo__texto { margin: 0; font-size: var(--t-chico); color: var(--tinta-suave); line-height: 1.45; }
 
 
 /* --- Bloquear y reportar (titular, 2026-09-19) -----------------------------
