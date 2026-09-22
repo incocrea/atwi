@@ -385,7 +385,11 @@
 /* El ancho va ACOTADO a la selección: `.jg-el__dibujo` lo usan también el duelo
    (56 px), el recibo (72) y el globo del círculo (34), y una regla suelta les
    cambiaría el tamaño a todos. */
-.jg-el .jg-el__dibujo { width: 104px; height: auto; }
+/* La mitad que antes (titular, 2026-09-22: «aumenta 50 % el seleccionado y
+   reduce 50 % cada una de las opciones»): lo que se mira es el círculo, y la
+   paleta es solo de dónde se saca. El fantasma del arrastre sigue a 96, así que
+   la figura crece al levantarla y aterriza del tamaño del círculo. */
+.jg-el .jg-el__dibujo { width: 52px; height: auto; }
 /* ⚠️ Y NINGUNA PIEZA SE ARRASTRA A LO NATIVO. El `draggable="false"` del HTML es
    lo que arregla el cursor de prohibido; esto es la red en CSS para Safari, que
    necesita `-webkit-user-drag`, y para que el nombre no se seleccione a mitad
@@ -430,7 +434,7 @@
    empezar—; lleno enseña el elemento y el número se va a la esquina. */
 .jg-turnos { display: flex; justify-content: center; gap: var(--e-3); width: 100%; }
 .jg-turno {
-  width: 84px; height: 84px; flex: none; position: relative;
+  width: 126px; height: 126px; flex: none; position: relative;
   display: grid; place-items: center; border-radius: 50%;
   background: color-mix(in srgb, var(--superficie) 70%, transparent);
   border: 2px dashed var(--competencia); touch-action: none;
@@ -444,7 +448,7 @@
    Es lo mismo que ya hace `.partida__espera > *`. */
 .jg-turno > * { grid-area: 1 / 1; }
 .jg-turno__hueco { display: grid; place-items: center; }
-.jg-turno .jg-el__dibujo { width: 64px; height: auto; }
+.jg-turno .jg-el__dibujo { width: 96px; height: auto; }
 .jg-turno__n {
   font-family: var(--display); font-weight: 900; font-size: var(--t-h2);
   color: var(--competencia); line-height: 1;
@@ -460,7 +464,7 @@
    orden sin taparle la cara al elemento. */
 .jg-turno--lleno .jg-turno__n {
   position: absolute; bottom: -4px; right: -4px;
-  width: 24px; height: 24px; display: grid; place-items: center;
+  width: 30px; height: 30px; display: grid; place-items: center;
   border-radius: 50%; background: var(--competencia); color: #fff;
   font-size: var(--t-chico); box-shadow: inset 0 0 0 2px #fff;
 }
