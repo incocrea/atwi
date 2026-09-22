@@ -4,7 +4,7 @@
    de seleccionar un elemento, aceptar y luego seleccionar otro, vamos a
    acumularle puntos como turnos asignados: si le doy a un elemento lo marco
    con un 1, al siguiente le agrego un 2 en círculos pequeños, con posibilidad
-   de reasignar»). Con todas repartidas se enciende «Confirmar selección».
+   de reasignar»). Con todas repartidas se manda con «Siguiente reto» o «Enviar».
    Reasignar es libre —eso reemplaza al recibo y a los reintentos— y con esto se
    va también la duda del titular sobre Fuego bloqueado: ya no hay «turno
    pasado» que agote nada, se ve todo el reparto junto.
@@ -99,8 +99,12 @@
             '</button>' +
           '</p>' +
           '<div class="jg-choque__pie">' +
-            '<button type="button" class="boton boton--bloque boton--competencia" data-el-confirmar disabled>' +
-              'Confirmar selección</button>' +
+            /* ⚠️ DICE QUÉ PASA AL PULSARLO Y NUNCA SE APAGA (titular,
+               2026-09-22). «Confirmar selección» no decía a dónde llevaba, y
+               apagado se leía como un botón roto. Si falta el elemento, al
+               pulsarlo se dice y el círculo vacío se enciende. */
+            '<button type="button" class="boton boton--bloque boton--competencia" data-el-confirmar>' +
+              (ctx.hasta >= (ctx.rondas || ctx.hasta) ? 'Enviar' : 'Siguiente reto') + '</button>' +
           '</div>' +
         '</div>';
 
@@ -140,8 +144,6 @@
                 ? 'Listo. Toca el círculo para vaciarlo o arrastra otro encima.'
                 : 'Listos los ' + rondas.length + ' turnos. Toca un círculo para vaciarlo o arrastra otro encima.');
         }
-        var b = caja.querySelector('[data-el-confirmar]');
-        if (b) b.disabled = quedan.length > 0;
       }
 
       /* --- ARRASTRAR (titular, 2026-09-21: «el jugador arrastra el elemento al
@@ -296,11 +298,20 @@
           return;
         }
         var b = e.target.closest('[data-el-confirmar]');
-        if (b && !b.disabled) {
+        if (b) {
           /* Una jugada por ronda pendiente, EN SU ORDEN: lo que haya en el
              círculo 1 se juega primero. */
           var porRonda = rondas.map(function (r) { return puesto[r]; });
-          if (porRonda.indexOf(-1) !== -1) return;
+          if (porRonda.indexOf(-1) !== -1) {
+            if (window.ATWI.aviso) window.ATWI.aviso(rondas.length === 1
+              ? 'Arrastra un elemento al círculo primero.'
+              : 'Falta poner un elemento en cada círculo.');
+            [].forEach.call(caja.querySelectorAll('.jg-turno:not(.jg-turno--lleno)'), function (c) {
+              c.classList.add('jg-turno--diana');
+              setTimeout(function () { c.classList.remove('jg-turno--diana'); }, 700);
+            });
+            return;
+          }
           ctx.confirmar(porRonda);
         }
       });

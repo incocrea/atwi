@@ -437,6 +437,9 @@
     ui.seleccion(area, {
       desde: C.ronda,
       hasta: finDelTramo(),
+      /* El total, para que el juego sepa si ésta es la última: su botón dice
+         «Siguiente reto» o «Enviar» según lo que venga después. */
+      rondas: C.rondas,
       previas: previas(),
       ancho: area.clientWidth,
       alto: area.clientHeight,
