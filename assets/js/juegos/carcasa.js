@@ -717,8 +717,15 @@
     C.gastados++;
     C.intento++;
     if (C.P.enLinea) return reintentarEnLinea();
-    /* MISMO TABLERO (titular): la semilla es la de la ronda, no la del intento. */
-    pintarPresentacion();
+    /* ⚠️ REINTENTAR ARRANCA EL JUEGO, NO VUELVE A LA PRESENTACIÓN (titular,
+       2026-09-22: «el botón de reintento debe lanzar inmediatamente el juego
+       sin pantalla previa de confirmación»). Volvía a «Comenzar ronda», o sea
+       que pedía confirmar dos veces lo mismo: quien pulsa «Reintentar» ya
+       decidió. La cuenta atrás se queda —no es una confirmación, es el 3-2-1
+       que evita perder segundos que puntúan mirando aparecer el tablero—.
+       MISMO TABLERO: la semilla es la de la ronda, no la del intento. */
+    C.estado = 'presentacion';
+    comenzar();
   }
 
   function enviar() {
@@ -1018,9 +1025,15 @@
       });
   }
 
+  /* En línea el tablero lo reparte el servidor, así que entre el toque y el
+     3-2-1 hay un viaje. Lo que se ve mientras tanto es la presentación de la
+     ronda —no hay otro sitio donde esperar— pero SIN ofrecer confirmar nada:
+     el botón dice lo que está pasando. */
   function reintentarEnLinea() {
     C.estado = 'presentacion';
     pintarPresentacion();
+    var b = $('#m-partida [data-jg]');
+    if (b) { b.disabled = true; b.textContent = 'Preparando…'; }
     comenzarEnLinea(true);
   }
 
