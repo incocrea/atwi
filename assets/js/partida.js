@@ -122,8 +122,10 @@ window.ATWI = window.ATWI || {};
          frases entre turnos-- y es quien presenta el resultado. */
       juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
       tema: op.tema,
-      modo: op.modo,                 // 'debate' | 'negociacion'
-      turnos: op.turnos,             // por persona
+      modo: op.modo,                 // 'debate' | 'negociacion' | 'competencia'
+      /* QUIÉNGANE: qué minijuego se juega (docs/10). En los otros modos, nulo. */
+      juego: op.modo === 'competencia' ? (op.juego || null) : null,
+      turnos: op.turnos,             // por persona (en QuiénGane, RONDAS)
       publico: op.publico || 'pareja',
       /* SIN POSTURA ASIGNADA. Cada jugador llegaba con una letra y el texto de
          «su» postura, y tenía que sostenerla los tres turnos aunque no la
@@ -148,8 +150,12 @@ window.ATWI = window.ATWI || {};
        sigue en local y lo único que falta es la voz del personaje. */
     P.debate = null;
     if (window.ATWI.nube && window.ATWI.nube.hay()) {
-      window.ATWI.nube.abrirPartida({
-        tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez,
+      /* Y SE GUARDA LA PROMESA (`P.abriendo`): en QuiénGane la primera ronda
+         genera su tablero con el id de la partida —la semilla local sale de
+         él— así que la carcasa tiene que poder esperarlo si todavía no llegó.
+         En los otros modos nadie la mira. */
+      P.abriendo = window.ATWI.nube.abrirPartida({
+        tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez, juego: P.juego,
         abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
         abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
         /* El personaje DEL DUELO. Con abogado es el elegido; sin abogado es el
@@ -162,7 +168,7 @@ window.ATWI = window.ATWI || {};
            sitio quedan. Ver la migración 0031. */
         yo: P.jugadores[indiceDeLaCuenta()],
         abreLado: P.orden[0] === indiceDeLaCuenta() ? 'propone' : 'invitado'
-      }).then(function (id) { P.debate = id; });
+      }).then(function (id) { if (P) P.debate = id; return id; });
     }
     abrir();
     /* Las poses del encuentro se piden YA, aunque falten cinco segundos para
@@ -172,7 +178,7 @@ window.ATWI = window.ATWI || {};
     P.poses = Promise.all([
       window.ATWI.precargarPoses(
         P.jugadores.map(function (j) { return j.avatar; }),
-        [P.modo === 'debate' ? 'plante' : 'puno'],
+        [poseDelEncuentro()],
         /* El color va en paralelo: cada lado tiene el suyo y la pieza que hay que
            bajar es la de ESE color, no una cualquiera del personaje. */
         P.jugadores.map(function (j) { return j.color; })),
@@ -328,6 +334,22 @@ window.ATWI = window.ATWI || {};
   function repasar(d, op) {
     op = op || {};
     var t = turnosDe(d);
+    /* QUIÉNGANE NO SE VUELVE A OÍR: no hay intervenciones. Lo que tiene es un
+       resultado, y volver a abrirlo es volver a verlo con su tabla de rondas.
+       `estrenar` sigue decidiendo el sello y la contabilidad, como siempre. */
+    if (d.modo === 'competencia') {
+      if (!d.resultado) return;
+      var mesaJ = mesaDelDebate(d, t);
+      P = {
+        tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+        modo: 'competencia', juego: d.juego || null, turnos: d.turnos, publico: 'pareja',
+        jugadores: mesaJ.jugadores, orden: mesaJ.orden, intervenciones: [], i: 0, borrador: null,
+        estado: 'repaso', repaso: !op.estrenar, estrenando: Boolean(op.estrenar),
+        juez: d.juez || null, veredicto: d.resultado, enLinea: Boolean(d.en_linea),
+        miLado: miLadoEn(d), abandono: d.abandono || null, debate: d.id
+      };
+      return revelar();
+    }
     if (!t.length) return;
     /* Al repaso se viene a OÍR. Nada de esta pantalla graba. */
     window.ATWI.grabadora.soltar('repaso');
@@ -557,6 +579,9 @@ window.ATWI = window.ATWI || {};
       repaso: false,
       reanudada: t.length > 0,
       enLinea: true,
+      /* QuiénGane: el minijuego de la partida; la carcasa pregunta al servidor
+         por dónde va (`estado_del_juego`). */
+      juego: d.juego || null,
       miLado: miLado,
       plazo: d.plazo || null,
       /* Quien no contesto en 24 h (0056): con esto la ronda esta cerrada
@@ -569,7 +594,7 @@ window.ATWI = window.ATWI || {};
     precargarElFinal();
     P.poses = Promise.all([
       window.ATWI.precargarPoses(P.jugadores.map(function (j) { return j.avatar; }),
-        [P.modo === 'debate' ? 'plante' : 'puno'],
+        [poseDelEncuentro()],
         P.jugadores.map(function (j) { return j.color; })),
       window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
     ]);
@@ -578,10 +603,24 @@ window.ATWI = window.ATWI || {};
                                P.jugadores.map(function (j) { return j.color; }));
     /* La revelación del sorteo, UNA VEZ POR LADO: el host que invitó y volvió
        cuando el otro ya grabó también la ve —es su primera vez en esta sala—
-       y la ruleta cae donde el servidor dijo. Vista una vez, se entra derecho. */
+       y la ruleta cae donde el servidor dijo. Vista una vez, se entra derecho.
+       ⚠️ Y SI YA JUGUÉ UN TURNO, YA VI EL SORTEO, diga lo que diga el flag
+       (titular, 2026-09-21). El fallo: se abre la partida desde el buzón, que
+       usa la copia del historial en memoria; si esa copia se cargó ANTES de que
+       yo entrara la primera vez, trae `intro_visto_*` en null aunque el servidor
+       ya lo tenga puesto, y el intro se repite «como si apenas empezara» con dos
+       intervenciones ya jugadas. El flag por sí solo depende de que la copia
+       local esté fresca; haber jugado un turno no depende de nada y no miente:
+       si hay una intervención mía, es imposible no haber visto el sorteo. */
     var vista = miLado === 'invitado' ? d.intro_visto_invitado : d.intro_visto_propone;
-    if (!vista) {
+    var yaJugue = P.intervenciones.some(function (v) { return v.jugador === indiceDeLaCuenta(); });
+    if (!vista && !yaJugue) {
       P.estado = 'aviso';
+      /* Se marca también en la copia local, no solo en el servidor: reabrir la
+         misma partida desde el buzón, sin que el historial se haya refrescado,
+         no puede volver a mostrar el intro. `d` es la entrada del historial en
+         memoria (`abrirPartida` la pasa por referencia). */
+      if (miLado === 'invitado') d.intro_visto_invitado = true; else d.intro_visto_propone = true;
       if (window.ATWI.nube && window.ATWI.nube.marcarIntroVista) window.ATWI.nube.marcarIntroVista(d.id);
       return pintarAviso();
     }
@@ -590,6 +629,9 @@ window.ATWI = window.ATWI || {};
 
   /** En línea, después de la revelación o de un refresco: grabar, esperar o el resultado. */
   function loQueToca() {
+    /* QuiénGane: la carcasa decide sola —mis rondas, la espera o el resultado—
+       preguntándole al servidor por dónde va la partida. */
+    if (P.modo === 'competencia') return arrancarJuego();
     var total = P.turnos * 2;
     if (P.abandono || P.intervenciones.length >= total) {
       if (P.cerrando && P.juicio) return;   // ya se pidió al mandar el último
@@ -669,6 +711,15 @@ window.ATWI = window.ATWI || {};
     if (!n || !n.partida) return;
     n.partida(id).then(function (d) {
       if (!P || !P.enLinea || P.debate !== id || P.estado !== 'espera' || !d) return;
+      /* QuiénGane esperando las rondas del otro: lo único que puede llegar es
+         el resultado, y se revela; si no está, se sigue esperando. */
+      if (P.modo === 'competencia') {
+        if (!d.resultado) return;
+        P.veredicto = d.resultado;
+        P.abandono = d.abandono || null;
+        P.estado = 'deliberando';
+        return revelar();
+      }
       var t = turnosDe(d);
       if (t.length <= P.intervenciones.length && !d.cerrado && !d.abandono) return;
       var mesa = mesaDelDebate(d, t);
@@ -796,7 +847,18 @@ window.ATWI = window.ATWI || {};
        su propio botón antes. */
     var mandadas = (P.intervenciones || []).length;
     var total = P.turnos * 2;
+    var esJuego = P.modo === 'competencia';
+    var juegoEnLinea = P.enLinea;
     cerrar();
+    if (window.ATWI.aviso && esJuego) {
+      /* EN QUIÉNGANE LOCAL NADA SE GUARDA HASTA EL FINAL —las rondas de los dos
+         viajan juntas—, así que salir a medias es empezar de nuevo, y hay que
+         decirlo. En línea cada ronda enviada ya está en el servidor. */
+      window.ATWI.aviso(juegoEnLinea
+        ? 'Tus rondas enviadas están guardadas. Sigue desde el Historial cuando quieras.'
+        : 'Las rondas jugadas no se guardan a medias: al volver, se empieza de nuevo.');
+      return;
+    }
     if (window.ATWI.aviso) {
       window.ATWI.aviso(mandadas
         ? 'Guardamos la partida con ' + mandadas + ' de ' + total +
@@ -818,6 +880,9 @@ window.ATWI = window.ATWI || {};
     try { vozJuez.pause(); vozJuez.onended = vozJuez.onerror = null; } catch (e) {}
     cerrarReproductor();
     tirarBorrador();
+    /* Y la carcasa del minijuego, si la había: su reloj y sus temporizadores
+       no pueden seguir corriendo sobre una sala cerrada. */
+    if (window.ATWI.juego) window.ATWI.juego.cerrar();
     /* Solo los objetos LOCALES. Las URLs firmadas de la voz del personaje no
        son objetos de este navegador y `revokeObjectURL` con ellas no hace nada,
        pero da igual: se comprueba para decir en el codigo cual es cual. */
@@ -1327,10 +1392,13 @@ window.ATWI = window.ATWI || {};
     return l;
   }
 
+  /** Devuelve true si dejó programada la siguiente pista; false si ésta era la
+     última y no hay nada más que oír. Quien llama usa eso para cerrar el
+     reproductor al terminar la cadena. */
   function encadenar() {
     var l = ordenDePistas();
     var i = l.indexOf(sonando);
-    if (i < 0 || i === l.length - 1) return;          // era la última
+    if (i < 0 || i === l.length - 1) return false;    // era la última
     var proxima = l[i + 1];
     if (siguiendo) clearTimeout(siguiendo);
     siguiendo = setTimeout(function () {
@@ -1340,6 +1408,7 @@ window.ATWI = window.ATWI || {};
       if (!P || sonando !== l[i]) return;
       oir(proxima);
     }, MS_ENTRE_PISTAS);
+    return true;
   }
 
   function pararEscucha() {
@@ -1511,7 +1580,16 @@ window.ATWI = window.ATWI || {};
           apagarPorOir(Number(String(sonando).slice(1)));
         }
       }
-      a.currentTime = 0; encadenar();
+      /* SE CIERRA SOLO AL TERMINAR (titular, 2026-09-21). Antes el reproductor
+         se quedaba abierto cuando la cadena se acababa, y con él la figura del
+         que habló: el botón decía «Turno de X» y en pantalla seguía la cara del
+         otro —se oyó su turno y nadie cerró el control—, que es justo la
+         confusión que la figura existe para evitar. Ahora, cuando ésta era la
+         última pista y no hay nada más que encadenar, se cierra y se vuelve al
+         turno y al personaje actual (`cerrarReproductor` → `ponerHablante(null)`).
+         Si la cadena sigue, no se toca: se cierra al final de todo. */
+      a.currentTime = 0;
+      if (!encadenar()) { cerrarReproductor(); return; }
     }
 
     var ic = $('#r-icono');
@@ -1563,7 +1641,12 @@ window.ATWI = window.ATWI || {};
         '<div class="sala__tema">' +
           '<p class="sala__enunciado">' + esc(P.tema.enunciado) + '</p>' +
           '<div class="sala__chips">' +
-            '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>' +
+            /* En QuiénGane lo configurado son RONDAS de un minijuego, y el chip
+               dice cuál: es lo único de esta pantalla que no se ve en el dibujo. */
+            (P.modo === 'competencia'
+              ? '<span class="chip">' + esc(nombreDelJuego()) + '</span>' +
+                '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' ronda' : ' rondas') + '</span>'
+              : '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>') +
           '</div>' +
         '</div>' +
         /* EL SORTEO SE VE Y SE OYE. Antes ponía el resultado ya hecho, que es
@@ -1701,8 +1784,16 @@ window.ATWI = window.ATWI || {};
      se cambia en esta línea el día que el morado exista. */
   var TINTE_DE_MESA = { pareja: 'rosa', amigos: 'sol', familia: 'azul' };
 
+  /* EL CORAZÓN ES SOLO DE PACTO, y esto estaba escrito como «lo que no es
+     Controversia» cuando había dos modos: QuiénGane caía en el choque de puños
+     y en el corazón, que es lo contrario de un duelo por un premio (docs/10 §3).
+     Ahí los dos se plantan y cae el VS, como en Controversia. Es la quinta vez
+     que una lista de dos modos escrita a mano se queda coja con el tercero. */
+  function esPacto() { return P && P.modo === 'negociacion'; }
+  function poseDelEncuentro() { return esPacto() ? 'puno' : 'plante'; }
+
   function piezaDelEncuentro(modo, publico) {
-    return '../assets/img/iconos/' + (modo === 'debate' ? 'vs' : 'choque') +
+    return '../assets/img/iconos/' + (modo === 'negociacion' ? 'choque' : 'vs') +
            '-' + (TINTE_DE_MESA[publico] || 'sol') + '.png';
   }
 
@@ -1716,8 +1807,8 @@ window.ATWI = window.ATWI || {};
     var m = $('#m-partida');
     if (!m || $('#encuentro')) return;
 
-    var pacto = P.modo !== 'debate';
-    var pose = pacto ? 'puno' : 'plante';
+    var pacto = esPacto();
+    var pose = poseDelEncuentro();
     var izq = P.jugadores[P.orden[0]];         // quien abre, a la izquierda
     var der = P.jugadores[P.orden[1]];
 
@@ -3241,20 +3332,26 @@ window.ATWI = window.ATWI || {};
       return;
     }
 
+    /* UNA SOLA PROPUESTA NO SE «ELIGE ENTRE LAS DOS» (titular, 2026-09-21). El
+       mediador puede devolver una —dos candidatas con las mismas anclas son una
+       (H16)— y entonces el título «Elijan una, entre los dos» y el botón
+       «Ninguna nos convence» hablaban de algo que no está: no hay dos ni varias.
+       Con una, la elección es aceptar ésta o ninguna. */
+    var una = P.propuestas.length === 1;
     caja().innerHTML =
       '<div class="votacion">' +
-        '<p class="votacion__quien">' + esc(n.titulo) + '</p>' +
+        '<p class="votacion__quien">' + esc(una ? n.tituloUna : n.titulo) + '</p>' +
         /* SIN `--tenue`: esa clase baja al 60 % y es para lo accesorio. Esto no
            lo es --es la condición de la elección, y saberla cambia cómo se
            elige-- así que va a pleno. */
-        '<p class="sala__nota">' + esc(n.aviso) + '</p>' +
+        '<p class="sala__nota">' + esc(una ? n.avisoUna : n.aviso) + '</p>' +
         '<div class="propuestas">' +
           P.propuestas.map(function (p, k) {
             return tarjetaPropuesta(p, k, P.voto === k);
           }).join('') +
           '<button class="propuesta propuesta--ninguna' +
             (P.voto === -1 ? ' propuesta--marcada' : '') + '" data-propuesta="-1">' +
-            esc(n.ninguna) + '</button>' +
+            esc(una ? n.ningunaUna : n.ninguna) + '</button>' +
         '</div>' +
       '</div>';
     pie().innerHTML = principal('p-voto-listo', 'Listo', '', P.voto === null);
@@ -3455,7 +3552,8 @@ window.ATWI = window.ATWI || {};
     if (P.debate && !P.ensayo && !P.demo && window.ATWI.nube && window.ATWI.nube.marcarVisto) {
       window.ATWI.nube.marcarVisto(P.debate);
     }
-    var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto) : null;
+    var real = P.modo === 'debate' && P.veredicto ? delArbitro(P.veredicto)
+             : P.modo === 'competencia' && P.veredicto ? delJuego(P.veredicto) : null;
     /* Por abandono (0056): la pantalla del juez lo dice antes del desglose. */
     if (real && P.abandono) real.abandono = P.abandono;
     veredicto.revelar(Object.assign({
@@ -3587,7 +3685,12 @@ window.ATWI = window.ATWI || {};
     if (a === 'p-regrabar') { regrabar(Number(b.dataset.orden)); return; }
     if (a === 'p-remandar') { remandar(Number(b.dataset.orden)); return; }
     if (a === 'p-oir-todo') { oir('i0'); return; }
-    if (a === 'p-listo') { if (P.demo) demoLaRonda(); else if (P.enLinea) loQueToca(); else pintarTurno(); }
+    if (a === 'p-listo') {
+      if (P.demo) demoLaRonda();
+      else if (P.modo === 'competencia') arrancarJuego();
+      else if (P.enLinea) loQueToca();
+      else pintarTurno();
+    }
     /* `p-espera-volver` se fue con «Volver al inicio»: las dos pantallas de
        espera llevan ahora el estado «Esperando…» y la salida es el atrás. */
     if (a === 'p-voto-quedarme' || a === 'p-voto-aceptar') { votarEnLinea(Number(b.dataset.eleccion)); return; }
@@ -3687,7 +3790,7 @@ window.ATWI = window.ATWI || {};
     var base = {
       juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
       tema: op.tema || TEMA_DE_ENSAYO,
-      modo: op.modo === 'negociacion' ? 'negociacion' : 'debate',
+      modo: op.modo === 'negociacion' ? 'negociacion' : op.modo === 'competencia' ? 'competencia' : 'debate',
       /* De la config y no un 3 escrito aquí: el ensayo pinta el chip de «N
          turnos cada uno» en la misma tarjeta que la partida de verdad, así que
          con el número a mano se quedaba enseñando el de antes en cuanto alguien
@@ -3738,7 +3841,7 @@ window.ATWI = window.ATWI || {};
     P.poses = Promise.all([
       window.ATWI.precargarPoses(
         P.jugadores.map(function (j) { return j.avatar; }),
-        [P.modo === 'debate' ? 'plante' : 'puno'],
+        [poseDelEncuentro()],
         P.jugadores.map(function (j) { return j.color; })),
       window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
     ]);
@@ -3841,6 +3944,131 @@ window.ATWI = window.ATWI || {};
   }
 
   /* ==========================================================================
+     QUIÉNGANE: LA SALA LE PASA EL MANDO A LA CARCASA (docs/10, bloque 0.4)
+     Después del sorteo y la cortinilla —que son los de siempre— en QuiénGane
+     no se graba: se juega. La carcasa (`juegos/carcasa.js`) pinta dentro de
+     esta misma sala —mismo modal, misma cabecera, mismo pie— y cuando termina
+     devuelve la fila de `resultados`, que se revela con la ceremonia de siempre.
+     ========================================================================== */
+  function nombreDelJuego() {
+    var J = window.ATWI.juegos;
+    var m = J && P && P.juego ? J.juego(P.juego) : null;
+    return (m && m.nombre) || 'Minijuego';
+  }
+
+  function arrancarJuego() {
+    if (!P) return;
+    if (P.limpiarEncuentro) { P.limpiarEncuentro(); P.limpiarEncuentro = null; }
+    /* Aquí no se graba nada: el micrófono se suelta como en cualquier pantalla
+       que no graba, por si el sorteo lo dejó abierto. */
+    window.ATWI.grabadora.soltar('minijuego');
+    P.estado = 'juego';
+    var carcasa = window.ATWI.juego;
+    if (!carcasa) return fallo('El minijuego no está cargado en esta versión.');
+    carcasa.arrancar(P, {
+      terminado: function (fila) {
+        if (!P) return;
+        P.veredicto = fila;
+        P.veredictoListo = true;
+        P.estado = 'deliberando';
+        revelar();
+      },
+      esperar: function (otroLado) {
+        if (!P) return;
+        pintarEsperaDelJuego(otroLado);
+      },
+      fallo: function (texto) {
+        if (window.ATWI.aviso) window.ATWI.aviso(texto);
+      }
+    });
+  }
+
+  /* En línea, mis rondas están enviadas y faltan las del otro: la misma espera
+     que la del turno, con el plazo, y el sondeo trae el resultado (`tocada`). */
+  function pintarEsperaDelJuego(otroLado) {
+    P.estado = 'espera';
+    P.esperaDelJuego = true;
+    var cab = $('#t-partida');
+    if (cab) cab.textContent = nombreDelJuego();
+    var otro = P.jugadores[otroLado === 'invitado' ? 1 : 0];
+    var hasta = P.plazo ? ' Tiene hasta ' + cuandoVence(P.plazo) + '.' : '';
+    caja().innerHTML =
+      '<div class="sala sala--centrada jg jg--relevo">' +
+        '<p class="jg-relevo__t">Tus rondas están enviadas</p>' +
+        '<p class="chico centrado jg-aviso">Faltan las de ' + esc(otro.nombre) + '.' + esc(hasta) +
+          ' Te avisamos cuando el juez tenga el resultado.</p>' +
+      '</div>';
+    pie().innerHTML = esperandoHTML() +
+      '<p class="chico centrado pie-nota">Puedes cerrar la app: la partida sigue en el Historial.</p>';
+  }
+
+  /* La fila de `resultados` de una partida de QuiénGane, traducida a lo que la
+     revelación sabe pintar: como `delArbitro()`, pero sin rúbrica —aquí no hay
+     justificación, hay una tabla de rondas— y con el juego dentro para que la
+     pantalla del juez la enseñe (bloque 0.5). */
+  function delJuego(res) {
+    var quien = { propone: P.jugadores[0], invitado: P.jugadores[1] };
+    var persona = function (lado) { return quien[lado] || { nombre: '?' }; };
+    var d = res.desglose || {};
+    return {
+      simulado: false,
+      ganador: res.ganador_lado ? persona(res.ganador_lado).nombre : null,
+      empate: res.tipo_resultado === 'empate_tecnico',
+      motivoEmpate: res.motivo_empate || 'parejo',
+      sinResultado: null,
+      justificacion: '',
+      forma: null,
+      loMejor: null,
+      duelo: ['propone', 'invitado'].map(function (l) {
+        var q = persona(l);
+        return { nombre: q.nombre, avatar: q.avatar, color: q.color, gano: res.ganador_lado === l };
+      }),
+      juez: P.juez,
+      desglose: null,
+      cierre: null,
+      loQueDijo: null,
+      juego: {
+        id: d.juego || P.juego,
+        nombre: nombreDelJuego(),
+        como: d.como || null,
+        marcador: d.marcador || null,
+        rondas: (d.filas || []).map(function (f) {
+          return { ronda: f.ronda, gana: f.gana === 'empate' ? null : (f.gana ? persona(f.gana).nombre : null),
+                   propone: f.propone, invitado: f.invitado };
+        }),
+        personas: ['propone', 'invitado'].map(function (l) {
+          var q = persona(l);
+          return { nombre: q.nombre, avatar: q.avatar, color: q.color, lado: l };
+        })
+      }
+    };
+  }
+
+  /* ENSAYAR UN MINIJUEGO desde el probador: la mesa de mentira, el sorteo y la
+     cortinilla de siempre, y después la carcasa con el juego pedido. Sin
+     partida en el servidor: la semilla sale de un texto al azar y el veredicto
+     lo calcula la carcasa con la misma lógica. */
+  function ensayarElJuego(op) {
+    P = mesaDeEnsayo(op, {
+      modo: 'competencia',
+      juego: op.juego || 'prueba',
+      turnos: op.rondas || 1,
+      orden: Math.random() < 0.5 ? [0, 1] : [1, 0]
+    });
+    separarFichas();
+    abrir();
+    P.poses = Promise.all([
+      window.ATWI.precargarPoses(
+        P.jugadores.map(function (j) { return j.avatar; }),
+        [poseDelEncuentro()],
+        P.jugadores.map(function (j) { return j.color; })),
+      window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
+    ]);
+    precargarElFinal();
+    pintarAviso();
+  }
+
+  /* ==========================================================================
      EL VISOR DE LA LANDING (peticion del titular, 2026-09-17)
 
      Ensena una partida de verdad a quien todavia no ha entrado: el sorteo, la
@@ -3908,6 +4136,7 @@ window.ATWI = window.ATWI || {};
                           enLinea: enLinea, tocada: tocada,
                           cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal,
                           ensayarLaEntrada: ensayarLaEntrada,
+                          ensayarElJuego: ensayarElJuego,
                           demoDeLanding: demoDeLanding,
                           /* La usa tambien el detalle del tema, para ensenar la
                              escena de lo que va a pasar. Se exporta en vez de

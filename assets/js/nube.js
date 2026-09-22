@@ -377,6 +377,60 @@ window.ATWI = window.ATWI || {};
      tiene que quedar es el campo de escribir, no un error. */
   function misContactos() { if (!hayNube()) return Promise.resolve([]); return rpc('mis_contactos', {}); }
 
+  /* ------------------------------------------------------------------ */
+  /* LOS MINIJUEGOS DE QUIÉNGANE (migración 0076, función de borde `juego`) */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Una acción de la función de borde `juego`: `empezar`, `terminar`,
+   * `confirmar` o `local`. RESUELVE SIEMPRE con lo que contestó el servidor: si
+   * no fue 2xx, el cuerpo trae `error` (la frase corta de la función, p. ej.
+   * `version_vieja`) y aquí se le cuelga `http`. La carcasa mira `r.error` y no
+   * un `catch`: un rechazo de red y un 409 se tratan igual —se dicen y se ofrece
+   * volver a intentar— y así no hay dos caminos que mantener.
+   */
+  function juego(accion, cuerpo) {
+    if (!hayNube()) return Promise.resolve({ error: 'sin sesión' });
+    var datos = Object.assign({ accion: accion }, cuerpo || {});
+    return fetch(cfg.supabaseUrl + '/functions/v1/juego', {
+      method: 'POST',
+      headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(),
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    }).then(function (r) {
+      return r.text().then(function (t) {
+        var d = null;
+        try { d = t ? JSON.parse(t) : null; } catch (e) { d = null; }
+        if (!r.ok) {
+          var fallo = { error: (d && d.error) || ('el servidor contestó ' + r.status), http: r.status };
+          apuntar('juego ' + accion + ': ' + fallo.error);
+          return fallo;
+        }
+        return d || {};
+      });
+    }).catch(function (e) {
+      apuntar('juego ' + accion + ': ' + e.message);
+      return { error: 'No hay conexión con el servidor.', http: 0 };
+    });
+  }
+
+  /** Mis rondas de esta partida, cuántas envió el otro y el resultado si ya está. */
+  function estadoDelJuego(debate) {
+    if (!hayNube()) return Promise.resolve(null);
+    return rpc('estado_del_juego', { p_debate: debate }).catch(function (e) { apuntar('estado_del_juego: ' + e.message); return null; });
+  }
+  /** En línea: el invitado (o el host, a la vuelta) propone otro juego. */
+  function contraproponerJuego(debate, juego, avatar, color) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('contraproponer_juego', { p_debate: debate, p_juego: juego,
+                                         p_avatar: avatar || null, p_color: color || null });
+  }
+  /** Acepto el juego que el otro propuso. */
+  function aceptarJuego(debate) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('aceptar_juego', { p_debate: debate });
+  }
+
   /* BLOQUEAR Y REPORTAR (titular, 2026-09-19). Por APODO, que es lo único que
      se ve del otro; la base lo resuelve a su id y lo guarda así, porque el
      apodo se puede cambiar. */
@@ -512,6 +566,10 @@ window.ATWI = window.ATWI || {};
       propone_avatar: p.yo && p.yo.avatar || null,
       propone_color: p.yo && p.yo.color || null
     };
+    /* QUIÉNGANE LLEVA SU JUEGO (0076): el CHECK de la base exige que una partida
+       de competencia lo traiga, y que las otras no. En línea es la propuesta del
+       host, que el invitado acepta o contesta con otro. */
+    if (cuerpo.modo === 'competencia') cuerpo.juego = p.juego || null;
     if (enLinea) {
       cuerpo.en_linea = true;
       /* Por cuenta (apodo, resuelto a su id) o por correo: uno de los dos. La
@@ -773,6 +831,9 @@ window.ATWI = window.ATWI || {};
          partida se seguia viendo «Sin empezar», con su boton, invitando a jugar
          contra alguien que ya no esta. */
       'oculta_propone,oculta_invitado,' +
+      /* QuiénGane (0076): qué minijuego, y de quién es la propuesta de juego
+         vigente mientras se negocia en línea. Nulos en los otros modos. */
+      'juego,juego_de,' +
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
       'invitado_nombre,invitado_avatar,invitado_color,' +
@@ -1089,6 +1150,11 @@ window.ATWI = window.ATWI || {};
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
     perfilPorApodo: conTokenVivo(perfilPorApodo),
     misContactos: conTokenVivo(misContactos),
+    /* Los minijuegos (0076). */
+    juego: conTokenVivo(juego),
+    estadoDelJuego: conTokenVivo(estadoDelJuego),
+    contraproponerJuego: conTokenVivo(contraproponerJuego),
+    aceptarJuego: conTokenVivo(aceptarJuego),
     borrarMiCuenta: conTokenVivo(borrarMiCuenta),
     bloquear: conTokenVivo(bloquear),
     desbloquear: conTokenVivo(desbloquear),

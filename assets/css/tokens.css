@@ -315,3 +315,18 @@
   --ctx-tenue: #5F5872;
   --ctx-tenue-2: #6E6783;
 }
+/* La sala de QuiénGane, azul: la tercera temperatura de la misma sala
+   (minijuegos, 2026-09-21). El acento es el azul oscuro del modo, que es el que
+   se lee sobre su tinte. */
+[data-ctx="sala-competencia"] {
+  --ctx-fondo: #E2F0FD;          /* competencia-tinte, sólido */
+  --ctx-tinta: #2E2A3F;
+  --ctx-acento: #1E6FAC;         /* competencia-oscuro */
+  --ctx-relleno: #3FA3EE;
+  --ctx-halo: #CFE4FA;
+  --ctx-vidrio: #FFFFFF;
+  --ctx-vidrio-mas: #BFDBF7;
+  --ctx-linea: #A9CDF1;
+  --ctx-tenue: #5F5872;
+  --ctx-tenue-2: #6E6783;
+}

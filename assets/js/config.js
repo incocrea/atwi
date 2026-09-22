@@ -70,9 +70,13 @@ window.ATWI.config = {
        Por eso lo que se elige antes de jugar NO es un tema sino un PREMIO, y
        por eso el catálogo tiene dos clases de ficha. Ver `clase` en
        `catalogo.json`.
-       ⚠️ ESTÁ A MEDIAS A PROPÓSITO: llega hasta elegir premio. Lo que sigue
-       —el selector de minijuego, que sustituye al de «local o invitación»— lo
-       explicará el titular más adelante, así que aquí no hay nada de la sala. */
+       LA SALA DE ESTE MODO ES LA CARCASA de los minijuegos (docs/10, bloque
+       0.4): después del sorteo y la cortinilla no se graba, se juega. El
+       minijuego se elige en «Antes de empezar» —un retrato más, entre los dos
+       y el juez— y hay vía local y en línea, como en los otros dos modos.
+       Mientras se construyen los diez juegos, el único que existe es el de
+       mentira («Cuenta», solo el titular) y para los demás sigue el toast de
+       «en desarrollo». */
     competencia: {
       nombre: 'QuiénGane',
       /* Sin partir: los otros dos separan su «IA» para pintarla aparte y este
@@ -118,7 +122,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '3bd1c8b',
+  version: '623e08d',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -165,6 +169,16 @@ window.ATWI.config = {
     aviso: 'Si ninguna les convence, márquenlo: no acordar hoy también vale. La que ' +
            'elijan la van a poder ajustar antes de firmarla.',
     ninguna: 'Ninguna nos convence',
+
+    /* CUANDO EL MEDIADOR PROPONE UNA SOLA. No es un fallo: dos candidatas con el
+       mismo par de anclas son una (H16, «cuantos es un tope, no una cuota»), y a
+       veces solo sale un acuerdo que se sostenga. Con una propuesta, «Elijan
+       una, entre los dos» y «Ninguna nos convence» mienten —no hay dos ni varias
+       para descartar—: la elección es aceptar ésta o ninguna. */
+    tituloUna: 'Este es el acuerdo que sale',
+    avisoUna: 'Si les convence, márquenlo y lo pueden ajustar antes de firmarlo. ' +
+              'Si no, no acordar hoy también vale.',
+    ningunaUna: 'No nos convence',
 
     /* CUANDO EL MEDIADOR NO PUDO PROPONER NADA. Puede pasar porque declaró que
        no hay terreno común, porque paró por seguridad, o porque lo que se dijo
@@ -390,6 +404,21 @@ window.ATWI.config = {
        decidió. `{ganador}` es el nombre. */
     abandono: 'La otra parte no contestó en 24 horas: {ganador} gana por abandono. ' +
               'Lo de abajo es lo que el juez leyó de la ronda.',
+    /* QUIÉNGANE (docs/10): aquí el juez no puntúa, COMPARA. Lo que dice sale del
+       código —quién ganó más rondas, o la suma cuando empataron en rondas— y la
+       tabla de abajo es su resumen. `{ganador}`, `{otro}`, `{a}` y `{b}` son el
+       nombre, el otro nombre y las rondas de cada uno. El empate es un
+       resultado válido (titular): no hay desempate, se vuelve a jugar entera. */
+    juego: {
+      rondas: '{ganador} ganó más rondas: {a} a {b}. Comparé lo que hizo cada quien en cada una y esto es lo que salió.',
+      total: 'Empataron en rondas, {a} a {b}, así que sumé todo lo hecho en la partida y la cuenta favoreció a {ganador}.',
+      abandono: '{otro} no llegó a jugar sus rondas, así que {ganador} gana por abandono. Lo de abajo es lo que sí se jugó.',
+      empate: 'Todo igual: {a} a {b} en rondas y la misma cuenta al sumar. Es un empate de verdad. Si quieren, vuelven a jugar con retos nuevos.',
+      rotuloTabla: 'Ronda por ronda',
+      gana: 'gana',
+      sinJugar: 'sin jugar',
+      empateRonda: 'iguales'
+    },
     empate: {
       /* LOS 8 PUNTOS LOS DICE LA PANTALLA, NO EL JUEZ (v2.3, S16): la regla de
          los 8 la aplica el codigo con los totales, asi que el modelo escribe la

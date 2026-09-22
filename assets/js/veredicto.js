@@ -239,7 +239,7 @@ window.ATWI = window.ATWI || {};
     revelar: function (r) {
       var p = pantalla();
       p.hidden = false;
-      p.className = 'revelacion revelacion--' + (r.modo === 'negociacion' ? 'negociacion' : 'debate');
+      p.className = 'revelacion revelacion--' + (r.modo === 'negociacion' ? 'negociacion' : r.modo === 'competencia' ? 'competencia' : 'debate');
       /* Una entrada de historial para el veredicto: si no, el atrás del
          teléfono cerraría la app con el resultado en pantalla. */
       if (window.ATWI.pasoAtras) window.ATWI.pasoAtras();
@@ -354,7 +354,7 @@ window.ATWI = window.ATWI || {};
 
     /* El color del modo entra en la mezcla para que la fiesta sea de ESTA
        partida y no un confeti genérico. */
-    var paleta = COLORES.concat([modo === 'negociacion' ? '#34B79B' : '#F07F55']);
+    var paleta = COLORES.concat([modo === 'negociacion' ? '#34B79B' : modo === 'competencia' ? '#3FA3EE' : '#F07F55']);
     var trozos = [];
 
     function canon(x, haciaLaDerecha) {
@@ -660,7 +660,10 @@ window.ATWI = window.ATWI || {};
        debajo se puede quitar: la composición apoya en que esta pantalla dice
        QUÉ pasó y la del juez POR QUÉ. */
     var hayJuez = r.modo === 'negociacion' || Boolean(r.sinResultado) ||
-      Boolean(r.loMejor || r.justificacion || r.desglose || r.empate);
+      Boolean(r.loMejor || r.justificacion || r.desglose || r.empate) ||
+      /* QuiénGane (docs/10): el juez presenta la tabla de rondas, que es su
+         resumen «después de anunciar al ganador». Siempre hay algo que decir. */
+      Boolean(r.juego);
     var pie = function (texto) {
       return hayJuez || !texto ? '' : '<p class="revelacion__pie">' + esc(texto) + '</p>';
     };
@@ -941,6 +944,27 @@ window.ATWI = window.ATWI || {};
                 quiere-- y solo dice que el tema no se juzga ni se negocia aquí
                 y que lo hablen. Ver `cfg.veredicto.sinResultado.duraCierre`. */
              (dura ? '<p class="dice__linea">' + esc(sr0.duraCierre || '') + '</p>' : '');
+    } else if (r.juego) {
+      /* QUIÉNGANE: el juez no puntúa, compara, y lo dice con lo que decidió el
+         código —rondas, la suma o el abandono— seguido de la tabla ronda por
+         ronda, que es «el resumen que presenta después de anunciar al ganador»
+         (titular, D3). La regla 3 sigue: es la tabla de ESTA partida, con
+         nombres, y nada acumulado entre los dos. */
+      var jg = v.juego || {};
+      var J = r.juego;
+      var per = J.personas || [];
+      var ganaLado = r.ganador ? (per[0] && per[0].nombre === r.ganador ? 0 : 1) : -1;
+      var otroNombre = ganaLado >= 0 && per[1 - ganaLado] ? per[1 - ganaLado].nombre : '';
+      var mk = J.marcador || [0, 0];
+      /* `a` es siempre lo del ganador, y `b` lo del otro: «ganó 2 a 1» se lee
+         desde quien ganó. En empate da igual el orden. */
+      var a = ganaLado === 1 ? mk[1] : mk[0];
+      var b = ganaLado === 1 ? mk[0] : mk[1];
+      var clave = r.empate ? 'empate' : (J.como === 'abandono' ? 'abandono' : (J.como === 'total' ? 'total' : 'rondas'));
+      var frase = String(jg[clave] || '')
+        .replace('{ganador}', r.ganador || '').replace('{otro}', otroNombre)
+        .replace('{a}', a).replace('{b}', b);
+      dice = '<p class="dice__linea">' + esc(frase) + '</p>' + tablaJuegoHTML(r, jg);
     } else if (r.modo === 'negociacion') {
       var n = v.juezNegociacion || {};
       /* El acuerdo se lee con SUS palabras, entrecomillado: lo escribieron
@@ -995,6 +1019,43 @@ window.ATWI = window.ATWI || {};
         (r.modo === 'debate' && !r.sinResultado ? tablaHTML(r) : '') +
       '</div>' +
     '</div>';
+  }
+
+  /* LA TABLA DE RONDAS DE QUIÉNGANE: una fila por ronda, lo que hizo cada quien
+     y quién se la llevó. Cómo se resume lo hecho lo sabe el juego
+     (`ui.<id>.resumenCorto`); sin él, lo genérico: hecho, fallos y segundos.
+     Una ronda sin jugar se dice, no se deja en blanco. */
+  function resumenCortoDe(id, res) {
+    var ui = window.ATWI.juegos && window.ATWI.juegos.ui && window.ATWI.juegos.ui[id];
+    if (ui && ui.resumenCorto) return ui.resumenCorto(res);
+    var partes = [];
+    if (res.completo != null) partes.push(res.completo ? '✓' : '✗');
+    if (res.hechas != null) partes.push(res.hechas);
+    if (res.ms != null) partes.push((Math.round(res.ms / 100) / 10) + ' s');
+    return partes.join(' · ');
+  }
+  function tablaJuegoHTML(r, jg) {
+    var J = r.juego;
+    var per = J.personas || [];
+    var filas = J.rondas || [];
+    if (!filas.length) return '';
+    var cabeza = per.map(function (q) {
+      return '<th><span class="tabla-juego__quien">' +
+        window.ATWI.fichaHTML(q.avatar, 'avatar--mini', q.color) + esc(q.nombre) + '</span></th>';
+    }).join('');
+    var cuerpo = filas.map(function (f) {
+      var celda = function (lado) {
+        var res = f[lado];
+        var gano = f.gana && per.some(function (q) { return q.lado === lado && q.nombre === f.gana; });
+        return '<td class="' + (gano ? 'tabla-juego__gana' : '') + '">' +
+          (res ? esc(resumenCortoDe(J.id, res)) : '<span class="tenue">' + esc(jg.sinJugar || '—') + '</span>') +
+          '</td>';
+      };
+      return '<tr><th scope="row">' + f.ronda + '</th>' + celda('propone') + celda('invitado') + '</tr>';
+    }).join('');
+    return '<p class="dice__rotulo">' + esc(jg.rotuloTabla || '') + '</p>' +
+      '<table class="tabla-juego"><thead><tr><th></th>' + cabeza + '</tr></thead>' +
+      '<tbody>' + cuerpo + '</tbody></table>';
   }
 
   /* EL JUEZ NO VA DENTRO DEL CENTRO: se cuelga de la pantalla entera, abajo a la

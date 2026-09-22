@@ -1,0 +1,168 @@
+/* ==========================================================================
+   ATWI · LOS MINIJUEGOS DE QUIÉNGANE
+   La carcasa (la sala común a los diez: presentación, cuenta atrás, tablero
+   con reloj, recibo, relevo) y los tableros de cada juego. Prefijo `jg-`.
+
+   NINGÚN COLOR EN CRUDO: la sala de QuiénGane es azul y sale de --ctx-* como
+   las otras dos (tokens.css), y los tableros toman su color de ahí.
+   ========================================================================== */
+
+/* La sala azul. Su fondo es la lámina del modo, con el tinte debajo por si
+   la imagen tarda: igual que Juicio y Pacto. */
+#m-partida[data-ctx="sala-competencia"] {
+  background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
+}
+
+/* --- El armazón --------------------------------------------------------- */
+.jg { --jg-color: var(--ctx-acento, var(--competencia-oscuro)); }
+.jg--presenta, .jg--recibo, .jg--relevo, .jg--enviando, .jg--fallo { gap: var(--e-4); }
+
+/* La pieza que juega: ficha grande, nombre y qué le toca. Es la misma columna
+   que el «perfil en dúo» de «Antes de empezar», así que se lee como la misma
+   persona que acaba de elegirse. */
+.jg-quien { display: grid; justify-items: center; gap: 4px; text-align: center; }
+.jg-quien__nombre {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h3);
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+}
+.jg-quien__que {
+  font-size: var(--t-mini); color: var(--tinta); font-weight: 700;
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+}
+.jg-quien--chica .avatar--duelo { width: 64px; height: 64px; }
+
+/* La ficha de la ronda: una tarjeta blanca, como todo lo que lleva texto
+   encima de un fondo dibujado. */
+.jg-ficha-ronda {
+  width: 100%; max-width: 340px; display: grid; gap: 6px; justify-items: center;
+  padding: var(--e-4) var(--e-4) var(--e-3); border-radius: var(--radio-tarjeta);
+  background: var(--superficie); box-shadow: var(--sombra-2); text-align: center;
+}
+.jg-ficha-ronda__t { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); color: var(--jg-color); }
+.jg-ficha-ronda__nivel { font-size: var(--t-chico); color: var(--tinta-suave); font-weight: 700; }
+.jg-ficha-ronda__como { font-size: var(--t-chico); color: var(--tinta); margin-top: 4px; }
+
+/* Los datos van en una fila de chips con su pegatina: tiempo, reintentos,
+   aciertos. La pegatina ya trae perfil blanco; no lleva disco detrás. */
+.jg-datos { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; margin-top: 4px; }
+.jg-dato {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--display); font-weight: 800; font-size: var(--t-base); color: var(--tinta);
+}
+.jg-pieza { display: inline-block; flex: none; }
+.jg-aviso { max-width: 320px; text-shadow: 0 0 5px #fff, 0 0 10px #fff; }
+
+/* --- El tablero con su cabecera --------------------------------------------
+   La cabecera son tres píldoras —quién, la ronda y el reloj— y debajo el
+   hueco del tablero, que es lo único que crece. El juego mide ese hueco con
+   `clientWidth/clientHeight` y se dibuja dentro: no scrollea nunca. */
+.jg--juego {
+  display: grid; grid-template-rows: auto minmax(0, 1fr); gap: var(--e-3);
+  height: 100%; min-height: 0; position: relative;
+}
+#m-partida .modal__cuerpo:has(.jg--juego) { display: grid; overflow: hidden; }
+.jg-cabecera { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.jg-pildora {
+  display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px;
+  border-radius: 999px; background: var(--superficie); box-shadow: var(--sombra-1);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico); color: var(--tinta);
+  white-space: nowrap;
+}
+.jg-pildora--quien { padding-left: 4px; min-width: 0; }
+.jg-pildora--quien > span { overflow: hidden; text-overflow: ellipsis; }
+.jg-pildora--reloj { min-width: 84px; justify-content: center; font-variant-numeric: tabular-nums; }
+/* Los últimos diez segundos, en el color del modo y latiendo: es lo único de
+   la pantalla que tiene que llamar la atención mientras se juega. */
+.jg-pildora--urge { color: var(--jg-color); animation: jg-urge 1s ease-in-out infinite; }
+@keyframes jg-urge { 50% { transform: scale(1.06); } }
+
+.jg-tablero { min-height: 0; display: grid; place-items: center; }
+
+/* LA CUENTA ATRÁS, encima del tablero ya pintado y bloqueado: al llegar al
+   «¡Ya!» se ve lo que hay que jugar, no un hueco. El número nace grande y
+   se asienta; el «¡Ya!» sale en el color del modo. */
+.jg-cuenta {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  font-family: var(--display); font-weight: 800; font-size: 6rem; color: var(--tinta);
+  text-shadow: 0 0 12px #fff, 0 0 24px #fff; pointer-events: none;
+  background: rgba(255, 255, 255, .35);
+}
+.jg-cuenta--late { animation: jg-late .9s ease-out; }
+.jg-cuenta--ya { color: var(--jg-color); font-size: 5rem; }
+@keyframes jg-late { from { transform: scale(1.5); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .jg-cuenta--late, .jg-pildora--urge { animation: none; }
+}
+
+/* --- El relevo y el envío -------------------------------------------------- */
+.jg-relevo__signo { width: 96px; height: 96px; }
+.jg-relevo__t {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h3); text-align: center;
+  color: var(--jg-color); text-shadow: 0 0 5px #fff, 0 0 10px #fff; max-width: 320px;
+}
+
+/* ==========================================================================
+   «CUENTA», el juego de mentira: una cuadrícula de números
+   ========================================================================== */
+.jg-cuadricula {
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: 8px; width: min(100%, var(--lado)); aspect-ratio: var(--cols) / var(--filas);
+  max-height: 100%;
+}
+.jg-celda {
+  font-family: var(--display); font-weight: 800; font-size: 1.6rem; color: var(--tinta);
+  background: var(--superficie); border-radius: var(--radio-boton); box-shadow: var(--sombra-1);
+  transition: transform .12s, opacity .25s;
+}
+.jg-celda:active { transform: scale(.94); }
+.jg-celda--fuera { opacity: 0; pointer-events: none; transform: scale(.6); }
+.jg-celda--mal { animation: jg-mal .3s ease-out; color: var(--peligro); }
+@keyframes jg-mal { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.jg-pista { text-align: center; font-size: var(--t-chico); color: var(--tinta-suave); margin-top: var(--e-3); text-shadow: 0 0 5px #fff; }
+.jg-pista b { color: var(--jg-color); }
+
+/* ==========================================================================
+   «ANTES DE EMPEZAR»: el minijuego, entre los dos y el juez
+   El mismo retrato que los otros tres —`perfil-duo`, con su halo— para que la
+   mesa se lea de una pieza; solo que dentro del disco va la pegatina del juego
+   y no una cara. `.duo--uno` centra la única columna.
+   ========================================================================== */
+.duo--uno { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+.duo--uno .perfil-duo { max-width: 50%; }
+.jg-retrato-juego { display: grid; place-items: center; background: var(--superficie); }
+.jg-retrato-juego .jg-pieza { width: 64px; height: 64px; }
+
+/* El globo «¿A qué juegan?»: los juegos que hay, en rejilla de tres, y el
+   puesto con su aro POR DENTRO (la lección de la carita puesta). */
+.jg-selector {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+  width: 100%; margin-top: var(--e-2);
+}
+.jg-selector__op {
+  display: grid; justify-items: center; gap: 4px; padding: 8px 4px;
+  border-radius: var(--radio-boton); background: var(--superficie); box-shadow: var(--sombra-1);
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico); color: var(--tinta);
+}
+.jg-selector__op[aria-pressed="true"] { box-shadow: inset 0 0 0 3px var(--competencia); }
+.jg-selector__op .jg-pieza { width: 56px; height: 56px; }
+
+/* ==========================================================================
+   LA REVELACIÓN DE QUIÉNGANE: la sala azul debajo, como en los otros dos
+   modos, y la tabla de rondas en la pantalla del juez.
+   ========================================================================== */
+.revelacion--competencia {
+  background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
+}
+.tabla-juego {
+  width: 100%; border-collapse: collapse; margin-top: 6px;
+  font-size: var(--t-chico); font-variant-numeric: tabular-nums;
+}
+.tabla-juego th, .tabla-juego td { padding: 6px 4px; text-align: center; border-top: 1px solid var(--linea); }
+.tabla-juego thead th { border-top: 0; font-weight: 800; font-family: var(--display); }
+.tabla-juego tbody th { font-family: var(--display); font-weight: 800; color: var(--tinta-suave); width: 28px; }
+.tabla-juego__quien { display: inline-flex; align-items: center; gap: 4px; }
+/* Quién se llevó la ronda: en negrita y con el fondo del modo, sin más
+   marcas —un signo de «ganó» en cada fila leería como marcador—. */
+.tabla-juego__gana { font-weight: 800; background: color-mix(in srgb, var(--competencia) 18%, transparent); border-radius: 8px; }
