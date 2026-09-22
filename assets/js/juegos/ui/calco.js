@@ -32,16 +32,11 @@
   var PASOS = 5;          // el mismo de logica/calco.js
   var VACIA = -1;
 
-  /* Los 24 de la hoja, en el orden que la lógica cuenta: su índice ES el número
-     que viaja en el tablero (`fichas`). ⚠️ NO SE REORDENA NI SE RECORTA esta
-     lista sin subir `VERSION_REGLAS`: un teléfono con otro orden pondría otro
-     dibujo en la misma ronda. */
-  var HOJA = [
-    'arcoiris', 'balon', 'camara', 'conejo', 'corazon', 'cupcake',
-    'dona', 'estrella', 'gato', 'gema', 'huevo', 'lata',
-    'leche', 'libro', 'luna', 'mando', 'manzana', 'osito',
-    'patito', 'pizza', 'taza', 'trebol', 'zanahoria', 'zapatilla'
-  ];
+  /* Los 24 de la hoja viven en `piezas/stickers.js` desde que Frascos también
+     los usa (2026-09-22): una lista de 24 nombres escrita en dos archivos es
+     una lista que un día dice dos cosas. Su índice ES el número que viaja en
+     el tablero (`fichas`), y allí está el aviso de por qué no se reordena. */
+  var HOJA = J.stickers.HOJA;
 
   /* ⚠️ `draggable="false"`: un `<img>` es arrastrable de serie, así que sin
      esto el navegador arranca SU arrastre de imagen —cursor de prohibido— y de

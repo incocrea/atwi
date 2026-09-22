@@ -4161,8 +4161,12 @@ window.ATWI = window.ATWI || {};
            premio, así que sale de ahí y no de otra consulta.
            ⚠️ SOLO SI HAY GANADOR: sin `ganador_lado` la base no consigna ningún
            premio (migración 0082), y anunciar uno que no existe dejaría a
-           alguien buscándolo en una lista vacía. */
-        premio: (res.ganador_lado && P.tema && P.tema.enunciado)
+           alguien buscándolo en una lista vacía.
+           ⚠️ NI EN EL ENSAYO NI EN LA DEMO: ahí no se guarda nada, así que «queda
+           guardado en Historial» sería falso, y el «enunciado» de la mesa de
+           mentira es un tema de debate cualquiera --salió anunciado como premio
+           «¿los platos se lavan en ese momento…?» la primera vez que se probó--. */
+        premio: (!P.ensayo && !P.demo && res.ganador_lado && P.tema && P.tema.enunciado)
           ? { texto: P.tema.enunciado, ganador: persona(res.ganador_lado).nombre } : null,
         /* ⚠️ CADA FILA LLEVA SU JUEGO, y sin eso la tabla del juez enseñaba
            `undefined` y `NaN` (lo vio el titular, 2026-09-22). Desde el pivote

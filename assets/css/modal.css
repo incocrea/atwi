@@ -106,6 +106,16 @@
   color: rgba(255, 255, 255, .82);
   box-shadow: none;
 }
+/* ⚠️ Y EL SUAVE APAGADO SE QUEDABA SIN LETRA, otra vez (2026-09-22, al estrenar
+   «Reiniciar» en Frascos). Es la trampa de `base.css` —el blanco de un botón que
+   se pinta el fondo a mano— por un tercer sitio: aquí arriba `.boton--suave` se
+   pinta BLANCO y la regla de encima le pone la letra BLANCA al 82 %, y las dos
+   pesan más que el arreglo de `base.css`. Resultado: un botón en blanco, sin
+   nada escrito. En el suave la letra vuelve a gris, que sobre blanco es lo que
+   dice «no se puede pulsar» sin dejar de leerse. */
+.modal--inmersivo .boton--suave[disabled] {
+  color: var(--tinta-suave); filter: none;
+}
 .modal--inmersivo .boton-icono { background: var(--superficie); box-shadow: var(--sombra-1); }
 .modal--inmersivo .chip { background: var(--ctx-halo); color: var(--ctx-tenue); }
 /* El chip del modo sí lleva color: es lo que dice en qué se está jugando. */

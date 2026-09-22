@@ -1004,7 +1004,7 @@
         '<div class="jg-quien">' +
           window.ATWI.fichaHTML(q.avatar, 'avatar--duelo', q.color) +
           '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
-          '<p class="jg-quien__que">Le tocan sus ' + (C.rondas === 1 ? 'ronda' : C.rondas + ' rondas') + '</p>' +
+          '<p class="jg-quien__que">' + (C.rondas === 1 ? 'Le toca su ronda' : 'Le tocan sus ' + C.rondas + ' rondas') + '</p>' +
         '</div>' +
         '<p class="chico centrado jg-aviso">Lo que hizo ' + esc(jugador(elOtroLado(C.lado)).nombre) +
           ' se ve al final, con el resultado.</p>' +

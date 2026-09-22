@@ -980,3 +980,120 @@
   font-family: var(--display); font-weight: 800; font-size: 13px; line-height: 1;
   border: 2px solid var(--blanco);
 }
+
+/* ==========================================================================
+   FRASCOS · el tablero de «Frascos» (docs/10 §8.3). Todo sale de un número,
+   `--s` (el lado del sticker), que mide el juego contra el hueco real: el
+   frasco es el sticker más su cristal, y su alto es `cabe` stickers más la boca.
+   Los frascos se dibujan aquí y no en una lámina (docs/10 §9): así toman el
+   color que toque y no pesan.
+   ========================================================================== */
+.jg-fr {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), auto);
+  gap: var(--gy) var(--gx);
+  justify-content: center; align-content: center;
+}
+/* EL BOTÓN ES MÁS ALTO QUE EL FRASCO A PROPÓSITO: por encima queda el hueco
+   donde se levanta el sticker de arriba (`--alza`), y ese hueco tiene que ser
+   parte de lo que se toca --si no, tocar el sticker levantado caería fuera--.
+   `manipulation` quita la espera del doble toque: en un juego de ritmo, cada
+   toque tiene que contar en el acto. */
+.jg-frasco {
+  border: 0; background: none; padding: var(--alza) 0 0; margin: 0;
+  display: block; cursor: pointer; touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+/* EL CRISTAL: blanco translúcido con un filo del color del modo y la boca
+   abierta arriba. Sin degradado de fondo --la regla del juego-- y el brillo de
+   vidrio es una franja, no un reflejo pintado. El culo va redondo porque es lo
+   que hace que se lea como un frasco y no como una caja. */
+.jg-frasco__cuerpo {
+  position: relative; box-sizing: border-box;
+  display: flex; flex-direction: column-reverse; align-items: center;
+  gap: var(--g);
+  width: calc(var(--s) + 2 * var(--pad));
+  height: calc(4 * var(--s) + 3 * var(--g) + 2 * var(--pad) + var(--s) * .18);
+  padding: var(--pad);
+  background: rgba(255, 255, 255, .5);
+  border: 2px solid rgba(255, 255, 255, .95); border-top: 0;
+  border-radius: 6px 6px calc(var(--s) * .55) calc(var(--s) * .55);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--jg-color) 40%, transparent),
+              0 5px 12px rgba(0, 0, 0, .12);
+  transition: box-shadow .15s, transform .15s;
+}
+/* El brillo del vidrio: una franja vertical, que es lo que el ojo lee como
+   cristal aunque no haya nada detrás. */
+.jg-frasco__cuerpo::before {
+  content: ''; position: absolute; left: 14%; top: 8%; bottom: 14%; width: 9%;
+  border-radius: 99px; background: rgba(255, 255, 255, .7); pointer-events: none;
+}
+/* La boca: un reborde algo más ancho que el cuerpo. */
+.jg-frasco__cuerpo::after {
+  content: ''; position: absolute; left: -5px; right: -5px; top: -3px; height: 6px;
+  border-radius: 99px; background: rgba(255, 255, 255, .95);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--jg-color) 40%, transparent);
+  pointer-events: none;
+}
+.jg-fr__st {
+  display: block; position: relative; z-index: 1;
+  width: var(--s); height: var(--s); flex: none;
+  pointer-events: none; -webkit-user-drag: none; user-select: none;
+  transition: transform .16s cubic-bezier(.3, .8, .4, 1);
+}
+/* EL DE ARRIBA SE LEVANTA al elegir su frasco, fuera del cristal: es lo que
+   dice «éste va a moverse» sin una palabra. */
+.jg-fr__st--alzado { transform: translateY(calc(-1 * var(--alza) - var(--pad))); }
+.jg-frasco--elegido .jg-frasco__cuerpo {
+  box-shadow: 0 0 0 3px var(--jg-color), 0 6px 14px rgba(0, 0, 0, .16);
+}
+/* Donde PUEDE caer, insinuado: un filo blanco y el color, más suave que el del
+   elegido. Dice qué es legal, no qué conviene. */
+/* ⚠️ Y SE TIÑE EL CRISTAL, no solo el filo: con el halo solo, medido en
+   pantalla, los dos vacíos se veían igual que los demás --un contorno más sobre
+   un frasco que ya tiene contorno no se nota--. */
+.jg-frasco--puede .jg-frasco__cuerpo {
+  background: color-mix(in srgb, var(--jg-color) 16%, rgba(255, 255, 255, .6));
+  box-shadow: 0 0 0 2px #fff, 0 0 0 5px color-mix(in srgb, var(--jg-color) 60%, transparent),
+              0 5px 12px rgba(0, 0, 0, .12);
+}
+.jg-frasco:focus-visible { outline: none; }
+.jg-frasco:focus-visible .jg-frasco__cuerpo {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--jg-color);
+}
+/* UN FRASCO HECHO se queda con el verde de la paleta (el `#3AA655` de Planta,
+   el mismo que ya dice «ganó» en la escena de Choque) y hace un pop al
+   completarse: es el progreso que se ve de lejos. */
+.jg-frasco--lleno .jg-frasco__cuerpo {
+  background: color-mix(in srgb, #3AA655 16%, rgba(255, 255, 255, .6));
+  box-shadow: 0 0 0 3px #3AA655, 0 5px 12px rgba(0, 0, 0, .12);
+}
+.jg-frasco--hecho .jg-frasco__cuerpo { animation: jg-fr-hecho .42s ease-out; }
+@keyframes jg-fr-hecho { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
+/* EL VUELO: el sticker nace en su frasco nuevo desplazado a donde estaba
+   (`--dx`, `--dy`, medidos en el JS) y vuelve a su sitio por un arco. Mide lo
+   mismo que `MS_VUELO` de ui/frascos.js. */
+.jg-fr__st--vuela { z-index: 3; animation: jg-fr-vuela 280ms cubic-bezier(.3, .7, .4, 1) both; }
+@keyframes jg-fr-vuela {
+  0%   { transform: translate(var(--dx, 0), var(--dy, 0)); }
+  45%  { transform: translate(calc(var(--dx, 0px) * .45), calc(var(--dy, 0px) * .45 - var(--s) * .45)); }
+  100% { transform: none; }
+}
+
+/* Debajo: cuántos movimientos van y «Reiniciar». El contador se lee siempre
+   porque es lo que se está compitiendo. */
+.jg-fr-barra {
+  display: flex; align-items: center; justify-content: center; gap: var(--e-4);
+  margin-top: var(--e-3); min-height: 44px;
+}
+.jg-fr-mov {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--t-chico); color: var(--tinta-suave); text-shadow: 0 0 5px #fff;
+}
+.jg-fr-mov b { font-family: var(--display); font-weight: 900; font-size: 1.15rem; color: var(--tinta); }
+.jg-fr-reinicia { min-height: 40px; padding: 6px 16px; font-size: var(--t-chico); }
+
+@media (prefers-reduced-motion: reduce) {
+  .jg-fr__st--vuela, .jg-frasco--hecho .jg-frasco__cuerpo { animation: none; }
+  .jg-fr__st { transition: none; }
+}

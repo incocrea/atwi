@@ -203,6 +203,12 @@
   J.registrar({
     id: 'calco',
     nombre: 'Calco',
+    /* ⚠️ EN PRUEBAS TAMBIÉN EN EL CLIENTE (2026-09-22). La base lo rechaza para
+       cualquier cuenta que no sea la del titular (`juego_en_pruebas()`), pero
+       el globo «¿a qué juegan?» se lo ofrecía a todo el mundo: quien lo elegía
+       se quedaba en «No se pudo crear la partida». CERRAR EL JUEGO SON DOS
+       COSAS: quitar esta línea y la migración que lo saca de la lista. */
+    soloPruebas: true,
     /* Tiene su rotulo dibujado (titular, 2026-09-22): manda sobre el nombre
        en texto, como el logo del modo en el versus. */
     rotulo: true,

@@ -168,6 +168,12 @@
   J.registrar({
     id: 'choque',
     nombre: 'Choque',
+    /* ⚠️ EN PRUEBAS TAMBIÉN EN EL CLIENTE (2026-09-22). La base lo rechaza para
+       cualquier cuenta que no sea la del titular (`juego_en_pruebas()`), pero
+       el globo «¿a qué juegan?» se lo ofrecía a todo el mundo: quien lo elegía
+       se quedaba en «No se pudo crear la partida». CERRAR EL JUEGO SON DOS
+       COSAS: quitar esta línea y la migración que lo saca de la lista. */
+    soloPruebas: true,
     como: 'Selecciona un elemento para enfrentar a tu oponente: ¡como piedra, papel o tijera, pero con más opciones!',
     compara: 'rondas',
     /* Sin reintentos y sin recibo: la seleccion se reasigna libre en la misma
