@@ -75,9 +75,6 @@
   J.duelo = function (caja, filas, personas, fin) {
     var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var quien = { propone: personas[0], invitado: personas[1] };
-    /* Solo se nombra el juego si no son todos el mismo. */
-    var juegos = filas.map(function (f) { return f.juego; });
-    var mixto = juegos.some(function (x) { return x !== juegos[0]; });
 
     function ladoHTML(res, lado, gana, idJuego) {
       var c = chocanteDe(idJuego, res);
@@ -91,19 +88,28 @@
         '</div>';
     }
 
-    /* Cada avatar va ARRIBA y CENTRADO sobre su columna (titular, 2026-09-22):
-       avatar encima, nombre debajo. El hueco de en medio copia la columna de la
-       chispa de las filas, para que los dos avatares caigan centrados sobre sus
-       elementos. */
-    var cab =
-      '<div class="jg-d__cab">' +
-        '<span class="jg-d__quien">' +
-          window.ATWI.fichaHTML(quien.propone.avatar, 'avatar--mini', quien.propone.color) +
-          '<b>' + esc(quien.propone.nombre) + '</b></span>' +
-        '<span class="jg-d__quien-hueco" aria-hidden="true"></span>' +
-        '<span class="jg-d__quien jg-d__quien--der">' +
-          window.ATWI.fichaHTML(quien.invitado.avatar, 'avatar--mini', quien.invitado.color) +
-          '<b>' + esc(quien.invitado.nombre) + '</b></span>' +
+    /* ⚠️ LOS DOS QUE JUEGAN VAN ABAJO Y DE CUERPO ENTERO (titular, 2026-09-22:
+       «quita los users de arriba y sube más los resultados, porque abajo
+       pondrás los avatares, no en círculos sino como en el modo versus, pero
+       con la ilustración de estado neutro de cada uno»). Dos discos de 48 px
+       arriba ocupaban una franja entera para decir quién es quién, y lo dicen
+       mejor las figuras: cada una en su lado, mirándose, como en la cortinilla.
+       LA POSE ES `frente` Y NO `plante`: aquí ya no se están retando --la
+       partida terminó-- y la pose de versus contaría otra cosa. Van con
+       `fondo: null` porque la mancha de color de detrás es del avatar redondo,
+       y `mira` las voltea hacia el centro. */
+    var abajo =
+      '<div class="jg-d__abajo" aria-hidden="true">' +
+        '<span class="jg-d__jug jg-d__jug--izq">' +
+          window.ATWI.retrato(quien.propone.avatar, 'frente',
+            { fondo: null, mira: 'derecha', color: quien.propone.color, clase: 'jg-d__fig' }) +
+          '<b>' + esc(quien.propone.nombre) + '</b>' +
+        '</span>' +
+        '<span class="jg-d__jug jg-d__jug--der">' +
+          window.ATWI.retrato(quien.invitado.avatar, 'frente',
+            { fondo: null, mira: 'izquierda', color: quien.invitado.color, clase: 'jg-d__fig' }) +
+          '<b>' + esc(quien.invitado.nombre) + '</b>' +
+        '</span>' +
       '</div>';
 
     var cuerpo = filas.map(function (f) {
@@ -113,10 +119,14 @@
         : (f.frase ? f.frase + '.' : 'Ronda para ' + quien[f.gana].nombre + '.');
       var m = J.juego(f.juego);
       /* Sin número de ronda (titular, 2026-09-22): la frase de cada choque ya
-         dice qué pasó y son pocas filas; el número no situaba nada. Lo que sí
-         hace falta con reparto mixto es a QUÉ se jugó esta. */
+         dice qué pasó y son pocas filas; el número no situaba nada.
+         ⚠️ Y EL NOMBRE DEL JUEGO VA CENTRADO ENCIMA DE SU PAR, SIEMPRE (titular,
+         2026-09-22: «los nombres de los juegos jugados van en el centro superior
+         de cada par de resultado»). Antes iba en el canto y solo con reparto
+         mixto; centrado encabeza su par y es lo que separa una ronda de la
+         siguiente cuando las figuras de abajo ocupan el sitio del encabezado. */
       return '<div class="jg-d__fila">' +
-          (mixto ? '<span class="jg-d__ronda">' + esc((m && m.nombre) || f.juego) + '</span>' : '') +
+          '<span class="jg-d__juego">' + esc((m && m.nombre) || f.juego) + '</span>' +
           ladoHTML(f.propone, 'propone', f.gana, f.juego) +
           '<span class="jg-d__chispa" aria-hidden="true"></span>' +
           ladoHTML(f.invitado, 'invitado', f.gana, f.juego) +
@@ -126,8 +136,43 @@
 
     caja.innerHTML =
       '<div class="jg jg--duelo2' + (quieto ? ' jg--duelo2-quieto' : '') + '" aria-live="polite">' +
-        cab + '<div class="jg-d__filas">' + cuerpo + '</div>' +
+        '<div class="jg-d__filas">' + cuerpo + '</div>' + abajo +
       '</div>';
+
+    /* ⚠️ Y DESPUÉS SE MIDE, PORQUE EL TAMAÑO DE LAS PIEZAS NO SABE DEL ALTO.
+       Van en `clamp(58px, 21vw, 92px)`, o sea que ceden con el ANCHO: en un
+       teléfono estrecho y BAJO no ceden nada y tres rondas no caben --medido, la
+       última frase se metía 155 px dentro de la franja de las figuras--. Aquí se
+       mide lo que de verdad ocupó y, si se pasa, las piezas encogen por pasos.
+       Es lo mismo que hacen la ruleta del catálogo y el aire de «Antes de
+       empezar»: la cuenta se hace con lo que hay en ese instante, y lo único que
+       no depende de acertar el momento es mirar el resultado y corregirlo. */
+    var filasCaja = caja.querySelector('.jg-d__filas');
+    /* ⚠️ LO QUE OCUPA SE MIDE CON `offsetTop`, NO CON `scrollHeight` NI CON
+       `getBoundingClientRect`: las piezas ENTRAN VOLANDO con `transform`, y las
+       dos últimas cuentan ese desplazamiento --medido: daban «no cabe» hasta en
+       una pantalla donde sobraban 16 px, y las fichas encogían sin motivo--.
+       `offsetTop + offsetHeight` es la maquetación, que es lo que se pregunta. */
+    function loQueOcupa() {
+      var u = filasCaja && filasCaja.lastElementChild;
+      return u ? u.offsetTop + u.offsetHeight : 0;
+    }
+    function ajustar() {
+      if (!filasCaja || !filasCaja.isConnected) return;
+      var lado = 92, aire = 20;
+      /* Encogen las dos cosas a la vez: el dibujo y el aire entre pares. Con
+         tres rondas en un teléfono bajo, solo con el dibujo no basta. */
+      for (var i = 0; i < 5 && loQueOcupa() > filasCaja.clientHeight; i++) {
+        lado = Math.max(40, Math.round(lado * 0.85));
+        aire = Math.max(4, Math.round(aire * 0.7));
+        filasCaja.style.setProperty('--jg-d-fig', lado + 'px');
+        filasCaja.style.setProperty('--jg-d-gap', aire + 'px');
+      }
+    }
+    ajustar();
+    /* Una segunda pasada cuando las fuentes ya midieron: no están autoalojadas,
+       así que la primera pintada va con la de respaldo y el texto puede crecer. */
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
 
     var timers = [];
     var s = window.ATWI.sonido;
