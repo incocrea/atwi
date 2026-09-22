@@ -3423,8 +3423,23 @@
       premios = null;                 // se vuelve a pedir con el estado nuevo
       if (vistaActual === 'historial') pintarHistorial();
     }).catch(function (e) {
+      var porque = (e && e.message) || '';
+      /* ⚠️ «NO EXISTE ESE PREMIO» NO SE REINTENTA (titular, 2026-09-22). Es la
+         misma familia que el 403 de borrar: la lista en memoria enseña algo que
+         el servidor ya no tiene —la partida se borró, y el premio se fue con
+         ella—, así que devolver el botón a «Recibido» invita a pulsar otra vez
+         algo que nunca va a funcionar. Se vuelve a pedir la lista, que es lo que
+         hace desaparecer la tarjeta, y se dice qué pasó. */
+      if (/no existe ese premio/i.test(porque)) {
+        premios = null;
+        if (vistaActual === 'historial') pintarHistorial();
+        if (window.ATWI.aviso) {
+          window.ATWI.aviso('Ese premio ya no está: la partida se borró.');
+        }
+        return;
+      }
       if (boton) { boton.disabled = false; boton.textContent = 'Recibido'; }
-      if (window.ATWI.aviso) window.ATWI.aviso('No se pudo marcar: ' + ((e && e.message) || ''));
+      if (window.ATWI.aviso) window.ATWI.aviso('No se pudo marcar: ' + porque);
     });
   }
 

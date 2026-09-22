@@ -31,16 +31,48 @@
   }
 
   J.ui.cuenta = {
+    /* Lo que tarda una ficha en irse del todo: 500 ms rota más los 250 del
+       desvanecido (`transition: opacity .25s` en `.jg-celda`). La carcasa lo lee
+       para no congelar el tablero encima de la última rotura. Si cambia el CSS,
+       cambia aquí. */
+    msSalida: 750,
+
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
-      var lado = Math.min(ctx.ancho, ctx.alto);
+      /* ⚠️ LA CELDA SE CALCULA CUADRADA, Y ESO NO ES UN DETALLE (titular,
+         2026-09-22: «los iconos se están deformando, achatando; nunca
+         deformarlos, escálalos completos»). Antes el lado salía de
+         `min(ancho, alto)` del hueco y el CSS montaba la rejilla con
+         `aspect-ratio: cols/filas` y `max-height: 100%`: cuando mandaba el
+         ALTO, ese tope recortaba la rejilla sin avisar, las casillas se volvían
+         más anchas que altas y la ficha —que se pinta con `background-size`—
+         se estiraba para llenarlas. Ahora el lado sale de las DOS medidas a la
+         vez y las casillas se declaran cuadradas, así que no hay nada que
+         estirar.
+         Y EL HUECO CEDE ANTES QUE LA FICHA (titular, «reduce un poco la
+         distancia entre ellos para no generar scroll, esto es norma»): se
+         empieza por el hueco cómodo y se aprieta solo si con él las fichas
+         salen pequeñas. Nunca al revés. */
+      var HUECO_COMODO = 10, HUECO_MINIMO = 4, FICHA_DIGNA = 96;
+      function ladoCon(h) {
+        return Math.floor(Math.min(
+          (ctx.ancho - (t.cols - 1) * h) / t.cols,
+          (ctx.alto - (t.filas - 1) * h) / t.filas));
+      }
+      var hueco = HUECO_COMODO;
+      var lado = ladoCon(hueco);
+      while (hueco > HUECO_MINIMO && lado < FICHA_DIGNA) {
+        hueco -= 2;
+        lado = ladoCon(hueco);
+      }
+      lado = Math.max(24, lado);
       /* La ficha ES el numero (cosmetico: no toca la logica ni la jugada). El
          set del tablero es el mismo en toda la ronda --lo fija `sets()`-- y el
          numero es la fila. */
       var set = sets(estado).juego;
       caja.innerHTML =
         '<div class="jg-cuadricula jg-cuadricula--fichas" style="--cols:' + t.cols + ';--filas:' + t.filas +
-          ';--lado:' + Math.floor(lado) + 'px;--set:' + set + '">' +
+          ';--celda:' + lado + 'px;--hueco:' + hueco + 'px;--set:' + set + '">' +
           t.celdas.map(function (n, i) {
             /* La ficha se pinta con `background-position`; el numero va en
                `aria-label` porque en pantalla lo dice el dibujo. `--n` es la

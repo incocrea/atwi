@@ -425,15 +425,23 @@
     function paso() {
       if (!C) return;
       if (n === 0) {
-        if (velo) { velo.textContent = '¡Ya!'; velo.classList.add('jg-cuenta--ya'); }
+        /* ⚠️ SIN «¡Ya!» (titular, 2026-09-22: «solo pasa la cuenta regresiva e
+           inicia»). Era medio segundo de cartel entre el 1 y el primer toque,
+           y lo que de verdad dice que se empieza es que el tablero se
+           desbloquea: el cartel solo retrasaba eso. La campana se queda, que es
+           la señal de salida sin ocupar la pantalla. */
         if (s && s.hay()) s.campana();
-        luego(function () { if (velo) velo.remove(); fin(); }, 350);
+        if (velo) velo.remove();
+        fin();
         return;
       }
       if (velo) { velo.innerHTML = conteoContenido(n); velo.classList.remove('jg-cuenta--late'); void velo.offsetWidth; velo.classList.add('jg-cuenta--late'); }
       if (s && s.hay()) s.clac(0.6);
       n--;
-      luego(paso, (CUENTA_ATRAS_MS - 350) / 3);
+      /* Los tres pasos se reparten los 3 s ENTEROS: los 350 ms que antes se
+         apartaban eran los del «¡Ya!», y el servidor descuenta 3.000 exactos
+         (`CUENTA_ATRAS_MS`), así que la cuenta tiene que durar eso. */
+      luego(paso, CUENTA_ATRAS_MS / 3);
     }
     paso();
   }
@@ -501,6 +509,15 @@
     C.actualizar = typeof actualizar === 'function' ? actualizar : null;
   }
 
+  /* Cuánto dura la salida de una jugada, si el tablero la anima. Lo declara el
+     juego (`msSalida`) porque el número vive con la animación que describe: la
+     carcasa no puede saber cuánto tarda una ficha en romperse. Sin declararlo,
+     cero: el final de la ronda congela en el acto, como hacía antes. */
+  function msSalida() {
+    var ui = (J().ui || {})[C.P.juego];
+    return (ui && ui.msSalida) || 0;
+  }
+
   function previas() {
     if (!C) return [];
     if (C.P.enLinea) {
@@ -549,15 +566,29 @@
     C.bloqueado = true;
     if (C.reloj) { clearInterval(C.reloj); C.reloj = null; }
     C.ms = Math.min(topeMs(), Math.max(0, Math.round(performance.now() - C.t0)));
-    pintarJuego();   // bloqueado, para que se vea el tablero final quieto
+    /* ⚠️ EL CONGELADO SE LLEVABA POR DELANTE LA ÚLTIMA ANIMACIÓN (titular,
+       2026-09-22: «el último elemento que se rompe en el conteo no está
+       mostrando su animación de ruptura»). `actualizar` acababa de poner esa
+       ficha en su estado roto y `pintarJuego` vuelve a dibujar el tablero
+       ENTERO desde `estado`, donde esa celda ya está quitada: se pintaba
+       directamente fuera, así que la rotura de la jugada que CIERRA la ronda no
+       se veía nunca —y es justo la que remata—. Ahora el congelado espera a que
+       la salida termine. No hay riesgo de tocar de más: `jugar()` ya rechaza
+       todo lo que no esté en `jugando`. */
+    var salida = motivo === 'completo' ? msSalida() : 0;
+    luego(function () { if (C && C.estado === 'terminando') pintarJuego(); }, salida);
     var s = sonido();
     if (s && s.hay()) { if (motivo === 'completo') s.campana(); else s.clac(0.3); }
-    if (C.P.enLinea) return terminarEnLinea();
+    if (C.P.enLinea) return terminarEnLinea(salida);
     /* En local el resumen lo calcula la misma lógica que el servidor va a
        correr después: si aquí saliera otra cosa, el servidor tendría razón. */
     var r = J().repetir(C.P.juego, C.semilla, C.nivel, C.lado, C.jugadas, C.ms);
     C.resumen = r.ok ? r.resumen : C.m.resumen(C.estadoJuego, C.ms);
-    luego(pintarRecibo, 700);
+    /* El recibo reemplaza la pantalla entera, así que si llega antes de que la
+       última ficha acabe de irse se lleva la rotura igual que el congelado. Los
+       700 de siempre cuando no hay nada que esperar; con salida, un respiro
+       después de ella. */
+    luego(pintarRecibo, Math.max(700, salida + 150));
   }
 
   function pintarRecibo() {
@@ -848,14 +879,19 @@
       });
   }
 
-  function terminarEnLinea() {
+  /* `salida` son los milisegundos que le quedan a la animación de la última
+     jugada. La PETICIÓN sale igual de inmediata —el final de la ronda lo sella
+     el servidor con lo que se le manda, no con lo que se pinta—; lo único que
+     espera es el recibo, y solo lo que le falte a la salida. */
+  function terminarEnLinea(salida) {
+    var t0 = performance.now();
     nube().juego('terminar', { debate: C.P.debate, ronda: C.ronda, jugadas: C.jugadas, ms: C.ms })
       .then(function (r) {
         if (!C) return;
         if (!r || r.error) return fallar((r && r.error) || 'No se pudo entregar la ronda.', terminarEnLinea);
         C.resumen = r.resumen;
         C.intento = r.intento;
-        pintarRecibo();
+        luego(pintarRecibo, Math.max(0, (salida || 0) - (performance.now() - t0)));
       }).catch(function (err) {
         if (!C) return;
         fallar('No se pudo entregar la ronda. ' + ((err && err.message) || ''), terminarEnLinea);
