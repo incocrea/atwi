@@ -4187,6 +4187,83 @@ window.ATWI = window.ATWI || {};
     pintarAviso();
   }
 
+  /* LA PANTALLA DE COMPARACIÓN, SOLA (titular, 2026-09-22: «quiero poder
+     reproducir directamente la pantalla de resultados de comparación de los
+     juegos»). Hasta ahora había que jugar la partida entera --dos lados, sus
+     rondas y el relevo-- para ver seis segundos de escena, que es el tipo de
+     pantalla que por eso no se ajusta nunca.
+     ⚠️ EL RESULTADO SE SORTEA, no se escribe: cada ronda saca una jugada al azar
+     del juego que le toque y **quién gana lo decide la lógica de verdad**
+     (`ganadorDeRonda`), no un `Math.random` sobre el ganador. Con el ganador
+     puesto a mano la escena podría enseñar una fila que el juego nunca
+     produciría --un empate imposible, un elemento que gana al que le gana-- y
+     entonces lo que se estaría ajustando no es la pantalla del juego. */
+  function ensayarLosResultados(op) {
+    var J = window.ATWI.juegos;
+    if (!J || !J.duelo) return;
+    var juegos = (op.juegos && op.juegos.length) ? op.juegos : [op.juego || 'cuenta'];
+    P = mesaDeEnsayo(op, {
+      modo: 'competencia', juego: juegos[0], juegos: juegos,
+      turnos: juegos.length, ajustes: op.ajustes || {},
+      orden: Math.random() < 0.5 ? [0, 1] : [1, 0]
+    });
+    separarFichas();
+    abrir();
+    marcarJuegoDeLaPartida();
+    var titulo = $('#t-partida');
+    if (titulo) titulo.textContent = '';
+    pie().innerHTML = '';
+    var filas = juegos.map(function (id, i) {
+      var p = jugadaDeEnsayo(id), q = jugadaDeEnsayo(id);
+      var r = J.ganadorDeRonda(id, p, q);
+      return { ronda: i + 1, juego: id, propone: r.propone, invitado: r.invitado,
+               gana: r.gana, frase: r.frase || null };
+    });
+    P.pararDuelo = J.duelo(caja(), filas, [P.jugadores[0], P.jugadores[1]], function () {
+      P.pararDuelo = null;
+      /* Se sale por donde se entró: al probador, sin veredicto que enseñar.
+         Montar además la ceremonia sería reproducir OTRA cosa, y para eso está
+         su propio atajo. */
+      cerrar();
+    });
+  }
+
+  /* Una ronda de mentira, jugada con la lógica de verdad. ⚠️ NO SE INVENTAN
+     JUGADAS AL AZAR: cada juego sabe resolver su tablero (`resolver`), así que
+     se parte de ahí --la secuencia siempre es legal-- y lo que se sortea es
+     CUÁNTO se llegó a hacer y en cuánto tiempo. Después se pasa por `repetir()`,
+     que es exactamente lo que hace el servidor, así que el resumen tiene la
+     misma forma que tendría en una partida de verdad. */
+  function jugadaDeEnsayo(id) {
+    var J = window.ATWI.juegos;
+    var m = J.juego(id);
+    if (!m || !m.resolver) return null;
+    var nivel = J.nivelDe();
+    var semilla = J.azar.deTexto('ensayo:' + id + ':' + Math.random());
+    var tablero = J.tablero(id, semilla, nivel, 'propone');
+    var base = m.resolver(tablero) || [];
+    var jugadas = base.slice();
+    var completo = true;
+    if (base.length > 1) {
+      /* Lo dejó a medias una de cada tres veces: si siempre saliera completo, la
+         escena no enseñaría nunca el caso que más se mira --el que no llegó--. */
+      if (Math.random() < 0.34) {
+        jugadas = base.slice(0, Math.max(1, Math.round(base.length * (0.4 + Math.random() * 0.5))));
+        completo = false;
+      }
+    } else if (base.length === 1) {
+      /* Un juego de una sola jugada --elegir un elemento-- necesita variedad, o
+         los dos lados sacarían siempre lo mismo. Se prueba una al azar y se
+         comprueba contra la lógica; si no la acepta, se queda la resuelta. */
+      var v = Math.floor(Math.random() * 5);
+      if (J.repetir(id, semilla, nivel, 'propone', [v], 3000).ok) jugadas = [v];
+    }
+    var ms = (completo ? 1500 : 4000) + Math.floor(Math.random() * 5000);
+    var rep = J.repetir(id, semilla, nivel, 'propone', jugadas, ms);
+    if (!rep.ok) return null;
+    return { marca: m.marca(rep.resumen), resumen: rep.resumen };
+  }
+
   /* ==========================================================================
      EL VISOR DE LA LANDING (peticion del titular, 2026-09-17)
 
@@ -4256,6 +4333,7 @@ window.ATWI = window.ATWI || {};
                           cerrar: cerrar, ensayarDesdeElFinal: ensayarDesdeElFinal,
                           ensayarLaEntrada: ensayarLaEntrada,
                           ensayarElJuego: ensayarElJuego,
+                          ensayarLosResultados: ensayarLosResultados,
                           demoDeLanding: demoDeLanding,
                           /* La usa tambien el detalle del tema, para ensenar la
                              escena de lo que va a pasar. Se exporta en vez de

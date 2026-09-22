@@ -143,11 +143,17 @@
     if (d === h) return 'Ronda ' + d + '/' + C.rondas;
     return 'Rondas ' + d + '-' + h + '/' + C.rondas;
   }
-  function finDelTramo() {
-    var id = juegoActual(), r = C.ronda || 1;
-    while (r < C.rondas && juegoDeRonda(r + 1) === id) r++;
-    return r;
-  }
+  /* ⚠️ UNA RONDA POR PANTALLA, AUNQUE LAS TRES SEAN DEL MISMO JUEGO (titular,
+     2026-09-22: «ahora solo se posiciona 1 elemento por casilla y cada selección
+     es una ronda aparte»). Choque repartía de una vez todas las rondas seguidas
+     que fueran suyas --con tres de Choque salían tres círculos-- y eso venía de
+     cuando el juego era de la PARTIDA: entonces asignar los tres turnos juntos
+     ERA la partida. Desde el pivote cada ronda se elige, se juega y se cierra
+     por su cuenta, así que juntarlas volvía a mezclar lo que el pivote separó.
+     `deUnaVez` sigue queriendo decir «este juego no tiene tablero con reloj,
+     tiene una pantalla de selección»; lo que cambia es que esa pantalla cubre SU
+     ronda y nada más. */
+  function finDelTramo() { return C.ronda || 1; }
   function elOtroLado(lado) { return lado === 'invitado' ? 'propone' : 'invitado'; }
 
   function mmss(ms) {

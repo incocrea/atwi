@@ -6017,3 +6017,34 @@ body[data-demo] { background: var(--crema); }
 @media (prefers-reduced-motion: reduce) {
   .ronda-op:active .ronda-op__disco { transform: none; }
 }
+
+/* ==========================================================================
+   LOS ATAJOS DEL PROBADOR (titular, 2026-09-22)
+   Cinco botones grandes apilados eran media pantalla de pie para un panel que
+   ya llega con scroll, y aquí no hay una acción principal: son cinco maneras de
+   mirar lo mismo desde distintos momentos de la partida. En fila caben los
+   cinco y se abarcan de una mirada.
+   La palabra debajo se queda: es lo que los distingue de un vistazo, igual que
+   en la barra de abajo del juego. El nombre largo vive en `aria-label`.
+   ========================================================================== */
+.pb-atajos { display: flex; justify-content: space-between; gap: 4px; }
+.pb-atajo {
+  flex: 1 1 0; min-width: 0;
+  display: grid; justify-items: center; gap: 2px;
+  border: 0; background: none; padding: 6px 2px; cursor: pointer;
+  font: inherit; color: var(--tinta);
+  border-radius: var(--radio-chip);
+  transition: transform var(--dur-corta) var(--suave), background var(--dur-corta) var(--suave);
+}
+.pb-atajo:active { transform: scale(.94); }
+.pb-atajo:hover { background: rgba(0, 0, 0, .04); }
+/* Las pegatinas traen su propio perfil blanco, así que van sueltas: un disco
+   detrás les pondría un segundo borde. */
+.pb-atajo img { width: 44px; height: 44px; }
+.pb-atajo span {
+  font-size: var(--t-mini); font-weight: 800; color: var(--tinta-suave);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pb-atajo:active { transform: none; }
+}

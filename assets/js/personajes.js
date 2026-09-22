@@ -265,7 +265,18 @@ window.ATWI = window.ATWI || {};
        le esta dando la espalda al otro. Volteando al de la derecha se ponen
        cara a cara. El precio es que a esa figura se le invierte el logotipo de
        la camiseta, y a este tamaño no se lee. */
-    plante: TODOS_A_LA_DERECHA
+    plante: TODOS_A_LA_DERECHA,
+    /* Y `frente` TAMBIÉN, desde la escena de resultados (titular, 2026-09-22:
+       «asegurándote de que ambos miren hacia el centro según su ilustración, es
+       decir espejados»). Aquí decía que las poses frontales no se voltean; eso
+       vale para donde la figura está SOLA --el avatar del perfil, la ficha-- y
+       deja de valer en cuanto hay dos, una a cada lado: sin voltear, los dos
+       miran al mismo sitio y uno le da la espalda al otro.
+       ⚠️ NO CAMBIA NADA DONDE NO SE PIDE: sin `mira` no se voltea nadie, y hoy
+       solo lo piden el encuentro y la escena de resultados. El precio es el
+       mismo que en `plante`: al de la derecha se le invierte el logotipo de la
+       camiseta, y a este tamaño no se lee. */
+    frente: TODOS_A_LA_DERECHA
   };
 
   /**

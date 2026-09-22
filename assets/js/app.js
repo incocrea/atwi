@@ -1275,6 +1275,32 @@
     window.ATWI.partida.ensayarElJuego(mesa);
   }
 
+  /* LA PANTALLA DE COMPARACIÓN, DIRECTA (titular, 2026-09-22). Usa el MISMO
+     reparto que «Reproducir un minijuego» —lo que esté puesto en las rondas de
+     arriba— porque es la pantalla que resume justo esa partida: con otro
+     reparto se estaría mirando una escena que el juego configurado no puede
+     producir. Las fichas y la mesa se sortean, como allí. */
+  function ensayarLosResultados() {
+    var e = estadoProbador();
+    var caras = window.ATWI.quienes().map(function (q) { return q.clave; });
+    var colores = window.ATWI.colores().map(function (c) { return c.clave; });
+    var unaCara = unoDe(caras);
+    var otraCara = unoDe(caras.filter(function (c) { return c !== unaCara; }));
+    var jueces = window.ATWI.jueces ? window.ATWI.jueces() : [];
+    cerrarModales(['m-probador']);
+    window.ATWI.partida.ensayarLosResultados({
+      modo: 'competencia',
+      juego: e.repartoJuego[0],
+      juegos: e.repartoJuego.slice(),
+      rondas: e.rondasJuego,
+      quien: [{ nombre: 'Uno', avatar: unaCara, color: unoDe(colores) },
+              { nombre: 'Dos', avatar: otraCara, color: unoDe(colores) }],
+      juez: jueces.length ? unoDe(jueces).clave : e.juez,
+      publico: unoDe(MESAS_PROBADOR).clave,
+      ajustes: e.ajustes || {}
+    });
+  }
+
   function abrirProbador() {
     estadoProbador();
     repintarProbador();
@@ -7172,6 +7198,9 @@
     else if (a === 'pb-votar') { ensayarDesdeElFinal(); }
     else if (a === 'pb-entrada') { ensayarLaEntrada(); }
     else if (a === 'pb-juego') { ensayarElJuego(); }
+    /* La pantalla de comparación sola, con el reparto que esté puesto arriba y
+       el resultado sorteado por la lógica de verdad. */
+    else if (a === 'pb-duelo') { ensayarLosResultados(); }
     /* AL CERRARLO SE BORRA LO BUSCADO, y es lo que hace que plegarlo sea
        seguro: un campo escondido que sigue filtrando deja una lista recortada
        sin nada en pantalla que explique por qué faltan temas. Los chips no se

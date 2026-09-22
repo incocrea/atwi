@@ -45,13 +45,13 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=57837ff">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=57837ff">
-<link rel="stylesheet" href="../assets/css/base.css?v=57837ff">
-<link rel="stylesheet" href="../assets/css/app.css?v=57837ff">
-<link rel="stylesheet" href="../assets/css/modal.css?v=57837ff">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=9535040">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=9535040">
+<link rel="stylesheet" href="../assets/css/base.css?v=9535040">
+<link rel="stylesheet" href="../assets/css/app.css?v=9535040">
+<link rel="stylesheet" href="../assets/css/modal.css?v=9535040">
 <!-- Los minijuegos de QuiénGane: la carcasa y los tableros (prefijo `jg-`). -->
-<link rel="stylesheet" href="../assets/css/juegos.css?v=57837ff">
+<link rel="stylesheet" href="../assets/css/juegos.css?v=9535040">
 </head>
 
 <body class="app">
@@ -284,32 +284,34 @@
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
-      <!-- LOS DOS SON «REPRODUCIR», y lo que cambia es DESDE DÓNDE. «Fin de
-           ronda» arranca en el instante en que se manda la última intervención y
-           recorre todo lo que viene después --la espera, lo que conteste el
-           modelo, y en Negociación elegir y firmar--; «victoria» salta directo a
-           la escena del resultado. Los nombres viejos --«la escena» y «ensayar»--
-           no decían eso: uno no decía qué escena y el otro sonaba a otra cosa
-           distinta en vez de a la misma vista desde más atrás. -->
-      <!-- Y DESDE 2026-09-16 SON TRES, EN ORDEN DE PARTIDA: la entrada, el fin
-           de ronda y la victoria. «La entrada» es el sorteo de quien abre y la
-           cortinilla del encuentro --seis segundos que hasta ahora costaban
-           montar una partida entera para poder mirarlos: elegir tema, invitado,
-           turnos y fichas--. Va primero porque es lo primero que pasa.
-           Los tres del mismo tamano, como en el acta: son tres maneras de mirar
-           lo mismo y ninguna es la opcion menor. Lo que las distingue es el
-           color, y el lleno es el ultimo porque es el final. -->
-      <button class="boton boton--suave boton--bloque boton--grande boton--punteado"
-              data-accion="pb-entrada">Reproducir la entrada</button>
-      <button class="boton boton--suave boton--bloque boton--grande boton--punteado"
-              data-accion="pb-votar" id="pb-votar">Reproducir fin de ronda</button>
-      <!-- Y EL MINIJUEGO (docs/10, bloque 0.4): el sorteo, la cortinilla y la
-           carcasa entera con el juego de mentira, sin partida en el servidor.
-           Es la unica manera de recorrer la sala de QuienGane sin gastar una
-           partida, y por eso vive aqui y no detras del catalogo. -->
-      <button class="boton boton--suave boton--bloque boton--grande boton--punteado"
-              data-accion="pb-juego">Reproducir un minijuego</button>
-      <button class="boton boton--bloque boton--grande" data-accion="pb-jugar">Reproducir victoria</button>
+      <!-- LOS CINCO SON «REPRODUCIR», y lo que cambia es DESDE DÓNDE: la
+           entrada (el sorteo y la cortinilla), un minijuego entero, el fin de
+           ronda (desde que se manda la última intervención), la comparación de
+           las rondas y la victoria. Van en ORDEN DE PARTIDA.
+           ⚠️ SON ICONOS Y NO BOTONES DE BLOQUE (titular, 2026-09-22: «en el
+           simulador reemplaza estos botones grandes por iconos relativos a cada
+           función»). Cinco botones grandes apilados eran media pantalla de pie
+           para un panel que ya llega con scroll, y aquí no hay una acción
+           principal: son cinco atajos del mismo rango. La palabra debajo se
+           queda --es lo que los distingue de un vistazo, como en la barra de
+           abajo del juego-- y el nombre largo vive en `aria-label`. -->
+      <div class="pb-atajos">
+        <button class="pb-atajo" data-accion="pb-entrada" aria-label="Reproducir la entrada">
+          <img src="../assets/img/iconos/vs-azul.png" alt="" width="44" height="44" decoding="async">
+          <span>Entrada</span></button>
+        <button class="pb-atajo" data-accion="pb-juego" aria-label="Reproducir un minijuego">
+          <img src="../assets/img/juegos/jg-pasos.webp" alt="" width="44" height="44" decoding="async">
+          <span>Minijuego</span></button>
+        <button class="pb-atajo" data-accion="pb-votar" id="pb-votar" aria-label="Reproducir el fin de ronda">
+          <img src="../assets/img/iconos/micro.png" alt="" width="44" height="44" decoding="async">
+          <span>Fin de ronda</span></button>
+        <button class="pb-atajo" data-accion="pb-duelo" aria-label="Reproducir la comparación de las rondas">
+          <img src="../assets/img/juegos/jg-empate.webp" alt="" width="44" height="44" decoding="async">
+          <span>Comparar</span></button>
+        <button class="pb-atajo" data-accion="pb-jugar" aria-label="Reproducir la victoria">
+          <img src="../assets/img/juegos/jg-copa.webp" alt="" width="44" height="44" decoding="async">
+          <span>Victoria</span></button>
+      </div>
     </div>
   </div>
 
@@ -471,37 +473,37 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=57837ff"></script>
-<script src="../assets/js/precarga.js?v=57837ff"></script>
-<script src="../assets/js/iconos.js?v=57837ff"></script>
-<script src="../assets/js/personajes.js?v=57837ff"></script>
-<script src="../assets/js/datos.js?v=57837ff"></script>
-<script src="../assets/js/sonido.js?v=57837ff"></script>
-<script src="../assets/js/veredicto.js?v=57837ff"></script>
-<script src="../assets/js/grabadora.js?v=57837ff"></script>
+<script src="../assets/js/config.js?v=9535040"></script>
+<script src="../assets/js/precarga.js?v=9535040"></script>
+<script src="../assets/js/iconos.js?v=9535040"></script>
+<script src="../assets/js/personajes.js?v=9535040"></script>
+<script src="../assets/js/datos.js?v=9535040"></script>
+<script src="../assets/js/sonido.js?v=9535040"></script>
+<script src="../assets/js/veredicto.js?v=9535040"></script>
+<script src="../assets/js/grabadora.js?v=9535040"></script>
 <!-- LOS MINIJUEGOS DE QUIÉNGANE (docs/10). La lógica sin DOM va primero —es la
      MISMA que corre en el servidor, copiada letra por letra a `logica.ts`—,
      después la carcasa y los tableros. Cada juego construido suma dos scripts:
      `logica/<id>.js` y `ui/<id>.js`. `prueba` es el juego de mentira. -->
-<script src="../assets/js/juegos/azar.js?v=57837ff"></script>
-<script src="../assets/js/juegos/logica/comun.js?v=57837ff"></script>
-<script src="../assets/js/juegos/logica/cuenta.js?v=57837ff"></script>
-<script src="../assets/js/juegos/logica/choque.js?v=57837ff"></script>
-<script src="../assets/js/juegos/logica/calco.js?v=57837ff"></script>
-<script src="../assets/js/juegos/carcasa.js?v=57837ff"></script>
-<script src="../assets/js/juegos/duelo.js?v=57837ff"></script>
-<script src="../assets/js/juegos/ui/cuenta.js?v=57837ff"></script>
-<script src="../assets/js/juegos/ui/choque.js?v=57837ff"></script>
-<script src="../assets/js/juegos/ui/calco.js?v=57837ff"></script>
-<script src="../assets/js/partida.js?v=57837ff"></script>
-<script src="../assets/js/auth.js?v=57837ff"></script>
-<script src="../assets/js/entrada.js?v=57837ff"></script>
-<script src="../assets/js/nube.js?v=57837ff"></script>
+<script src="../assets/js/juegos/azar.js?v=9535040"></script>
+<script src="../assets/js/juegos/logica/comun.js?v=9535040"></script>
+<script src="../assets/js/juegos/logica/cuenta.js?v=9535040"></script>
+<script src="../assets/js/juegos/logica/choque.js?v=9535040"></script>
+<script src="../assets/js/juegos/logica/calco.js?v=9535040"></script>
+<script src="../assets/js/juegos/carcasa.js?v=9535040"></script>
+<script src="../assets/js/juegos/duelo.js?v=9535040"></script>
+<script src="../assets/js/juegos/ui/cuenta.js?v=9535040"></script>
+<script src="../assets/js/juegos/ui/choque.js?v=9535040"></script>
+<script src="../assets/js/juegos/ui/calco.js?v=9535040"></script>
+<script src="../assets/js/partida.js?v=9535040"></script>
+<script src="../assets/js/auth.js?v=9535040"></script>
+<script src="../assets/js/entrada.js?v=9535040"></script>
+<script src="../assets/js/nube.js?v=9535040"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=57837ff"></script>
-<script src="../assets/js/app.js?v=57837ff"></script>
+<script src="../assets/js/demo.js?v=9535040"></script>
+<script src="../assets/js/app.js?v=9535040"></script>
 </body>
 </html>
