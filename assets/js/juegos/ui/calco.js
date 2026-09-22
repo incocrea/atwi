@@ -52,31 +52,49 @@
       'width="' + px + '" height="' + px + '" alt="" decoding="async" draggable="false">';
   }
 
-  function celdaHTML(t, i, valor, px) {
+  /* `seVa` es el sticker del PATRÓN que se desvanece en una casilla vacía al
+     empezar a jugar (ver `pintar`). Es decorado: no cuenta como puesto, no lo
+     nombra la etiqueta y se lo lleva el primer sticker que caiga ahí. */
+  function celdaHTML(t, i, valor, px, seVa) {
     return '<button type="button" class="jg-cal' + (valor === VACIA ? '' : ' jg-cal--puesta') +
       '" data-cal="' + i + '"' +
       ' aria-label="' + (valor === VACIA ? 'casilla vacía' : HOJA[t.fichas[valor]]) + '">' +
-      (valor === VACIA ? '' : stickerHTML(t.fichas[valor], px)) +
+      (valor !== VACIA ? stickerHTML(t.fichas[valor], px) :
+        seVa !== undefined && seVa !== VACIA ? stickerHTML(t.fichas[seVa], px).replace('class="jg-st"', 'class="jg-st jg-st--se-va"') : '') +
       '</button>';
   }
 
-  function rejillaHTML(t, valores, lado, hueco) {
+  function rejillaHTML(t, valores, lado, hueco, patronQueSeVa) {
     var dentro = Math.round(lado * 0.82);
     var celdas = '';
-    for (var i = 0; i < valores.length; i++) celdas += celdaHTML(t, i, valores[i], dentro);
+    for (var i = 0; i < valores.length; i++) {
+      celdas += celdaHTML(t, i, valores[i], dentro, patronQueSeVa ? patronQueSeVa[i] : undefined);
+    }
     return '<div class="jg-rejilla" style="--cols:' + t.cols + ';--filas:' + t.filas +
       ';--celda:' + lado + 'px;--hueco:' + hueco + 'px">' + celdas + '</div>';
   }
 
-  function paletaHTML(t, disco) {
+  /* En la muestra la paleta YA ESTÁ, pero no se toca (`jg-paleta--espera`): se
+     pinta para que al empezar no aparezca nada nuevo que empuje la rejilla. */
+  function paletaHTML(t, disco, espera) {
     var s = '';
     for (var c = 0; c < t.distintos; c++) {
       s += '<button type="button" class="jg-tinta" data-tinta="' + c + '"' +
+        (espera ? ' tabindex="-1" aria-hidden="true"' : '') +
         ' style="--disco:' + disco + 'px" aria-label="Sticker ' + HOJA[t.fichas[c]] + '">' +
         stickerHTML(t.fichas[c], Math.round(disco * 0.86)) + '</button>';
     }
-    return '<div class="jg-paleta">' + s + '</div>';
+    return '<div class="jg-paleta' + (espera ? ' jg-paleta--espera' : '') + '">' + s + '</div>';
   }
+
+  /* Cuánto dura el desvanecido del patrón al empezar a jugar (titular). Es el
+     mismo número que la animación `jg-se-va` de juegos.css. */
+  var MS_SE_VA = 800;
+  /* El estado cuya muestra se acaba de pintar: si la pintada siguiente es la de
+     jugar ESE MISMO estado, es la transición y el patrón se desvanece. Se
+     compara el objeto y no un booleano porque reintentar monta un estado nuevo
+     y ahí la muestra vuelve a empezar. */
+  var vioLaMuestra = null;
 
   /* ⚠️ LA CASILLA SE CALCULA CUADRADA Y EL HUECO CEDE ANTES QUE ELLA, igual que
      en Cuenta y por lo mismo: el sticker se pinta dentro y una casilla más
@@ -101,22 +119,42 @@
   J.ui.calco = {
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
-      if (ctx.muestra) {
-        var mm = medidas(t, ctx.ancho, ctx.alto - 34);
-        caja.innerHTML =
-          rejillaHTML(t, t.patron, mm.lado, mm.hueco) +
-          '<p class="jg-pista">Mírate el patrón: en un momento desaparece.</p>';
-        return null;
-      }
-
-      var ALTO_PALETA = 96;
-      var m = medidas(t, ctx.ancho, ctx.alto - ALTO_PALETA);
+      /* ⚠️ LA MUESTRA Y EL JUEGO SON LA MISMA MAQUETA (titular, 2026-09-22: «las
+         cajas están en una posición y al iniciar la partida se mueven al
+         aparecer el set de iconos… esto marea y confunde»). Eran dos: la muestra
+         reservaba 34 px para la pista y el juego 96 para la paleta, así que la
+         rejilla cambiaba de tamaño y de sitio justo en el instante en que hay que
+         recordar DÓNDE estaba cada sticker. Ahora las dos fases pintan lo mismo
+         —rejilla, la banda del conteo, la paleta y una pista de alto fijo— y lo
+         único que cambia es lo que hay DENTRO de las casillas.
+         La banda es el hueco donde flota el 3-2-1 durante la muestra (la carcasa
+         lo coloca sobre `[data-conteo]`); en el juego se queda vacía, porque
+         quitarla movería todo lo de debajo. */
+      var RESERVA = 44 + 16 + 58 + 12 + 40;   // banda + paleta con su margen + pista
+      var m = medidas(t, ctx.ancho, ctx.alto - RESERVA);
       var disco = Math.max(40, Math.min(58, m.lado - 6));
+      /* EL PATRÓN NO DESAPARECE DE GOLPE: se desvanece en 800 ms (titular: «un
+         poco de ayuda a la memoria de dónde estaba»). Solo en la primera pintada
+         de juego tras la muestra de este mismo estado. */
+      var seVa = !ctx.muestra && vioLaMuestra === estado;
+      vioLaMuestra = ctx.muestra ? estado : null;
       caja.innerHTML =
-        rejillaHTML(t, estado.pintadas, m.lado, m.hueco) +
-        paletaHTML(t, disco) +
-        '<p class="jg-pista">Arrastra cada sticker a su casilla. ' +
-        '<b>Toca una puesta para quitarla.</b></p>';
+        rejillaHTML(t, ctx.muestra ? t.patron : estado.pintadas, m.lado, m.hueco,
+          seVa ? t.patron : null) +
+        '<div class="jg-cal-banda"' + (ctx.muestra ? ' data-conteo' : '') + '></div>' +
+        paletaHTML(t, disco, ctx.muestra) +
+        (ctx.muestra ?
+          '<p class="jg-pista jg-pista--fija">Mírate el patrón: en un momento desaparece.</p>' :
+          '<p class="jg-pista jg-pista--fija">Arrastra los stickers a las cajas, o de una caja a otra. ' +
+          '<b>Toca uno puesto para quitarlo.</b></p>');
+      if (seVa) {
+        /* Con reloj y no con `animationend`: las animaciones no avanzan en una
+           pestaña que no pinta (S29), y un sticker del patrón que se quedara
+           puesto sería una pista que el otro jugador no tuvo. */
+        setTimeout(function () {
+          [].forEach.call(caja.querySelectorAll('.jg-st--se-va'), function (n) { n.remove(); });
+        }, MS_SE_VA + 50);
+      }
 
       if (ctx.bloqueado) return null;
 
@@ -132,7 +170,7 @@
 
       /* --- ARRASTRAR ------------------------------------------------------ */
       var UMBRAL = 6;
-      var ar = null;            // {ficha, x0, y0, fantasma}
+      var ar = null;            // {ficha, origen, x0, y0, fantasma}
       var comerClic = false;
 
       function fantasmaEn(ficha, x, y) {
@@ -165,8 +203,21 @@
            se quedara puesto se comería el toque de más tarde. */
         comerClic = false;
         var n = e.target.closest('[data-tinta]');
-        if (!n) return;
-        ar = { ficha: Number(n.dataset.tinta), x0: e.clientX, y0: e.clientY, fantasma: null };
+        if (n) {
+          ar = { ficha: Number(n.dataset.tinta), origen: -1, x0: e.clientX, y0: e.clientY, fantasma: null };
+          return;
+        }
+        /* UN STICKER YA PUESTO TAMBIÉN SE ARRASTRA (titular, 2026-09-22: «quiero
+           poder arrastrar stickers ya ubicados a otra caja; si es una caja
+           ocupada se intercambian, esto facilita reorganizar para probar»).
+           Hasta soltarlo es el mismo gesto que el de la paleta, y el umbral de
+           seis píxeles sigue separándolo del toque: tocar sin mover todavía
+           QUITA, como antes. */
+        var c = e.target.closest('[data-cal]');
+        if (!c) return;
+        var i = Number(c.dataset.cal);
+        if (estado.pintadas[i] === VACIA) return;
+        ar = { ficha: estado.pintadas[i], origen: i, x0: e.clientX, y0: e.clientY, fantasma: null };
       });
 
       /* Los oyentes viven en `window` --el dedo se sale de la caja a mitad del
@@ -190,14 +241,23 @@
            perder y sin esto quedaría un sticker arrastrándose solo. */
         if (!e.buttons) {
           if (ar.fantasma) ar.fantasma.remove();
-          ar = null; marcarDiana(null); return;
+          ar = null; marcarDiana(null); marcarOrigen(-1); return;
         }
         if (!ar.fantasma) {
           if (Math.abs(e.clientX - ar.x0) < UMBRAL && Math.abs(e.clientY - ar.y0) < UMBRAL) return;
           ar.fantasma = fantasmaEn(ar.ficha, e.clientX, e.clientY);
+          marcarOrigen(ar.origen);
         }
         mover(ar.fantasma, e.clientX, e.clientY);
         marcarDiana(celdaBajo(e.clientX, e.clientY));
+      }
+
+      /* La caja de la que sale el sticker se queda con él atenuado mientras
+         viaja: se ve de dónde viene y a dónde vuelve si se suelta fuera. */
+      function marcarOrigen(i) {
+        [].forEach.call(caja.querySelectorAll('.jg-cal'), function (n) {
+          n.classList.toggle('jg-cal--origen', Number(n.dataset.cal) === i);
+        });
       }
 
       window.addEventListener('pointerup', alSoltar);
@@ -206,12 +266,16 @@
         if (seFue() || !ar) return;
         var esto = ar; ar = null;
         marcarDiana(null);
-        if (!esto.fantasma) return;        // fue un toque en la paleta: no pone nada
+        marcarOrigen(-1);
+        /* Sin fantasma no hubo arrastre: fue un toque. En la paleta no pone
+           nada, y en una caja lo atiende el `click`, que quita. */
+        if (!esto.fantasma) return;
         esto.fantasma.remove();
         comerClic = true;
         var c = celdaBajo(e.clientX, e.clientY);
-        if (!c) return;                    // soltar fuera no hace nada
-        soltarEn(Number(c.dataset.cal), esto.ficha);
+        if (!c) return;                    // soltar fuera no hace nada: se queda donde estaba
+        if (esto.origen >= 0) moverEntre(esto.origen, Number(c.dataset.cal));
+        else soltarEn(Number(c.dataset.cal), esto.ficha);
       }
 
       function soltarEn(i, ficha) {
@@ -220,6 +284,40 @@
            jugada que el servidor va a tirar. */
         if (estado.pintadas[i] === ficha) return;
         ctx.jugar(i * PASOS + ficha + 1);
+      }
+
+      /* ¿Quedaría el tablero igual al patrón si la casilla `celda` tuviera
+         `valor` y todo lo demás siguiera como está? */
+      function calcariaCon(celda, valor) {
+        var p = t.patron;
+        for (var k = 0; k < p.length; k++) {
+          if ((k === celda ? valor : estado.pintadas[k]) !== p[k]) return false;
+        }
+        return true;
+      }
+
+      /* MOVER O INTERCAMBIAR ES DOS JUGADAS DE LAS DE SIEMPRE, no una nueva:
+         poner en el destino lo que venía y dejar en el origen lo que había en el
+         destino —nada si estaba vacío—. Así ni la lógica ni el servidor cambian:
+         repiten exactamente lo que ya sabían repetir.
+         ⚠️ Y EL ORDEN SE ELIGE, porque entre las dos jugadas hay un tablero a
+         medias y la ronda se gana en cuanto el tablero calca el patrón. Poner
+         primero en el destino deja el sticker EN LAS DOS cajas un instante; si
+         justo eso fuera el patrón, se ganaría con un tablero que quien juega no
+         pidió —su movimiento termina en otro—. En ese caso se empieza por el
+         origen, y ahí el tablero a medias no puede calcar el patrón: las dos
+         cosas a la vez pedirían que el destino tuviera dos stickers distintos.
+         Así se gana SOLO con el tablero que resulta del gesto. */
+      function moverEntre(o, d) {
+        if (o === d) return;
+        var a = estado.pintadas[o], b = estado.pintadas[d];
+        if (a === VACIA || a === b) return;        // mismo sticker: nada cambia
+        var alDestino = d * PASOS + a + 1;
+        var alOrigen = b === VACIA ? o * PASOS : o * PASOS + b + 1;
+        var orden = calcariaCon(d, a) ? [alOrigen, alDestino] : [alDestino, alOrigen];
+        /* Si la primera cierra la ronda, la segunda la rechaza la carcasa
+           (`jugar` solo acepta con la ronda en juego). */
+        if (ctx.jugar(orden[0])) ctx.jugar(orden[1]);
       }
 
       caja.addEventListener('click', function (e) {

@@ -237,6 +237,11 @@
   transition: transform .12s, filter .15s;
 }
 .jg-cal:not(:disabled):active { transform: scale(.92); }
+/* Un sticker puesto también se arrastra, a otra caja o para intercambiarlo con
+   el que haya (titular, 2026-09-22). Mientras viaja, en su caja se queda
+   atenuado: dice de dónde sale y adónde vuelve si se suelta fuera. */
+.jg-cal--puesta { cursor: grab; }
+.jg-cal--origen .jg-st { opacity: .3; }
 /* EL ÁREA DE SUELTA, al pasar el sticker por encima (titular, 2026-09-22):
    tiene que leerse con el dedo tapando media pantalla. Con la caja de madera
    ya no hay borde que encender ni fondo que teñir, así que la caja crece y se
@@ -253,6 +258,24 @@
   transform: scale(1.1);
 }
 .jg-st { display: block; pointer-events: none; }
+/* El patrón que se desvanece al empezar a jugar (titular, 2026-09-22: «no
+   desaparecerán de una sino en una transición de transparencia de 800 ms, para
+   dejar un poco de ayuda a la memoria de dónde estaba»). `ease-in` lo deja casi
+   entero al principio, que es cuando sirve de ayuda. Lo quita un reloj en
+   calco.js (`MS_SE_VA`), que tiene que decir el mismo número. */
+.jg-st--se-va { animation: jg-se-va 800ms ease-in forwards; }
+@keyframes jg-se-va { from { opacity: 1; } to { opacity: 0; } }
+
+/* LA MISMA MAQUETA EN LA MUESTRA Y EN EL JUEGO (Calco): entre la rejilla y la
+   paleta hay una banda de alto fijo donde flota el 3-2-1 mientras se mira el
+   patrón. En el juego se queda vacía a propósito: quitarla movería todo. */
+.jg-cal-banda { height: 44px; width: 100%; }
+.jg-cal-banda + .jg-paleta { margin-top: 0; }
+/* La pista cambia de texto entre las dos fases —uno ocupa un renglón y el otro
+   dos— y con el alto libre esa diferencia empujaba la rejilla medio renglón. */
+.jg-pista--fija { line-height: 1.4; min-height: 2.8em; }
+/* En la muestra la paleta ya se ve, pero todavía no se arrastra. */
+.jg-paleta--espera { pointer-events: none; }
 
 /* La paleta: los cuatro stickers de la ronda, de donde se arrastran. NO tiene
    estado «elegido» porque tocarla ya no elige nada --poner es arrastrar, y el
@@ -285,6 +308,12 @@
   place-items: end center; padding: 0 0 4px; font-size: 3rem;
   color: var(--jg-color);
 }
+/* Y SI EL TABLERO LE DICE DÓNDE, FLOTA AHÍ (titular, 2026-09-22: «hacer el
+   conteo flotante para que no ocupe interfaz ni mueva nada»). La carcasa lo
+   coloca encima del `[data-conteo]` del juego —en Calco, la banda entre la
+   rejilla y la paleta— sin sacarlo del `absolute`: no ocupa sitio ni empuja
+   nada, y se va sin que nada se recoloque. */
+.jg-cuenta--anclada { place-items: center; padding: 0; }
 
 /* ==========================================================================
    «ANTES DE EMPEZAR»: el minijuego, entre los dos y el juez

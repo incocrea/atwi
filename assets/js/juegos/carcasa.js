@@ -553,6 +553,22 @@
     /* Con muestra, el número no puede plantarse en medio del tablero: es justo
        lo que hay que mirar. Se va a una esquina y deja ver lo de debajo. */
     if (velo && M().muestra) velo.classList.add('jg-cuenta--muestra');
+    /* ⚠️ Y SI EL TABLERO MARCA UN SITIO (`[data-conteo]`), FLOTA AHÍ (titular,
+       2026-09-22: «el conteo flotante, que no ocupe interfaz ni mueva nada»).
+       Sin marca iba al pie de la sala, y en Calco caía justo donde ahora está la
+       paleta —que se enseña desde la muestra para que la rejilla no salte al
+       empezar— y el número salía medio cortado por el borde. Se mide una vez:
+       durante el 3-2-1 no cambia nada de sitio, que es justo lo que se busca. */
+    var ancla = velo && $('#jg-tablero [data-conteo]');
+    if (ancla) {
+      var base = velo.parentNode.getBoundingClientRect(), r = ancla.getBoundingClientRect();
+      velo.classList.add('jg-cuenta--anclada');
+      velo.style.inset = 'auto';
+      velo.style.left = (r.left - base.left) + 'px';
+      velo.style.top = (r.top - base.top) + 'px';
+      velo.style.width = r.width + 'px';
+      velo.style.height = r.height + 'px';
+    }
     var n = 3;
     var s = sonido();
     function paso() {
