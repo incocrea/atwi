@@ -51,6 +51,14 @@
   function segundosDeCuenta() { return (M() && M().cuentaS) || 3; }
   var MS_TIC = 100;
 
+  /* LA FICHA DE LA RONDA LLEVA LA PEANA DE QUIÉNGANE (titular, 2026-09-22: «el
+     mismo decorador de bottom que tiene el selector de modo QuiénGane del
+     home»). Es la misma pieza, con la misma regla de `app.css` que la carta de
+     modo, así que se ven hermanas: el juego sale de esa carta y su ficha lleva
+     su suelo. Va primera y fuera del flujo, detrás del texto. */
+  var PEANA_DE_FICHA = '<img class="jg-ficha-ronda__base" src="../assets/img/iconos/base-competencia.png" ' +
+    'alt="" aria-hidden="true" decoding="async">';
+
   var C = null;   // la carcasa viva, o nulo
 
   /* ⚠️ EL FONDO ES DEL JUEGO DE LA RONDA, Y SE MARCA AQUÍ (pivote del titular,
@@ -336,7 +344,7 @@
           '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
           '<p class="jg-quien__que">Te toca jugar</p>' +
         '</div>' +
-        '<div class="jg-ficha-ronda">' +
+        '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
           /* Con `deUnaVez` las rondas de su TRAMO se asignan juntas en una
              pantalla, así que la presentación es una sola y lo dice en plural
              --pero solo de las que cubre: con reparto mixto pueden ser una--. */
@@ -794,7 +802,7 @@
           window.ATWI.fichaHTML(q.avatar, 'avatar--duelo', q.color) +
           '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
         '</div>' +
-        '<div class="jg-ficha-ronda">' +
+        '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
           '<p class="jg-ficha-ronda__t">' + (C.resumen.completo ? '¡Ronda completa!' : 'Se acabó el tiempo') + '</p>' +
           '<p class="jg-ficha-ronda__nivel">Ronda ' + C.ronda + ' de ' + C.rondas +
             (C.intento > 1 ? ' · intento ' + C.intento : '') + '</p>' +

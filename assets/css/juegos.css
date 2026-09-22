@@ -62,11 +62,20 @@
 .jg-ficha-ronda {
   width: 100%; max-width: 340px; display: grid; gap: 6px; justify-items: center;
   padding: var(--e-4) var(--e-4) var(--e-3); border-radius: var(--radio-tarjeta);
-  /* Un 30 % transparente (titular, 2026-09-22): deja pasar el fondo dibujado del
-     juego sin dejar de sostener el texto. */
-  background: color-mix(in srgb, var(--superficie) 70%, transparent);
+  /* A LA MITAD (titular, 2026-09-22: primero un 30 % transparente, después «al
+     50 %»): deja pasar el fondo dibujado del juego y sigue sosteniendo el texto,
+     que aquí es poco y grande. */
+  background: color-mix(in srgb, var(--superficie) 50%, transparent);
   box-shadow: var(--sombra-2); text-align: center;
+  /* LA PEANA DE QUIÉNGANE AL PIE (titular, 2026-09-22), la misma de la carta de
+     modo de la portada y con su misma regla (`app.css`, `.carta-modo__base`):
+     a lo ancho, hundida 20 px y desenfocada. La ficha la corta por su radio
+     (`overflow`), y el hueco de la onda lo hace el relleno de abajo: la pieza
+     va fuera del flujo. Medido a 340 px de ancho la onda pinta 66 y asoma 46. */
+  position: relative; overflow: hidden;
+  padding-bottom: 54px;
 }
+.jg-ficha-ronda > :not(.jg-ficha-ronda__base) { position: relative; z-index: 1; }
 .jg-ficha-ronda__nivel { font-size: var(--t-chico); color: var(--tinta-suave); font-weight: 700; }
 .jg-ficha-ronda__t { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); color: var(--jg-color); }
 .jg-ficha-ronda__como { font-size: var(--t-chico); color: var(--tinta); margin-top: 4px; }

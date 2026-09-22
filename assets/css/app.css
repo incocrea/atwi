@@ -809,7 +809,7 @@ body.app {
    carta y no como una pegatina puesta encima.
    Va centrada con `left: 50%` y `translateX` para que el recorte sea igual por
    los dos lados: anclándola a un lado, el dibujo se descentraría. */
-.carta-modo__base, .publico__base, .partida__base {
+.carta-modo__base, .publico__base, .partida__base, .jg-ficha-ronda__base {
   position: absolute; left: 50%; z-index: 0;
   width: 118%; transform: translateX(-50%);
   height: auto; display: block; pointer-events: none;
