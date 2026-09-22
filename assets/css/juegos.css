@@ -92,7 +92,13 @@
   position: absolute; inset: 0; display: grid; place-items: center;
   font-family: var(--display); font-weight: 800; font-size: 6rem; color: var(--tinta);
   text-shadow: 0 0 12px #fff, 0 0 24px #fff; pointer-events: none;
-  background: rgba(255, 255, 255, .35);
+  /* ⚠️ SIN VELO BLANCO (titular, 2026-09-22: «quita el recuadro blanco que
+     aparece con el número de la cuenta regresiva»). Estaba para despegar el
+     número del tablero, y sobre el fondo claro de la sala se leía como un
+     recuadro pegado encima. Lo que de verdad lo despega es su halo —los dos
+     `text-shadow` blancos, que van pegados a la letra y no dibujan ninguna
+     caja—, y el tablero ya está bloqueado mientras corre, así que el velo no
+     estaba conteniendo nada. */
 }
 .jg-cuenta--late { animation: jg-late .9s ease-out; }
 .jg-cuenta--ya { color: var(--jg-color); font-size: 5rem; }
@@ -100,7 +106,9 @@
    el mismo halo blanco que tenía el número. La misma hoja y la misma cuenta de
    posición que `.jg-cuadricula--fichas .jg-celda`. */
 .jg-conteo-ficha {
-  display: block; width: 130px; height: 130px;
+  /* Un 20 % más grande (titular, 2026-09-22): de 130 a 156. Ahora se puede
+     pedir sin que se note, porque la hoja guarda 216 px por icono y no 84. */
+  display: block; width: 156px; height: 156px;
   background: url(../img/juegos/cuenta-fichas.webp) no-repeat;
   background-size: 800% 1600%;
   background-position: calc(var(--set) / 7 * 100%) calc(var(--n) / 15 * 100%);
@@ -411,24 +419,32 @@
    barra. Lo que cede es el tamaño del dibujo, no el número de filas.
    ========================================================================== */
 .jg--duelo2 {
-  display: flex; flex-direction: column; justify-content: center; gap: var(--e-3);
-  height: 100%; min-height: 0; overflow: hidden; padding: var(--e-2) 0;
+  display: flex; flex-direction: column; justify-content: flex-start; gap: var(--e-3);
+  height: 100%; min-height: 0; overflow: hidden; padding: var(--e-3) 0;
   /* El verde de «ésta ganó la ronda». Es el mismo de la placa de Planta, que ya
      estaba en la paleta del juego: un verde nuevo para decir lo mismo sería un
      color más que mantener. */
   --jg-gana: #3AA655;
+  /* La duración del vuelo+choque+rebote. Un 30 % más lenta que los 900 ms de
+     antes (titular, 2026-09-22). En un solo sitio: la usan las siete animaciones
+     de la escena. */
+  --jg-d-dur: 1290ms;
 }
+/* LOS AVATARES, ARRIBA Y CENTRADOS SOBRE SU COLUMNA (titular, 2026-09-22): avatar
+   encima, nombre debajo, los dos centrados. La rejilla copia la de las filas
+   —`1fr auto 1fr`, con el hueco de la chispa en medio— para que cada avatar caiga
+   justo sobre su elemento. */
 .jg-d__cab {
-  display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-4);
-  align-items: center; flex: none;
+  display: grid; grid-template-columns: 1fr auto 1fr; column-gap: var(--e-2);
+  align-items: start; flex: none; padding: 0 var(--e-3) var(--e-2);
 }
+.jg-d__quien-hueco { width: 30px; }   /* = el ancho de la chispa de las filas */
 .jg-d__quien {
-  display: inline-flex; align-items: center; gap: 6px; min-width: 0;
+  display: grid; justify-items: center; gap: 4px; min-width: 0; text-align: center;
   font-size: var(--t-chico); color: var(--tinta);
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
-.jg-d__quien b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.jg-d__quien--der { justify-content: flex-end; }
+.jg-d__quien b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
 .jg-d__filas { display: flex; flex-direction: column; gap: var(--e-3); min-height: 0; }
 /* Dos columnas de elemento con el choque en medio, y la explicación debajo
@@ -457,29 +473,42 @@
 .jg-d__lado .jg-el__dibujo { width: clamp(58px, 21vw, 92px); height: auto; }
 .jg-d__dice {
   grid-column: 1 / -1; text-align: center; margin: 4px 0 0;
-  font-size: var(--t-chico); color: var(--tinta); line-height: 1.3;
+  font-size: var(--t-chico); font-weight: 700; color: var(--tinta); line-height: 1.3;
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
 /* El número de ronda y el nombre también se leen sobre el fondo dibujado. */
 .jg-d__ronda { text-shadow: 0 0 5px #fff, 0 0 8px #fff; }
 
-/* EL VUELO Y EL CHOQUE. Los dos lados salen de fuera, se cruzan en el centro
-   —ahí es el golpe— y vuelven a su sitio. El perdedor se apaga DENTRO de la
-   misma animación, a partir del choque: así el estado final no depende de
-   ningún temporizador. */
+/* EL VUELO, EL CHOQUE Y EL REBOTE. Los dos lados se lanzan desde fuera, se cruzan
+   en el centro —ahí es el golpe— y después REBOTAN COMO UN BALÓN hasta caer a su
+   sitio (titular, 2026-09-22): cada bote más bajo que el anterior, y el suelo es
+   la posición final de comparación (translateY 0). El `animation-timing-function`
+   por tramo da el peso de una pelota: subir frena (ease-out), caer acelera
+   (ease-in). El perdedor se apaga y el ganador se enciende DENTRO de la misma
+   animación (abajo), así el estado final no depende de ningún temporizador. */
 @keyframes jg-d-izq {
-  0%   { transform: translateX(-150%); opacity: 0; }
-  35%  { opacity: 1; }
-  45%  { transform: translateX(34%); }
-  62%  { transform: translateX(-6%); }
-  100% { transform: translateX(0); opacity: 1; }
+  0%   { transform: translateX(-150%); opacity: 0; animation-timing-function: cubic-bezier(.4, 0, .7, .5); }
+  25%  { opacity: 1; }
+  40%  { transform: translateX(32%); animation-timing-function: ease-out; }   /* choque en el centro */
+  52%  { transform: translate(0, 0); animation-timing-function: ease-out; }   /* cae a su sitio (1.er bote) */
+  63%  { transform: translateY(-32%); animation-timing-function: ease-in; }
+  72%  { transform: translateY(0); animation-timing-function: ease-out; }
+  81%  { transform: translateY(-15%); animation-timing-function: ease-in; }
+  88%  { transform: translateY(0); animation-timing-function: ease-out; }
+  94%  { transform: translateY(-6%); animation-timing-function: ease-in; }
+  100% { transform: translateY(0); }
 }
 @keyframes jg-d-der {
-  0%   { transform: translateX(150%); opacity: 0; }
-  35%  { opacity: 1; }
-  45%  { transform: translateX(-34%); }
-  62%  { transform: translateX(6%); }
-  100% { transform: translateX(0); opacity: 1; }
+  0%   { transform: translateX(150%); opacity: 0; animation-timing-function: cubic-bezier(.4, 0, .7, .5); }
+  25%  { opacity: 1; }
+  40%  { transform: translateX(-32%); animation-timing-function: ease-out; }
+  52%  { transform: translate(0, 0); animation-timing-function: ease-out; }
+  63%  { transform: translateY(-32%); animation-timing-function: ease-in; }
+  72%  { transform: translateY(0); animation-timing-function: ease-out; }
+  81%  { transform: translateY(-15%); animation-timing-function: ease-in; }
+  88%  { transform: translateY(0); animation-timing-function: ease-out; }
+  94%  { transform: translateY(-6%); animation-timing-function: ease-in; }
+  100% { transform: translateY(0); }
 }
 /* Se pone en gris a partir del choque y se queda: «toma posición pero se pone
    en gris expresando que perdió». Y ENCOGE UN 20 % (titular, 2026-09-22): el
@@ -507,30 +536,32 @@
   70%, 100% { background: var(--jg-gana); }
 }
 @keyframes jg-d-chispa {
-  0%, 38%  { transform: scale(0); opacity: 0; }
-  48%      { transform: scale(1.5); opacity: 1; }
+  0%, 34%  { transform: scale(0); opacity: 0; }
+  42%      { transform: scale(1.5); opacity: 1; }
   100%     { transform: scale(2.4); opacity: 0; }
 }
 @keyframes jg-d-dice { 0%, 60% { opacity: 0; transform: translateY(4px); } 100% { opacity: 1; transform: none; } }
 
-.jg-d__lado--izq { animation: jg-d-izq 900ms cubic-bezier(.3, 1.4, .5, 1) both; }
-.jg-d__lado--der { animation: jg-d-der 900ms cubic-bezier(.3, 1.4, .5, 1) both; }
+/* El peso del rebote lo dan los tramos (`animation-timing-function` por
+   keyframe), así que la animación va lineal. */
+.jg-d__lado--izq { animation: jg-d-izq var(--jg-d-dur) linear both; }
+.jg-d__lado--der { animation: jg-d-der var(--jg-d-dur) linear both; }
 /* Dos animaciones sobre la misma pieza: la de mover va en el lado y la del
    gris en el dibujo, para que no se pisen en la misma propiedad. */
 .jg-d__lado--pierde .jg-el__dibujo,
-.jg-d__lado--pierde .jg-el__nombre { animation: jg-d-gris 900ms linear both; }
+.jg-d__lado--pierde .jg-el__nombre { animation: jg-d-gris var(--jg-d-dur) linear both; }
 /* El ganador: el dorado en la figura y el verde en la placa. Van en el hijo y
    no en `.jg-d__lado`, que ya tiene su `transform` con el vuelo: dos
    animaciones sobre la misma propiedad del mismo elemento se pisan. */
-.jg-d__lado--gana .jg-el__dibujo { animation: jg-d-gana-fig 900ms ease-out both; }
-.jg-d__lado--gana .jg-el__nombre { animation: jg-d-gana-pill 900ms linear both; }
+.jg-d__lado--gana .jg-el__dibujo { animation: jg-d-gana-fig var(--jg-d-dur) ease-out both; }
+.jg-d__lado--gana .jg-el__nombre { animation: jg-d-gana-pill var(--jg-d-dur) linear both; }
 /* El destello del golpe, en el centro de la fila. */
 .jg-d__chispa {
   width: 30px; height: 30px; border-radius: 50%;
   background: radial-gradient(circle, #fff 0%, var(--competencia) 45%, transparent 70%);
-  animation: jg-d-chispa 900ms ease-out both;
+  animation: jg-d-chispa var(--jg-d-dur) ease-out both;
 }
-.jg-d__dice { animation: jg-d-dice 900ms ease-out both; }
+.jg-d__dice { animation: jg-d-dice var(--jg-d-dur) ease-out both; }
 
 /* Sin movimiento: se ve el resultado, no el viaje. */
 .jg--duelo2-quieto .jg-d__lado--izq,
