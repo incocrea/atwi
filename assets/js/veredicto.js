@@ -230,6 +230,11 @@ window.ATWI = window.ATWI || {};
    * @param r.alCerrar  se llama cuando la persona toca «Ver el desglose»
    */
   window.ATWI.veredicto = {
+    /** Las serpentinas, sueltas: los minijuegos las disparan al completar un
+     *  reto (titular, 2026-09-22). Es el mismo cañón de la revelación, para
+     *  que el juego celebre de una sola manera. `p` tiene que estar posicionado. */
+    confeti: function (p, modo) { confeti(p, modo); },
+
     /** La frase que dice el juez al cerrar la última intervención. */
     fraseDeCierre: function () { return alAzar(cfg.frasesDeCierre); },
 

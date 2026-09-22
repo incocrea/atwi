@@ -744,7 +744,21 @@
     var salida = motivo === 'completo' ? msSalida() : 0;
     luego(function () { if (C && C.estado === 'terminando') pintarJuego(); }, salida);
     var s = sonido();
-    if (s && s.hay()) { if (motivo === 'completo') s.campana(); else s.clac(0.3); }
+    /* ⚠️ COMPLETAR EL RETO SE CELEBRA EN EL ACTO (titular, 2026-09-22: «en
+       Cuenta y en Calco dispara las serpentinas de celebración tan pronto el
+       user completa el reto, con sonido»). Son las MISMAS serpentinas y el
+       mismo platillo de la revelación del veredicto —no un efecto nuevo—, así
+       que el juego entero celebra de una sola manera. Antes sonaba la campana,
+       que es la señal de SALIDA del 3-2-1: al final decía «empieza» en vez de
+       «lo lograste».
+       El confeti cuelga del MODAL y no del tablero: el recibo reemplaza el
+       tablero entero a los 700 ms y se lo llevaría a mitad de la caída; en el
+       modal sigue cayendo por encima de la pantalla que venga y se quita solo. */
+    if (motivo === 'completo') {
+      if (s && s.hay()) s.platillo();
+      var modal = $('#m-partida'), v = window.ATWI.veredicto;
+      if (modal && v && typeof v.confeti === 'function') v.confeti(modal, 'competencia');
+    } else if (s && s.hay()) s.clac(0.3);
     if (C.P.enLinea) return terminarEnLinea(salida);
     /* En local el resumen lo calcula la misma lógica que el servidor va a
        correr después: si aquí saliera otra cosa, el servidor tendría razón. */
