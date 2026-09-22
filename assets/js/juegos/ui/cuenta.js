@@ -157,6 +157,24 @@
         ';--n:' + (n - 1) + '" aria-hidden="true"></span>';
     },
 
+    /* LO QUE ENSEÑA EN LA REVELACIÓN (contrato de `juegos/duelo.js`). Lo que
+       vuela es la ficha del ÚLTIMO número que llegó a tocar --que es su marca
+       en una imagen-- y debajo, cuántos y en cuánto. Sin fichas, la ronda
+       aparecía como «No jugó» al lado de una de Choque que sí se veía. */
+    chocante: function (r) {
+      if (!r) return null;
+      var n = Math.max(1, Math.min(16, r.hechas || 1));
+      return {
+        /* ⚠️ SET FIJO Y NO `sets()`: ese memo es el de la RONDA EN CURSO y
+           preguntarle desde aquí --la revelación, que corre cuando la partida
+           ya terminó-- lo invalidaría con un estado que no es ninguno. La
+           revelación no tiene ronda, así que tampoco tiene por qué sortear. */
+        icono: '<span class="jg-el__dibujo jg-conteo-ficha jg-conteo-ficha--chocante" ' +
+          'style="--set:0;--n:' + (n - 1) + '" aria-hidden="true"></span>',
+        nombre: r.hechas + ' en ' + (Math.round(r.ms / 100) / 10) + ' s'
+      };
+    },
+
     /* Una celda de la tabla del juez: cuántos, y en cuánto. */
     resumenCorto: function (r) {
       return (r.completo ? '✓ ' : '') + r.hechas + ' en ' + (Math.round(r.ms / 100) / 10) + ' s' +

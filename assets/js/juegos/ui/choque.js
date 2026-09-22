@@ -321,113 +321,13 @@
         '<span class="jg-el__nombre">' + nombre(r.elemento) + '</span></div>';
     },
 
-    /* ------------------------------------------------------------------------
-       EL DUELO: `filas` es el desglose del veredicto ({propone, invitado,
-       gana, frase}), `personas` los dos con nombre y lado, `fin` lo que sigue
-       (la revelación). Cada ronda: las dos cartas boca abajo entran, se
-       voltean, la frase del cruce, y a la siguiente. Todo con reloj. */
-    /* ------------------------------------------------------------------------
-       LA REVELACIÓN: TODAS LAS RONDAS A LA VEZ (titular, 2026-09-21).
-       Antes era una carta por ronda que se destapaba, y el titular lo corrigió
-       entero: «no son cards, son elementos; cada uno entra volando desde su
-       lado, chocan, y después del choque el que gana toma posición y se queda
-       de color mientras que el otro toma posición pero se pone en gris; todas
-       las rondas se muestran en simultánea».
-
-       UN SOLO ENCABEZADO con los dos avatares —antes se repetía en cada ronda—
-       y debajo una fila por encuentro: el elemento de cada quien en su columna,
-       el destello del choque en medio y la explicación debajo.
-
-       ⚠️ TODA LA ESCENA ES UNA ANIMACIÓN CSS DECLARADA DE UNA VEZ, sin
-       temporizadores que la vayan pintando por pasos. Es la lección de S29 por
-       el lado bueno: si la pestaña deja de pintar a mitad —el teléfono se
-       bloquea— al volver no queda a medias, porque el estado final (ganador a
-       color, perdedor en gris) está en el último fotograma y no en un `setTimeout`
-       que ya pasó. El único temporizador que queda es el que avisa de que
-       terminó. */
-    duelo: function (caja, filas, personas, fin) {
-      var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      var quien = { propone: personas[0], invitado: personas[1] };
-
-      function ladoHTML(res, lado, gana) {
-        var hay = res && typeof res.elemento === 'number';
-        /* El que pierde se apaga; el que gana se queda a color. En empate no se
-           apaga ninguno: nadie perdió. */
-        var pierde = hay && gana !== 'empate' && gana !== lado;
-        return '<div class="jg-d__lado jg-d__lado--' + (lado === 'propone' ? 'izq' : 'der') +
-            (pierde ? ' jg-d__lado--pierde' : '') + (gana === lado ? ' jg-d__lado--gana' : '') + '">' +
-            (hay ? pieza(res.elemento, 62) +
-                   '<span class="jg-el__nombre">' + nombre(res.elemento) + '</span>'
-                 : '<span class="jg-el__nombre">No jugó</span>') +
-          '</div>';
-      }
-
-      /* Cada avatar va ARRIBA y CENTRADO sobre su columna (titular, 2026-09-22):
-         avatar encima, nombre debajo. El hueco de en medio copia la columna de la
-         chispa de las filas, para que los dos avatares caigan centrados sobre sus
-         elementos. */
-      var cab =
-        '<div class="jg-d__cab">' +
-          '<span class="jg-d__quien">' +
-            window.ATWI.fichaHTML(quien.propone.avatar, 'avatar--mini', quien.propone.color) +
-            '<b>' + esc(quien.propone.nombre) + '</b></span>' +
-          '<span class="jg-d__quien-hueco" aria-hidden="true"></span>' +
-          '<span class="jg-d__quien jg-d__quien--der">' +
-            window.ATWI.fichaHTML(quien.invitado.avatar, 'avatar--mini', quien.invitado.color) +
-            '<b>' + esc(quien.invitado.nombre) + '</b></span>' +
-        '</div>';
-
-      var cuerpo = filas.map(function (f) {
-        var dice = f.gana === 'empate'
-          ? (f.propone && f.invitado ? 'Mismo elemento: la ronda queda en tablas.' : 'Ronda sin jugar.')
-          : (f.frase ? f.frase + '.' : 'Ronda para ' + quien[f.gana].nombre + '.');
-        /* Sin número de ronda (titular, 2026-09-22): la frase de cada choque ya
-           dice qué pasó y son pocas filas; el número no situaba nada. */
-        return '<div class="jg-d__fila">' +
-            ladoHTML(f.propone, 'propone', f.gana) +
-            '<span class="jg-d__chispa" aria-hidden="true"></span>' +
-            ladoHTML(f.invitado, 'invitado', f.gana) +
-            '<p class="jg-d__dice">' + esc(dice) + '</p>' +
-          '</div>';
-      }).join('');
-
-      caja.innerHTML =
-        '<div class="jg jg--duelo2' + (quieto ? ' jg--duelo2-quieto' : '') + '" aria-live="polite">' +
-          cab + '<div class="jg-d__filas">' + cuerpo + '</div>' +
-        '</div>';
-
-      var timers = [];
-      var s = window.ATWI.sonido;
-      /* El golpe suena cuando chocan, que es el 40 % de una animación de 1290 ms
-         (un 30 % más lenta que antes, titular 2026-09-22) —los dos lados llegan al
-         centro a la vez, así que es UN sonido y no uno por fila—. Con
-         `reduced-motion` no hay vuelo y tampoco golpe. */
-      if (!quieto && s && s.hay()) timers.push(setTimeout(function () { s.choque(); }, 520));
-
-      /* ⚠️ NO SE PASA SOLO AL RESULTADO (titular, 2026-09-21: «después de
-         presentar el choque no sigas automáticamente al resultado, agrega un
-         botón de ver resultado, por si el user quiere revisar las
-         comparaciones»). Con las tres rondas juntas hay algo que LEER —quién
-         ganó cada una y por qué—, y un temporizador decide por quien está
-         leyendo. El botón sale cuando el choque terminó, no antes: si estuviera
-         desde el primer fotograma se podría saltar la escena sin verla. */
-      var pie = document.querySelector('#m-partida .modal__pie');
-      function ponerBoton() {
-        if (!pie || !caja.isConnected) return;
-        pie.innerHTML = '<button type="button" class="boton boton--bloque boton--grande ' +
-          'boton--competencia jg-d__ver" data-el-ver>Ver el resultado</button>';
-        var b = pie.querySelector('[data-el-ver]');
-        if (b) b.addEventListener('click', function () { b.disabled = true; fin(); });
-      }
-      timers.push(setTimeout(ponerBoton, quieto ? 200 : 1450));
-
-      return function parar() {
-        timers.forEach(clearTimeout);
-        /* El botón vive en el pie, fuera de `caja`: si la escena se corta a
-           mitad no se va solo con el cuerpo y se quedaría sobre la pantalla
-           siguiente. */
-        if (pie) { var v = pie.querySelector('[data-el-ver]'); if (v) v.remove(); }
-      };
+    /* LO QUE ESTE JUEGO ENSEÑA EN LA REVELACIÓN (contrato de `juegos/duelo.js`,
+       pivote del titular, 2026-09-22). La escena era de Choque y ahora es de
+       todos: aquí queda solo lo que es suyo --qué elemento jugó-- y el vuelo, el
+       choque, el apagado del que pierde y el botón viven en un sitio. */
+    chocante: function (r) {
+      if (!r || typeof r.elemento !== 'number') return null;
+      return { icono: pieza(r.elemento, 62), nombre: nombre(r.elemento) };
     }
   };
 })();

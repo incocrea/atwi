@@ -3577,15 +3577,20 @@ window.ATWI = window.ATWI || {};
        solo si el juego trae la escena (`ui.<id>.duelo`). */
     if (P.modo === 'competencia' && P.veredicto && !P.repaso && !P.dueloHecho) {
       var dj = (P.veredicto.desglose || {});
-      var uiJ = (window.ATWI.juegos && window.ATWI.juegos.ui || {})[dj.juego];
-      if (uiJ && uiJ.duelo && (dj.filas || []).length) {
+      /* ⚠️ LA ESCENA ES DE TODO EL MODO Y NO DE UN JUEGO (pivote del titular,
+         2026-09-22). Se pedía `ui[dj.juego].duelo`, así que una partida mixta
+         la habría montado el juego de la PRIMERA ronda --y las demás filas
+         salían como «No jugó»-- y un juego sin escena propia se saltaba la
+         revelación entera. */
+      var J = window.ATWI.juegos;
+      if (J && J.duelo && (dj.filas || []).length) {
         P.dueloHecho = true;
         m.hidden = false;
         marcarTurno(null);
         var rotulo0 = $('#t-partida');
         if (rotulo0) rotulo0.textContent = '';
         pie().innerHTML = '';
-        P.pararDuelo = uiJ.duelo(caja(), dj.filas,
+        P.pararDuelo = J.duelo(caja(), dj.filas,
           [P.jugadores[0], P.jugadores[1]],
           function () { P.pararDuelo = null; revelar(); });
         return;

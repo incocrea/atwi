@@ -631,3 +631,11 @@
   display: block; font-size: var(--t-chico); font-weight: 800;
   color: var(--tinta-suave); margin-bottom: 4px;
 }
+
+/* La ficha de Cuenta cuando VUELA en la revelación: la misma hoja de números,
+   al tamaño de los elementos de Choque —las dos cosas se ven en la misma
+   pantalla cuando el reparto es mixto, así que si no midieran igual la fila se
+   leería torcida—. */
+.jg-conteo-ficha--chocante {
+  display: block; width: clamp(58px, 21vw, 92px); height: auto; aspect-ratio: 1;
+}
