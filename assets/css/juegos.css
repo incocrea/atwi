@@ -148,6 +148,14 @@
 .jg-celda--fuera { opacity: 0; pointer-events: none; transform: scale(.6); }
 .jg-celda--mal { animation: jg-mal .3s ease-out; color: var(--peligro); }
 @keyframes jg-mal { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+/* AL TOCARLA, LA FICHA SE ROMPE 500 ms ANTES DE IRSE (titular, 2026-09-22): la
+   misma hoja y la misma posición, solo cambia la imagen a la versión rota. Un
+   golpecito al aparecer vende el impacto; después `--fuera` la desvanece. */
+.jg-cuadricula--fichas .jg-celda--rota {
+  background-image: url(../img/juegos/cuenta-rotas.webp);
+  animation: jg-romper .4s ease-out;
+}
+@keyframes jg-romper { 0% { transform: scale(1); } 30% { transform: scale(1.12); } 100% { transform: scale(1); } }
 .jg-pista { text-align: center; font-size: var(--t-chico); color: var(--tinta-suave); margin-top: var(--e-3); text-shadow: 0 0 5px #fff; }
 .jg-pista b { color: var(--jg-color); }
 
@@ -405,6 +413,10 @@
 .jg--duelo2 {
   display: flex; flex-direction: column; justify-content: center; gap: var(--e-3);
   height: 100%; min-height: 0; overflow: hidden; padding: var(--e-2) 0;
+  /* El verde de «ésta ganó la ronda». Es el mismo de la placa de Planta, que ya
+     estaba en la paleta del juego: un verde nuevo para decir lo mismo sería un
+     color más que mantener. */
+  --jg-gana: #3AA655;
 }
 .jg-d__cab {
   display: grid; grid-template-columns: 1fr 1fr; gap: var(--e-4);
@@ -470,10 +482,29 @@
   100% { transform: translateX(0); opacity: 1; }
 }
 /* Se pone en gris a partir del choque y se queda: «toma posición pero se pone
-   en gris expresando que perdió». */
+   en gris expresando que perdió». Y ENCOGE UN 20 % (titular, 2026-09-22): el
+   gris dice que perdió y el tamaño dice cuánto, que es lo que hace que los dos
+   lados de la fila dejen de pesar igual de un vistazo. */
 @keyframes jg-d-gris {
-  0%, 44%   { filter: none; }
-  70%, 100% { filter: grayscale(1); opacity: .55; }
+  0%, 44%   { filter: none; transform: scale(1); }
+  70%, 100% { filter: grayscale(1); opacity: .55; transform: scale(.8); }
+}
+/* EL GANADOR SE ENCIENDE EN DORADO (titular, 2026-09-22). El dorado es el color
+   de premio del juego —el único que no significa ni modo ni mesa— y aquí dice
+   exactamente eso: ésta ganó la ronda. Con un rebote corto en el golpe, que es
+   el instante en que se decide. */
+@keyframes jg-d-gana-fig {
+  0%, 44%   { filter: none; transform: scale(1); }
+  60%       { transform: scale(1.14); }
+  78%, 100% { transform: scale(1);
+              filter: drop-shadow(0 0 7px var(--premio))
+                      drop-shadow(0 0 15px color-mix(in srgb, var(--premio) 70%, transparent)); }
+}
+/* Y su placa pasa a verde: el color del elemento dice CUÁL es, y una vez
+   resuelta la ronda lo que hay que leer es QUIÉN ganó. */
+@keyframes jg-d-gana-pill {
+  0%, 44%   { background: var(--el, var(--tinta-suave)); }
+  70%, 100% { background: var(--jg-gana); }
 }
 @keyframes jg-d-chispa {
   0%, 38%  { transform: scale(0); opacity: 0; }
@@ -488,6 +519,11 @@
    gris en el dibujo, para que no se pisen en la misma propiedad. */
 .jg-d__lado--pierde .jg-el__dibujo,
 .jg-d__lado--pierde .jg-el__nombre { animation: jg-d-gris 900ms linear both; }
+/* El ganador: el dorado en la figura y el verde en la placa. Van en el hijo y
+   no en `.jg-d__lado`, que ya tiene su `transform` con el vuelo: dos
+   animaciones sobre la misma propiedad del mismo elemento se pisan. */
+.jg-d__lado--gana .jg-el__dibujo { animation: jg-d-gana-fig 900ms ease-out both; }
+.jg-d__lado--gana .jg-el__nombre { animation: jg-d-gana-pill 900ms linear both; }
 /* El destello del golpe, en el centro de la fila. */
 .jg-d__chispa {
   width: 30px; height: 30px; border-radius: 50%;
@@ -504,11 +540,27 @@
 .jg--duelo2-quieto .jg-d__chispa { opacity: 0; }
 .jg--duelo2-quieto .jg-d__lado--pierde .jg-el__dibujo,
 .jg--duelo2-quieto .jg-d__lado--pierde .jg-el__nombre {
-  animation: none; filter: grayscale(1); opacity: .55;
+  animation: none; filter: grayscale(1); opacity: .55; transform: scale(.8);
 }
+/* Sin movimiento el resultado se ve igual: el dorado y el verde no son la
+   animacion, son el estado final. Lo que se pierde es el viaje. */
+.jg--duelo2-quieto .jg-d__lado--gana .jg-el__dibujo {
+  animation: none;
+  filter: drop-shadow(0 0 7px var(--premio))
+          drop-shadow(0 0 15px color-mix(in srgb, var(--premio) 70%, transparent));
+}
+.jg--duelo2-quieto .jg-d__lado--gana .jg-el__nombre { animation: none; background: var(--jg-gana); }
 @media (prefers-reduced-motion: reduce) {
   .jg-d__lado--izq, .jg-d__lado--der, .jg-d__chispa, .jg-d__dice { animation: none; }
   .jg-d__chispa { opacity: 0; }
   .jg-d__lado--pierde .jg-el__dibujo,
-  .jg-d__lado--pierde .jg-el__nombre { animation: none; filter: grayscale(1); opacity: .55; }
+  .jg-d__lado--pierde .jg-el__nombre {
+    animation: none; filter: grayscale(1); opacity: .55; transform: scale(.8);
+  }
+  .jg-d__lado--gana .jg-el__dibujo {
+    animation: none;
+    filter: drop-shadow(0 0 7px var(--premio))
+            drop-shadow(0 0 15px color-mix(in srgb, var(--premio) 70%, transparent));
+  }
+  .jg-d__lado--gana .jg-el__nombre { animation: none; background: var(--jg-gana); }
 }
