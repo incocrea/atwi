@@ -4789,21 +4789,11 @@ body.app {
 /* Y EL MISMO AVISO EN LA PORTADA, que mientras no haya notificacion de fuera
    es la unica manera de enterarse sin ir a buscarlo. Ocupa el ancho entero
    porque compite con las dos cartas de modo, que son lo mas grande que hay. */
-.aviso-veredicto {
-  display: grid; gap: 2px; width: 100%; text-align: left;
-  margin-bottom: var(--e-4); cursor: pointer;
-  font: inherit; color: inherit;
-  border: 1px solid rgba(233, 162, 59, .34);
-  background: var(--premio-tinte);
-}
-.aviso-veredicto[data-tono="curso"] {
-  border-color: rgba(122, 106, 216, .3);
-  background: var(--lavanda-tinte);
-}
-.aviso-veredicto__eti {
-  font-size: var(--t-mini); font-weight: 800; letter-spacing: .04em;
-  color: var(--premio); text-transform: uppercase;
-}
+/* ⚠️ AQUÍ VIVÍA `.aviso-veredicto`, la tarjeta de «lo que te espera» del buzón.
+   Se fue con ella (titular, 2026-09-21: «esta no se ve como una notificación»):
+   esas filas usan ahora la misma `.aviso` que el resto del buzón, así que estas
+   reglas se quedaron sin nadie que las pidiera. Un CSS que no pinta nada no es
+   inofensivo: se lee como si alguien lo usara. */
 
 /* QUIENES JUGARON, en la fila y en el aviso de la portada. Las caras chicas
    porque el dato es CUAL de las partidas es, no quienes son: el nombre ya lo
@@ -4882,11 +4872,6 @@ body.app {
 .aviso-flotante--puesto { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .aviso-flotante { transition: none; transform: none; }
-}
-.aviso-veredicto[data-tono="curso"] .aviso-veredicto__eti { color: var(--lavanda-oscuro); }
-.aviso-veredicto__tema {
-  font-weight: 800; color: var(--tinta); line-height: 1.35;
-  overflow-wrap: anywhere;
 }
 
 /* LA INVITACION EN EL BUZON (modo en linea, 0055). Es la misma tarjeta que el

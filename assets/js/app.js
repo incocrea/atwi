@@ -296,6 +296,13 @@
      resultado sin ver sin ninguna forma de enterarse, porque estos tres estados
      NO están en la tabla `avisos` —los calcula el cliente mirando el historial—
      y el buzón solo leía esa tabla. */
+  /* El signo de cada modo para las filas del buzón. QuiénGane no tiene icono
+     propio —su rótulo es dibujado y las piezas del juego viven en otra
+     carpeta—, así que lleva el de jugar. ⚠️ Con respaldo a propósito: una tabla
+     de modos escrita a mano es lo que este archivo tiene anotado media docena de
+     veces como el fallo que aparece a la primera que entra uno nuevo. */
+  var SIGNO_DE_MODO = { debate: 'debate', negociacion: 'negociacion', competencia: 'jugar' };
+
   var LO_QUE_ESPERA = {
     'sin-ver':         ['Tu resultado está listo', 'premio', 'Toca para verlo'],
     'falta-veredicto': ['Falta el resultado', 'curso', 'Toca para pedirlo otra vez'],
@@ -662,19 +669,46 @@
                   '" data-accion="guardar-ficha">Aceptar y entrar</button>' });
   }
 
+  /* LO QUE ESPERA SE VE COMO UN AVISO, porque está en el buzón (titular,
+     2026-09-21: «esta no se ve como una notificación»). Era una tarjeta de
+     historial —etiqueta, enunciado, las dos caras y el recuento— metida entre
+     filas de aviso: dos gramáticas distintas en la misma lista, y la de arriba
+     pareciendo que se había colado. Ahora lleva la misma fila que las demás
+     —signo, título y una línea— y lo que cambia es el signo, que es el del modo.
+     ⚠️ LO QUE NO LLEVA ES PAPELERA, y no es un olvido: esto no es correo, es una
+     TAREA sacada del historial. Quitarla no quitaría nada —la partida seguiría a
+     medias— y dejaría la campana apagada sobre algo que sigue pendiente, que es
+     justo lo que enseña a no mirarla. Lo que sí se puede es deshacerse de la
+     partida, y eso vive en su papelera del Historial, con su confirmación,
+     porque ahí sí se borra material. */
   function filaQueEspera(d) {
     var e = estadoDe(d);
     var q = LO_QUE_ESPERA[e] || ['', 'curso', ''];
-    var pie = e === 'en-curso'
-      ? (d.turnos_grabados || []).length + ' de ' + ((d.turnos || 3) * 2) +
-        ' intervenciones · tocá para seguir'
-      : q[2];
-    return '<button class="tarjeta aviso-veredicto" data-tono="' + q[1] + '" ' +
+    var pie = q[2];
+    if (e === 'en-curso') {
+      /* ⚠️ EN QUIÉNGANE NO HAY INTERVENCIONES QUE CONTAR: lo que hay son rondas
+         de minijuego, y la fila del historial no las trae. El recuento de
+         debate —`turnos × 2`— salía en una partida de juego diciendo «0 de 4
+         intervenciones», que es una cuenta de otro modo sobre algo que no las
+         tiene. Sin número: lo que hace falta saber es que se puede seguir. */
+      pie = d.modo === 'competencia'
+        ? 'Toca para seguir jugando'
+        : (d.turnos_grabados || []).length + ' de ' + ((d.turnos || 3) * 2) +
+          ' intervenciones · toca para seguir';
+    }
+    return '<button class="aviso aviso--nuevo" data-tono="' + q[1] + '" ' +
         'data-partida="' + esc(d.id) + '">' +
-        '<span class="aviso-veredicto__eti">' + esc(q[0]) + '</span>' +
-        '<span class="aviso-veredicto__tema">' + esc(d.enunciado || 'Sin tema') + '</span>' +
-        quienesJugaron(d) +
-        '<span class="chico suave">' + esc(pie) + '</span>' +
+        /* En QuiénGane el signo es la pieza DEL JUEGO —la misma que lleva su
+           tarjeta del historial y su retrato en «Antes de empezar»—, no el
+           bocadillo de debatir: aquí no se habla, se juega a algo concreto. */
+        '<span class="aviso__icono">' + (d.modo === 'competencia' && d.juego
+          ? piezaDelJuego(d.juego, 28)
+          : icono(SIGNO_DE_MODO[d.modo] || 'aviso', 28)) + '</span>' +
+        '<span class="aviso__texto">' +
+          '<span class="aviso__titulo">' + esc(q[0]) + '</span>' +
+          '<span class="aviso__cuerpo">' + esc(d.enunciado || 'Sin tema') + '</span>' +
+          '<span class="aviso__cuando">' + esc(pie) + '</span>' +
+        '</span>' +
       '</button>';
   }
 
@@ -2740,6 +2774,20 @@
      en `resultados`. Marcarla como «falta el resultado» pondría un aviso
      permanente sobre algo que no está roto. El día que exista el mediador, esta
      excepción se cae sola. */
+  /** ¿Este teléfono tiene rondas enviadas de esta partida de QuiénGane?
+      Es la misma llave que escribe la carcasa (`atwi.juego.<debate>`): en local
+      las rondas no llegan al servidor hasta el final, así que el único que sabe
+      si se jugó algo es el aparato donde se jugó. */
+  function hayProgresoLocal(id) {
+    if (!id) return false;
+    try {
+      var crudo = JSON.parse(localStorage.getItem('atwi.juego.' + id) || 'null');
+      if (!crudo || !crudo.hechas) return false;
+      return (crudo.hechas.propone || []).filter(Boolean).length +
+             (crudo.hechas.invitado || []).filter(Boolean).length > 0;
+    } catch (e) { return false; }
+  }
+
   function estadoDe(d) {
     var hechos = (d.turnos_grabados || []).length;
     var total = (d.turnos || 3) * 2;
@@ -2765,11 +2813,18 @@
         var vistoJ = miLadoEn(d) === 'invitado' ? d.resultado.visto_invitado : d.resultado.visto;
         return vistoJ ? 'terminada' : 'sin-ver';
       }
-      /* SIN RESULTADO ES «EN CURSO», también en local (titular, 2026-09-21:
-         «cada juego debe cargar su state exactamente donde iba»): el progreso
-         local vive en el teléfono y retomar la tarjeta lleva a la carcasa, no
-         a la sala de voz. Aquí decía `sin-empezar` para local y esa tarjeta
-         no llevaba a ningún sitio bueno. */
+      /* SIN RESULTADO, LO QUE DECIDE ES SI SE JUGÓ ALGO.
+         ⚠️ Aquí se devolvía «en curso» a secas, y eso convertía CUALQUIER
+         partida de QuiénGane abierta y abandonada en una «Partida sin terminar»
+         que reclamaba atención desde el buzón —lo vio el titular, con una de
+         cero rondas—. Una partida sin empezar no es una partida, es un intento:
+         la misma regla que tienen los otros dos modos con `!hechos`.
+         En LOCAL las rondas no viajan hasta el final, así que quien sabe si se
+         jugó algo es el teléfono: el progreso de `atwi.juego.<debate>`, que la
+         carcasa escribe al enviar cada ronda. Sin esa llave no se jugó nada.
+         En LÍNEA lo sabe el servidor y la fila del historial no lo trae, así que
+         se deja en curso: ahí hay un plazo corriendo y la partida está viva. */
+      if (!esEnLinea(d)) return hayProgresoLocal(d.id) ? 'en-curso' : 'sin-empezar';
       return 'en-curso';
     }
     if (d.en_linea && d.abandono && d.modo === 'negociacion') return 'abandonada';
@@ -2943,6 +2998,14 @@
     if (e === 'sin-ver' || e === 'falta-veredicto' || e === 'falta-acuerdo') return true;
     if (e !== 'en-curso' && e !== 'sin-empezar') return false;
     if (!esEnLinea(d)) return true;
+    /* ⚠️ EN QUIÉNGANE EN LÍNEA NO SE PUEDE SABER DESDE AQUÍ, así que no llama.
+       La cuenta de abajo mira `turnos_grabados`, que en este modo está siempre
+       vacío —lo que hay son rondas, y la fila del historial no las trae—, de
+       modo que daría SIEMPRE el lado que abre: media campana mintiendo. Es la
+       misma regla con la que se escribió la rama en línea de esta función:
+       encender de más es peor que no encender, porque lo que se aprende es a
+       ignorar el brillo. El resultado sin ver sí llama, y sale arriba. */
+    if (d.modo === 'competencia') return false;
 
     var yo = window.ATWI.auth && window.ATWI.auth.sesion();
     yo = yo && yo.user && yo.user.id;
@@ -4370,12 +4433,25 @@
     var n = window.ATWI.nube;
     var hayNube = Boolean(n && n.hay && n.hay());
     var conInv = hayNube && n.invitaciones ? n.invitaciones() : Promise.resolve([]);
-    /* Y EL HISTORIAL, si todavía no se trajo: «las partidas que esperan» salen
-       de él, y quien abre el buzón sin haber pasado por la pestaña Historial se
-       encontraba un buzón vacío con una partida esperándole. */
-    var conHist = (historial || !hayNube) ? Promise.resolve() :
-      n.historial(POR_TANDA).then(function (l) {
-        historial = l || [];
+    /* Y EL HISTORIAL, que es de donde salen «las partidas que esperan»: sin él,
+       quien abre el buzón sin haber pasado por la pestaña se encontraba un buzón
+       vacío con una partida esperándole.
+       ⚠️ SE VUELVE A PEDIR SIEMPRE, NO SOLO LA PRIMERA VEZ (titular, 2026-09-21:
+       «si se va a mostrar esta notificación debe verificarse si la partida sigue
+       existiendo y su estado»). Antes se pedía únicamente si nunca se había
+       traído, así que el buzón podía anunciar una partida borrada desde otro
+       aparato, o ya terminada, mientras la copia en memoria siguiera vieja. Es
+       la misma regla que la pestaña Historial tiene desde el 2026-09-19 —entrar
+       a una pantalla es el momento de ponerla al día— y el mismo motivo: un
+       borrado es el único cambio del que no llega noticia, porque una partida
+       que ya no está no puede salir en `novedades()`.
+       La lista vieja se sigue pintando mientras llega la nueva, y si la consulta
+       falla se queda lo que había: `historial()` marca el fallo en el array
+       (`.fallo`) justo para que un corte de red no vacíe la pantalla. */
+    var conHist = !hayNube ? Promise.resolve() :
+      n.historial(Math.max(POR_TANDA, (historial || []).length)).then(function (l) {
+        if (!l || l.fallo) return;
+        historial = l;
         anotarTanda(l, null, POR_TANDA);
         historialCaducado = false;
       }).catch(function () {});
@@ -6644,7 +6720,16 @@
     if (yaOlvidar) { olvidarPartida(yaOlvidar.dataset.olvidarYa, yaOlvidar); return; }
 
     var partida = e.target.closest('[data-partida]');
-    if (partida && !partida.disabled) { abrirPartida(partida.dataset.partida); return; }
+    if (partida && !partida.disabled) {
+      /* Si se tocó desde el buzón, el buzón se cierra: la sala se abre encima y
+         al volver de ella no tiene por qué seguir ahí —y lo que quedaba detrás
+         era una lista ya vieja, porque la tarea acaba de atenderse—. Es lo que
+         hace el aviso de más abajo desde el 2026-09-18; estas filas se le
+         añadieron después y se quedaron sin ello. */
+      if ($('#m-buzon') && !$('#m-buzon').hidden) cerrarModales(['m-buzon']);
+      abrirPartida(partida.dataset.partida);
+      return;
+    }
 
     /* UN AVISO QUE HABLA DE UNA PARTIDA LLEVA A ESA PARTIDA (titular, 2026-09-18:
        «la notificación de que es mi turno debe ser link directo a la partida en
