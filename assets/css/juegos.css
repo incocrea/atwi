@@ -198,6 +198,90 @@
 .jg-pista b { color: var(--jg-color); }
 
 /* ==========================================================================
+   LA REJILLA · la pieza que estrena «Calco» y heredan Dúos, Trazos, Bloques y
+   Puente (docs/10 §7). Casillas CUADRADAS por construcción: el lado lo mide el
+   juego contra el hueco real y lo pasa en `--celda`, y las dos direcciones usan
+   ese mismo número. Es la lección de las fichas de Cuenta —una casilla más
+   ancha que alta deforma lo que lleve dentro— aplicada desde el principio.
+   ========================================================================== */
+.jg-rejilla {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--celda));
+  grid-auto-rows: var(--celda);
+  gap: var(--hueco, 8px);
+  justify-content: center; align-content: center;
+}
+
+/* Una casilla de Calco. Vacía es un hueco con su marco punteado --dice «aquí
+   puede ir algo» sin pesar como una pieza--; puesta es la pieza de color. */
+.jg-cal {
+  border: 2px dashed var(--linea-fuerte); background: rgba(255, 255, 255, .45);
+  border-radius: var(--radio-chip); padding: 0;
+  display: grid; place-items: center;
+  transition: transform .12s, background .15s, border-color .15s;
+}
+.jg-cal:not(:disabled):active { transform: scale(.92); }
+.jg-cal--puesta { border-style: solid; border-color: transparent; background: transparent; }
+
+/* ⚠️ EL COLOR NO VA SOLO: CADA TONO LLEVA SU FORMA (docs/10 §10.6). Cuatro
+   colores que solo se distinguen por el tono dejan fuera a quien no los separa,
+   y este juego va entero de recordar cuál iba dónde. La forma se recorta con
+   `clip-path` sobre la misma pieza: ni un archivo más. */
+.jg-cal__forma {
+  display: block; width: 100%; height: 100%;
+  background: var(--tinta-color);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .18), inset 0 3px 0 rgba(255, 255, 255, .45);
+}
+/* ⚠️ SIEMPRE PREFIJADOS CON SU PIEZA, nunca `[style*="--tono:0"]` a secas: un
+   selector de atributo sin clase delante alcanza a CUALQUIER elemento de la app
+   que lleve esa variable en su `style`, y este proyecto ya pagó dos colisiones
+   de nombres (`.hoja`, `.opcion`). Aquí solo pintan una casilla o una tinta. */
+.jg-cal[style*="--tono:0"], .jg-tinta[style*="--tono:0"] { --tinta-color: #F2683C; }   /* coral  · círculo */
+.jg-cal[style*="--tono:1"], .jg-tinta[style*="--tono:1"] { --tinta-color: #2D9CDB; }   /* azul   · cuadrado */
+.jg-cal[style*="--tono:2"], .jg-tinta[style*="--tono:2"] { --tinta-color: #3AA655; }   /* verde  · triángulo */
+.jg-cal[style*="--tono:3"], .jg-tinta[style*="--tono:3"] { --tinta-color: #9B5DE5; }   /* morado · rombo */
+.jg-cal[style*="--tono:0"] > .jg-cal__forma,
+.jg-tinta[style*="--tono:0"] > .jg-cal__forma { border-radius: 50%; }
+.jg-cal[style*="--tono:1"] > .jg-cal__forma,
+.jg-tinta[style*="--tono:1"] > .jg-cal__forma { border-radius: var(--radio-chip); }
+.jg-cal[style*="--tono:2"] > .jg-cal__forma,
+.jg-tinta[style*="--tono:2"] > .jg-cal__forma { clip-path: polygon(50% 4%, 96% 92%, 4% 92%); }
+.jg-cal[style*="--tono:3"] > .jg-cal__forma,
+.jg-tinta[style*="--tono:3"] > .jg-cal__forma { clip-path: polygon(50% 2%, 98% 50%, 50% 98%, 2% 50%); }
+
+/* La paleta: los cuatro colores, y el puesto crece y se le enciende el aro POR
+   DENTRO --la lección del aro de la carita: por fuera no cabe en el hueco entre
+   vecinos y cualquier `overflow` lo recorta--. */
+.jg-paleta {
+  display: flex; justify-content: center; gap: var(--e-3);
+  margin-top: var(--e-4);
+}
+.jg-tinta {
+  width: var(--disco, 44px); height: var(--disco, 44px); padding: 6px;
+  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .55);
+  display: grid; place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+  transition: transform .12s, box-shadow .15s;
+}
+.jg-tinta--puesta {
+  transform: scale(1.12);
+  box-shadow: inset 0 0 0 3px var(--jg-color), 0 3px 8px rgba(0, 0, 0, .18);
+}
+
+/* ⚠️ CON MUESTRA EL NÚMERO SE APARTA (Calco): la cuenta atrás corre mientras el
+   patrón está a la vista, así que plantarla en el centro taparía justo lo que
+   hay que mirar. Arriba a la derecha y más chica; el halo la sigue despegando
+   del dibujo sin dibujar ninguna caja. */
+.jg-cuenta--muestra {
+  /* ⚠️ ABAJO Y NO EN UNA ESQUINA DE ARRIBA: ahí cae encima de la píldora del
+     reloj —medido, el «1» se montaba sobre el 0:30— y las dos cosas son
+     números, así que se leen como una sola. Debajo del tablero hay hueco libre
+     y el ojo ya está ahí cuando el patrón se esconde. */
+  place-items: end center; padding: 0 0 4px; font-size: 3rem;
+  color: var(--jg-color);
+}
+
+/* ==========================================================================
    «ANTES DE EMPEZAR»: el minijuego, entre los dos y el juez
    El mismo retrato que los otros tres —`perfil-duo`, con su halo— para que la
    mesa se lea de una pieza; solo que dentro del disco va la pegatina del juego
