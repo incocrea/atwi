@@ -795,6 +795,11 @@ window.ATWI = window.ATWI || {};
     /* El color de la sala es el del modo. Juicio va en coral y Pacto en menta,
        y no se mezclan nunca: es la única regla de color que el juego no negocia. */
     m.setAttribute('data-ctx', 'sala-' + P.modo);
+    /* En QuiénGane, el minijuego marca su propio fondo (`#m-partida[data-juego]`):
+       Choque tiene el suyo en sus tres pantallas —selección, choque y ver
+       resultado—. En los otros modos no aplica. */
+    if (P.modo === 'competencia' && P.juego) m.setAttribute('data-juego', P.juego);
+    else m.removeAttribute('data-juego');
   }
 
   /* EL ASPA RETROCEDE UN PASO ANTES DE SACAR A NADIE, y esto era un fallo de

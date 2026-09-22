@@ -13,6 +13,16 @@
   background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
               var(--competencia-tinte);
 }
+/* CHOQUE LLEVA SU PROPIO FONDO (titular, 2026-09-22) en sus tres pantallas
+   —selección, choque y ver resultado—, en vez del genérico de QuiénGane. Lo
+   marca `data-juego` en el modal; cubre la sala (selección + duelo) y también la
+   revelación, que pinta el suyo aparte. Va DESPUÉS de las dos reglas base y con
+   más peso (id + clase para la revelación) para ganarles. */
+#m-partida[data-juego="choque"],
+#m-partida[data-juego="choque"] .revelacion--competencia {
+  background: url(../img/fondos/game-choque.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
+}
 
 /* --- El armazón --------------------------------------------------------- */
 .jg { --jg-color: var(--ctx-acento, var(--competencia-oscuro)); }
@@ -129,10 +139,21 @@
 /* ==========================================================================
    «CUENTA», el juego de mentira: una cuadrícula de números
    ========================================================================== */
+/* ⚠️ CASILLAS CUADRADAS DE LADO FIJO, Y CENTRADAS (titular, 2026-09-22). Aquí
+   había `aspect-ratio: cols/filas` con `width: min(100%, --lado)` y
+   `max-height: 100%`, y ese tope es el que deformaba: cuando el alto mandaba,
+   recortaba la rejilla y las casillas dejaban de ser cuadradas —la ficha se
+   pinta con `background-size`, así que se estiraba para llenarlas—. El lado lo
+   calcula ahora el juego mirando el ancho Y el alto del hueco, así que la
+   rejilla entra entera por construcción y no hay nada que recortar.
+   `align-content: center` es lo que reparte el área de juego en el vertical
+   disponible, que es la otra mitad de lo que se pidió. */
 .jg-cuadricula {
-  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  gap: 8px; width: min(100%, var(--lado)); aspect-ratio: var(--cols) / var(--filas);
-  max-height: 100%;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), var(--celda));
+  grid-auto-rows: var(--celda);
+  gap: var(--hueco, 8px);
+  justify-content: center; align-content: center;
 }
 .jg-celda {
   font-family: var(--display); font-weight: 800; font-size: 1.6rem; color: var(--tinta);
@@ -445,6 +466,10 @@
   text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
 .jg-d__quien b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+/* El avatar del jugador, un poco más grande (titular, 2026-09-22): de los 26 px
+   de `avatar--mini` a 48, que es lo que pide una cabecera con el avatar como
+   pieza y no como icono de una píldora. */
+.jg-d__quien .avatar--mini { width: 48px; height: 48px; font-size: 1.5rem; }
 
 /* LAS FILAS SE REPARTEN UNIFORMEMENTE EN EL ALTO (titular, 2026-09-22): el
    contenedor crece hasta llenar lo que deja la cabecera (`flex: 1`) y `space-evenly`

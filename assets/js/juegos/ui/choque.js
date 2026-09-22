@@ -373,8 +373,9 @@
         var dice = f.gana === 'empate'
           ? (f.propone && f.invitado ? 'Mismo elemento: la ronda queda en tablas.' : 'Ronda sin jugar.')
           : (f.frase ? f.frase + '.' : 'Ronda para ' + quien[f.gana].nombre + '.');
+        /* Sin número de ronda (titular, 2026-09-22): la frase de cada choque ya
+           dice qué pasó y son pocas filas; el número no situaba nada. */
         return '<div class="jg-d__fila">' +
-            '<span class="jg-d__ronda">' + f.ronda + '</span>' +
             ladoHTML(f.propone, 'propone', f.gana) +
             '<span class="jg-d__chispa" aria-hidden="true"></span>' +
             ladoHTML(f.invitado, 'invitado', f.gana) +
