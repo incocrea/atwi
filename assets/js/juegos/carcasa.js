@@ -460,7 +460,12 @@
   function pintarJuego() {
     var ui = (J().ui || {})[C.P.juego];
     var area = $('#jg-tablero');
-    if (!ui || !area) {
+    /* ⚠️ Y SE COMPRUEBA QUE `pintar` SEA UNA FUNCIÓN, no solo que haya `ui`: un
+       juego de selección (`deUnaVez`) expone `seleccion` y NO `pintar`, así que
+       llegar aquí con uno de ésos reventaba con «ui.pintar is not a function» en
+       la cara de quien juega. Quien enruta es `comenzar`/`comenzarEnLinea`; esto
+       es la red para que el próximo olvido se lea en vez de romper. */
+    if (!ui || !area || typeof ui.pintar !== 'function') {
       if (area) area.innerHTML = '<p class="chico centrado">Este juego todavía no tiene tablero.</p>';
       return;
     }
@@ -774,6 +779,19 @@
         /* Si la ronda ya venía corriendo --se cerró la app a mitad-- el reloj
            del servidor ya descontó lo que pasó: aquí se arranca con eso menos. */
         C.transcurrido = r.transcurrido_ms || 0;
+        /* ⚠️ EL MISMO REPARTO QUE `comenzar()`, QUE AQUÍ FALTABA (titular,
+           2026-09-21: «ui.pintar is not a function» al cargar Choque en línea).
+           La rama local enruta por `deUnaVez` y `sinReloj`; ésta iba siempre a
+           `cuentaAtras(jugarRonda)`, y `jugarRonda` pinta con `ui.pintar` —que
+           un juego de selección como Choque no tiene: expone `ui.seleccion`—.
+           Por eso Choque funcionaba en local y reventaba en línea. */
+        if (C.m.deUnaVez) return montarSeleccion();
+        if (C.m.sinReloj) {
+          montarTablero(false);
+          jugarRonda();
+          if (C && C.transcurrido) C.t0 -= C.transcurrido;
+          return;
+        }
         cuentaAtras(function () {
           jugarRonda();
           if (C && C.transcurrido) C.t0 -= C.transcurrido;
