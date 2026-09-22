@@ -35,10 +35,12 @@
   var ESPERA_PESADAS = 2500;       /* si no hay `requestIdleCallback` */
   var MS_TOPE = 3000;              /* lo que se espera por una pieza, como mucho */
 
-  /* Las dos primeras hacen falta ya; las dos últimas son 21,7 MB que solo se ven
-     dentro de una partida. */
+  /* Las dos primeras hacen falta ya; las tres últimas solo se ven dentro de una
+     partida: las figuras son 21,7 MB, y `juegos` son las piezas de los
+     minijuegos de QuiénGane (0,7 MB), que se bajan al final porque solo las ve
+     quien abre ese modo. */
   var OLAS_PRONTO = ['nucleo', 'marca'];
-  var OLAS_LUEGO = ['fichas', 'figuras'];
+  var OLAS_LUEGO = ['fichas', 'figuras', 'juegos'];
 
   var manifiesto = null;
   var trabajador = null;

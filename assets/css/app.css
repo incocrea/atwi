@@ -5210,23 +5210,17 @@ body.app {
   background: var(--linea);
 }
 
-/* --- El alta de invitado: una sola ficha (mockup del titular, 2026-09-19) ----
-   Todo lo de la invitación vive dentro de la misma tarjeta translúcida —quién
-   invita, a qué, el tema, los campos y los términos— porque es UNA cosa. El
-   velo es el mismo recurso de las cartas del historial: deja pasar el fondo
-   dibujado en vez de taparlo con un blanco. */
+/* --- El alta de invitado: los elementos solos (titular, 2026-09-21) ---------
+   ⚠️ REVOCA la ficha del 2026-09-19: *«quita el contenedor cuadrado y el que
+   contiene el tema, deja los elementos solos»*. Lo que aquella agrupaba —que no
+   se leyera como tres pantallas apiladas— lo resuelve igual el ORDEN, y a
+   cambio metía dos velos uno dentro de otro sobre un fondo dibujado: la
+   tarjeta translúcida y, dentro, el globo del tema con su propio color. Dos
+   capas de blanco no dejan pasar el dibujo, lo enturbian.
+   `.invita-ficha` sigue existiendo como agrupador —centra lo de dentro y le da
+   su ritmo— y ya no es una caja: sin fondo, sin borde y sin relleno. */
 .portal--corto { margin-bottom: var(--e-4); }
-.invita-ficha {
-  padding: var(--e-5) var(--e-4) var(--e-4);
-  border-radius: var(--r-4);
-  background: rgba(255, 255, 255, .62);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  text-align: center;
-}
-@supports not ((backdrop-filter: blur(6px)) or (-webkit-backdrop-filter: blur(6px))) {
-  .invita-ficha { background: rgba(255, 255, 255, .86); }
-}
+.invita-ficha { text-align: center; }
 .invita-ficha__quien {
   margin: 0;
   font-family: var(--display); font-weight: 800;
@@ -5238,26 +5232,32 @@ body.app {
   font-size: var(--t-chico); color: var(--tinta-suave);
 }
 
-/* El tema, en el globo que le corresponde: es lo que alguien dijo. La escena
-   del modo asoma por la izquierda, medio fuera, como una pegatina pegada al
-   globo —el mismo recurso que el signo de los globos de sistema—. */
+/* ⚠️ Y LO QUE QUEDA DESNUDO SE SOSTIENE CON UN HALO BLANCO, no con una caja.
+   Es el recurso que ya usa el descargo de IA sobre el fondo dibujado
+   (`.aviso-ia--desnudo`): una sombra blanca ancha en las cuatro direcciones
+   —no una sombra de caída, que dejaría el texto flotando— separa la letra del
+   dibujo sin poner una pared encima. Los campos no lo necesitan: tienen su
+   propio fondo. */
+.invita-ficha__quien,
+.invita-ficha__que,
+.invita-tema__texto,
+.invita-ficha .campo-rotulado__eti,
+.invita-ficha .campo-rotulado__pista {
+  text-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 1px 2px rgba(255, 255, 255, .9);
+}
+
+/* El tema y la escena del modo, en fila y sin nada alrededor. Ya no hay globo
+   del que la escena pueda asomar, así que deja de ir medio fuera con posición
+   absoluta: son dos piezas al lado, y el texto ocupa lo que le queda. */
 .invita-tema {
-  position: relative;
+  display: flex; align-items: center; gap: var(--e-3);
   margin: var(--e-4) 0 var(--e-5);
-  padding-left: 30px;
 }
-.invita-tema__escena {
-  position: absolute; left: -14px; top: 50%;
-  width: 88px; height: auto; transform: translateY(-50%);
-  pointer-events: none;
-}
-.invita-tema__globo {
-  margin: 0;
-  padding: var(--e-4) var(--e-4) var(--e-4) 62px;
-  border-radius: var(--r-3);
-  background: color-mix(in srgb, var(--lavanda) 9%, #fff);
+.invita-tema__escena { width: 76px; height: auto; flex: none; pointer-events: none; }
+.invita-tema__texto {
+  margin: 0; min-width: 0;
   font-weight: 700; line-height: 1.35; color: var(--tinta);
-  text-align: center;
+  text-align: left;
 }
 .invita-ficha__campos { display: grid; gap: var(--e-4); text-align: left; }
 

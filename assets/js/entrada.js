@@ -724,16 +724,21 @@ window.ATWI = window.ATWI || {};
         '<div class="portal portal--corto">' +
           '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
         '</div>' +
-        /* TODO LO DE LA INVITACIÓN VA EN UNA SOLA FICHA (mockup del titular,
-           2026-09-19): quién invita, a qué, el tema, los dos campos y los
-           términos. Es UNA cosa —esta invitación— y partirla en bloques sueltos
-           sobre el fondo la leía como tres pantallas apiladas. El botón se
-           queda fuera, en el pie, que es donde vive en toda la app. */
+        /* ⚠️ SIN TARJETA Y SIN GLOBO (titular, 2026-09-21: «quita el contenedor
+           cuadrado y el que contiene el tema, deja los elementos solos»), que
+           REVOCA el mockup del 2026-09-19. Lo de entonces agrupaba para que no
+           se leyera como tres pantallas apiladas, y eso lo resuelve igual el
+           orden —quién invita, a qué, el tema, los campos— sin meter dos cajas
+           una dentro de otra: la ficha translúcida sobre el fondo dibujado y,
+           dentro, el globo del tema con SU otro fondo. Dos velos apilados
+           ensucian el dibujo que hay detrás en vez de dejarlo pasar.
+           `.invita-ficha` se queda como agrupador —centra y reparte— pero sin
+           caja: ni fondo, ni borde, ni relleno. */
         '<div class="invita-ficha">' +
           '<p class="invita-ficha__quien">' + esc(inv.propone_nombre || 'Alguien') + ' te invita a jugar</p>' +
           '<p class="invita-ficha__que">' + esc(nombreDeModo(modoInv)) + ' · ' +
             esc(String(inv.turnos || 2)) + (Number(inv.turnos) === 1 ? ' turno' : ' turnos') + ' cada uno</p>' +
-          /* EL TEMA VA EN UN GLOBO, CON LA ESCENA DEL MODO AL LADO. Y esas tres
+          /* EL TEMA, CON LA ESCENA DEL MODO AL LADO. Y esas tres
              piezas son las que se quedaron huérfanas cuando el detalle del tema
              salió del flujo (2026-09-17): siguen publicadas y en el manifiesto,
              así que esto no baja un byte nuevo y deja de haber arte pagada que
@@ -743,7 +748,7 @@ window.ATWI = window.ATWI || {};
             ? '<div class="invita-tema">' +
                 '<img class="invita-tema__escena" src="../assets/img/iconos/escena-' + esc(modoInv) + '.png" ' +
                   'alt="" width="88" height="88">' +
-                '<p class="invita-tema__globo">«' + esc(inv.enunciado) + '»</p>' +
+                '<p class="invita-tema__texto">«' + esc(inv.enunciado) + '»</p>' +
               '</div>'
             : '') +
           '<div class="invita-ficha__campos">' +
