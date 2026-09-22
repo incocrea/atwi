@@ -4025,10 +4025,19 @@ window.ATWI = window.ATWI || {};
      esta misma sala —mismo modal, misma cabecera, mismo pie— y cuando termina
      devuelve la fila de `resultados`, que se revela con la ceremonia de siempre.
      ========================================================================== */
+  /* ⚠️ CON REPARTO MIXTO NO HAY «EL» JUEGO (pivote del titular, 2026-09-22):
+     con el nombre del primero, una partida de tres juegos distintos se
+     anunciaría como si fuera de ése, que es la app afirmando algo falso sobre
+     la partida. Si todas las rondas llevan el mismo, su nombre; si no, los tres
+     en orden, que es lo que se va a jugar. */
   function nombreDelJuego() {
     var J = window.ATWI.juegos;
-    var m = J && P && P.juego ? J.juego(P.juego) : null;
-    return (m && m.nombre) || 'Minijuego';
+    if (!J || !P) return 'Minijuego';
+    var l = (P.juegos && P.juegos.length) ? P.juegos : (P.juego ? [P.juego] : []);
+    var nombre = function (id) { var m = J.juego(id); return (m && m.nombre) || 'Minijuego'; };
+    if (!l.length) return 'Minijuego';
+    if (l.every(function (x) { return x === l[0]; })) return nombre(l[0]);
+    return l.map(nombre).join(' · ');
   }
 
   function arrancarJuego() {

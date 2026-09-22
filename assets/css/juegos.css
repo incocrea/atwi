@@ -623,3 +623,11 @@
   }
   .jg-d__lado--gana .jg-el__nombre { animation: none; background: var(--jg-gana); }
 }
+
+/* El selector de minijuego, una fila por ronda (pivote, 2026-09-22): con tres
+   rondas son tres grupos, y sin el rótulo no se sabría cuál es cuál. */
+.jg-selector-ronda + .jg-selector-ronda { margin-top: var(--e-2); }
+.jg-selector-ronda__t {
+  display: block; font-size: var(--t-chico); font-weight: 800;
+  color: var(--tinta-suave); margin-bottom: 4px;
+}

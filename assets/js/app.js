@@ -893,14 +893,34 @@
       /* EL MINIJUEGO, PARA PROBARLO SIN MONTAR UNA PARTIDA (titular,
          2026-09-22). Lo único que se elige es a qué y cuántas rondas; el resto
          —las fichas, el juez, la mesa— se sortea en cada tirada, que es lo que
-         pidió: «solo defino juego y número de rondas y el resto randomízalo». */
-      juego: 'cuenta',
+         pidió: «solo defino juego y número de rondas y el resto randomízalo».
+         ⚠️ Y DESDE EL PIVOTE SE ELIGE POR RONDA: `repartoJuego` trae uno por
+         cada una, así que el probador puede montar la partida mixta —que es
+         justo el caso que no se puede mirar de otra manera— sin abrir una
+         partida de verdad. */
+      repartoJuego: ['cuenta', 'cuenta'],
       rondasJuego: 2,
       /* Lo que cada juego deja configurar, por juego: `{ cuenta: { set: '3' } }`.
          Se guarda por separado para que cambiar de juego y volver conserve lo
          que se había elegido en cada uno. */
       ajustes: {}
     };
+  }
+
+  /* ⚠️ EL REPARTO SE CUADRA CON LAS RONDAS EN LOS DOS SITIOS: al leer lo
+     guardado --que puede ser de cuando había otro número-- y al cambiar el
+     número aquí mismo. Con el cuadre solo en el saneado, subir de 2 a 3 rondas
+     dejaba la tercera sin fila de chips y sin juego: lo vi al probarlo. */
+  function cuadrarReparto(e) {
+    var lista = juegosDelProbador();
+    var n = e.rondasJuego;
+    var l = Array.isArray(e.repartoJuego) ? e.repartoJuego.slice(0, n) : [];
+    var pri = lista[0] ? lista[0].clave : 'cuenta';
+    for (var i = 0; i < n; i++) {
+      l[i] = enLista(lista, l[i], null) || l[i - 1] || pri;
+    }
+    e.repartoJuego = l;
+    return e;
   }
 
   /** Lo que el juego `id` deja configurar en el probador, o lista vacía. */
@@ -949,11 +969,13 @@
       publico: MESAS_PROBADOR.some(function (m) { return m.clave === e.publico; })
         ? e.publico : base.publico,
       juez: window.ATWI.esJuez(e.juez) ? e.juez : base.juez,
-      /* El juego guardado puede ser de una versión que ya no lo trae —o de antes
-         de que existiera este control—: si no está cargado, al de fábrica. */
-      juego: enLista(juegosDelProbador(), e.juego, base.juego),
       rondasJuego: [1, 2, 3].indexOf(Number(e.rondasJuego)) >= 0
         ? Number(e.rondasJuego) : base.rondasJuego,
+      /* ⚠️ EL REPARTO SE CUADRA CON LAS RONDAS, siempre: lo guardado puede ser
+         de cuando había otro número, y un reparto más corto dejaría una ronda
+         sin juego --y uno más largo, un juego que nadie juega--. El relleno usa
+         el último elegido, que es lo que alguien espera al subir de 2 a 3. */
+      repartoJuego: Array.isArray(e.repartoJuego) ? e.repartoJuego.slice() : base.repartoJuego.slice(),
       /* Lo guardado puede traer ajustes de un juego que ya no está o de una
          opción que se quitó: se copia solo lo que hoy existe. */
       ajustes: (function () {
@@ -991,7 +1013,7 @@
     var crudo = null;
     try { crudo = JSON.parse(localStorage.getItem(CLAVE_PROBADOR) || 'null'); }
     catch (e) { crudo = null; }
-    probador = probadorSaneado(crudo);
+    probador = cuadrarReparto(probadorSaneado(crudo));
     return probador;
   }
 
@@ -1109,23 +1131,35 @@
             '<p class="chico tenue" style="margin:2px 0 6px">Para «Reproducir un minijuego». ' +
               'Las fichas, el juez y la mesa se sortean en cada tirada, y no queda ' +
               'nada en el historial.</p>' +
-            chipsProbador('juego', juegosDelProbador(), e.juego) +
-            '<div style="margin-top:var(--e-2)">' +
-              chipsProbador('rondasJuego', [{ clave: '1', nombre: '1 ronda' },
-                                            { clave: '2', nombre: '2 rondas' },
-                                            { clave: '3', nombre: '3 rondas' }],
-                            String(e.rondasJuego)) +
-            '</div>' +
-            /* LO QUE EL JUEGO ELEGIDO DEJA CONFIGURAR. Sale de `ui.ajustes` del
-               propio juego, así que el probador no sabe qué son: pinta lo que
-               haya. Un juego sin ajustes no añade nada. */
-            ajustesDelJuego(e.juego).map(function (a) {
-              return '<div style="margin-top:var(--e-3)">' +
-                '<span class="pb-ficha__t">' + esc(a.nombre) + '</span>' +
-                chipsProbador('ajuste:' + a.clave, a.opciones,
-                              ((e.ajustes || {})[e.juego] || {})[a.clave] || '') +
+            chipsProbador('rondasJuego', [{ clave: '1', nombre: '1 ronda' },
+                                          { clave: '2', nombre: '2 rondas' },
+                                          { clave: '3', nombre: '3 rondas' }],
+                          String(e.rondasJuego)) +
+            /* A QUÉ SE JUEGA CADA RONDA. Una fila por ronda, que es como se
+               reparte de verdad desde el pivote; con una sola ronda el rótulo
+               sobra --no hay nada que distinguir-- y va la fila a secas. */
+            e.repartoJuego.map(function (id, i) {
+              return '<div style="margin-top:var(--e-2)">' +
+                (e.repartoJuego.length > 1
+                  ? '<span class="pb-ficha__t">Ronda ' + (i + 1) + '</span>' : '') +
+                chipsProbador('juegoRonda:' + i, juegosDelProbador(), id) +
               '</div>';
             }).join('') +
+            /* LO QUE CADA JUEGO DEL REPARTO DEJA CONFIGURAR. Sale de
+               `ui.ajustes` del propio juego, así que el probador no sabe qué
+               son: pinta lo que haya. Un juego sin ajustes no añade nada, y uno
+               repetido en dos rondas se pinta una sola vez --su ajuste es del
+               juego, no de la ronda--. */
+            e.repartoJuego.filter(function (id, i) { return e.repartoJuego.indexOf(id) === i; })
+              .map(function (id) {
+                return ajustesDelJuego(id).map(function (a) {
+                  return '<div style="margin-top:var(--e-3)">' +
+                    '<span class="pb-ficha__t">' + esc(a.nombre) + '</span>' +
+                    chipsProbador('ajuste:' + id + ':' + a.clave, a.opciones,
+                                  ((e.ajustes || {})[id] || {})[a.clave] || '') +
+                  '</div>';
+                }).join('');
+              }).join('') +
           '</div>'
         : '') +
 
@@ -1221,7 +1255,9 @@
 
     var mesa = {
       modo: 'competencia',
-      juego: e.juego,
+      /* El reparto manda; `juego` es el primero, como en la base. */
+      juego: e.repartoJuego[0],
+      juegos: e.repartoJuego.slice(),
       rondas: e.rondasJuego,
       quien: [{ nombre: 'Uno', avatar: unaCara, color: unoDe(colores) },
               { nombre: 'Dos', avatar: otraCara, color: unoDe(colores) }],
@@ -4696,9 +4732,38 @@
     try { j = localStorage.getItem(JUEGO); } catch (e) {}
     return juegosDisponibles().indexOf(j) !== -1 ? j : (juegosDisponibles()[0] || null);
   }
-  function recordarJuego(j) {
-    propuesta.juego = j;
-    try { localStorage.setItem(JUEGO, j); } catch (e) {}
+  /* ⚠️ SE RECUERDA EL REPARTO ENTERO, no un juego (pivote del titular,
+     2026-09-22). Quien montó «Choque, Cuenta, Choque» no tiene que volver a
+     montarlo cada partida, igual que el juez o la ficha del invitado. La clave
+     vieja se sigue leyendo: quien tenía uno guardado lo encuentra en todas las
+     rondas, que es exactamente la partida que jugaba antes. */
+  var REPARTO = 'atwi-juegos';
+  function repartoRecordado(rondas) {
+    var l = null;
+    try { l = JSON.parse(localStorage.getItem(REPARTO) || 'null'); } catch (e) {}
+    if (!Array.isArray(l)) l = [juegoRecordado()];
+    return cuadrarRepartoDe(l, rondas);
+  }
+  /* Uno por ronda: lo que sobra se corta y lo que falta hereda el anterior, que
+     es lo que alguien espera al subir de 2 a 3 rondas. */
+  function cuadrarRepartoDe(lista, rondas) {
+    var hay = juegosDisponibles();
+    var n = Math.max(1, Number(rondas) || 1);
+    var l = (Array.isArray(lista) ? lista : []).slice(0, n);
+    for (var i = 0; i < n; i++) {
+      if (hay.indexOf(l[i]) === -1) l[i] = l[i - 1] || hay[0] || null;
+    }
+    return l;
+  }
+  function recordarReparto(l) {
+    propuesta.juegos = l.slice();
+    /* `juego` es el primero, derivado, como en la base: los textos de la
+       invitación y el chip de la tarjeta hablan en singular. */
+    propuesta.juego = l[0];
+    try {
+      localStorage.setItem(REPARTO, JSON.stringify(l));
+      localStorage.setItem(JUEGO, l[0]);
+    } catch (e) {}
   }
   /* La pegatina del juego: `juego-<id>.webp` de la plancha. «Cuenta» todavía
      no tiene la suya --está pedida-- y mientras tanto lleva la diana. */
@@ -4713,14 +4778,20 @@
     return { id: id, nombre: (m && m.nombre) || 'Minijuego', como: (m && m.como) || '' };
   }
   function bloqueDelJuego() {
-    var j = datosDelJuego(propuesta.juego);
+    var l = propuesta.juegos || [propuesta.juego];
+    var mismo = l.every(function (x) { return x === l[0]; });
+    var j = datosDelJuego(l[0]);
+    /* MIXTO SE DICE Y SE ENSEÑA: con el nombre de uno solo, una partida de tres
+       juegos distintos se anunciaría como si fuera de ése. El retrato es el de
+       la primera ronda --el que abre-- y debajo va el orden. */
     return perfilEnDuo({
       accion: 'elegir-juego',
       retrato: '<span class="avatar avatar--duelo jg-retrato-juego">' + piezaDelJuego(j.id, 64) + '</span>',
-      quien: j.nombre,
-      como: 'El minijuego del reto',
+      quien: mismo ? j.nombre : 'Mixto',
+      como: mismo ? 'El minijuego del reto'
+                  : l.map(function (id) { return datosDelJuego(id).nombre; }).join(' · '),
       tocar: juegosDisponibles().length > 1 ? 'Cambiar' : 'Único por ahora',
-      etiqueta: 'Elegir el minijuego'
+      etiqueta: 'Elegir los minijuegos'
     });
   }
   function refrescarJuego() {
@@ -4731,16 +4802,25 @@
      deja puesto y cierra: no hay nada más que decidir ahí dentro. */
   function abrirJuego(disparador) {
     var lista = juegosDisponibles();
-    var cuerpo = '<div class="jg-selector" role="group" aria-label="Minijuego">' +
-      lista.map(function (id) {
-        var j = datosDelJuego(id);
-        return '<button type="button" class="jg-selector__op" data-juego="' + esc(id) + '"' +
-          ' aria-pressed="' + (id === propuesta.juego) + '">' +
-          piezaDelJuego(id, 56) + '<span>' + esc(j.nombre) + '</span></button>';
-      }).join('') +
-    '</div>';
-    abrirGlobo(disparador, { titulo: '¿A qué juegan?' },
-      { tinte: 'competencia', signo: 'ayuda-azul', etiqueta: 'Elegir el minijuego', cuerpo: cuerpo });
+    var puesto = propuesta.juegos || [propuesta.juego];
+    /* UNA FILA POR RONDA (pivote del titular, 2026-09-22: «se podrá seleccionar
+       un minijuego diferente para cada ronda»). Con una sola el rótulo sobra:
+       no hay nada que distinguir. */
+    var cuerpo = puesto.map(function (id, i) {
+      return '<div class="jg-selector-ronda">' +
+        (puesto.length > 1 ? '<span class="jg-selector-ronda__t">Ronda ' + (i + 1) + '</span>' : '') +
+        '<div class="jg-selector" role="group" aria-label="Minijuego de la ronda ' + (i + 1) + '">' +
+          lista.map(function (x) {
+            var j = datosDelJuego(x);
+            return '<button type="button" class="jg-selector__op" data-juego="' + esc(x) + '"' +
+              ' data-juego-ronda="' + i + '" aria-pressed="' + (x === id) + '">' +
+              piezaDelJuego(x, 56) + '<span>' + esc(j.nombre) + '</span></button>';
+          }).join('') +
+        '</div>' +
+      '</div>';
+    }).join('');
+    abrirGlobo(disparador, { titulo: puesto.length > 1 ? '¿A qué juegan cada ronda?' : '¿A qué juegan?' },
+      { tinte: 'competencia', signo: 'ayuda-azul', etiqueta: 'Elegir los minijuegos', cuerpo: cuerpo });
   }
 
   /* EL ULTIMO JUEZ SE RECUERDA, igual que la ficha del invitado. Quien
@@ -5378,7 +5458,9 @@
     /* Y EL MINIJUEGO, en QuiénGane: el recordado, o el primero que haya. Al
        abrir y no al repintar, por lo mismo que el juez. */
     var esJuego = propuesta.modo === 'competencia';
-    if (esJuego && (!repintando || !propuesta.juego)) propuesta.juego = juegoRecordado();
+    if (esJuego && (!repintando || !propuesta.juegos)) {
+      recordarReparto(repartoRecordado(propuesta.turnos));
+    }
 
     /* Con quién se ha jugado, para el globo de invitar. Se pide al ENTRAR y no
        al abrir el globo: cuando se abra ya tiene que saberse si los hay (de eso
@@ -5510,7 +5592,7 @@
          retrato, mismo ancho, misma rejilla de dos columnas. El orden es el de
          siempre —a qué se juega y quién lo juzga—, solo que ahora leído de
          izquierda a derecha en vez de de arriba abajo. */
-      (esJuego && propuesta.juego
+      (esJuego && propuesta.juegos && propuesta.juegos[0]
         ? '<div class="duo prep__bloque">' + bloqueDelJuego() + pintarJuez() + '</div>'
         /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
            juzga es de la partida y los turnos son el último parámetro —cuánto
@@ -6052,7 +6134,8 @@
       posturas: [fichaMia, fichaSuya],
       abre: abre,                // índice sobre esa lista: quién habla primero
       juez: propuesta.juez || juezPorDefecto(),
-      juego: esJuego ? propuesta.juego : null
+      juego: esJuego ? propuesta.juego : null,
+      juegos: esJuego ? (propuesta.juegos || null) : null
     });
   }
 
@@ -6102,6 +6185,7 @@
       donde: 'linea', correo: porApodo ? '' : quien, invitadoPerfil: propuesta.invitadoPerfil || null,
       tema: t, modo: propuesta.modo, turnos: turnos, juez: propuesta.juez || juezPorDefecto(),
       juego: propuesta.modo === 'competencia' ? propuesta.juego : null,
+      juegos: propuesta.modo === 'competencia' ? (propuesta.juegos || null) : null,
       yo: { nombre: datos.limpiarNombre(p.nombre), avatar: p.avatar, color: p.avatarBorde }
     }).then(function (id) {
       if (b) { b.disabled = false; b.textContent = 'Enviar invitación'; }
@@ -6883,6 +6967,14 @@
         if (Number(x.dataset.turnos) === propuesta.turnos) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
+      /* ⚠️ EN QUIÉNGANE, LAS RONDAS Y EL REPARTO SON EL MISMO NÚMERO MIRADO POR
+         DOS SITIOS: subir de 2 a 3 tiene que dar juego a la tercera, o la base
+         rechazaría la partida entera («el reparto tiene 2 juegos y la partida 3
+         rondas»). Se cuadra aquí, que es donde cambia. */
+      if (propuesta.modo === 'competencia') {
+        recordarReparto(cuadrarRepartoDe(propuesta.juegos || [propuesta.juego], propuesta.turnos));
+        refrescarJuego();
+      }
       return;
     }
 
@@ -6910,7 +7002,22 @@
     /* El minijuego elegido en su globo: queda puesto, se recuerda y el globo
        se cierra —no hay nada más que decidir ahí dentro—. */
     var jg = e.target.closest('.jg-selector [data-juego]');
-    if (jg) { recordarJuego(jg.dataset.juego); refrescarJuego(); cerrarGlobo(); return; }
+    if (jg) {
+      var l = (propuesta.juegos || [propuesta.juego]).slice();
+      l[Number(jg.dataset.juegoRonda) || 0] = jg.dataset.juego;
+      recordarReparto(l);
+      refrescarJuego();
+      /* ⚠️ CON VARIAS RONDAS EL GLOBO NO SE CIERRA AL PRIMER TOQUE: quien está
+         montando un reparto tiene que poder elegir las tres seguidas, y cerrar
+         en cada una obligaría a reabrirlo dos veces. Con una sola ronda no hay
+         nada más que decidir ahí dentro y se cierra, como antes. */
+      if (l.length === 1) { cerrarGlobo(); return; }
+      [].forEach.call(document.querySelectorAll('.jg-selector [data-juego-ronda="' +
+        jg.dataset.juegoRonda + '"]'), function (b) {
+        b.setAttribute('aria-pressed', String(b.dataset.juego === jg.dataset.juego));
+      });
+      return;
+    }
 
     var pj = e.target.closest('[data-personaje]');
     if (pj && !pj.disabled) {
@@ -6942,15 +7049,28 @@
       var campo = pbo.dataset.pb;
       if (campo === 'contesta') estadoProbador().contesta[estadoProbador().modo] = pbo.dataset.val;
       /* Las rondas son un número: guardarlas como la cadena del chip dejaría
-         `turnos: '2'` en la mesa, y la carcasa compara con `<` contra números. */
-      else if (campo === 'rondasJuego') estadoProbador().rondasJuego = Number(pbo.dataset.val);
-      /* Los ajustes se guardan POR JUEGO, para que cambiar de juego y volver
-         conserve lo que cada uno tenía puesto. */
+         `turnos: '2'` en la mesa, y la carcasa compara con `<` contra números.
+         El reparto lo cuadra `probadorSaneado` en el repintado siguiente: la
+         ronda que aparece hereda el juego de la anterior. */
+      else if (campo === 'rondasJuego') {
+        estadoProbador().rondasJuego = Number(pbo.dataset.val);
+        cuadrarReparto(estadoProbador());
+      }
+      /* A qué se juega UNA ronda concreta. */
+      else if (campo.indexOf('juegoRonda:') === 0) {
+        estadoProbador().repartoJuego[Number(campo.slice(11))] = pbo.dataset.val;
+      }
+      /* Los ajustes se guardan POR JUEGO --y el juego va en la propia clave del
+         chip-- para que cambiar de juego y volver conserve lo que cada uno tenía
+         puesto. ⚠️ Antes se colgaban de `st.juego`, el juego ELEGIDO, y con un
+         reparto mixto eso ya no existe: el ajuste de Cuenta se habría guardado
+         bajo lo que dijera un control que ya no está. */
       else if (campo.indexOf('ajuste:') === 0) {
+        var trozos = campo.split(':');   // ajuste:<juego>:<clave>
         var st = estadoProbador();
         st.ajustes = st.ajustes || {};
-        st.ajustes[st.juego] = st.ajustes[st.juego] || {};
-        st.ajustes[st.juego][campo.slice(7)] = pbo.dataset.val;
+        st.ajustes[trozos[1]] = st.ajustes[trozos[1]] || {};
+        st.ajustes[trozos[1]][trozos[2]] = pbo.dataset.val;
       }
       else estadoProbador()[campo] = pbo.dataset.val;
       /* Cambiar de modo cambia la lista de finales, y el que estaba puesto
