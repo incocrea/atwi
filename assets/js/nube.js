@@ -429,11 +429,16 @@ window.ATWI = window.ATWI || {};
     if (!hayNube()) return Promise.resolve(null);
     return rpc('estado_del_juego', { p_debate: debate }).catch(function (e) { apuntar('estado_del_juego: ' + e.message); return null; });
   }
-  /** En línea: el invitado (o el host, a la vuelta) propone otro juego. */
-  function contraproponerJuego(debate, juego, avatar, color) {
+  /* En línea: el invitado (o el host, a la vuelta) propone OTRO REPARTO.
+     ⚠️ SE NEGOCIA LA LISTA ENTERA y no un juego suelto (titular, 2026-09-22):
+     desde el pivote cada ronda tiene el suyo, así que aceptar «el juego» sin
+     más dejaría sin contestar las otras dos rondas. `juegos` puede ser una
+     lista o un solo id --entonces es ése en todas las rondas--. */
+  function contraproponerJuego(debate, juegos, avatar, color) {
     if (!hayNube()) return Promise.reject(new Error('sin sesión'));
-    return rpc('contraproponer_juego', { p_debate: debate, p_juego: juego,
-                                         p_avatar: avatar || null, p_color: color || null });
+    var l = Array.isArray(juegos) ? juegos : [juegos];
+    return rpc('contraproponer_reparto', { p_debate: debate, p_juegos: l,
+                                           p_avatar: avatar || null, p_color: color || null });
   }
   /** Acepto el juego que el otro propuso. */
   function aceptarJuego(debate) {
@@ -579,7 +584,14 @@ window.ATWI = window.ATWI || {};
     /* QUIÉNGANE LLEVA SU JUEGO (0076): el CHECK de la base exige que una partida
        de competencia lo traiga, y que las otras no. En línea es la propuesta del
        host, que el invitado acepta o contesta con otro. */
-    if (cuerpo.modo === 'competencia') cuerpo.juego = p.juego || null;
+    /* ⚠️ Y EL REPARTO ES LO QUE MANDA DESDE EL PIVOTE (0084): uno por ronda.
+       `juego` se sigue mandando porque los textos de la invitación hablan en
+       singular, pero la base lo DERIVA del reparto, así que si los dos se
+       separaran ganaría el reparto. */
+    if (cuerpo.modo === 'competencia') {
+      cuerpo.juego = p.juego || null;
+      if (p.juegos && p.juegos.length) cuerpo.juegos = p.juegos;
+    }
     if (enLinea) {
       cuerpo.en_linea = true;
       /* Por cuenta (apodo, resuelto a su id) o por correo: uno de los dos. La
@@ -843,7 +855,7 @@ window.ATWI = window.ATWI || {};
       'oculta_propone,oculta_invitado,' +
       /* QuiénGane (0076): qué minijuego, y de quién es la propuesta de juego
          vigente mientras se negocia en línea. Nulos en los otros modos. */
-      'juego,juego_de,' +
+      'juego,juegos,juego_de,' +
       'abre_lado,abogado_propone,abogado_invitado,' +
       'propone_nombre,propone_avatar,propone_color,' +
       'invitado_nombre,invitado_avatar,invitado_color,' +

@@ -107,6 +107,32 @@
     return e;
   }
 
+  /* ⚠️ UNA RONDA, NO LA PARTIDA (pivote del titular, 2026-09-22: «se podrá
+     seleccionar un minijuego diferente para cada ronda»). Antes Choque resolvía
+     la partida entera --`veredicto(rondas, …)`-- y eso solo vale si TODAS las
+     rondas son suyas. Ahora la ronda 2 puede ser de Cuenta, así que lo que este
+     juego sabe decidir es SU ronda y el recuento lo lleva `comun`.
+     Devuelve lo que la pantalla de resultados necesita: quién ganó, qué puso
+     cada uno y la frase del cruce. */
+  function ronda(p, q) {
+    var eA = elementoDe(p);
+    var eB = elementoDe(q);
+    var gana = 'empate';
+    var dicho = '';
+    if (eA === -1 && eB === -1) gana = 'empate';
+    else if (eB === -1) gana = 'propone';
+    else if (eA === -1) gana = 'invitado';
+    else if (eA === eB) gana = 'empate';
+    else if (vence(eA, eB)) { gana = 'propone'; dicho = frase(eA, eB); }
+    else { gana = 'invitado'; dicho = frase(eB, eA); }
+    return {
+      gana: gana,
+      propone: eA === -1 ? null : { elemento: eA },
+      invitado: eB === -1 ? null : { elemento: eB },
+      frase: dicho
+    };
+  }
+
   function veredicto(rondas, dePropone, deInvitado) {
     var filas = [];
     var a = 0, b = 0;
@@ -154,7 +180,6 @@
     topeS: 300,
     sinReloj: true,
     sinGemelo: true,
-    sinNiveles: true,
     rotulo: true,
     niveles: [{}, {}, {}],
     generar: generar,
@@ -165,6 +190,9 @@
     marca: marca,
     gemelo: gemelo,
     resolver: resolver,
+    /* `ronda` es lo que usa `comun.veredicto` desde el pivote; `veredicto`
+       se queda para el caso de una partida entera de Choque. */
+    ronda: ronda,
     veredicto: veredicto,
     /* Lo que la pantalla necesita del círculo, sin copiarlo: el orden, quién
        vence a quién y la frase de cada cruce. */

@@ -78,6 +78,62 @@
   function jugador(lado) {
     return C.P.jugadores[lado === 'invitado' ? 1 : 0];
   }
+
+  /* ⚠️ EL JUEGO ES DE LA RONDA, NO DE LA PARTIDA (pivote del titular,
+     2026-09-22). `C.reparto` trae uno por ronda; una partida de antes del
+     pivote --o del probador-- trae uno solo, y entonces su reparto es ése
+     repetido.
+     Y el módulo se DERIVA en vez de guardarse: `M()` se fijaba al arrancar, y
+     con un juego por ronda habría que acordarse de actualizarlo en los cinco
+     sitios donde cambia `C.ronda`. Una lista escrita a mano se queda coja a la
+     primera que entra --es la lección que este proyecto tiene anotada cuatro
+     veces--, así que aquí no hay lista: se pregunta. */
+  function juegoDeRonda(r) {
+    var l = C.reparto || [];
+    return l[Math.min(Math.max(1, r), l.length) - 1] || C.P.juego;
+  }
+  function juegoActual() { return juegoDeRonda(C.ronda || 1); }
+  function M() { return J().juego(juegoActual()) || C.mBase; }
+
+  /* ⚠️ LOS AJUSTES DEL PROBADOR SON POR JUEGO, y con reparto mixto eso deja de
+     ser un detalle: `P.ajustes` es un MAPA `{ <juego>: {...} }` y cada tablero
+     recibe el suyo. Si se le pasara el mapa entero, Cuenta leería `ajustes.set`
+     como undefined --el suyo está bajo `ajustes.cuenta.set`-- y el set fijado se
+     perdería en cuanto la partida tuviera dos juegos. */
+  function ajustesDelJuego() {
+    var todo = (C.P && C.P.ajustes) || {};
+    return todo[juegoActual()] || {};
+  }
+
+  /* ⚠️ UN JUEGO «DE UNA VEZ» RESUELVE SU TRAMO, NO LA PARTIDA ENTERA. Choque
+     pide los elementos de varias rondas en una sola pantalla, y hasta el pivote
+     eso eran TODAS las que quedaban --el juego era uno solo--. Con reparto
+     mixto, pedirle a Choque los elementos de una ronda que se juega a Cuenta
+     sería jugar por adelantado un juego que no es el suyo. Se le da el tramo
+     CONSECUTIVO que sí es suyo desde la ronda actual. */
+  /* Lo que cubre ESTA pantalla, dicho en palabras. ⚠️ Antes decía siempre «N
+     rondas» --el juego era uno solo, así que su selección cubría la partida
+     entera-- y con reparto mixto eso mentía: una pantalla de Choque que resuelve
+     la ronda 1 de 3 anunciaba tres. */
+  /* Lo mismo dicho para la ficha de la presentación, donde se habla en primera
+     persona: «Tus 3 rondas» solo es verdad si esta pantalla las cubre las tres. */
+  function tituloDelTramo() {
+    var d = C.ronda || 1, h = finDelTramo();
+    if (d === h) return C.rondas === 1 ? 'Tu ronda' : 'Ronda ' + d + ' de ' + C.rondas;
+    if (d === 1 && h === C.rondas) return 'Tus ' + C.rondas + ' rondas';
+    return 'Tus rondas ' + d + ' a ' + h;
+  }
+  function rondasDelTramo() {
+    var d = C.ronda || 1, h = finDelTramo();
+    if (d === 1 && h === C.rondas) return C.rondas === 1 ? '1 ronda' : C.rondas + ' rondas';
+    if (d === h) return 'Ronda ' + d + '/' + C.rondas;
+    return 'Rondas ' + d + '-' + h + '/' + C.rondas;
+  }
+  function finDelTramo() {
+    var id = juegoActual(), r = C.ronda || 1;
+    while (r < C.rondas && juegoDeRonda(r + 1) === id) r++;
+    return r;
+  }
   function elOtroLado(lado) { return lado === 'invitado' ? 'propone' : 'invitado'; }
 
   function mmss(ms) {
@@ -110,13 +166,24 @@
      ========================================================================== */
   function arrancar(P, ganchos) {
     cerrar();
-    var m = J().juego(P.juego);
-    if (!m) {
-      ganchos.fallo('El juego «' + P.juego + '» no está en esta versión de la app.');
+    /* ⚠️ SE COMPRUEBAN TODOS LOS DE LA PARTIDA, no solo el primero: con un
+       reparto mixto, un juego que esta versión no conoce reventaría al llegar a
+       SU ronda, o sea a mitad de partida y con lo jugado ya entregado. */
+    var reparto = (function () {
+      var n = Number(P.turnos) || 1;
+      var l = (P.juegos || []).filter(Boolean);
+      if (l.length === n) return l.slice();
+      var u = []; for (var i = 0; i < n; i++) u.push(P.juego);
+      return u;
+    })();
+    var falta = reparto.filter(function (id) { return !J().juego(id); })[0];
+    if (falta) {
+      ganchos.fallo('El juego «' + falta + '» no está en esta versión de la app.');
       return;
     }
+    var m = J().juego(reparto[0]);
     C = {
-      P: P, m: m, ganchos: ganchos,
+      P: P, mBase: m, ganchos: ganchos,
       rondas: Number(P.turnos) || 1,
       /* En local juegan los dos, por turnos de RONDAS COMPLETAS: primero
          todas las de quien abre, después todas las del otro. En línea solo
@@ -128,6 +195,9 @@
       intento: 1,
       gastados: 0,              // reintentos ya usados en esta ronda
       hechas: { propone: [], invitado: [] },   // en local: las rondas enviadas
+      /* Uno por ronda. `P.juegos` lo trae la partida desde el pivote; sin él,
+         el mismo juego en todas. */
+      reparto: reparto,
       temporizadores: [], reloj: null, vivo: true
     };
     C.lado = C.lados[0];
@@ -191,8 +261,7 @@
     if (!C) return;
     C.estado = 'presentacion';
     var q = jugador(C.lado);
-    var m = C.m;
-    var nivel = J().nivelDe(C.rondas, C.ronda);
+    var m = M();
     var titulo = $('#t-partida');
     if (titulo) titulo.textContent = m.nombre || 'Minijuego';
     /* El rótulo dibujado, si el juego lo tiene (`rotulo-<id>.webp`): manda
@@ -210,12 +279,11 @@
           '<p class="jg-quien__que">Te toca jugar</p>' +
         '</div>' +
         '<div class="jg-ficha-ronda">' +
-          /* Con `deUnaVez` las rondas se asignan juntas en una pantalla, así
-             que la presentación es una sola y lo dice en plural. */
-          '<p class="jg-ficha-ronda__t">' + (m.deUnaVez
-            ? (C.rondas === 1 ? 'Tu ronda' : 'Tus ' + C.rondas + ' rondas')
+          /* Con `deUnaVez` las rondas de su TRAMO se asignan juntas en una
+             pantalla, así que la presentación es una sola y lo dice en plural
+             --pero solo de las que cubre: con reparto mixto pueden ser una--. */
+          '<p class="jg-ficha-ronda__t">' + esc(m.deUnaVez ? tituloDelTramo()
             : 'Ronda ' + C.ronda + ' de ' + C.rondas) + '</p>' +
-          (m.sinNiveles ? '' : '<p class="jg-ficha-ronda__nivel">' + esc(nombreDeNivel(nivel)) + '</p>') +
           '<div class="jg-datos">' +
             (m.sinReloj ? '' : '<span class="jg-dato">' + pieza('jg-tiempo', 28) + esc(mmss(topeMs())) + '</span>') +
             (m.reintentos ? '<span class="jg-dato">' + pieza('jg-pasos', 28) +
@@ -241,9 +309,11 @@
     }
   }
 
-  var NIVELES = ['Para entrar en calor', 'Nivel normal', 'Nivel difícil'];
-  function nombreDeNivel(n) { return NIVELES[n] || NIVELES[1]; }
-  function topeMs() { return (C.topeMs || (C.m.topeS || 60) * 1000); }
+  /* ⚠️ EL RENGLÓN DE NIVEL SE FUE CON LA RAMPA (pivote del titular,
+     2026-09-22: «los juegos tendrán dificultad única»). Decía «Para entrar en
+     calor / Nivel normal / Nivel difícil» según la ronda, y con un solo nivel
+     eso era un rótulo que afirmaba algo falso sobre la ronda que viene. */
+  function topeMs() { return (C.topeMs || (M().topeS || 60) * 1000); }
 
   /* ==========================================================================
      2 · COMENZAR: la semilla, el tablero y la cuenta atrás
@@ -260,13 +330,13 @@
     var texto = C.P.debate ? C.P.debate + ':' + C.ronda
                            : 'ensayo:' + (C.P.ensayoSemilla || (C.P.ensayoSemilla = String(Math.random()))) + ':' + C.ronda;
     C.semilla = J().azar.deTexto(texto);
-    C.nivel = J().nivelDe(C.rondas, C.ronda);
-    C.topeMs = (C.m.topeS || 60) * 1000;
+    C.nivel = J().nivelDe();
+    C.topeMs = (M().topeS || 60) * 1000;
     /* SIN RELOJ NO HAY CUENTA ATRÁS (Choque): el 3-2-1 existe para que nadie
        pierda segundos que puntúan mirando cómo aparece el tablero, y aquí el
        tiempo ni apura ni puntúa. Se entra derecho a elegir. */
-    if (C.m.deUnaVez) return montarSeleccion();
-    if (C.m.sinReloj) { montarTablero(false); jugarRonda(); return; }
+    if (M().deUnaVez) return montarSeleccion();
+    if (M().sinReloj) { montarTablero(false); jugarRonda(); return; }
     cuentaAtras(jugarRonda);
   }
 
@@ -294,12 +364,12 @@
             window.ATWI.fichaHTML(q.avatar, 'avatar--mini', q.color) +
             '<span>' + esc(q.nombre) + '</span>' +
           '</span>' +
-          '<span class="jg-pildora">' + (C.rondas === 1 ? '1 ronda' : C.rondas + ' rondas') + '</span>' +
+          '<span class="jg-pildora">' + esc(rondasDelTramo()) + '</span>' +
         '</div>' +
         '<div class="jg-tablero" id="jg-tablero"></div>' +
       '</div>';
     pie().innerHTML = '';
-    var ui = (J().ui || {})[C.P.juego];
+    var ui = (J().ui || {})[juegoActual()];
     var area = $('#jg-tablero');
     if (!ui || !ui.seleccion || !area) {
       if (area) area.innerHTML = '<p class="chico centrado">Este juego todavía no tiene tablero.</p>';
@@ -307,13 +377,13 @@
     }
     ui.seleccion(area, {
       desde: C.ronda,
-      hasta: C.rondas,
+      hasta: finDelTramo(),
       previas: previas(),
       ancho: area.clientWidth,
       alto: area.clientHeight,
       /* Los mismos ajustes del probador que reciben los de tablero: un juego de
          selección también puede tener variantes que auditar. */
-      ajustes: (C.P && C.P.ajustes) || {},
+      ajustes: ajustesDelJuego(),
       confirmar: enviarSeleccion
     });
   }
@@ -329,15 +399,15 @@
       var texto = C.P.debate ? C.P.debate + ':' + r
                              : 'ensayo:' + (C.P.ensayoSemilla || (C.P.ensayoSemilla = String(Math.random()))) + ':' + r;
       var semilla = J().azar.deTexto(texto);
-      var nivel = J().nivelDe(C.rondas, r);
-      var rep = J().repetir(C.P.juego, semilla, nivel, C.lado, [elementos[i]], ms);
+      var nivel = J().nivelDe();
+      var rep = J().repetir(juegoDeRonda(r), semilla, nivel, C.lado, [elementos[i]], ms);
       C.hechas[C.lado][r - 1] = {
         lado: C.lado, ronda: r, jugadas: [elementos[i]], ms: ms, intento: 1,
         resumen: rep.ok ? rep.resumen : null
       };
     }
     guardarProgreso();
-    C.ronda = C.rondas;
+    C.ronda = C.ronda + elementos.length - 1;
     siguiente();
   }
 
@@ -410,7 +480,7 @@
      a secas. El número siempre va en un `solo-lectores` para que la región
      `aria-live` lo anuncie aunque la vista sea un dibujo. */
   function conteoContenido(n) {
-    var ui = (J().ui || {})[C.P.juego];
+    var ui = (J().ui || {})[juegoActual()];
     if (ui && typeof ui.conteo === 'function') {
       return '<span class="solo-lectores">' + n + '</span>' + ui.conteo(C.estadoJuego, n);
     }
@@ -454,8 +524,8 @@
      ========================================================================== */
   function montarTablero(bloqueado) {
     var q = jugador(C.lado);
-    C.tablero = J().tablero(C.P.juego, C.semilla, C.nivel, C.lado);
-    C.estadoJuego = C.m.inicial(C.tablero);
+    C.tablero = J().tablero(juegoActual(), C.semilla, C.nivel, C.lado);
+    C.estadoJuego = M().inicial(C.tablero);
     C.jugadas = [];
     C.bloqueado = bloqueado;
     caja().innerHTML =
@@ -466,7 +536,7 @@
             '<span>' + esc(q.nombre) + '</span>' +
           '</span>' +
           '<span class="jg-pildora">Ronda ' + C.ronda + '/' + C.rondas + '</span>' +
-          (C.m.sinReloj ? '' :
+          (M().sinReloj ? '' :
             '<span class="jg-pildora jg-pildora--reloj" id="jg-reloj">' + pieza('jg-tiempo', 22) +
               '<span id="jg-reloj-n">' + esc(mmss(topeMs())) + '</span></span>') +
         '</div>' +
@@ -500,12 +570,12 @@
          azar»). Van SIEMPRE en el contexto y en una partida de verdad llegan
          vacíos: un juego los lee como «si hay algo puesto, respétalo; si no,
          sortea», así que la partida real no cambia de comportamiento. */
-      ajustes: (C.P && C.P.ajustes) || {}
+      ajustes: ajustesDelJuego()
     };
   }
 
   function pintarJuego() {
-    var ui = (J().ui || {})[C.P.juego];
+    var ui = (J().ui || {})[juegoActual()];
     var area = $('#jg-tablero');
     /* ⚠️ Y SE COMPRUEBA QUE `pintar` SEA UNA FUNCIÓN, no solo que haya `ui`: un
        juego de selección (`deUnaVez`) expone `seleccion` y NO `pintar`, así que
@@ -525,7 +595,7 @@
      carcasa no puede saber cuánto tarda una ficha en romperse. Sin declararlo,
      cero: el final de la ronda congela en el acto, como hacía antes. */
   function msSalida() {
-    var ui = (J().ui || {})[C.P.juego];
+    var ui = (J().ui || {})[juegoActual()];
     return (ui && ui.msSalida) || 0;
   }
 
@@ -543,7 +613,7 @@
     C.bloqueado = false;
     C.t0 = performance.now();
     pintarJuego();   // desbloqueado
-    if (!C.m.sinReloj) { C.reloj = setInterval(tic, MS_TIC); tic(); }
+    if (!M().sinReloj) { C.reloj = setInterval(tic, MS_TIC); tic(); }
   }
 
   function tic() {
@@ -559,12 +629,12 @@
   /** Lo único que el juego llama. */
   function jugar(jugada) {
     if (!C || C.estado !== 'jugando' || C.bloqueado) return false;
-    var sig = C.m.aplicar(C.estadoJuego, jugada);
+    var sig = M().aplicar(C.estadoJuego, jugada);
     if (sig === null || sig === undefined) return false;   // ilegal: el tablero no lo permite
     C.estadoJuego = sig;
     C.jugadas.push(jugada);
     if (C.actualizar) C.actualizar(C.estadoJuego, jugada); else pintarJuego();
-    if (C.m.fin(C.estadoJuego)) terminarRonda('completo');
+    if (M().fin(C.estadoJuego)) terminarRonda('completo');
     return true;
   }
 
@@ -593,8 +663,8 @@
     if (C.P.enLinea) return terminarEnLinea(salida);
     /* En local el resumen lo calcula la misma lógica que el servidor va a
        correr después: si aquí saliera otra cosa, el servidor tendría razón. */
-    var r = J().repetir(C.P.juego, C.semilla, C.nivel, C.lado, C.jugadas, C.ms);
-    C.resumen = r.ok ? r.resumen : C.m.resumen(C.estadoJuego, C.ms);
+    var r = J().repetir(juegoActual(), C.semilla, C.nivel, C.lado, C.jugadas, C.ms);
+    C.resumen = r.ok ? r.resumen : M().resumen(C.estadoJuego, C.ms);
     /* El recibo reemplaza la pantalla entera, así que si llega antes de que la
        última ficha acabe de irse se lleva la rotura igual que el congelado. Los
        700 de siempre cuando no hay nada que esperar; con salida, un respiro
@@ -606,9 +676,9 @@
     if (!C) return;
     C.estado = 'recibo';
     var q = jugador(C.lado);
-    var m = C.m;
+    var m = M();
     var quedan = Math.max(0, (m.reintentos || 0) - C.gastados);
-    var ui = (J().ui || {})[C.P.juego];
+    var ui = (J().ui || {})[juegoActual()];
     var detalle = ui && ui.resumenHTML ? ui.resumenHTML(C.resumen) : resumenGenerico(C.resumen);
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--recibo">' +
@@ -643,7 +713,7 @@
 
   function reintentar() {
     if (!C || C.estado !== 'recibo') return;
-    if (C.gastados >= (C.m.reintentos || 0)) return;
+    if (C.gastados >= (M().reintentos || 0)) return;
     C.gastados++;
     C.intento++;
     if (C.P.enLinea) return reintentarEnLinea();
@@ -685,7 +755,7 @@
     C.estado = 'relevo';
     var q = jugador(C.lado);
     var titulo = $('#t-partida');
-    if (titulo) titulo.textContent = C.m.nombre || 'Minijuego';
+    if (titulo) titulo.textContent = M().nombre || 'Minijuego';
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--relevo">' +
         pieza('jg-relevo', 96, 'jg-relevo__signo') +
@@ -728,11 +798,11 @@
           var lista = [];
           for (var r = 1; r <= C.rondas; r++) {
             var f = C.hechas[lado][r - 1];
-            lista.push(f ? { marca: C.m.marca(f.resumen), resumen: f.resumen } : null);
+            lista.push(f ? { marca: (J().juego(juegoDeRonda(r)) || M()).marca(f.resumen), resumen: f.resumen } : null);
           }
           return lista;
         };
-        var v = J().veredicto(C.P.juego, C.rondas, porLado('propone'), porLado('invitado'));
+        var v = J().veredicto(C.reparto, porLado('propone'), porLado('invitado'));
         entregar(filaDe(v));
       }, 900);
     }
@@ -753,7 +823,7 @@
       ganador_lado: v.ganador || null,
       motivo_empate: v.tipo === 'empate' ? 'parejo' : null,
       justificacion: null, forma_del_desacuerdo: null, lo_mejor: null, lo_que_dijo: null,
-      desglose: { juego: C.P.juego, rondas: C.rondas, como: v.como, marcador: v.marcador, filas: v.rondas },
+      desglose: { juego: C.P.juego, juegos: C.reparto, rondas: C.rondas, como: v.como, marcador: v.marcador, filas: v.rondas },
       visto: null, visto_invitado: null, creado: new Date().toISOString()
     };
   }
@@ -866,14 +936,23 @@
         /* Si la ronda ya venía corriendo --se cerró la app a mitad-- el reloj
            del servidor ya descontó lo que pasó: aquí se arranca con eso menos. */
         C.transcurrido = r.transcurrido_ms || 0;
+        /* ⚠️ EL JUEGO DE LA RONDA LO DICE EL SERVIDOR, aunque el cliente ya lo
+           tenga en su reparto. Son la misma red que la versión: si los dos no
+           coinciden, este teléfono pintaría un tablero y el servidor juzgaría
+           otro, y eso solo se vería al rechazarle la ronda ya jugada. */
+        if (r.juego) C.reparto[C.ronda - 1] = r.juego;
+        if (!J().juego(juegoActual())) {
+          return fallar('El juego «' + juegoActual() + '» no está en esta versión de la app: recarga.',
+            function () { location.reload(); });
+        }
         /* ⚠️ EL MISMO REPARTO QUE `comenzar()`, QUE AQUÍ FALTABA (titular,
            2026-09-21: «ui.pintar is not a function» al cargar Choque en línea).
            La rama local enruta por `deUnaVez` y `sinReloj`; ésta iba siempre a
            `cuentaAtras(jugarRonda)`, y `jugarRonda` pinta con `ui.pintar` —que
            un juego de selección como Choque no tiene: expone `ui.seleccion`—.
            Por eso Choque funcionaba en local y reventaba en línea. */
-        if (C.m.deUnaVez) return montarSeleccion();
-        if (C.m.sinReloj) {
+        if (M().deUnaVez) return montarSeleccion();
+        if (M().sinReloj) {
           montarTablero(false);
           jugarRonda();
           if (C && C.transcurrido) C.t0 -= C.transcurrido;

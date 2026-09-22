@@ -1227,9 +1227,11 @@
               { nombre: 'Dos', avatar: otraCara, color: unoDe(colores) }],
       juez: jueces.length ? unoDe(jueces).clave : e.juez,
       publico: unoDe(MESAS_PROBADOR).clave,
-      /* Lo elegido para ESTE juego. En una partida de verdad no va nada, y los
-         juegos lo leen como «si hay algo puesto, respétalo; si no, sortea». */
-      ajustes: (e.ajustes || {})[e.juego] || {},
+      /* Lo elegido para CADA juego, el mapa entero: con reparto mixto la
+         carcasa le da a cada tablero el suyo. En una partida de verdad no va
+         nada, y los juegos lo leen como «si hay algo puesto, respétalo; si no,
+         sortea». */
+      ajustes: e.ajustes || {},
       /* Sin sorteo ni cortinilla: aquí se viene a ver el tablero. */
       directo: true
     };

@@ -49,8 +49,8 @@
   padding: var(--e-4) var(--e-4) var(--e-3); border-radius: var(--radio-tarjeta);
   background: var(--superficie); box-shadow: var(--sombra-2); text-align: center;
 }
-.jg-ficha-ronda__t { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); color: var(--jg-color); }
 .jg-ficha-ronda__nivel { font-size: var(--t-chico); color: var(--tinta-suave); font-weight: 700; }
+.jg-ficha-ronda__t { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); color: var(--jg-color); }
 .jg-ficha-ronda__como { font-size: var(--t-chico); color: var(--tinta); margin-top: 4px; }
 
 /* Los datos van en una fila de chips con su pegatina: tiempo, reintentos,

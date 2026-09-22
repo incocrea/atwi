@@ -18,14 +18,19 @@
   raiz.ATWI = raiz.ATWI || {};
   var J = raiz.ATWI.juegos = raiz.ATWI.juegos || Object.create(null);
 
+  /* ⚠️ DIFICULTAD ÚNICA: SIEMPRE LOS 16 (pivote del titular, 2026-09-22: «el de
+     contar siempre muestra los 16 cuadritos»). Aquí había tres tableros --3x3,
+     3x4 y 4x4-- que se repartían por ronda; lo que gradúa una partida pasa a ser
+     cuántas rondas y de qué juegos, no lo grande que sea la cuadrícula.
+     Se queda como lista de UNA entrada y no como dos constantes sueltas: el
+     contrato de `registrar` pide `niveles`, y así el día que un juego quiera
+     variantes no hay que reinventar la forma. */
   var NIVELES = [
-    { cols: 3, filas: 3 },
-    { cols: 3, filas: 4 },
     { cols: 4, filas: 4 }
   ];
 
   function generar(semilla, nivel) {
-    var n = NIVELES[nivel] || NIVELES[1];
+    var n = NIVELES[nivel] || NIVELES[0];
     var total = n.cols * n.filas;
     var numeros = [];
     for (var i = 1; i <= total; i++) numeros.push(i);

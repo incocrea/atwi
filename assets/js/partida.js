@@ -123,8 +123,13 @@ window.ATWI = window.ATWI || {};
       juez: (op.juez && window.ATWI.esJuez(op.juez)) ? op.juez : 'bruno',
       tema: op.tema,
       modo: op.modo,                 // 'debate' | 'negociacion' | 'competencia'
-      /* QUIÉNGANE: qué minijuego se juega (docs/10). En los otros modos, nulo. */
+      /* QUIÉNGANE: qué minijuego se juega (docs/10). En los otros modos, nulo.
+         ⚠️ Y DESDE EL PIVOTE (2026-09-22) EL QUE MANDA ES `juegos`: uno por
+         ronda, en orden. `juego` se conserva porque los textos --la invitación,
+         el chip de la tarjeta, el correo-- hablan en singular y no pueden
+         escribir tres nombres; es el primero del reparto, derivado. */
       juego: op.modo === 'competencia' ? (op.juego || null) : null,
+      juegos: op.modo === 'competencia' ? (op.juegos || null) : null,
       turnos: op.turnos,             // por persona (en QuiénGane, RONDAS)
       publico: op.publico || 'pareja',
       /* SIN POSTURA ASIGNADA. Cada jugador llegaba con una letra y el texto de
@@ -155,7 +160,7 @@ window.ATWI = window.ATWI || {};
          él— así que la carcasa tiene que poder esperarlo si todavía no llegó.
          En los otros modos nadie la mira. */
       P.abriendo = window.ATWI.nube.abrirPartida({
-        tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez, juego: P.juego,
+        tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez, juego: P.juego, juegos: P.juegos,
         abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
         abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
         /* El personaje DEL DUELO. Con abogado es el elegido; sin abogado es el
@@ -342,7 +347,7 @@ window.ATWI = window.ATWI || {};
       var mesaJ = mesaDelDebate(d, t);
       P = {
         tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
-        modo: 'competencia', juego: d.juego || null, turnos: d.turnos, publico: 'pareja',
+        modo: 'competencia', juego: d.juego || null, juegos: d.juegos || null, turnos: d.turnos, publico: 'pareja',
         jugadores: mesaJ.jugadores, orden: mesaJ.orden, intervenciones: [], i: 0, borrador: null,
         estado: 'repaso', repaso: !op.estrenar, estrenando: Boolean(op.estrenar),
         juez: d.juez || null, veredicto: d.resultado, enLinea: Boolean(d.en_linea),
@@ -484,7 +489,7 @@ window.ATWI = window.ATWI || {};
       P = {
         juez: (d.juez && window.ATWI.esJuez(d.juez)) ? d.juez : 'bruno',
         tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
-        modo: 'competencia', juego: d.juego || null, turnos: d.turnos, publico: 'pareja',
+        modo: 'competencia', juego: d.juego || null, juegos: d.juegos || null, turnos: d.turnos, publico: 'pareja',
         jugadores: mesa.jugadores, orden: mesa.orden, intervenciones: [], i: 0,
         borrador: null, estado: 'juego', repaso: false, reanudada: true,
         enLinea: Boolean(d.en_linea), miLado: miLadoEn(d),
@@ -603,6 +608,7 @@ window.ATWI = window.ATWI || {};
       /* QuiénGane: el minijuego de la partida; la carcasa pregunta al servidor
          por dónde va (`estado_del_juego`). */
       juego: d.juego || null,
+      juegos: d.juegos || null,
       miLado: miLado,
       plazo: d.plazo || null,
       /* Quien no contesto en 24 h (0056): con esto la ronda esta cerrada
@@ -4121,6 +4127,7 @@ window.ATWI = window.ATWI || {};
     P = mesaDeEnsayo(op, {
       modo: 'competencia',
       juego: op.juego || 'prueba',
+      juegos: op.juegos || null,
       turnos: op.rondas || 1,
       /* Lo que el probador fijó para este juego; vacío en una partida real. */
       ajustes: op.ajustes || {},

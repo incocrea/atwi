@@ -35,7 +35,11 @@
      una marca. El cliente la manda en `empezar` y el servidor se niega ANTES de
      arrancar el reloj si no es la suya: un teléfono con el JS viejo generaría
      otro tablero y su ronda se rechazaría después de haberla jugado. */
-  J.VERSION_REGLAS = '0.3';
+  /* 0.4: el pivote del 2026-09-22 --dificultad unica-- cambia el tablero de
+     Cuenta (siempre 4x4), asi que la version SUBE: con la misma, un telefono
+     con el JS de ayer generaria un tablero distinto del que el servidor repite
+     y su ronda se rechazaria despues de jugada. */
+  J.VERSION_REGLAS = '0.4';
 
   var MAX_JUGADAS = 600;
   var SAL_DEL_GEMELO = 0x67656D65;      // «geme»: la semilla hija del gemelo
@@ -57,8 +61,14 @@
         throw new Error('juegos: «' + modulo.id + '» es sin tablero y le falta valida() o veredicto()');
       }
     } else {
-      if (!modulo.niveles || modulo.niveles.length !== 3) {
-        throw new Error('juegos: «' + modulo.id + '» necesita sus tres niveles');
+      /* ⚠️ YA NO SE EXIGEN TRES NIVELES (pivote del titular, 2026-09-22:
+         «los juegos tendrán dificultad única; por ejemplo, el de contar siempre
+         muestra los 16 cuadritos»). Lo que gradúa una partida es CUÁNTAS
+         rondas, no lo difícil que sea cada una. `niveles` sigue admitiéndose
+         --un juego puede querer su tabla de parámetros-- pero con una sola
+         entrada basta. */
+      if (!modulo.niveles || !modulo.niveles.length) {
+        throw new Error('juegos: «' + modulo.id + '» necesita al menos un nivel');
       }
       for (var i = 0; i < PIEZAS.length; i++) {
         if (typeof modulo[PIEZAS[i]] !== 'function') {
@@ -78,13 +88,15 @@
     return Object.keys(registro).sort();
   }
 
-  /* Qué nivel toca en cada ronda. Con tres rondas se sube la rampa entera; con
-     dos, fácil y medio; con una sola, la de en medio —ni un paseo ni un muro—. */
-  function nivelDe(rondas, ronda) {
-    if (rondas <= 1) return 1;
-    var n = ronda - 1;
-    return n < 0 ? 0 : (n > 2 ? 2 : n);
-  }
+  /* ⚠️ DIFICULTAD ÚNICA (pivote del titular, 2026-09-22). Aquí había una rampa
+     --con tres rondas se subía entera; con dos, fácil y medio-- y se cae: todas
+     las rondas de un juego son EL MISMO reto, y lo que gradúa la partida es
+     cuántas hay y de qué juegos. Se conserva la función, y no por pereza: la
+     llaman la carcasa, la función de borde y `tablero()`, y las tres tienen que
+     pedir el mismo nivel o el servidor generaría un tablero distinto del que se
+     jugó. Un solo sitio que devuelve 0 es más seguro que quitar el parámetro de
+     cinco firmas a la vez. */
+  function nivelDe() { return 0; }
 
   /* --- El tablero de cada lado -------------------------------------------- */
   function tablero(id, semilla, nivel, lado) {
@@ -173,29 +185,57 @@
        'abandono' el otro no envió ni una ronda
        'empate'   todo igual: resultado válido, se vuelve a jugar entera
        'nadie'    nadie envió nada: la partida no existió */
-  function veredicto(id, rondas, dePropone, deInvitado) {
+  /* QUIÉN GANA UNA RONDA, con el juego DE ESA RONDA. Un juego puede traer su
+     propio `ronda(p, q)` --Choque lo hace: fuego contra planta no es una marca
+     mayor que otra, es una relación-- y si no, se comparan las marcas. */
+  function ganadorDeRonda(id, p, q) {
     var m = registro[id];
-    if (!m) throw new Error('juegos: no conozco «' + id + '»');
-    /* UN JUEGO PUEDE TRAER SU PROPIO VEREDICTO, y hoy solo lo trae Choque: es
-       el único cuyo resultado depende de LOS DOS a la vez —fuego contra planta
-       no es una marca mayor que otra, es una relación— así que la comparación
-       lexicográfica de abajo no puede decidirlo (docs/10 §5.1). */
-    if (m.veredicto) return m.veredicto(rondas, dePropone, deInvitado);
+    if (m && typeof m.ronda === 'function') return m.ronda(p, q);
+    var c = compararMarcas(p && p.marca, q && q.marca);
+    return {
+      gana: c > 0 ? 'propone' : (c < 0 ? 'invitado' : 'empate'),
+      propone: p ? p.resumen : null,
+      invitado: q ? q.resumen : null
+    };
+  }
+
+  /* ⚠️ EL VEREDICTO RECORRE RONDAS, Y CADA UNA PUEDE SER DE OTRO JUEGO (pivote
+     del titular, 2026-09-22). `juegos` es la lista de ids, uno por ronda.
+     Se admite todavía la firma vieja --`veredicto(id, rondas, a, b)`-- para no
+     tener que migrar de golpe a la función de borde y al banco.
+
+     ⚠️ Y CON JUEGOS MEZCLADOS NO HAY DESEMPATE POR MARCA TOTAL: sumar los
+     segundos de Cuenta con los elementos de Choque no significa nada. El total
+     solo desempata cuando TODAS las rondas son del mismo juego; si no, empatar
+     en rondas es empatar. */
+  function veredicto(juegos, dePropone, deInvitado) {
+    if (typeof juegos === 'string') {
+      var cuantas = arguments[1];
+      var lista = [];
+      for (var k = 0; k < cuantas; k++) lista.push(juegos);
+      return veredicto(lista, arguments[2], arguments[3]);
+    }
+    if (!juegos || !juegos.length) throw new Error('juegos: el veredicto necesita la lista de rondas');
+    for (var v = 0; v < juegos.length; v++) {
+      if (!registro[juegos[v]]) throw new Error('juegos: no conozco «' + juegos[v] + '»');
+    }
 
     var filas = [];
     var a = 0;
     var b = 0;
-    for (var r = 0; r < rondas; r++) {
+    for (var r = 0; r < juegos.length; r++) {
       var p = dePropone[r] || null;
       var q = deInvitado[r] || null;
-      var c = compararMarcas(p && p.marca, q && q.marca);
-      if (c > 0) a++;
-      if (c < 0) b++;
+      var res = ganadorDeRonda(juegos[r], p, q);
+      if (res.gana === 'propone') a++;
+      if (res.gana === 'invitado') b++;
       filas.push({
         ronda: r + 1,
-        propone: p ? p.resumen : null,
-        invitado: q ? q.resumen : null,
-        gana: c > 0 ? 'propone' : (c < 0 ? 'invitado' : 'empate')
+        juego: juegos[r],
+        propone: res.propone,
+        invitado: res.invitado,
+        gana: res.gana,
+        frase: res.frase || ''
       });
     }
 
@@ -205,12 +245,24 @@
     if (!hizoB) return fallo('ganador', 'propone', 'abandono', [a, b], filas);
     if (!hizoA) return fallo('ganador', 'invitado', 'abandono', [a, b], filas);
 
-    if ((m.compara || 'rondas') === 'rondas' && a !== b) {
+    /* ⚠️ `compara: 'total'` SIGUE MANDANDO, Y SOLO EN PARTIDA HOMOGÉNEA. Un juego
+       puede declarar que lo que cuenta es la marca sumada y no cuántas rondas se
+       llevó --lo comprueba el banco--, pero eso únicamente significa algo si
+       TODAS las rondas son suyas: sumar los segundos de Cuenta con los elementos
+       de Choque no da un número que quiera decir nada. Con juegos mezclados, lo
+       que hay son rondas ganadas. */
+    var unico = juegos.every(function (x) { return x === juegos[0]; }) ? registro[juegos[0]] : null;
+    var porTotal = unico && (unico.compara || 'rondas') === 'total';
+
+    if (!porTotal && a !== b) {
       return fallo('ganador', a > b ? 'propone' : 'invitado', 'rondas', [a, b], filas);
     }
-    var t = compararMarcas(sumarMarcas(dePropone), sumarMarcas(deInvitado));
-    if (t === 0) return fallo('empate', null, 'empate', [a, b], filas);
-    return fallo('ganador', t > 0 ? 'propone' : 'invitado', 'total', [a, b], filas);
+    if (unico && typeof unico.ronda !== 'function') {
+      var t = compararMarcas(sumarMarcas(dePropone), sumarMarcas(deInvitado));
+      if (t !== 0) return fallo('ganador', t > 0 ? 'propone' : 'invitado', 'total', [a, b], filas);
+    }
+    if (a !== b) return fallo('ganador', a > b ? 'propone' : 'invitado', 'rondas', [a, b], filas);
+    return fallo('empate', null, 'empate', [a, b], filas);
   }
 
   J.registrar = registrar;
@@ -222,4 +274,5 @@
   J.compararMarcas = compararMarcas;
   J.sumarMarcas = sumarMarcas;
   J.veredicto = veredicto;
+  J.ganadorDeRonda = ganadorDeRonda;
 })(typeof window !== 'undefined' ? window : globalThis);

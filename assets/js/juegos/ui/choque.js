@@ -128,9 +128,17 @@
         });
         var p = caja.querySelector('#jg-choque-pista');
         if (p) {
+          /* ⚠️ EN SINGULAR CUANDO SOLO HAY UN TURNO (pivote del titular,
+             2026-09-22): desde que cada ronda puede tener su juego, esta
+             pantalla puede cubrir una sola, y «cada elemento» / «los 1 turnos»
+             se leía como un error. */
           p.textContent = quedan.length
-            ? 'Arrastra cada elemento al turno en que quieras jugarlo. Puedes repetir el mismo.'
-            : 'Listos los ' + rondas.length + ' turnos. Toca un círculo para vaciarlo o arrastra otro encima.';
+            ? (rondas.length === 1
+                ? 'Arrastra al círculo el elemento con el que quieres jugar esta ronda.'
+                : 'Arrastra cada elemento al turno en que quieras jugarlo. Puedes repetir el mismo.')
+            : (rondas.length === 1
+                ? 'Listo. Toca el círculo para vaciarlo o arrastra otro encima.'
+                : 'Listos los ' + rondas.length + ' turnos. Toca un círculo para vaciarlo o arrastra otro encima.');
         }
         var b = caja.querySelector('[data-el-confirmar]');
         if (b) b.disabled = quedan.length > 0;
