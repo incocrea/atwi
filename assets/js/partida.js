@@ -1653,6 +1653,7 @@ window.ATWI = window.ATWI || {};
        pase lo que pase. */
     var rotulo = $('#t-partida');
     if (rotulo) rotulo.textContent = '';
+    var esJuego = P.modo === 'competencia';
     caja().innerHTML =
       '<div class="sala sala--sorteo">' +
         /* EL MODO MANDA Y VA FUERA DE LA TARJETA. Dentro competía con el
@@ -1674,7 +1675,18 @@ window.ATWI = window.ATWI || {};
         /* EL SORTEO SE VE Y SE OYE. Antes ponía el resultado ya hecho, que es
            como enseñar el dado en la mesa en vez de tirarlo: quién abre es la
            primera cosa que el juego decide por ustedes y merece sus cuatro
-           segundos. La ficha salta entre las dos, va frenando, y para. */
+           segundos. La ficha salta entre las dos, va frenando, y para.
+           ⚠️ EN QUIÉNGANE NO SE SORTEA NADA A LA VISTA (titular, 2026-09-21:
+           «no hay un orden de importancia entre quién inicia, ya que ambos
+           juegan por separado; puede pasar directo a la entrada de los
+           personajes»). Y es exacto: en los otros dos modos quién abre CAMBIA
+           la partida —se abre a ciegas y se contesta habiendo oído—, así que
+           merece su ceremonia; aquí cada quien juega su tablero solo y el orden
+           es nada más el del relevo. Cuatro segundos de tambores para decidir
+           algo que no decide nada es justo lo que hace que la gente aprenda a
+           saltarse las animaciones. `abre` se sigue sorteando —alguien tiene que
+           empezar el relevo—, lo que se va es contarlo. */
+        (esJuego ? '' :
         '<div class="sorteo">' +
           '<p class="sorteo__que">Quién inicia</p>' +
           '<span class="avatar sorteo__ficha" id="sorteo-ficha"></span>' +
@@ -1682,12 +1694,20 @@ window.ATWI = window.ATWI || {};
           /* Aquí iba «Salió por sorteo. En la revancha abre X». Se va: lo del
              sorteo acaba de verse en pantalla durante cuatro segundos, y quién
              abre la revancha no le importa a nadie antes de jugar esta. */
-        '</div>' +
+        '</div>') +
       '</div>';
     /* El botón espera al sorteo: si no, se puede pasar de largo y el juego
-       habría decidido quién abre sin que nadie lo viera. */
-    pie().innerHTML = principal('p-listo', 'Empezar', '', true);
-    correrSorteo();
+       habría decidido quién abre sin que nadie lo viera. En QuiénGane no hay
+       nada que esperar, así que nace encendido. */
+    pie().innerHTML = principal('p-listo', 'Empezar', '', !esJuego);
+    if (!esJuego) return correrSorteo();
+    /* Derecho a la entrada de los personajes. Espera a las poses por lo mismo
+       que el sorteo: una animación que empieza sin sus dibujos se ve a trozos
+       y no se puede volver a empezar. */
+    (P.poses || Promise.resolve()).then(function () {
+      if (!P || P.estado !== 'aviso') return;
+      entrarAlEncuentro();
+    });
   }
 
   /**

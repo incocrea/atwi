@@ -3675,6 +3675,13 @@ body.app {
    pies. Con el alto mandando entra entera, y lo que sobra por los lados se sale
    de la pantalla, que es justo lo que se quiere. */
 .sala--sorteo { display: flex; flex-direction: column; min-height: 100%; }
+/* ⚠️ Y AQUÍ NO SE CENTRA NADA, aunque lo parezca. Al quitarle la tirada a
+   QuiénGane quedan 395 px por debajo del enunciado y la primera reacción fue
+   repartirlos: ese hueco NO ESTÁ VACÍO, es la banda donde entran las figuras y
+   donde se quedan hasta que se pulsa «Empezar». Centrando, el enunciado aterriza
+   sobre sus cabezas y sobre sus nombres —medido: la tarjeta a 376 y la banda
+   empezando en 343—. La columna empieza arriba porque el 58 % de abajo es de
+   ellos. */
 
 .encuentro {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
