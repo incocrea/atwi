@@ -693,17 +693,31 @@
   }
 
   /* Algo no se pudo: se dice en la propia pantalla y se ofrece volver a
-     intentar lo mismo. Las jugadas siguen en memoria: no se pierde nada. */
+     intentar lo mismo. Las jugadas siguen en memoria: no se pierde nada.
+
+     ⚠️ SALVO CUANDO REINTENTAR NO PUEDE FUNCIONAR (titular, 2026-09-21: mandó
+     sus jugadas de Choque y le salió «No se pudo mandar · version_vieja» con un
+     «Volver a intentar» que iba a fallar siempre). `version_vieja` es el
+     servidor diciendo que este teléfono lleva el JS de antes de un cambio de
+     reglas: reenviar manda exactamente la misma versión, así que el botón era
+     un callejón con el código crudo por toda explicación. El camino EN LÍNEA ya
+     lo contaba bien desde `empezar`; el LOCAL no, y son el mismo aviso. Se
+     resuelve aquí, en el único sitio por el que pasan todos los fallos, y no
+     llamador por llamador —que es la lista escrita a mano que este proyecto ya
+     tiene anotada media docena de veces—. */
   function fallar(texto, otraVez) {
     if (!C) return;
+    var recargar = texto === 'version_vieja' || /versión nueva/.test(texto);
     C.estado = 'fallo';
-    C.otraVez = otraVez;
+    C.otraVez = recargar ? function () { location.reload(); } : otraVez;
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--fallo">' +
-        '<p class="jg-relevo__t">No se pudo mandar</p>' +
-        '<p class="chico centrado jg-aviso">' + esc(texto) + '</p>' +
+        '<p class="jg-relevo__t">' + (recargar ? 'Hay una versión nueva' : 'No se pudo mandar') + '</p>' +
+        '<p class="chico centrado jg-aviso">' + esc(recargar
+          ? 'El juego se actualizó mientras jugabas. Recarga la app y vuelve a elegir: no se guardó nada de esta ronda.'
+          : texto) + '</p>' +
       '</div>';
-    pie().innerHTML = principal('otra-vez', 'Volver a intentar');
+    pie().innerHTML = principal('otra-vez', recargar ? 'Recargar la app' : 'Volver a intentar');
   }
 
   /* ==========================================================================
