@@ -434,10 +434,10 @@
    empezar—; lleno enseña el elemento y el número se va a la esquina. */
 .jg-turnos { display: flex; justify-content: center; gap: var(--e-3); width: 100%; }
 .jg-turno {
-  width: 126px; height: 126px; flex: none; position: relative;
+  width: 140px; height: 140px; flex: none; position: relative;
   display: grid; place-items: center; border-radius: 50%;
   background: color-mix(in srgb, var(--superficie) 70%, transparent);
-  border: 2px dashed var(--competencia); touch-action: none;
+  border: 4px dashed var(--competencia); touch-action: none;
   transition: transform .15s, background .15s, border-color .15s;
 }
 /* ⚠️ LOS DOS HIJOS VAN EN LA MISMA CELDA, Y ESO ES LO QUE CENTRA EL NÚMERO
@@ -448,7 +448,7 @@
    Es lo mismo que ya hace `.partida__espera > *`. */
 .jg-turno > * { grid-area: 1 / 1; }
 .jg-turno__hueco { display: grid; place-items: center; }
-.jg-turno .jg-el__dibujo { width: 96px; height: auto; }
+.jg-turno .jg-el__dibujo { width: 122px; height: auto; }
 .jg-turno__n {
   font-family: var(--display); font-weight: 900; font-size: var(--t-h2);
   color: var(--competencia); line-height: 1;
@@ -876,3 +876,23 @@
   height: 44px; width: auto; max-width: 100%;
   object-fit: contain;
 }
+
+/* EL LEMA DE CHOQUE (titular, 2026-09-22: «¡Arrastra tu elemento a jugar!, en
+   negrita, más grandecito y decorado; permanente»). Lleva los destellos
+   dorados de los títulos del juego —el mismo dibujo, para que se lea como
+   parte de la casa y no como un adorno suelto— y el halo blanco de los textos
+   que van sobre el fondo dibujado. */
+.jg-choque__lema {
+  margin: var(--e-2) 0 0; text-align: center;
+  font-family: var(--display); font-weight: 900; font-size: clamp(16px, 4.9vw, 19px);
+  line-height: 1.15; color: var(--competencia); white-space: nowrap;
+  text-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 0 18px #fff;
+}
+.jg-choque__lema::before, .jg-choque__lema::after {
+  content: '';
+  display: inline-block; vertical-align: -.15em;
+  width: .62em; height: 1.05em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 30'%3E%3Cg stroke='%23F5C243' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M14 6 L5 2'/%3E%3Cpath d='M13 15 L3 15'/%3E%3Cpath d='M14 24 L5 28'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+}
+.jg-choque__lema::before { margin-right: .36em; }
+.jg-choque__lema::after { margin-left: .36em; transform: scaleX(-1); }

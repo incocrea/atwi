@@ -91,7 +91,11 @@
              rondas quedan varios indicadores encendidos sin decir de cuál se
              habla. El círculo entero, que es lo que de verdad hay que saber, se
              consulta cuando se quiere. */
-          '<p class="jg-pista" id="jg-choque-pista"></p>' +
+          /* EL LEMA ES FIJO (titular, 2026-09-22): «¡Arrastra tu elemento a
+             jugar!», con selección o sin ella. La instrucción que cambiaba
+             según el estado era letra chica que nadie leía, y lo que dice el
+             estado ya lo dice el círculo. */
+          '<p class="jg-choque__lema">¡Arrastra tu elemento a jugar!</p>' +
           '<p class="jg-choque__ayuda">' +
             '<button type="button" class="jg-choque__comovence" data-el-ayuda>' +
               (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
@@ -118,32 +122,17 @@
       function libres() { return rondas.filter(function (r) { return puesto[r] < 0; }); }
 
       function repinta() {
-        var quedan = libres();
         [].forEach.call(caja.querySelectorAll('.jg-turno'), function (c) {
           var r = Number(c.dataset.turno), e = puesto[r];
           var hueco = c.querySelector('.jg-turno__hueco');
           /* Se PINTA, no se esconde: un `hidden` sobre algo con `display` propio
              no oculta nada —lo enseñó `.micro-prueba`, y los círculos vacíos que
              el titular vio sobre tres figuras eran exactamente eso—. */
-          if (hueco) hueco.innerHTML = e < 0 ? '' : pieza(e, 64);
+          if (hueco) hueco.innerHTML = e < 0 ? '' : pieza(e, 128);
           c.classList.toggle('jg-turno--lleno', e >= 0);
           if (e >= 0) c.dataset.el = String(e); else delete c.dataset.el;
           c.setAttribute('aria-label', 'Turno ' + r + (e < 0 ? ', vacío' : ': ' + nombre(e) + '. Tócalo para vaciarlo.'));
         });
-        var p = caja.querySelector('#jg-choque-pista');
-        if (p) {
-          /* ⚠️ EN SINGULAR CUANDO SOLO HAY UN TURNO (pivote del titular,
-             2026-09-22): desde que cada ronda puede tener su juego, esta
-             pantalla puede cubrir una sola, y «cada elemento» / «los 1 turnos»
-             se leía como un error. */
-          p.textContent = quedan.length
-            ? (rondas.length === 1
-                ? 'Arrastra al círculo el elemento con el que quieres jugar esta ronda.'
-                : 'Arrastra cada elemento al turno en que quieras jugarlo. Puedes repetir el mismo.')
-            : (rondas.length === 1
-                ? 'Listo. Toca el círculo para vaciarlo o arrastra otro encima.'
-                : 'Listos los ' + rondas.length + ' turnos. Toca un círculo para vaciarlo o arrastra otro encima.');
-        }
       }
 
       /* --- ARRASTRAR (titular, 2026-09-21: «el jugador arrastra el elemento al
