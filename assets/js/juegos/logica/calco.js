@@ -203,6 +203,9 @@
   J.registrar({
     id: 'calco',
     nombre: 'Calco',
+    /* Tiene su rotulo dibujado (titular, 2026-09-22): manda sobre el nombre
+       en texto, como el logo del modo en el versus. */
+    rotulo: true,
     como: 'Mira el patrón, y cuando se esconda cálcalo: toca un color y toca su celda.',
     compara: 'rondas',
     reintentos: 2,

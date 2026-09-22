@@ -104,7 +104,7 @@
        cara ya dice, y encima obligaba a colgarlo por arriba de la figura para
        que no se lo comiera el recorte. */
     var abajo =
-      '<div class="jg-d__abajo" aria-hidden="true">' +
+      '<div class="jg-d__abajo">' +
         '<span class="jg-d__jug jg-d__jug--izq">' +
           window.ATWI.retrato(quien.propone.avatar, 'frente',
             { fondo: null, mira: 'derecha', color: quien.propone.color, clase: 'jg-d__fig' }) +
@@ -140,7 +140,19 @@
           ladoHTML(f.propone, 'propone', f.gana, f.juego) +
           '<span class="jg-d__medio">' +
             '<span class="jg-d__chispa" aria-hidden="true"></span>' +
-            '<span class="jg-d__juego">' + esc((m && m.nombre) || f.juego) + '</span>' +
+            /* ⚠️ EL LOGO MANDA SOBRE EL NOMBRE (titular, 2026-09-22: «reemplaza los
+             nombres de los juegos en esta interfaz y aplica también los logos
+             donde corresponda»). Es lo mismo que ya hace la presentación de la
+             ronda y el versus con el logo del modo: el dibujo dice a qué se
+             jugó mejor que la palabra, y aquí encabeza su par. Un juego sin
+             rótulo cae al texto, así que el que venga sin dibujo no se queda sin
+             encabezado. */
+          '<span class="jg-d__juego">' +
+            ((m && m.rotulo)
+              ? '<img class="jg-d__rotulo" src="../assets/img/juegos/rotulo-' + esc(f.juego) +
+                '.webp" alt="' + esc(m.nombre || '') + '" decoding="async">'
+              : esc((m && m.nombre) || f.juego)) +
+          '</span>' +
           '</span>' +
           ladoHTML(f.invitado, 'invitado', f.gana, f.juego) +
         '</div>';
@@ -148,7 +160,7 @@
 
     caja.innerHTML =
       '<div class="jg jg--duelo2' + (quieto ? ' jg--duelo2-quieto' : '') + '" aria-live="polite">' +
-        '<div class="jg-d__filas">' + cuerpo + '</div>' + abajo +
+        '<div class="jg-d__filas">' + cuerpo + '</div>' +
       '</div>';
 
     /* ⚠️ Y DESPUÉS SE MIDE, PORQUE EL TAMAÑO DE LAS PIEZAS NO SABE DEL ALTO.
@@ -169,6 +181,22 @@
       var u = filasCaja && filasCaja.lastElementChild;
       return u ? u.offsetTop + u.offsetHeight : 0;
     }
+    /* ⚠️ EL SITIO DE LAS FIGURAS SE MIDE, NO SE ESCRIBE (titular, 2026-09-22:
+       «las líneas de resultados deben distribuirse para ocupar equitativamente
+       el vertical, pero teniendo en cuenta a los personajes también»). Las
+       figuras están fuera del flujo --cuelgan del modal-- así que las filas no
+       las ven: sin reservarles su hueco, la última caía sobre sus cabezas. El
+       número no se puede escribir a mano porque depende de cuánto asoman, y eso
+       cambia con el ancho de la pantalla. */
+    function reservarElHueco() {
+      if (!filasCaja || !filasCaja.isConnected) return;
+      var fig = document.querySelector('.jg-d__jug .jg-d__fig');
+      if (!fig) return;
+      var caja2 = filasCaja.getBoundingClientRect();
+      var arriba = fig.getBoundingClientRect().top;
+      var invade = Math.max(0, Math.round(caja2.bottom - arriba));
+      filasCaja.style.paddingBottom = (invade + 10) + 'px';
+    }
     function ajustar() {
       if (!filasCaja || !filasCaja.isConnected) return;
       var lado = 92, aire = 20;
@@ -181,10 +209,44 @@
         filasCaja.style.setProperty('--jg-d-gap', aire + 'px');
       }
     }
-    ajustar();
+
+    /* ⚠️ LAS FIGURAS NO VAN DENTRO DEL CUERPO, VAN EN EL MODAL (titular,
+       2026-09-22: «no hagas cortes a los personajes; los únicos cortes son la
+       parte del cuerpo que se les oculta con base en su posición en el
+       viewport, deben salir desde abajo y de cada lado opuesto»). Metidas en
+       una caja con `overflow`, lo que las cortaba era esa caja: una línea recta
+       por encima de la cabeza, que es un recorte que no existe en ninguna otra
+       pantalla del juego. Colgadas del modal y asomando por debajo del borde,
+       lo único que las tapa es el canto del teléfono, como en la sala.
+       Van ANTES del pie en el DOM para quedar por detrás del botón. */
+    var modal = document.getElementById('m-partida');
+    var pieModal = modal && modal.querySelector('.modal__pie');
+    var abajoNodo = null;
+    if (modal) {
+      /* ⚠️ SE BARRE LO DE LA ESCENA ANTERIOR (titular, 2026-09-22: «en el
+         escenario de pruebas del simulador no se remueven los personajes del
+         resultado pasado cuando vuelvo a probar y se sobreponen»). Viven fuera
+         del cuerpo, así que repintar el cuerpo no se los lleva, y quien los
+         quita es `parar()` --que solo corre si alguien lo llama--. En el
+         probador se ensaya una escena tras otra sin pasar por ahí. Barrer antes
+         de insertar no depende de que nadie se acuerde. */
+      [].forEach.call(modal.querySelectorAll('.jg-d__abajo'), function (n) {
+        if (n.parentNode) n.parentNode.removeChild(n);
+      });
+      var envoltorio = document.createElement('div');
+      envoltorio.innerHTML = abajo;
+      abajoNodo = envoltorio.firstChild;
+      modal.insertBefore(abajoNodo, pieModal);
+    }
+
+    /* ⚠️ EL AJUSTE VA DESPUÉS DE INSERTAR LAS FIGURAS, y el orden importa: lo que
+       reserva el hueco de abajo las mide, así que corriendo antes medía la
+       escena anterior --o nada-- y el hueco salía cero. */
+    function acomodar() { reservarElHueco(); ajustar(); }
+    acomodar();
     /* Una segunda pasada cuando las fuentes ya midieron: no están autoalojadas,
        así que la primera pintada va con la de respaldo y el texto puede crecer. */
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(ajustar);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(acomodar);
 
     var timers = [];
     var s = window.ATWI.sonido;
@@ -213,6 +275,8 @@
 
     return function parar() {
       timers.forEach(clearTimeout);
+      /* Las figuras viven fuera del cuerpo, así que no se van solas con él. */
+      if (abajoNodo && abajoNodo.parentNode) abajoNodo.parentNode.removeChild(abajoNodo);
       /* El botón vive en el pie, fuera de `caja`: si la escena se corta a
          mitad no se va solo con el cuerpo y se quedaría sobre la pantalla
          siguiente. */

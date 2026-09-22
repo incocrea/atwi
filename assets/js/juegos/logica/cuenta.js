@@ -107,6 +107,9 @@
   J.registrar({
     id: 'cuenta',
     nombre: 'Cuenta',
+    /* Tiene su rotulo dibujado (titular, 2026-09-22): manda sobre el nombre
+       en texto, como el logo del modo en el versus. */
+    rotulo: true,
     como: 'Toca los números en orden, del 1 al último. Los fallos restan.',
     compara: 'rondas',
     reintentos: 2,

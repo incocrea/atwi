@@ -294,7 +294,7 @@
     /* El rótulo dibujado, si el juego lo tiene (`rotulo-<id>.webp`): manda
        sobre el nombre en texto, como el logo del modo en el versus. */
     var cabeza = m.rotulo
-      ? '<img class="jg-rotulo" src="../assets/img/juegos/rotulo-' + esc(C.P.juego) + '.webp" alt="' +
+      ? '<img class="jg-rotulo" src="../assets/img/juegos/rotulo-' + esc(juegoActual()) + '.webp" alt="' +
           esc(m.nombre || '') + '" decoding="async">'
       : '';
     caja().innerHTML =

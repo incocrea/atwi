@@ -544,6 +544,15 @@
 .jg-d__filas {
   display: flex; flex-direction: column; justify-content: flex-start;
   gap: var(--jg-d-gap, clamp(var(--e-2), 3vh, var(--e-4))); flex: 1 1 auto; min-height: 0;
+  /* ⚠️ Y SE REPARTEN EQUITATIVAMENTE EN LO QUE QUEDA (titular, 2026-09-22): el
+     mismo aire delante, entre y detrás, dentro del hueco que dejan las figuras.
+     Con `flex-start` los pares se apilaban arriba y todo el sobrante caía en un
+     bloque muerto justo encima de las cabezas. */
+  justify-content: space-evenly;
+  /* El hueco de abajo es el sitio de las figuras, que ya no están en el flujo.
+     Este número es solo el de partida: el de verdad lo mide `duelo.js` con lo
+     que las figuras acaban invadiendo, que depende del ancho de la pantalla. */
+  padding-bottom: 96px;
   /* ⚠️ SE DESPLAZA ANTES QUE PERDER UN RESULTADO. Estaba en `hidden`, así que en
      un teléfono bajo con tres rondas el último par se quedaba cortado y sin
      manera de verlo --y un resultado que no se puede leer es peor que un
@@ -578,6 +587,14 @@
   font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
   color: var(--tinta-suave); text-shadow: 0 0 5px #fff, 0 0 8px #fff;
 }
+/* El logo del juego: a lo ancho y con su alto, como el rótulo de la
+   presentación. Se acota para que no le quite sitio a los resultados, que es lo
+   que se viene a leer. */
+/* El logo va en la columna del medio, con la chispa del choque encima. Se acota
+   a 104 px: esa columna es tan ancha como lo que lleve dentro, así que un logo
+   grande le come el sitio a las dos piezas que compara --que es lo que se viene
+   a mirar--. */
+.jg-d__rotulo { display: block; margin: 0 auto; width: clamp(72px, 26vw, 104px); height: auto; }
 .jg-d__lado { display: grid; justify-items: center; gap: 2px; }
 /* Más grandes, que es lo que cabe al irse la tarjeta. El `clamp` con `vw` sigue
    siendo lo que cede en un teléfono bajo: se encoge el dibujo, nunca se pierde
@@ -593,46 +610,53 @@
 
 /* ==========================================================================
    LOS DOS QUE JUGARON, ABAJO (titular, 2026-09-22)
-   Cada uno en su lado y mirando al centro, en la pose NEUTRA: la partida ya
-   terminó, así que la de versus contaría otra cosa. Se ven de cintura para
-   arriba --la caja recorta-- para que ocupen la franja de abajo y no media
-   pantalla; es el mismo recurso que la sala, donde quien graba se ve así detrás
-   del botón.
-   ⚠️ Y CEDEN ANTES QUE LOS RESULTADOS: con `flex: none` no encogían nunca, así
-   que en un teléfono bajo con tres rondas la última frase se metía dentro de
-   esta franja. Lo que se pierde al encoger es cuerpo de una figura que ya está
-   recortada a propósito, y no una línea de resultado.
+   Cada uno asomando desde su lado, mirándose, en la pose NEUTRA: la partida ya
+   terminó, así que la de versus contaría otra cosa.
+   ⚠️ A UNA FIGURA NO SE LE HACE NINGÚN CORTE (titular: «los únicos cortes son la
+   parte del cuerpo que se les oculta con base en su posición en el viewport,
+   deben salir desde abajo y de cada lado opuesto»). Estaban dentro de una caja
+   con `overflow` y lo que las cortaba era esa caja: una línea recta por encima
+   de la cabeza que no existe en ninguna otra pantalla del juego. Ahora cuelgan
+   del MODAL y se salen por debajo: lo único que las tapa es el canto del
+   teléfono --el `overflow` del propio modal-- y el botón, que va delante.
    ========================================================================== */
 .jg-d__abajo {
-  position: relative; flex: 0 3 168px; min-height: 64px; overflow: hidden;
-  /* El aire de arriba lo pone el margen y no el `gap` de las filas: con tres
-     rondas el último par quedaba pegado a las cabezas. */
-  margin-top: var(--e-3);
+  position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+  /* Por debajo del pie (que trae el botón) y por encima del fondo. */
+  z-index: 1; pointer-events: none;
 }
-/* ⚠️ EL RECORTE LO HACE LA BANDA, NO UN DIBUJO CORTADO (titular, 2026-09-22:
-   «no hagas tú el corte del personaje, este será por viewport igual que en las
-   animaciones de victoria e intro del versus, con tamaños similares»). O sea lo
-   mismo que `.encuentro__fig`: la figura se dimensiona por ALTO contra la banda
-   y se coloca por su CINTURA, y lo que sobra lo corta el `overflow`. Es lo que
-   hace que los seis personajes salgan igual de grandes midan lo que midan:
-   `--cintura` (64,6 % del lienzo) es el único punto que todos comparten, porque
-   lo que los diferencia es el peinado y no el cuerpo.
-   `--linea-cintura` en 122 % pone la cintura por DEBAJO del suelo de la banda,
-   así que se ven de la cabeza al pecho y salen de las esquinas de abajo. */
 .jg-d__jug {
-  position: absolute; bottom: 0; top: 0; width: 56%;
-  --alto-fig: 232%; --factor-fig: 2.32; --cintura: 64.6%; --linea-cintura: 122%;
+  position: absolute; width: 48%;
+  /* ⚠️ SE HUNDEN (titular, 2026-09-22: «baja más los personajes, ocultándolos
+     más en el bottom»). Estaban prácticamente enteras --acababan 10 px antes
+     del canto-- y una figura entera al pie compite con los resultados, que es
+     lo que se viene a leer.
+     EL NÚMERO VA EN PÍXELES Y NO EN PORCENTAJE: el contenedor mide cero de
+     alto, así que un `%` se resolvía contra cero y no hundía nada.
+     Y LO QUE LAS CORTA DE VERDAD NO ES EL CANTO, ES EL BOTÓN: el pie ocupa los
+     94 px de abajo, así que de la figura solo se ve lo que queda por encima de
+     él. Con 92 px de hundido asomaban las cabezas y nada más --medido: 119 px
+     de figura a la vista--; con 48 se ven 166, que es de cintura para arriba. */
+  bottom: var(--jg-d-hunde, -48px);
+  display: grid; justify-items: center;
 }
-.jg-d__jug--izq { left: -10%; }
-.jg-d__jug--der { right: -10%; }
-.jg-d__fig { position: absolute; inset: 0; display: block; }
-/* La misma cuenta del encuentro: la cintura cae en `--linea-cintura` de la
-   banda, mida lo que mida la figura. */
-.jg-d__fig .retrato__fig {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  top: calc(var(--linea-cintura) - var(--cintura) * var(--factor-fig));
-  height: var(--alto-fig); width: auto; max-width: none;
+.jg-d__jug--izq { left: -6%; }
+.jg-d__jug--der { right: -6%; }
+/* El nombre, sobre la cabeza y con el halo de la escena: sin caja que lo
+   sostenga, es lo que lo despega del dibujo del fondo. */
+.jg-d__jug b {
+  position: absolute; top: -18px; z-index: 2; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: var(--t-chico); font-weight: 800; color: var(--tinta);
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
 }
+/* ⚠️ CON SU PROPORCIÓN, no solo `height: auto`: las piezas de personaje son de
+   620x960, y sin declararlo el alto no existe hasta que la imagen carga. Lo que
+   mide el hueco que hay que reservarles corre ANTES de eso, así que medía una
+   figura de cero de alto y el hueco salía cero --la última fila caía sobre sus
+   cabezas--. Es la misma trampa que ya costó medir las piezas del duelo. */
+.jg-d__fig { display: block; width: 100%; aspect-ratio: 620 / 960; }
+.jg-d__fig .retrato__fig { width: 100%; height: auto; display: block; }
 
 /* EL VUELO, EL CHOQUE Y EL REBOTE (titular, 2026-09-22, corregido). Tres tramos:
    1) INGRESO RECTO: se lanza desde fuera en línea recta hasta el centro (Y=0).
