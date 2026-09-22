@@ -799,9 +799,15 @@
           ? 'Si reintentas, se juega la misma ronda otra vez y cuenta solo la que envíes.'
           : 'No quedan reintentos: esta es la que cuenta.') + '</p>' +
       '</div>';
-    /* Los dos del mismo tamaño y el blanco punteado: regla de los pares. */
+    /* Los dos del mismo tamaño y el blanco punteado: regla de los pares.
+       ⚠️ EL BOTÓN DICE ADÓNDE LLEVA (titular, 2026-09-22: «solo dice Enviar si
+       es la última; si sigue otra ronda, "Siguiente reto"»). Hace lo mismo en
+       los dos casos —deja firme esta ronda—, pero con más rondas por delante lo
+       que viene es el reto siguiente, y «Enviar» se leía como que la partida se
+       acababa ahí. */
+    var hayOtra = C.ronda < C.rondas;
     pie().innerHTML = (quedan ? secundario('reintentar', 'Reintentar (' + (quedan === 1 ? 'queda 1' : 'quedan ' + quedan) + ')') : '') +
-                      principal('enviar', 'Enviar');
+                      principal('enviar', hayOtra ? 'Siguiente reto' : 'Enviar');
   }
 
   function resumenGenerico(r) {
