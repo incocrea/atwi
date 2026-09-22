@@ -174,18 +174,25 @@
 .jg-choque__cartas {
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%;
 }
-/* Cinco en rejilla de tres: las dos de abajo, centradas. */
+/* NO HAY CARTA, HAY FIGURA (mockup del titular, 2026-09-21): el dibujo grande,
+   su placa debajo y los números encima. Sin marco blanco, sin sombra de caja y
+   sin borde: lo que dice si está puesta es el COLOR y el tamaño.
+   Cinco en rejilla de tres: las dos de abajo, centradas. */
 .jg-el:nth-child(4) { grid-column: 1 / 2; transform: translateX(55%); }
 .jg-el:nth-child(5) { grid-column: 3 / 4; transform: translateX(-55%); }
 .jg-el {
-  display: grid; justify-items: center; gap: 2px; padding: 10px 4px 8px;
-  border-radius: var(--radio-carta); background: var(--superficie); box-shadow: var(--sombra-1);
-  border: 3px solid transparent; transition: transform .15s, border-color .15s, opacity .2s;
+  display: grid; justify-items: center; gap: 2px; padding: 4px 0 0;
+  background: none; border: 0; border-radius: var(--radio-carta);
+  transition: transform .15s, opacity .2s;
   position: relative;
 }
+/* El ancho va ACOTADO a la selección: `.jg-el__dibujo` lo usan también el duelo
+   (56 px) y el recibo (72), y una regla suelta les cambiaría el tamaño. */
+.jg-el .jg-el__dibujo { width: 80px; height: auto; transition: filter .15s; }
 .jg-el__nombre {
   font-family: var(--display); font-weight: 800; font-size: var(--t-mini); color: #fff;
   padding: 2px 10px; border-radius: 999px; background: var(--el, var(--tinta-suave));
+  transition: background .15s;
 }
 /* La placa de cada elemento, como la infografía: el color dice cuál es. */
 .jg-el--fuego  { --el: #E14B3B; }
@@ -193,18 +200,19 @@
 .jg-el--planta { --el: #3AA655; }
 .jg-el--rayo   { --el: #E0A32E; }
 .jg-el--metal  { --el: #7B8494; }
-/* Tocar EXPLORA: el puesto crece con su aro por dentro; verde a los que vence,
-   rojo a los que lo vencen. El renglón de debajo lo dice en palabras, que el
-   color solo no es información (y con daltonismo, menos). */
-.jg-el--puesto { border-color: var(--el); transform: scale(1.06); }
-.jg-el:nth-child(4).jg-el--puesto { transform: translateX(55%) scale(1.06); }
-.jg-el:nth-child(5).jg-el--puesto { transform: translateX(-55%) scale(1.06); }
-.jg-el--gana   { border-color: #3AA655; background: #EAF7EE; }
-.jg-el--pierde { border-color: #E14B3B; background: #FDEEEC; }
-.jg-el--usado  { opacity: .35; filter: grayscale(.7); }
-.jg-el__que { font-size: var(--t-mini); font-weight: 800; min-height: 14px; }
-.jg-el--gana  .jg-el__que { color: #2C7F41; }
-.jg-el--pierde .jg-el__que { color: #B93A2C; }
+/* LO QUE NO LLEVA RONDA VA EN GRIS, y lo puesto a color y un poco más grande
+   (titular). El gris es del DIBUJO y de la placa, no un velo por encima: así el
+   halo de explorar se sigue viendo sobre una figura apagada. */
+.jg-el:not(.jg-el--puesto) .jg-el__dibujo { filter: grayscale(1); opacity: .5; }
+.jg-el:not(.jg-el--puesto) .jg-el__nombre { background: var(--linea-fuerte); color: var(--tinta-suave); }
+.jg-el--puesto { transform: scale(1.1); }
+.jg-el:nth-child(4).jg-el--puesto { transform: translateX(55%) scale(1.1); }
+.jg-el:nth-child(5).jg-el--puesto { transform: translateX(-55%) scale(1.1); }
+/* ⚠️ AQUÍ VIVÍA LA ILUMINACIÓN POR FIGURA —halo verde a las que vence, rojo a
+   las que la vencen, con su palabra debajo— y se fue con las palabras: quién
+   vence a quién se consulta ahora en su globo, porque al asignar varias rondas
+   la comparación contra «la última tocada» no decía de cuál hablaba. Un halo de
+   color sin su palabra sería peor que ninguno: el color solo no es información. */
 .jg-choque__pie { width: 100%; }
 .jg-choque__elegida { display: grid; justify-items: center; gap: 4px; margin-top: 4px; }
 
@@ -249,12 +257,37 @@
   .jg-carta { transition: none; }
 }
 
-/* La asignación por números (titular, 2026-09-21): el círculo pequeño con la
-   ronda que le tocó a cada carta, arriba a la derecha, en el color del modo. */
+/* La asignación por números (titular, 2026-09-21): las rondas que lleva cada
+   figura, flotando arriba a la derecha, en el color del modo. Son VARIAS desde
+   que se puede repetir elemento, así que van en fila anclada por la derecha:
+   crece hacia la izquierda sola y nunca empuja al dibujo. */
+.jg-el__nums {
+  position: absolute; top: -2px; right: 2px; z-index: 1;
+  display: flex; gap: 3px;
+}
 .jg-el__num {
-  position: absolute; top: -8px; right: -8px; width: 26px; height: 26px;
+  width: 24px; height: 24px;
   display: grid; place-items: center; border-radius: 50%;
   background: var(--competencia); color: #fff;
   font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
   box-shadow: 0 2px 4px rgba(30, 111, 172, .35), inset 0 0 0 2px #fff;
 }
+
+/* ¿QUIÉN VENCE A QUIÉN?, A UN TOQUE (titular, 2026-09-21). Los rótulos «te
+   gana» / «le ganas» se fueron de las cartas —hablaban de la última tocada, y
+   con varias rondas asignadas no se sabía de cuál— y el círculo entero pasó a
+   un globo que se abre cuando se quiere. El botón es un enlace con su bombilla,
+   no un botón de acción: no hace nada en el tablero, solo explica. */
+.jg-choque__ayuda { margin: 0; text-align: center; }
+.jg-choque__comovence {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border: 0; background: none; cursor: pointer;
+  color: var(--competencia); font-weight: 800; font-size: var(--t-chico);
+  text-decoration: underline; text-underline-offset: 3px;
+}
+.jg-choque__comovence:active { transform: translateY(1px); }
+
+/* La lista del globo: cada elemento con su dibujo y a quién vence. */
+.jg-vence { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.jg-vence__f { display: flex; align-items: center; gap: 10px; text-align: left; }
+.jg-vence__t { font-size: var(--t-chico); line-height: 1.35; }

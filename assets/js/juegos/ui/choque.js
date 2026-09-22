@@ -4,16 +4,26 @@
    de seleccionar un elemento, aceptar y luego seleccionar otro, vamos a
    acumularle puntos como turnos asignados: si le doy a un elemento lo marco
    con un 1, al siguiente le agrego un 2 en círculos pequeños, con posibilidad
-   de reasignar»). Cada toque asigna la siguiente ronda libre; tocar una carta
-   ya marcada la libera; y con todas repartidas se enciende «Confirmar
-   selección». Reasignar es libre —eso reemplaza al recibo y a los
-   reintentos— y con esto se va también la duda del titular sobre Fuego
-   bloqueado: ya no hay «turno pasado» que agote nada, se ve todo el reparto
-   junto.
+   de reasignar»). Con todas repartidas se enciende «Confirmar selección».
+   Reasignar es libre —eso reemplaza al recibo y a los reintentos— y con esto se
+   va también la duda del titular sobre Fuego bloqueado: ya no hay «turno
+   pasado» que agote nada, se ve todo el reparto junto.
 
-   El círculo sigue A LA VISTA: la carta que se acaba de tocar ilumina en
-   verde a las dos que vence y en rojo a las dos que la vencen, con la palabra
-   al lado —el color solo no es información—.
+   Y UN ELEMENTO PUEDE LLEVAR VARIAS RONDAS (titular, el mismo día: «si doy dos
+   veces clic en el mismo elemento no se deselecciona, se le acumula otro turno
+   si está disponible»). Así que **el toque siempre suma** mientras quede una
+   ronda libre; cuando ya no queda ninguna, el toque en uno asignado SUELTA su
+   última —ése es el único gesto de quitar, y el renglón de ayuda lo dice en el
+   momento en que empieza a valer—. Repetir no es un atajo: tres fuegos ganan
+   las tres rondas contra quien no los contrarresta y las pierden todas contra
+   quien sí, así que el veredicto dejó de anular el repetido.
+
+   NO HAY CARTA, HAY FIGURA (mockup del titular): la pieza es el dibujo grande
+   con su placa debajo y los números flotando encima; el marco blanco se fue.
+   Lo que dice si una está puesta es **el color** —las que no llevan ronda van
+   en gris— y el tamaño. El círculo sigue A LA VISTA: la que se acaba de tocar
+   ilumina con un halo verde a las dos que vence y rojo a las dos que la vencen,
+   con la palabra debajo —el color solo no es información—.
 
    Y EL DUELO DE CARTAS (`duelo`): la escena de la revelación, ronda a ronda,
    ANTES del anuncio —si fuera después, el volteo llegaría con el ganador ya
@@ -40,13 +50,9 @@
   J.ui.choque = {
     /* ------------------------------------------------------------------------
        LA ASIGNACIÓN (`deUnaVez`): `ctx.desde..ctx.hasta` son las rondas que
-       faltan; `ctx.previas` lo ya enviado (en línea, tras una caída), que
-       sale agotado. `asignado[elemento] = ronda`. */
+       faltan —en línea, tras una caída, las ya enviadas no están en esa lista—.
+       `asignado[elemento]` es la LISTA de rondas que lleva esa figura. */
     seleccion: function (caja, ctx) {
-      var usados = {};
-      (ctx.previas || []).forEach(function (r) {
-        if (r && typeof r.elemento === 'number') usados[r.elemento] = true;
-      });
       var rondas = [];
       for (var r = ctx.desde; r <= ctx.hasta; r++) rondas.push(r);
 
@@ -55,85 +61,129 @@
           '<div class="jg-choque__cartas">' +
             m().ELEMENTOS.map(function (_, i) {
               return '<button type="button" class="jg-el jg-el--' + m().ELEMENTOS[i] +
-                (usados[i] ? ' jg-el--usado' : '') + '" data-el="' + i + '"' +
-                (usados[i] ? ' disabled' : '') + ' aria-label="' + nombre(i) + '">' +
-                '<span class="jg-el__num" hidden></span>' +
-                pieza(i, 64) +
+                '" data-el="' + i + '">' +
+                '<span class="jg-el__nums" aria-hidden="true"></span>' +
+                pieza(i, 80) +
                 '<span class="jg-el__nombre">' + nombre(i) + '</span>' +
-                '<span class="jg-el__que" aria-hidden="true"></span>' +
               '</button>';
             }).join('') +
           '</div>' +
+          /* ⚠️ QUIÉN VENCE A QUIÉN VA EN UN GLOBO, NO EN LAS CARTAS (titular,
+             2026-09-21). Cada carta llevaba «te gana» / «le ganas» respecto a la
+             última tocada, y eso confunde por dos motivos: aquí todavía no se
+             juega contra nadie --no hay con qué comparar-- y al asignar varias
+             rondas quedan varios indicadores encendidos sin decir de cuál se
+             habla. El círculo entero, que es lo que de verdad hay que saber, se
+             consulta cuando se quiere. */
           '<p class="jg-pista" id="jg-choque-pista"></p>' +
+          '<p class="jg-choque__ayuda">' +
+            '<button type="button" class="jg-choque__comovence" data-el-ayuda>' +
+              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 22) : '') +
+              '<span>¿Quién vence a quién?</span>' +
+            '</button>' +
+          '</p>' +
           '<div class="jg-choque__pie">' +
             '<button type="button" class="boton boton--bloque boton--competencia" data-el-confirmar disabled>' +
               'Confirmar selección</button>' +
           '</div>' +
         '</div>';
 
-      var asignado = {};        // elemento -> ronda
-      var ultima = -1;          // la última carta tocada, para la iluminación
+      var asignado = Object.create(null);   // elemento -> [rondas]
+      /* `ultima` se fue con los rótulos: existía solo para iluminar las cartas
+         según la última tocada, que es justo lo que confundía. */
 
+      function suyas(i) { return asignado[i] || []; }
       function libres() {
-        var puestos = Object.keys(asignado).map(function (k) { return asignado[k]; });
+        var puestos = [];
+        Object.keys(asignado).forEach(function (k) { puestos = puestos.concat(asignado[k]); });
         return rondas.filter(function (r) { return puestos.indexOf(r) === -1; });
+      }
+      function enLetra(ns) {
+        return ns.length === 1 ? 'la ronda ' + ns[0]
+          : 'las rondas ' + ns.slice(0, -1).join(', ') + ' y ' + ns[ns.length - 1];
       }
 
       function repinta() {
         var quedan = libres();
         [].forEach.call(caja.querySelectorAll('.jg-el'), function (c) {
           var i = Number(c.dataset.el);
-          var num = c.querySelector('.jg-el__num');
-          if (num) {
-            num.hidden = asignado[i] == null;
-            num.textContent = asignado[i] != null ? asignado[i] : '';
-          }
-          c.classList.toggle('jg-el--puesto', asignado[i] != null);
-          c.classList.remove('jg-el--gana', 'jg-el--pierde');
-          var que = c.querySelector('.jg-el__que');
-          if (que) que.textContent = '';
-          if (ultima !== -1 && i !== ultima && !c.disabled) {
-            if (m().vence(ultima, i)) { c.classList.add('jg-el--gana'); if (que) que.textContent = 'le ganas'; }
-            else if (m().vence(i, ultima)) { c.classList.add('jg-el--pierde'); if (que) que.textContent = 'te gana'; }
-          }
+          var mias = suyas(i);
+          /* Los números se PINTAN, no se esconden: un `hidden` sobre algo con
+             `display` propio no oculta nada (lo enseñó `.micro-prueba`, y el
+             círculo vacío que el titular vio en tres figuras era eso mismo). */
+          var nums = c.querySelector('.jg-el__nums');
+          if (nums) nums.innerHTML = mias.map(function (n) {
+            return '<b class="jg-el__num">' + n + '</b>';
+          }).join('');
+          c.classList.toggle('jg-el--puesto', mias.length > 0);
+          c.setAttribute('aria-label', nombre(i) + (mias.length ? ', ' + enLetra(mias) : ', sin asignar'));
         });
+        /* LA PISTA DICE QUÉ HACER, y nada más. La frase «X vence a Y y a Z»
+           se fue con los rótulos de las cartas: hablaba del último tocado, que
+           con varias rondas asignadas no se sabe cuál es. Vive en el globo. */
         var p = caja.querySelector('#jg-choque-pista');
         if (p) {
-          p.textContent = ultima !== -1
-            ? nombre(ultima) + ' vence a ' +
-              m().ELEMENTOS.map(function (_, i) { return i; })
-                .filter(function (i) { return m().vence(ultima, i); }).map(nombre).join(' y a ') +
-              '; pierde con los otros dos.' +
-              (quedan.length ? ' Falta asignar ' + (quedan.length === 1 ? 'la ronda ' + quedan[0] : quedan.length + ' rondas') + '.' : '')
-            : 'Toca un elemento para darle la ronda ' + (quedan[0] || '') +
-              '; tócalo otra vez para soltarla.';
+          p.textContent = quedan.length
+            ? 'Toca un elemento para darle la ronda ' + quedan[0] + '. Puedes repetir el mismo.'
+            : 'Ya están ' + enLetra(rondas) + '. Toca uno asignado para soltar su última.';
         }
         var b = caja.querySelector('[data-el-confirmar]');
         if (b) b.disabled = quedan.length > 0;
       }
 
+      /* EL CÍRCULO ENTERO, a un toque: los cinco con lo que vencen, en el mismo
+         orden en que están en el tablero. Se dice con las FRASES de la lógica
+         —«el metal corta la planta»— que es lo que hace el círculo memorable en
+         vez de una tabla que hay que estudiar. */
+      function comoVence() {
+        var els = m().ELEMENTOS;
+        var filas = els.map(function (_, i) {
+          var gana = els.map(function (__, k) { return k; })
+            .filter(function (k) { return m().vence(i, k); });
+          return '<li class="jg-vence__f">' +
+              pieza(i, 34) +
+              '<span class="jg-vence__t"><b>' + esc(nombre(i)) + '</b> vence a ' +
+                gana.map(function (k) { return esc(nombre(k)); }).join(' y a ') + '</span>' +
+            '</li>';
+        }).join('');
+        return '<ul class="jg-vence">' + filas + '</ul>' +
+          '<p class="chico tenue centrado">Cada uno vence a dos y pierde con los otros dos. ' +
+            'Si los dos eligen el mismo, la ronda queda en tablas.</p>';
+      }
+
       caja.addEventListener('click', function (e) {
+        var ay = e.target.closest('[data-el-ayuda]');
+        if (ay) {
+          if (window.ATWI.globo) {
+            window.ATWI.globo.abrir(ay, { titulo: '¿Quién vence a quién?' },
+              { tinte: 'competencia', etiqueta: 'Quién vence a quién', cuerpo: comoVence() });
+          }
+          return;
+        }
         var c = e.target.closest('[data-el]');
-        if (c && !c.disabled) {
+        if (c) {
           var i = Number(c.dataset.el);
-          ultima = i;
-          if (asignado[i] != null) {
-            /* Tocar una marcada la libera: reasignar es quitar y volver a poner. */
-            delete asignado[i];
-          } else {
-            var q = libres();
-            if (q.length) asignado[i] = q[0];
+          var q = libres();
+          if (q.length) asignado[i] = suyas(i).concat(q[0]);
+          else if (suyas(i).length) {
+            /* Sin rondas libres, el toque en uno asignado suelta su última:
+               es el único gesto de quitar, y por eso la pista lo dice. */
+            asignado[i] = suyas(i).slice(0, -1);
+            if (!asignado[i].length) delete asignado[i];
           }
           repinta();
           return;
         }
         var b = e.target.closest('[data-el-confirmar]');
         if (b && !b.disabled) {
-          /* Una jugada por ronda pendiente, EN SU ORDEN: la carta con el 1 es
+          /* Una jugada por ronda pendiente, EN SU ORDEN: la figura con el 1 es
              la ronda 1, aunque se haya asignado la última. */
           var porRonda = rondas.map(function (r) {
-            for (var k in asignado) if (asignado[k] === r) return Number(k);
-            return -1;
+            var cual = -1;
+            Object.keys(asignado).forEach(function (k) {
+              if (asignado[k].indexOf(r) !== -1) cual = Number(k);
+            });
+            return cual;
           });
           if (porRonda.indexOf(-1) !== -1) return;
           ctx.confirmar(porRonda);
