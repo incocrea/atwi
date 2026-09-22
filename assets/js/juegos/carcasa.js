@@ -402,6 +402,18 @@
     })();
   }
 
+  /* Lo que se pinta en el 3-2-1: si el juego trae `conteo(estado, n)` (Cuenta
+     usa una ficha de un set distinto al del tablero), su HTML; si no, el número
+     a secas. El número siempre va en un `solo-lectores` para que la región
+     `aria-live` lo anuncie aunque la vista sea un dibujo. */
+  function conteoContenido(n) {
+    var ui = (J().ui || {})[C.P.juego];
+    if (ui && typeof ui.conteo === 'function') {
+      return '<span class="solo-lectores">' + n + '</span>' + ui.conteo(C.estadoJuego, n);
+    }
+    return String(n);
+  }
+
   /* El 3-2-1. Tres segundos con su sonido, y el tablero ya está debajo pintado
      y bloqueado: al llegar al «¡Ya!» se ve lo que hay que jugar, no un hueco. */
   function cuentaAtras(fin) {
@@ -418,7 +430,7 @@
         luego(function () { if (velo) velo.remove(); fin(); }, 350);
         return;
       }
-      if (velo) { velo.textContent = String(n); velo.classList.remove('jg-cuenta--late'); void velo.offsetWidth; velo.classList.add('jg-cuenta--late'); }
+      if (velo) { velo.innerHTML = conteoContenido(n); velo.classList.remove('jg-cuenta--late'); void velo.offsetWidth; velo.classList.add('jg-cuenta--late'); }
       if (s && s.hay()) s.clac(0.6);
       n--;
       luego(paso, (CUENTA_ATRAS_MS - 350) / 3);
@@ -448,7 +460,7 @@
               '<span id="jg-reloj-n">' + esc(mmss(topeMs())) + '</span></span>') +
         '</div>' +
         '<div class="jg-tablero" id="jg-tablero"></div>' +
-        (bloqueado ? '<div class="jg-cuenta" aria-live="assertive">3</div>' : '') +
+        (bloqueado ? '<div class="jg-cuenta" aria-live="assertive">' + conteoContenido(3) + '</div>' : '') +
       '</div>';
     pie().innerHTML = '';
     pintarJuego();

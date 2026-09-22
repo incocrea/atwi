@@ -12,16 +12,32 @@
   var J = window.ATWI.juegos = window.ATWI.juegos || Object.create(null);
   J.ui = J.ui || Object.create(null);
 
+  /* EL SET ES DEL TABLERO Y SE DECIDE UNA VEZ POR RONDA (titular, 2026-09-22):
+     antes `pintar` sorteaba un set en CADA repintado --y la carcasa repinta el
+     tablero tres veces por ronda: bajo la cuenta atras, al desbloquear y al
+     congelarlo al final--, asi que el set que se veia en el 3-2-1 no era el que
+     se jugaba. El memo se cuelga del OBJETO estado, que la carcasa crea nuevo
+     por ronda (`inicial`) y reutiliza en los repintados: consistente dentro de
+     la ronda, distinto entre rondas. Y el CONTEO usa OTRO set --distinto al del
+     tablero-- para dar variedad al empezar. */
+  var memo = null;
+  function sets(estado) {
+    if (!memo || memo.estado !== estado) {
+      var j = Math.floor(Math.random() * 8);
+      var c = Math.floor(Math.random() * 7); if (c >= j) c += 1;   // c en [0,8) sin j
+      memo = { estado: estado, juego: j, conteo: c };
+    }
+    return memo;
+  }
+
   J.ui.cuenta = {
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
       var lado = Math.min(ctx.ancho, ctx.alto);
-      /* UN SET DE ICONOS AL AZAR EN CADA CARGA (titular, 2026-09-21): la ficha
-         ES el numero. Es COSMETICO --no toca la logica ni la jugada-- asi que
-         va con `Math.random` y no con la semilla; da igual que los dos lados en
-         linea vean formas distintas. Son 8 sets (columnas de la hoja) y el
+      /* La ficha ES el numero (cosmetico: no toca la logica ni la jugada). El
+         set del tablero es el mismo en toda la ronda --lo fija `sets()`-- y el
          numero es la fila. */
-      var set = Math.floor(Math.random() * 8);
+      var set = sets(estado).juego;
       caja.innerHTML =
         '<div class="jg-cuadricula jg-cuadricula--fichas" style="--cols:' + t.cols + ';--filas:' + t.filas +
           ';--lado:' + Math.floor(lado) + 'px;--set:' + set + '">' +
@@ -57,6 +73,15 @@
         var p = caja.querySelector('.jg-pista b');
         if (p) p.textContent = est.sig;
       };
+    },
+
+    /* LA CUENTA ATRÁS (3-2-1) USA OTRO SET (titular, 2026-09-22): la carcasa la
+       pinta y aquí le damos la ficha del número n (1..3) de un set DISTINTO al
+       del tablero, para dar variedad al empezar. `aria-hidden` porque la carcasa
+       ya anuncia el número por su región `aria-live`. */
+    conteo: function (estado, n) {
+      return '<span class="jg-conteo-ficha" style="--set:' + sets(estado).conteo +
+        ';--n:' + (n - 1) + '" aria-hidden="true"></span>';
     },
 
     /* Una celda de la tabla del juez: cuántos, y en cuánto. */

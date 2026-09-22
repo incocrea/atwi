@@ -96,6 +96,16 @@
 }
 .jg-cuenta--late { animation: jg-late .9s ease-out; }
 .jg-cuenta--ya { color: var(--jg-color); font-size: 5rem; }
+/* La ficha del 3-2-1 (Cuenta): un sticker de un set distinto al del tablero, con
+   el mismo halo blanco que tenía el número. La misma hoja y la misma cuenta de
+   posición que `.jg-cuadricula--fichas .jg-celda`. */
+.jg-conteo-ficha {
+  display: block; width: 130px; height: 130px;
+  background: url(../img/juegos/cuenta-fichas.webp) no-repeat;
+  background-size: 800% 1600%;
+  background-position: calc(var(--set) / 7 * 100%) calc(var(--n) / 15 * 100%);
+  filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #fff);
+}
 @keyframes jg-late { from { transform: scale(1.5); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) {
   .jg-cuenta--late, .jg-pildora--urge { animation: none; }
