@@ -4416,6 +4416,15 @@ body.app {
    —36 del gap más 12 del margen— así que el paso real eran 201 px y el reparto
    contaba 189: la tercera tarjeta se salía 24 px del hueco calculado. */
 .ruleta .partida-fila { height: 153px; margin: 0; }
+/* ⚠️ EL ACTA SUBE A 211 (titular, 2026-09-21: «el alto de las cards de acuerdo
+   debe ajustarse para garantizar que el texto se lea bien dejando el margen
+   inferior para la decoración»). El historial solo pinta el enunciado; el acta
+   pinta ADEMÁS lo que se quedó, y a 153 px ese texto chocaba con la peana. 211
+   es el peor caso medido —enunciado a dos renglones y acta a cuatro, con los 48
+   de la onda debajo—; las actas cortas dejan ese hueco al pie, que es el margen
+   para el dibujo. Va después de la regla de 153 y con su misma especificidad,
+   así que gana por orden. */
+.ruleta .partida-fila--acta { height: 211px; }
 .ruleta .partida__tema {
   display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
   overflow: hidden;
@@ -4813,7 +4822,12 @@ body.app {
    de la que sale --es el comportamiento natural del historial-- y escribirlo
    solo en una sugiere que las demas hacen otra cosa. */
 .acta-fila__texto {
-  display: block; margin-top: var(--e-2);
+  /* Cuatro renglones y lo que sobre, puntos suspensivos: el texto entero está a
+     un toque, en la partida. Con el enunciado ya acotado a dos arriba, esto es
+     lo que hace que todas las actas midan lo mismo y la ruleta cuadre. */
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
+  overflow: hidden;
+  margin-top: var(--e-2);
   font-size: var(--t-chico);
   color: var(--tinta); line-height: 1.45;
   overflow-wrap: anywhere;

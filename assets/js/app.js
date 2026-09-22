@@ -3191,7 +3191,7 @@
         /* «Detenida» para la parada del mediador (S27): no es que no acordaran,
            es que el mediador leyó la ronda y no propuso. El texto del acta en
            ese caso es su cierre. */
-        return '<div class="tarjeta partida-fila" data-tipo="' + esc(a.tipo) + '" ' +
+        return '<div class="tarjeta partida-fila partida-fila--acta" data-tipo="' + esc(a.tipo) + '" ' +
             'data-modo="' + esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'negociacion') + '">' +
             '<button class="partida" data-acta-de="' + esc(d.id || '') + '">' +
               '<span class="partida__alto">' +
