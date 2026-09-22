@@ -2615,6 +2615,21 @@
     boton.textContent = 'Borrando…';
     window.ATWI.nube.olvidar(id).then(function (r) {
       if (!r || !r.borrado) {
+        /* ⚠️ «NO ES TUYA O YA NO ESTÁ» NO SE REINTENTA (titular, 2026-09-21).
+           Un 403 dejaba «Reintentar», que da el mismo 403 para siempre y deja
+           al titular atascado en el globo. Si la partida ya no existe --o no es
+           suya, p.ej. una que ve el admin y no le pertenece-- lo correcto es
+           quitarla de la vista: se va de la lista, se caduca el historial y se
+           dice qué pasó, sin botón muerto. */
+        if (r && r.noEsMia) {
+          cerrarGlobo();
+          unaMenos((historial || []).filter(function (x) { return x.id === id; })[0]);
+          historial = (historial || []).filter(function (x) { return x.id !== id; });
+          historialCaducado = true;
+          if (vistaActual === 'historial') pintarHistorial();
+          if (window.ATWI.aviso) window.ATWI.aviso('Esa partida ya no está en tu historial.');
+          return;
+        }
         boton.disabled = false;
         boton.textContent = 'Reintentar';
         /* ENCIMA DE LOS BOTONES, no al final del modal: puesto al final cae

@@ -1076,11 +1076,19 @@ window.ATWI = window.ATWI || {};
       body: JSON.stringify({ debate: debate })
     }).then(function (r) {
       return r.json().then(function (d) {
-        if (!r.ok || (d && d.error))
-          return apuntar('no se pudo borrar: ' + ((d && d.error) || r.status));
+        if (!r.ok || (d && d.error)) {
+          var msg = (d && d.error) || String(r.status);
+          apuntar('no se pudo borrar: ' + msg);
+          /* SE DISTINGUE «NO ES TUYA / YA NO ESTÁ» DE UN FALLO DE RED. Un 403
+             --la fila no existe o no es del que llama-- no se arregla
+             reintentando: la partida hay que quitarla de la vista. Un 500 o un
+             corte de red sí: ahí «Reintentar» tiene sentido. Sin esta marca las
+             dos daban el mismo botón muerto. */
+          return { error: msg, noEsMia: r.status === 403 || /no es tuya|ya no est/i.test(msg) };
+        }
         return d;
-      }, function () { return apuntar('el servidor contestó algo raro (' + r.status + ')'); });
-    }).catch(function (e) { return apuntar('no se pudo borrar: ' + e.message); });
+      }, function () { apuntar('el servidor contestó algo raro (' + r.status + ')'); return { error: 'respuesta rara' }; });
+    }).catch(function (e) { apuntar('no se pudo borrar: ' + e.message); return { error: e.message }; });
   }
 
   /**
