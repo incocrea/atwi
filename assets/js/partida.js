@@ -163,31 +163,31 @@ window.ATWI = window.ATWI || {};
     P.reabrir = abrirEnElServidor;
     abrirEnElServidor();
     function abrirEnElServidor() {
-    if (!P) return Promise.resolve(null);
-    P.abiertaSinId = false;
-    if (window.ATWI.nube && window.ATWI.nube.hay()) {
-      /* Y SE GUARDA LA PROMESA (`P.abriendo`): en QuiénGane la primera ronda
-         genera su tablero con el id de la partida —la semilla local sale de
-         él— así que la carcasa tiene que poder esperarlo si todavía no llegó.
-         En los otros modos nadie la mira. */
-      P.abriendo = window.ATWI.nube.abrirPartida({
-        tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez, juego: P.juego, juegos: P.juegos,
-        abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
-        abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
-        /* El personaje DEL DUELO. Con abogado es el elegido; sin abogado es el
-           avatar de la ficha, que es lo que se ve aunque la voz sea humana. */
-        personajeYo: P.jugadores[indiceDeLaCuenta()].avatar,
-        personajeOtro: P.jugadores[1 - indiceDeLaCuenta()].avatar,
-        invitado: P.jugadores[1 - indiceDeLaCuenta()],
-        /* Para poder RETOMARLA después: con qué ficha juega esta cuenta en esta
-           ronda, y qué lado abrió. Las dos se deciden aquí y en ningún otro
-           sitio quedan. Ver la migración 0031. */
-        yo: P.jugadores[indiceDeLaCuenta()],
-        abreLado: P.orden[0] === indiceDeLaCuenta() ? 'propone' : 'invitado'
-      }).then(function (id) { if (P) { P.debate = id; P.abiertaSinId = !id; } return id; });
-      return P.abriendo;
-    }
-    return Promise.resolve(null);
+      if (!P) return Promise.resolve(null);
+      P.abiertaSinId = false;
+      if (window.ATWI.nube && window.ATWI.nube.hay()) {
+        /* Y SE GUARDA LA PROMESA (`P.abriendo`): en QuiénGane la primera ronda
+           genera su tablero con el id de la partida —la semilla local sale de
+           él— así que la carcasa tiene que poder esperarlo si todavía no llegó.
+           En los otros modos nadie la mira. */
+        P.abriendo = window.ATWI.nube.abrirPartida({
+          tema: P.tema, modo: P.modo, turnos: P.turnos, juez: P.juez, juego: P.juego, juegos: P.juegos,
+          abogadoYo: P.jugadores[indiceDeLaCuenta()].abogado,
+          abogadoOtro: P.jugadores[1 - indiceDeLaCuenta()].abogado,
+          /* El personaje DEL DUELO. Con abogado es el elegido; sin abogado es el
+             avatar de la ficha, que es lo que se ve aunque la voz sea humana. */
+          personajeYo: P.jugadores[indiceDeLaCuenta()].avatar,
+          personajeOtro: P.jugadores[1 - indiceDeLaCuenta()].avatar,
+          invitado: P.jugadores[1 - indiceDeLaCuenta()],
+          /* Para poder RETOMARLA después: con qué ficha juega esta cuenta en esta
+             ronda, y qué lado abrió. Las dos se deciden aquí y en ningún otro
+             sitio quedan. Ver la migración 0031. */
+          yo: P.jugadores[indiceDeLaCuenta()],
+          abreLado: P.orden[0] === indiceDeLaCuenta() ? 'propone' : 'invitado'
+        }).then(function (id) { if (P) { P.debate = id; P.abiertaSinId = !id; } return id; });
+        return P.abriendo;
+      }
+      return Promise.resolve(null);
     }
     abrir();
     /* Las poses del encuentro se piden YA, aunque falten cinco segundos para
