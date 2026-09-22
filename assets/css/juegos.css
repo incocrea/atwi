@@ -23,6 +23,15 @@
   background: url(../img/fondos/game-choque.webp) center top / cover no-repeat,
               var(--competencia-tinte);
 }
+/* Y CUENTA EL SUYO (titular, 2026-09-22). Desde el pivote el fondo lo marca la
+   RONDA que se está jugando y no la partida (`marcarFondo()` en la carcasa):
+   una partida de Choque y Cuenta cambia de lámina al cambiar de ronda. La
+   revelación solo lo lleva cuando TODAS las rondas fueron de este juego. */
+#m-partida[data-juego="cuenta"],
+#m-partida[data-juego="cuenta"] .revelacion--competencia {
+  background: url(../img/fondos/game-cuenta.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
+}
 
 /* --- El armazón --------------------------------------------------------- */
 .jg { --jg-color: var(--ctx-acento, var(--competencia-oscuro)); }

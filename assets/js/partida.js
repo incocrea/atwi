@@ -802,9 +802,26 @@ window.ATWI = window.ATWI || {};
        y no se mezclan nunca: es la única regla de color que el juego no negocia. */
     m.setAttribute('data-ctx', 'sala-' + P.modo);
     /* En QuiénGane, el minijuego marca su propio fondo (`#m-partida[data-juego]`):
-       Choque tiene el suyo en sus tres pantallas —selección, choque y ver
-       resultado—. En los otros modos no aplica. */
-    if (P.modo === 'competencia' && P.juego) m.setAttribute('data-juego', P.juego);
+       Choque y Cuenta tienen el suyo. En los otros modos no aplica.
+       ⚠️ AQUÍ SE MARCA EL DE LA PARTIDA Y SOLO SI ES UNA SOLA (pivote, 2026-09-22):
+       la revelación y el duelo son de la partida entera, así que con reparto
+       mixto no hay «su» fondo --poner el de la ronda 1 diría que la partida fue
+       de ése-- y se queda el genérico de QuiénGane. Mientras se JUEGA manda la
+       ronda, y eso lo marca la carcasa. */
+    marcarJuegoDeLaPartida();
+  }
+
+  /* El fondo que le toca a la PARTIDA: el del juego solo si TODAS sus rondas
+     son de ése. Se llama desde la sala y desde la revelación, que son las dos
+     pantallas que no pinta la carcasa --la carcasa marca el de su ronda y borra
+     la marca al cerrar--. */
+  function marcarJuegoDeLaPartida() {
+    var m = $('#m-partida');
+    if (!m || !P) return;
+    var reparto = (P.juegos && P.juegos.length) ? P.juegos : (P.juego ? [P.juego] : []);
+    var unico = reparto.length && reparto.every(function (x) { return x === reparto[0]; })
+      ? reparto[0] : null;
+    if (P.modo === 'competencia' && unico) m.setAttribute('data-juego', unico);
     else m.removeAttribute('data-juego');
   }
 
@@ -3570,6 +3587,10 @@ window.ATWI = window.ATWI || {};
 
   function revelar() {
     var m = $('#m-partida');
+    /* El fondo vuelve a ser el de la PARTIDA: la carcasa lo dejó en el de la
+       última ronda jugada y lo borró al cerrar. Va al principio, antes del
+       duelo y antes de la ceremonia, que son las dos cosas que se pintan aquí. */
+    marcarJuegoDeLaPartida();
     /* EL DUELO DE CARTAS DE CHOQUE VA ANTES DEL ANUNCIO (docs/10 §8.1): el
        volteo ronda a ronda con la frase del cruce ocupa el sitio de la
        deliberación; después llega la ceremonia de siempre. Solo la primera

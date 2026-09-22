@@ -51,7 +51,21 @@
 
   var C = null;   // la carcasa viva, o nulo
 
-  function caja() { return $('#m-partida .modal__cuerpo'); }
+  /* ⚠️ EL FONDO ES DEL JUEGO DE LA RONDA, Y SE MARCA AQUÍ (pivote del titular,
+     2026-09-22). Cada juego con lámina propia la pinta por
+     `#m-partida[data-juego]`, y `partida.js` lo escribe una vez con el juego de
+     la PARTIDA: con reparto mixto eso dejaría el fondo de la ronda 1 puesto
+     durante las tres. Se marca en `caja()` --el único punto por el que pasan
+     TODOS los pintados de la sala-- en vez de acordarse en cada pantalla: una
+     lista escrita a mano se queda coja a la primera que se escriba, que es la
+     lección que este proyecto tiene anotada cinco veces. */
+  function marcarFondo() {
+    var m = document.getElementById('m-partida');
+    if (!m || !C) return;
+    var id = juegoActual();
+    if (id && m.getAttribute('data-juego') !== id) m.setAttribute('data-juego', id);
+  }
+  function caja() { marcarFondo(); return $('#m-partida .modal__cuerpo'); }
   function pie() { return $('#m-partida .modal__pie'); }
 
   /** Una pieza de `assets/img/juegos/` (pegatina, sin disco detrás). */
@@ -252,6 +266,13 @@
     C.vivo = false;
     pararTodo();
     C = null;
+    /* ⚠️ Y SE QUITA LA MARCA DEL JUEGO DE LA RONDA. Lo que viene después --la
+       revelación-- es de la PARTIDA, y con reparto mixto no tiene «su» juego:
+       dejarla puesta le pegaba el fondo del último que se jugó, como si la
+       partida entera hubiera sido de ése. Quien la repone según lo que la
+       partida sea es `partida.js`. */
+    var m = document.getElementById('m-partida');
+    if (m) m.removeAttribute('data-juego');
   }
 
   /* ==========================================================================
@@ -493,6 +514,9 @@
     C.estado = 'cuenta';
     montarTablero(true);
     var velo = $('#m-partida .jg-cuenta');
+    /* Con muestra, el número no puede plantarse en medio del tablero: es justo
+       lo que hay que mirar. Se va a una esquina y deja ver lo de debajo. */
+    if (velo && M().muestra) velo.classList.add('jg-cuenta--muestra');
     var n = 3;
     var s = sonido();
     function paso() {
@@ -554,6 +578,14 @@
       lado: C.lado,
       nivel: C.nivel,
       bloqueado: C.bloqueado,
+      /* ⚠️ LA MUESTRA ES LA CUENTA ATRÁS, NO UN TIEMPO APARTE (Calco, 2026-09-22).
+         Un juego que se mira antes de jugarse (`m.muestra`) enseña su tablero
+         DURANTE el 3-2-1 y lo esconde al empezar. Se aprovecha esa cuenta en vez
+         de añadir una pausa propia porque el servidor descuenta `CUENTA_ATRAS_MS`
+         exactos del tiempo de la ronda: con una espera aparte, los segundos de
+         mirar contarían como tiempo de juego. Y de paso el 3-2-1 dice cuánto
+         queda para que el patrón desaparezca, que es lo que hace falta saber. */
+      muestra: !!(M().muestra && C.estado === 'cuenta'),
       /* Medido contra el hueco real, y no contra el viewport: en escritorio el
          juego vive dentro de un teléfono dibujado. `clientWidth` es el hueco
          interior, sin bordes. */
