@@ -1695,8 +1695,9 @@ window.ATWI = window.ATWI || {};
             /* En QuiénGane lo configurado son RONDAS de un minijuego, y el chip
                dice cuál: es lo único de esta pantalla que no se ve en el dibujo. */
             (P.modo === 'competencia'
-              ? '<span class="chip">' + esc(nombreDelJuego()) + '</span>' +
-                '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' ronda' : ' rondas') + '</span>'
+              /* Sin el chip de rondas (titular, 2026-09-22): leyendo los juegos
+                 --uno por ronda-- ya se sabe cuántas son. */
+              ? '<span class="chip">' + esc(nombreDelJuego()) + '</span>'
               : '<span class="chip">' + P.turnos + (P.turnos === 1 ? ' turno' : ' turnos') + ' cada uno</span>') +
           '</div>' +
         '</div>' +
