@@ -248,3 +248,13 @@
 @media (prefers-reduced-motion: reduce) {
   .jg-carta { transition: none; }
 }
+
+/* La asignación por números (titular, 2026-09-21): el círculo pequeño con la
+   ronda que le tocó a cada carta, arriba a la derecha, en el color del modo. */
+.jg-el__num {
+  position: absolute; top: -8px; right: -8px; width: 26px; height: 26px;
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--competencia); color: #fff;
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  box-shadow: 0 2px 4px rgba(30, 111, 172, .35), inset 0 0 0 2px #fff;
+}

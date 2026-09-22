@@ -145,9 +145,13 @@
   J.registrar({
     id: 'choque',
     nombre: 'Choque',
-    como: 'Elige tu elemento en secreto: cada uno vence a dos y pierde con dos.',
+    como: 'Asigna un elemento a cada ronda, en secreto: cada uno vence a dos y pierde con dos.',
     compara: 'rondas',
-    reintentos: 2,
+    /* Sin reintentos y sin recibo: la seleccion se reasigna libre en la misma
+       pantalla hasta confirmar (titular, 2026-09-21), asi que «pensarlo mejor»
+       ya esta dentro del tablero. */
+    reintentos: 0,
+    deUnaVez: true,
     /* El tope solo acota el tiempo que se anota: aquí no hay reloj que apure
        (`sinReloj`) y el tiempo no puntúa. */
     topeS: 300,

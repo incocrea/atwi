@@ -132,9 +132,49 @@
     };
     C.lado = C.lados[0];
     /* En línea, lo que ya hice lo sabe el servidor (`estado_del_juego`): se
-       sigue donde toque. Sin él --local o ensayo-- se empieza por la ronda 1. */
+       sigue donde toque. En LOCAL lo sabe el teléfono (titular, 2026-09-21:
+       «cada juego debe cargar su state exactamente donde iba»): el progreso
+       vive en `atwi.juego.<debate>` --se escribe al enviar cada ronda y se va
+       al publicar-- y aquí se repone. La ronda a medio jugar no se guarda y
+       tampoco hace falta: la semilla es de la ronda, así que al volver sale
+       EL MISMO reto. */
     if (P.enLinea) return seguirEnLinea();
+    if (cargarProgreso()) {
+      /* Dónde iba: el primer lado con rondas por enviar. Si le toca al
+         segundo y no ha empezado, el momento es el relevo. */
+      for (var i = 0; i < C.lados.length; i++) {
+        var suyas = (C.hechas[C.lados[i]] || []).filter(Boolean).length;
+        if (suyas < C.rondas) {
+          C.cual = i;
+          C.lado = C.lados[i];
+          C.ronda = suyas + 1;
+          if (i > 0 && suyas === 0) return pintarRelevo();
+          return pintarPresentacion();
+        }
+      }
+      /* Los dos completos y sin resultado: se cayó al comparar; se compara. */
+      return terminarLocal();
+    }
     pintarPresentacion();
+  }
+
+  /* --- El progreso local, en el teléfono ----------------------------------- */
+  function claveProgreso() { return 'atwi.juego.' + C.P.debate; }
+  function guardarProgreso() {
+    if (!C || !C.P.debate || C.P.enLinea || C.P.ensayo) return;
+    try { localStorage.setItem(claveProgreso(), JSON.stringify({ hechas: C.hechas })); } catch (e) {}
+  }
+  function cargarProgreso() {
+    if (!C.P.debate || C.P.ensayo) return false;
+    var crudo = null;
+    try { crudo = JSON.parse(localStorage.getItem(claveProgreso()) || 'null'); } catch (e) {}
+    if (!crudo || !crudo.hechas) return false;
+    C.hechas = { propone: crudo.hechas.propone || [], invitado: crudo.hechas.invitado || [] };
+    return (C.hechas.propone.filter(Boolean).length + C.hechas.invitado.filter(Boolean).length) > 0;
+  }
+  function borrarProgreso() {
+    if (!C || !C.P.debate) return;
+    try { localStorage.removeItem(claveProgreso()); } catch (e) {}
   }
 
   function cerrar() {
@@ -170,7 +210,11 @@
           '<p class="jg-quien__que">Te toca jugar</p>' +
         '</div>' +
         '<div class="jg-ficha-ronda">' +
-          '<p class="jg-ficha-ronda__t">Ronda ' + C.ronda + ' de ' + C.rondas + '</p>' +
+          /* Con `deUnaVez` las rondas se asignan juntas en una pantalla, así
+             que la presentación es una sola y lo dice en plural. */
+          '<p class="jg-ficha-ronda__t">' + (m.deUnaVez
+            ? (C.rondas === 1 ? 'Tu ronda' : 'Tus ' + C.rondas + ' rondas')
+            : 'Ronda ' + C.ronda + ' de ' + C.rondas) + '</p>' +
           (m.sinNiveles ? '' : '<p class="jg-ficha-ronda__nivel">' + esc(nombreDeNivel(nivel)) + '</p>') +
           '<div class="jg-datos">' +
             (m.sinReloj ? '' : '<span class="jg-dato">' + pieza('jg-tiempo', 28) + esc(mmss(topeMs())) + '</span>') +
@@ -221,8 +265,125 @@
     /* SIN RELOJ NO HAY CUENTA ATRÁS (Choque): el 3-2-1 existe para que nadie
        pierda segundos que puntúan mirando cómo aparece el tablero, y aquí el
        tiempo ni apura ni puntúa. Se entra derecho a elegir. */
+    if (C.m.deUnaVez) return montarSeleccion();
     if (C.m.sinReloj) { montarTablero(false); jugarRonda(); return; }
     cuentaAtras(jugarRonda);
+  }
+
+  /* ==========================================================================
+     2b · LA SELECCIÓN DE TODAS LAS RONDAS EN UNA PANTALLA (`deUnaVez`)
+     Petición del titular (2026-09-21) para Choque: en vez de elegir un
+     elemento, aceptar y elegir otro, se ASIGNAN los turnos en la misma
+     interfaz --tocar marca con un 1, el siguiente con un 2, tocar uno marcado
+     lo libera-- hasta repartir las rondas disponibles, y un solo «Confirmar».
+     Reasignar es libre, así que aquí no hay recibo ni reintentos: pensarlo
+     mejor es quitar un número y ponerlo en otro sitio.
+
+     La UI del juego pone `seleccion(area, ctx)` en vez de `pintar`, y llama a
+     `ctx.confirmar(elementos)` con una jugada por ronda pendiente, en orden.
+     Si venimos a medias --en línea con rondas ya enviadas-- se asignan solo
+     las que faltan, con `ctx.previas` para agotar lo ya usado. */
+  function montarSeleccion() {
+    C.estado = 'jugando';
+    C.t0 = performance.now();
+    var q = jugador(C.lado);
+    caja().innerHTML =
+      '<div class="jg jg--juego">' +
+        '<div class="jg-cabecera">' +
+          '<span class="jg-pildora jg-pildora--quien">' +
+            window.ATWI.fichaHTML(q.avatar, 'avatar--mini', q.color) +
+            '<span>' + esc(q.nombre) + '</span>' +
+          '</span>' +
+          '<span class="jg-pildora">' + (C.rondas === 1 ? '1 ronda' : C.rondas + ' rondas') + '</span>' +
+        '</div>' +
+        '<div class="jg-tablero" id="jg-tablero"></div>' +
+      '</div>';
+    pie().innerHTML = '';
+    var ui = (J().ui || {})[C.P.juego];
+    var area = $('#jg-tablero');
+    if (!ui || !ui.seleccion || !area) {
+      if (area) area.innerHTML = '<p class="chico centrado">Este juego todavía no tiene tablero.</p>';
+      return;
+    }
+    ui.seleccion(area, {
+      desde: C.ronda,
+      hasta: C.rondas,
+      previas: previas(),
+      ancho: area.clientWidth,
+      alto: area.clientHeight,
+      confirmar: enviarSeleccion
+    });
+  }
+
+  /** `elementos[i]` es la jugada de la ronda `C.ronda + i`. */
+  function enviarSeleccion(elementos) {
+    if (!C || C.estado !== 'jugando') return;
+    C.estado = 'terminando';
+    var ms = Math.min(topeMs(), Math.max(0, Math.round(performance.now() - C.t0)));
+    if (C.P.enLinea) return secuenciaEnLinea(elementos, ms);
+    for (var i = 0; i < elementos.length; i++) {
+      var r = C.ronda + i;
+      var texto = C.P.debate ? C.P.debate + ':' + r
+                             : 'ensayo:' + (C.P.ensayoSemilla || (C.P.ensayoSemilla = String(Math.random()))) + ':' + r;
+      var semilla = J().azar.deTexto(texto);
+      var nivel = J().nivelDe(C.rondas, r);
+      var rep = J().repetir(C.P.juego, semilla, nivel, C.lado, [elementos[i]], ms);
+      C.hechas[C.lado][r - 1] = {
+        lado: C.lado, ronda: r, jugadas: [elementos[i]], ms: ms, intento: 1,
+        resumen: rep.ok ? rep.resumen : null
+      };
+    }
+    guardarProgreso();
+    C.ronda = C.rondas;
+    siguiente();
+  }
+
+  /* En línea, la asignación se entrega ronda a ronda con las tres llamadas de
+     siempre --empezar sella, terminar entrega, confirmar cierra--, en serie y
+     con su pantalla de espera. Si algo se cae a mitad, el botón vuelve por
+     `seguirEnLinea()`, que pregunta qué quedó enviado y ofrece asignar solo lo
+     que falta. `empezar` puede encontrarse un intento «por confirmar» de una
+     caída anterior: se confirma y se sigue. */
+  function secuenciaEnLinea(elementos, ms) {
+    var n = nube();
+    C.estado = 'enviando';
+    caja().innerHTML =
+      '<div class="sala sala--centrada jg jg--enviando">' +
+        pieza('jg-copa', 96, 'jg-relevo__signo') +
+        '<p class="jg-relevo__t">Enviando tus rondas</p>' +
+      '</div>';
+    pie().innerHTML = esperandoHTML('Enviando');
+    var k = 0;
+    (function una() {
+      if (!C) return;
+      if (k >= elementos.length) {
+        var g = C.ganchos;
+        cerrar();
+        return g.esperar(elOtroLado(C.lados[0]));
+      }
+      var r = C.ronda + k;
+      function confirma(ronda) {
+        n.juego('confirmar', { debate: C.P.debate, ronda: ronda }).then(function (c) {
+          if (!C) return;
+          if (!c || c.error) return fallar((c && c.error) || ('No se pudo confirmar la ronda ' + ronda + '.'), seguirEnLinea);
+          if (c.resultado) return entregar(c.resultado);
+          k++;
+          una();
+        });
+      }
+      n.juego('empezar', { debate: C.P.debate, ronda: r, version: J().VERSION_REGLAS })
+        .then(function (e) {
+          if (!C) return;
+          if (e && e.error && /por confirmar/.test(e.error)) return confirma(r);
+          if (!e || e.error) return fallar((e && e.error) || ('No se pudo sellar la ronda ' + r + '.'), seguirEnLinea);
+          n.juego('terminar', { debate: C.P.debate, ronda: r, jugadas: [elementos[k]], ms: ms })
+            .then(function (x) {
+              if (!C) return;
+              if (!x || x.error) return fallar((x && x.error) || ('No se pudo entregar la ronda ' + r + '.'), seguirEnLinea);
+              confirma(r);
+            });
+        });
+    })();
   }
 
   /* El 3-2-1. Tres segundos con su sonido, y el tablero ya está debajo pintado
@@ -422,6 +583,7 @@
       lado: C.lado, ronda: C.ronda, jugadas: C.jugadas.slice(), ms: C.ms, intento: C.intento,
       resumen: C.resumen
     };
+    guardarProgreso();
     siguiente();
   }
 
@@ -519,6 +681,7 @@
   }
 
   function entregar(fila) {
+    borrarProgreso();
     var g = C.ganchos;
     cerrar();
     g.terminado(fila);

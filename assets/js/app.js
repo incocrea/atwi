@@ -2757,7 +2757,12 @@
         var vistoJ = miLadoEn(d) === 'invitado' ? d.resultado.visto_invitado : d.resultado.visto;
         return vistoJ ? 'terminada' : 'sin-ver';
       }
-      return d.en_linea ? 'en-curso' : 'sin-empezar';
+      /* SIN RESULTADO ES «EN CURSO», también en local (titular, 2026-09-21:
+         «cada juego debe cargar su state exactamente donde iba»): el progreso
+         local vive en el teléfono y retomar la tarjeta lleva a la carcasa, no
+         a la sala de voz. Aquí decía `sin-empezar` para local y esa tarjeta
+         no llevaba a ningún sitio bueno. */
+      return 'en-curso';
     }
     if (d.en_linea && d.abandono && d.modo === 'negociacion') return 'abandonada';
     if (!hechos) return 'sin-empezar';

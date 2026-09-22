@@ -1,19 +1,24 @@
 /* ATWI · minijuegos · el tablero de «Choque» (docs/10 §8.1)
    ==========================================================================
-   Las cinco cartas de elemento, con el círculo A LA VISTA: nadie tiene que
-   memorizar la matriz, porque al tocar una carta se iluminan en verde las dos
-   a las que vence y en rojo las dos que la vencen. Tocar EXPLORA; lo que juega
-   es «Confirmar», y eso es lo único que llega a la lógica.
+   LA SELECCIÓN ES UNA SOLA PANTALLA CON NÚMEROS (titular, 2026-09-21: «en vez
+   de seleccionar un elemento, aceptar y luego seleccionar otro, vamos a
+   acumularle puntos como turnos asignados: si le doy a un elemento lo marco
+   con un 1, al siguiente le agrego un 2 en círculos pequeños, con posibilidad
+   de reasignar»). Cada toque asigna la siguiente ronda libre; tocar una carta
+   ya marcada la libera; y con todas repartidas se enciende «Confirmar
+   selección». Reasignar es libre —eso reemplaza al recibo y a los
+   reintentos— y con esto se va también la duda del titular sobre Fuego
+   bloqueado: ya no hay «turno pasado» que agote nada, se ve todo el reparto
+   junto.
 
-   Los elementos ya usados en rondas anteriores salen agotados —N elementos
-   distintos, uno por ronda— y la pista dice cuántos quedan, como la
-   infografía («te quedan 2 por usar»).
+   El círculo sigue A LA VISTA: la carta que se acaba de tocar ilumina en
+   verde a las dos que vence y en rojo a las dos que la vencen, con la palabra
+   al lado —el color solo no es información—.
 
    Y EL DUELO DE CARTAS (`duelo`): la escena de la revelación, ronda a ronda,
    ANTES del anuncio —si fuera después, el volteo llegaría con el ganador ya
    dicho y sin suspenso—. Dos cartas boca abajo, se voltean, y la frase del
-   cruce dice quién venció. Con temporizadores y no con fotogramas (S29), y
-   con `prefers-reduced-motion` sin volteo: las cartas salen ya abiertas. */
+   cruce dice quién venció. Con temporizadores y no con fotogramas (S29). */
 (function () {
   'use strict';
   var J = window.ATWI.juegos = window.ATWI.juegos || Object.create(null);
@@ -26,82 +31,116 @@
     return '<img class="jg-el__dibujo" src="../assets/img/juegos/el-' + m().ELEMENTOS[i] +
       '.webp" width="' + px + '" height="' + px + '" alt="" decoding="async">';
   }
-
-  function carta(i, op) {
-    op = op || {};
-    return '<button type="button" class="jg-el jg-el--' + m().ELEMENTOS[i] +
-      (op.usado ? ' jg-el--usado' : '') + '" data-el="' + i + '"' +
-      (op.usado ? ' disabled' : '') + ' aria-label="' + nombre(i) + '">' +
-      pieza(i, 64) +
-      '<span class="jg-el__nombre">' + nombre(i) + '</span>' +
-      '<span class="jg-el__que" aria-hidden="true"></span>' +
-    '</button>';
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
   }
 
   J.ui.choque = {
-    pintar: function (caja, estado, ctx) {
-      /* Lo ya usado por MÍ en rondas anteriores: la carcasa lo trae en
-         `ctx.previas` (los resúmenes de mis rondas enviadas). */
+    /* ------------------------------------------------------------------------
+       LA ASIGNACIÓN (`deUnaVez`): `ctx.desde..ctx.hasta` son las rondas que
+       faltan; `ctx.previas` lo ya enviado (en línea, tras una caída), que
+       sale agotado. `asignado[elemento] = ronda`. */
+    seleccion: function (caja, ctx) {
       var usados = {};
       (ctx.previas || []).forEach(function (r) {
         if (r && typeof r.elemento === 'number') usados[r.elemento] = true;
       });
-      var quedan = 5 - Object.keys(usados).length;
+      var rondas = [];
+      for (var r = ctx.desde; r <= ctx.hasta; r++) rondas.push(r);
 
       caja.innerHTML =
         '<div class="jg-choque">' +
           '<div class="jg-choque__cartas">' +
-            m().ELEMENTOS.map(function (_, i) { return carta(i, { usado: usados[i] }); }).join('') +
+            m().ELEMENTOS.map(function (_, i) {
+              return '<button type="button" class="jg-el jg-el--' + m().ELEMENTOS[i] +
+                (usados[i] ? ' jg-el--usado' : '') + '" data-el="' + i + '"' +
+                (usados[i] ? ' disabled' : '') + ' aria-label="' + nombre(i) + '">' +
+                '<span class="jg-el__num" hidden></span>' +
+                pieza(i, 64) +
+                '<span class="jg-el__nombre">' + nombre(i) + '</span>' +
+                '<span class="jg-el__que" aria-hidden="true"></span>' +
+              '</button>';
+            }).join('') +
           '</div>' +
-          '<p class="jg-pista" id="jg-choque-pista">' +
-            (quedan < 5 ? 'Te quedan ' + quedan + ' por usar. ' : '') +
-            'Toca un elemento para ver a quién vence.</p>' +
+          '<p class="jg-pista" id="jg-choque-pista"></p>' +
           '<div class="jg-choque__pie">' +
             '<button type="button" class="boton boton--bloque boton--competencia" data-el-confirmar disabled>' +
-              'Confirmar elemento</button>' +
+              'Confirmar selección</button>' +
           '</div>' +
         '</div>';
 
-      var elegido = -1;
+      var asignado = {};        // elemento -> ronda
+      var ultima = -1;          // la última carta tocada, para la iluminación
 
-      function ilumina() {
+      function libres() {
+        var puestos = Object.keys(asignado).map(function (k) { return asignado[k]; });
+        return rondas.filter(function (r) { return puestos.indexOf(r) === -1; });
+      }
+
+      function repinta() {
+        var quedan = libres();
         [].forEach.call(caja.querySelectorAll('.jg-el'), function (c) {
           var i = Number(c.dataset.el);
-          c.classList.remove('jg-el--puesto', 'jg-el--gana', 'jg-el--pierde');
+          var num = c.querySelector('.jg-el__num');
+          if (num) {
+            num.hidden = asignado[i] == null;
+            num.textContent = asignado[i] != null ? asignado[i] : '';
+          }
+          c.classList.toggle('jg-el--puesto', asignado[i] != null);
+          c.classList.remove('jg-el--gana', 'jg-el--pierde');
           var que = c.querySelector('.jg-el__que');
           if (que) que.textContent = '';
-          if (elegido === -1 || c.disabled) return;
-          if (i === elegido) c.classList.add('jg-el--puesto');
-          else if (m().vence(elegido, i)) { c.classList.add('jg-el--gana'); if (que) que.textContent = 'le ganas'; }
-          else if (m().vence(i, elegido)) { c.classList.add('jg-el--pierde'); if (que) que.textContent = 'te gana'; }
-        });
-        var b = caja.querySelector('[data-el-confirmar]');
-        if (b) b.disabled = elegido === -1 || ctx.bloqueado;
-        var p = caja.querySelector('#jg-choque-pista');
-        if (p && elegido !== -1) {
-          p.textContent = nombre(elegido) + ' vence a ' +
-            m().ELEMENTOS.map(function (_, i) { return i; })
-              .filter(function (i) { return m().vence(elegido, i); }).map(nombre).join(' y a ') +
-            '; pierde con los otros dos.';
-        }
-      }
-
-      if (!ctx.bloqueado) {
-        caja.addEventListener('click', function (e) {
-          var c = e.target.closest('[data-el]');
-          if (c && !c.disabled) {
-            /* Tocar EXPLORA (y tocar el puesto lo suelta): la decisión es el botón. */
-            var i = Number(c.dataset.el);
-            elegido = elegido === i ? -1 : i;
-            ilumina();
-            return;
+          if (ultima !== -1 && i !== ultima && !c.disabled) {
+            if (m().vence(ultima, i)) { c.classList.add('jg-el--gana'); if (que) que.textContent = 'le ganas'; }
+            else if (m().vence(i, ultima)) { c.classList.add('jg-el--pierde'); if (que) que.textContent = 'te gana'; }
           }
-          var b = e.target.closest('[data-el-confirmar]');
-          if (b && !b.disabled && elegido !== -1) ctx.jugar(elegido);
         });
+        var p = caja.querySelector('#jg-choque-pista');
+        if (p) {
+          p.textContent = ultima !== -1
+            ? nombre(ultima) + ' vence a ' +
+              m().ELEMENTOS.map(function (_, i) { return i; })
+                .filter(function (i) { return m().vence(ultima, i); }).map(nombre).join(' y a ') +
+              '; pierde con los otros dos.' +
+              (quedan.length ? ' Falta asignar ' + (quedan.length === 1 ? 'la ronda ' + quedan[0] : quedan.length + ' rondas') + '.' : '')
+            : 'Toca un elemento para darle la ronda ' + (quedan[0] || '') +
+              '; tócalo otra vez para soltarla.';
+        }
+        var b = caja.querySelector('[data-el-confirmar]');
+        if (b) b.disabled = quedan.length > 0;
       }
 
-      return function actualizar() { /* la ronda acaba con la jugada: nada que repintar */ };
+      caja.addEventListener('click', function (e) {
+        var c = e.target.closest('[data-el]');
+        if (c && !c.disabled) {
+          var i = Number(c.dataset.el);
+          ultima = i;
+          if (asignado[i] != null) {
+            /* Tocar una marcada la libera: reasignar es quitar y volver a poner. */
+            delete asignado[i];
+          } else {
+            var q = libres();
+            if (q.length) asignado[i] = q[0];
+          }
+          repinta();
+          return;
+        }
+        var b = e.target.closest('[data-el-confirmar]');
+        if (b && !b.disabled) {
+          /* Una jugada por ronda pendiente, EN SU ORDEN: la carta con el 1 es
+             la ronda 1, aunque se haya asignado la última. */
+          var porRonda = rondas.map(function (r) {
+            for (var k in asignado) if (asignado[k] === r) return Number(k);
+            return -1;
+          });
+          if (porRonda.indexOf(-1) !== -1) return;
+          ctx.confirmar(porRonda);
+        }
+      });
+
+      repinta();
     },
 
     /* La tabla del juez: el nombre del elemento. */
@@ -109,7 +148,8 @@
       return typeof r.elemento === 'number' && r.elemento >= 0 ? nombre(r.elemento) : '—';
     },
 
-    /* El recibo: la carta elegida, en grande. */
+    /* El recibo genérico no se usa con `deUnaVez`, pero la espera en línea y
+       las herramientas lo pueden pedir: la carta elegida. */
     resumenHTML: function (r) {
       if (typeof r.elemento !== 'number' || r.elemento < 0) return '<div class="jg-datos"><span class="jg-dato">Sin elemento</span></div>';
       return '<div class="jg-choque__elegida">' + pieza(r.elemento, 72) +
@@ -140,15 +180,13 @@
           '</div>' +
         '</div>';
       }
-      function esc(s) {
-        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
-          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-        });
-      }
 
       var k = 0;
       var timers = [];
-      function luego(f, ms) { timers.push(setTimeout(f, quieto ? 0 : ms)); }
+      /* CON REDUCED MOTION SE VA EL VOLTEO, NO EL TIEMPO DE LEER: las cartas
+         salen ya abiertas y cada ronda se queda su ratito. Colapsarlo a cero
+         convertía la escena en un parpadeo. */
+      function luego(f, ms) { timers.push(setTimeout(f, quieto ? Math.min(ms, 1500) : ms)); }
 
       function ronda() {
         if (k >= filas.length) {

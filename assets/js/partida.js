@@ -473,6 +473,27 @@ window.ATWI = window.ATWI || {};
     var faltaElVeredicto = t.length >= total;
 
     var mesa = mesaDelDebate(d, t);
+    /* QUIÉNGANE SE RETOMA EN SU PROPIA SALA (lo vio el titular, 2026-09-21:
+       «al recargar una partida en curso de juego carga como si fuera un
+       debate»). Esta función montaba la sala de VOZ —casillas de turnos y el
+       micrófono— para una partida donde no se graba nada: cada juego carga su
+       estado en su propio timeline. Sin sorteo —ya se sorteó al abrirla— y
+       derecho a la carcasa, que en local retoma del progreso guardado en el
+       teléfono y en línea le pregunta al servidor por dónde va. */
+    if (d.modo === 'competencia') {
+      P = {
+        juez: (d.juez && window.ATWI.esJuez(d.juez)) ? d.juez : 'bruno',
+        tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
+        modo: 'competencia', juego: d.juego || null, turnos: d.turnos, publico: 'pareja',
+        jugadores: mesa.jugadores, orden: mesa.orden, intervenciones: [], i: 0,
+        borrador: null, estado: 'juego', repaso: false, reanudada: true,
+        enLinea: Boolean(d.en_linea), miLado: miLadoEn(d),
+        abandono: d.abandono || null, debate: d.id
+      };
+      abrir();
+      precargarElFinal();
+      return arrancarJuego();
+    }
     P = {
       juez: (d.juez && window.ATWI.esJuez(d.juez)) ? d.juez : 'bruno',
       tema: { id: d.tema_catalogo, enunciado: d.enunciado, titulo: d.enunciado },
@@ -848,15 +869,15 @@ window.ATWI = window.ATWI || {};
     var mandadas = (P.intervenciones || []).length;
     var total = P.turnos * 2;
     var esJuego = P.modo === 'competencia';
-    var juegoEnLinea = P.enLinea;
     cerrar();
     if (window.ATWI.aviso && esJuego) {
-      /* EN QUIÉNGANE LOCAL NADA SE GUARDA HASTA EL FINAL —las rondas de los dos
-         viajan juntas—, así que salir a medias es empezar de nuevo, y hay que
-         decirlo. En línea cada ronda enviada ya está en el servidor. */
-      window.ATWI.aviso(juegoEnLinea
-        ? 'Tus rondas enviadas están guardadas. Sigue desde el Historial cuando quieras.'
-        : 'Las rondas jugadas no se guardan a medias: al volver, se empieza de nuevo.');
+      /* EN QUIÉNGANE EL PROGRESO NO SE PIERDE (titular, 2026-09-21): en línea
+         cada ronda confirmada ya está en el servidor, y en local las enviadas
+         quedan guardadas en este teléfono; retomar desde el Historial sigue
+         exactamente donde iba. Lo único que se pierde es la ronda a medio
+         jugar, y ni eso cambia el reto: la semilla es de la ronda, así que al
+         volver sale el mismo. */
+      window.ATWI.aviso('Las rondas enviadas quedan guardadas. Sigue desde el Historial, justo donde iban.');
       return;
     }
     if (window.ATWI.aviso) {
