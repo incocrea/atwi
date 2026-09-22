@@ -37,9 +37,16 @@
   var NOMBRES = { fuego: 'Fuego', metal: 'Metal', planta: 'Planta', rayo: 'Rayo', agua: 'Agua' };
   function m() { return J.juego('choque'); }
   function nombre(i) { return NOMBRES[m().ELEMENTOS[i]] || '?'; }
+  /* ⚠️ `draggable="false"` NO ES UN ADORNO: ES LO QUE HACE QUE EL ARRASTRE
+     FUNCIONE (titular, 2026-09-21: «si intento arrastrar los elementos me sale
+     un prohibido y no los mete en el círculo»). Un `<img>` es arrastrable POR
+     DEFECTO, así que al mover el dedo o el ratón el navegador arrancaba SU
+     propio arrastre de imagen —el del icono de prohibido— y con él llegaba un
+     `pointercancel` que mataba el nuestro a mitad del gesto. El arrastre de
+     puntero estaba bien escrito; lo secuestraba el nativo. */
   function pieza(i, px) {
     return '<img class="jg-el__dibujo" src="../assets/img/juegos/el-' + m().ELEMENTOS[i] +
-      '.webp" width="' + px + '" height="' + px + '" alt="" decoding="async">';
+      '.webp" width="' + px + '" height="' + px + '" alt="" decoding="async" draggable="false">';
   }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -72,7 +79,7 @@
             m().ELEMENTOS.map(function (_, i) {
               return '<button type="button" class="jg-el jg-el--' + m().ELEMENTOS[i] +
                 '" data-el="' + i + '">' +
-                pieza(i, 92) +
+                pieza(i, 104) +
                 '<span class="jg-el__nombre">' + nombre(i) + '</span>' +
               '</button>';
             }).join('') +
@@ -87,7 +94,7 @@
           '<p class="jg-pista" id="jg-choque-pista"></p>' +
           '<p class="jg-choque__ayuda">' +
             '<button type="button" class="jg-choque__comovence" data-el-ayuda>' +
-              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 22) : '') +
+              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
               '<span>¿Quién vence a quién?</span>' +
             '</button>' +
           '</p>' +
@@ -114,7 +121,7 @@
           /* Se PINTA, no se esconde: un `hidden` sobre algo con `display` propio
              no oculta nada —lo enseñó `.micro-prueba`, y los círculos vacíos que
              el titular vio sobre tres figuras eran exactamente eso—. */
-          if (hueco) hueco.innerHTML = e < 0 ? '' : pieza(e, 56);
+          if (hueco) hueco.innerHTML = e < 0 ? '' : pieza(e, 64);
           c.classList.toggle('jg-turno--lleno', e >= 0);
           if (e >= 0) c.dataset.el = String(e); else delete c.dataset.el;
           c.setAttribute('aria-label', 'Turno ' + r + (e < 0 ? ', vacío' : ': ' + nombre(e) + '. Tócalo para vaciarlo.'));
@@ -144,7 +151,7 @@
       function fantasmaEn(i, x, y) {
         var g = document.createElement('div');
         g.className = 'jg-arrastre';
-        g.innerHTML = pieza(i, 84);
+        g.innerHTML = pieza(i, 96);
         document.body.appendChild(g);
         mover(g, x, y);
         return g;
@@ -159,6 +166,12 @@
           c.classList.toggle('jg-turno--diana', c === t);
         });
       }
+
+      /* Y LA RED: cualquier arrastre nativo que se cuele se corta aquí. El
+         `draggable="false"` de las piezas es lo que lo evita; esto cubre lo que
+         venga después —un fondo, un nombre seleccionable— sin tener que
+         acordarse de marcarlo pieza por pieza. */
+      caja.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
       caja.addEventListener('pointerdown', function (e) {
         if (e.button) return;
@@ -231,10 +244,15 @@
         var filas = els.map(function (_, i) {
           var gana = els.map(function (__, k) { return k; })
             .filter(function (k) { return m().vence(i, k); });
+          /* «Fuego: vence Metal y Planta» (titular, 2026-09-21): dos puntos tras
+             el nombre y SIN la «a» delante de cada uno. Son cinco renglones que
+             se leen en columna y no una frase suelta: el «vence a … y a …»
+             sonaba bien de uno en uno y en lista es una preposición repetida
+             diez veces que hay que saltarse para llegar a los nombres. */
           return '<li class="jg-vence__f">' +
               pieza(i, 34) +
-              '<span class="jg-vence__t"><b>' + esc(nombre(i)) + '</b> vence a ' +
-                gana.map(function (k) { return esc(nombre(k)); }).join(' y a ') + '</span>' +
+              '<span class="jg-vence__t"><b>' + esc(nombre(i)) + ':</b> vence ' +
+                gana.map(function (k) { return esc(nombre(k)); }).join(' y ') + '</span>' +
             '</li>';
         }).join('');
         return '<ul class="jg-vence">' + filas + '</ul>' +
