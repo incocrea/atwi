@@ -35,7 +35,7 @@
      una marca. El cliente la manda en `empezar` y el servidor se niega ANTES de
      arrancar el reloj si no es la suya: un teléfono con el JS viejo generaría
      otro tablero y su ronda se rechazaría después de haberla jugado. */
-  J.VERSION_REGLAS = '0.1';
+  J.VERSION_REGLAS = '0.2';
 
   var MAX_JUGADAS = 600;
   var SAL_DEL_GEMELO = 0x67656D65;      // «geme»: la semilla hija del gemelo
@@ -176,7 +176,11 @@
   function veredicto(id, rondas, dePropone, deInvitado) {
     var m = registro[id];
     if (!m) throw new Error('juegos: no conozco «' + id + '»');
-    if (m.sinTablero) return m.veredicto(rondas, dePropone, deInvitado);
+    /* UN JUEGO PUEDE TRAER SU PROPIO VEREDICTO, y hoy solo lo trae Choque: es
+       el único cuyo resultado depende de LOS DOS a la vez —fuego contra planta
+       no es una marca mayor que otra, es una relación— así que la comparación
+       lexicográfica de abajo no puede decidirlo (docs/10 §5.1). */
+    if (m.veredicto) return m.veredicto(rondas, dePropone, deInvitado);
 
     var filas = [];
     var a = 0;

@@ -1,18 +1,18 @@
-/* ATWI · minijuegos · «Cuenta», el juego de mentira
+/* ATWI · minijuegos · «Cuenta»
    ==========================================================================
-   NO ES UNO DE LOS DIEZ. Es el juego más tonto que cumple el contrato entero
-   —semilla, tablero, jugadas, marca, gemelo y resolvedor—, y existe para poder
-   cerrar la Fase 0 recorriendo una partida completa, en local y en línea, antes
-   de que haya ningún juego de verdad: si la base falla, que falle con un tablero
-   de nueve números y no con el primer juego que el titular vaya a aprobar.
+   NACIÓ COMO EL JUEGO DE MENTIRA DE LA FASE 0 y el titular decidió conservarlo
+   (2026-09-21): «me gustaría conservarlo, guárdalo en el catálogo de juegos
+   disponibles y lo mejoramos después». Así que es el juego número once, fuera
+   del plan de los diez, y el único que ya está publicado para todo el mundo.
 
    La regla: una cuadrícula de números barajados; se tocan en orden, del 1 al
    último. Tocar uno que no toca es un fallo (cuenta en contra, no es ilegal);
    tocar una casilla que ya se quitó sí es ilegal: eso en pantalla no se puede
    hacer, así que una lista de jugadas que lo traiga no salió de la app.
 
-   Solo lo ve el probador (`soloPruebas`), y se quita al cerrar el plan (Fase 11
-   de docs/10). */
+   ⚠️ Le falta su rótulo dibujado (`juego-cuenta.webp`): está pedido en
+   `arte/juegos/PEDIDO-DE-PLANCHAS.md` y mientras tanto el selector enseña la
+   diana de aciertos. */
 (function (raiz) {
   'use strict';
   raiz.ATWI = raiz.ATWI || {};
@@ -100,9 +100,9 @@
   }
 
   J.registrar({
-    id: 'prueba',
+    id: 'cuenta',
     nombre: 'Cuenta',
-    soloPruebas: true,
+    como: 'Toca los números en orden, del 1 al último. Los fallos restan.',
     compara: 'rondas',
     reintentos: 2,
     topeS: 60,

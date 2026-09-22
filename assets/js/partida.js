@@ -881,8 +881,9 @@ window.ATWI = window.ATWI || {};
     cerrarReproductor();
     tirarBorrador();
     /* Y la carcasa del minijuego, si la había: su reloj y sus temporizadores
-       no pueden seguir corriendo sobre una sala cerrada. */
+       no pueden seguir corriendo sobre una sala cerrada. El duelo igual. */
     if (window.ATWI.juego) window.ATWI.juego.cerrar();
+    if (P && P.pararDuelo) { P.pararDuelo(); P.pararDuelo = null; }
     /* Solo los objetos LOCALES. Las URLs firmadas de la voz del personaje no
        son objetos de este navegador y `revokeObjectURL` con ellas no hace nada,
        pero da igual: se comprueba para decir en el codigo cual es cual. */
@@ -3517,6 +3518,28 @@ window.ATWI = window.ATWI || {};
 
   function revelar() {
     var m = $('#m-partida');
+    /* EL DUELO DE CARTAS DE CHOQUE VA ANTES DEL ANUNCIO (docs/10 §8.1): el
+       volteo ronda a ronda con la frase del cruce ocupa el sitio de la
+       deliberación; después llega la ceremonia de siempre. Solo la primera
+       vez —en el repaso ya se sabe quién ganó y el suspenso sería teatro— y
+       solo si el juego trae la escena (`ui.<id>.duelo`). */
+    if (P.modo === 'competencia' && P.veredicto && !P.repaso && !P.dueloHecho) {
+      var dj = (P.veredicto.desglose || {});
+      var uiJ = (window.ATWI.juegos && window.ATWI.juegos.ui || {})[dj.juego];
+      if (uiJ && uiJ.duelo && (dj.filas || []).length) {
+        P.dueloHecho = true;
+        m.hidden = false;
+        marcarTurno(null);
+        var rotulo0 = $('#t-partida');
+        if (rotulo0) rotulo0.textContent = '';
+        pie().innerHTML = '';
+        P.pararDuelo = uiJ.duelo(caja(), dj.filas,
+          [P.jugadores[0], P.jugadores[1]],
+          function () { P.pararDuelo = null; revelar(); });
+        return;
+      }
+    }
+    if (P.pararDuelo) { P.pararDuelo(); P.pararDuelo = null; }
     /* LO QUE SONABA SE CALLA ANTES DE CAMBIAR DE PANTALLA. Esto no estaba y se
        oía: bastaba poner una intervención —o «oír la partida entera»— y tocar
        «ver el resultado» para que la voz del personaje siguiera de fondo sobre

@@ -74,9 +74,10 @@ window.ATWI.config = {
        0.4): después del sorteo y la cortinilla no se graba, se juega. El
        minijuego se elige en «Antes de empezar» —un retrato más, entre los dos
        y el juez— y hay vía local y en línea, como en los otros dos modos.
-       Mientras se construyen los diez juegos, el único que existe es el de
-       mentira («Cuenta», solo el titular) y para los demás sigue el toast de
-       «en desarrollo». */
+       Mientras se construyen los diez juegos, el catálogo publicado es
+       «Cuenta» (el que nació de mentira en la Fase 0 y el titular conservó) y
+       los que están en pruebas solo los ve él; sin juegos disponibles sigue el
+       toast de «en desarrollo». */
     competencia: {
       nombre: 'QuiénGane',
       /* Sin partir: los otros dos separan su «IA» para pintarla aparte y este
@@ -122,7 +123,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '9e5d1a8',
+  version: '8bfabe8',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -413,7 +414,7 @@ window.ATWI.config = {
       rondas: '{ganador} ganó más rondas: {a} a {b}. Comparé lo que hizo cada quien en cada una y esto es lo que salió.',
       total: 'Empataron en rondas, {a} a {b}, así que sumé todo lo hecho en la partida y la cuenta favoreció a {ganador}.',
       abandono: '{otro} no llegó a jugar sus rondas, así que {ganador} gana por abandono. Lo de abajo es lo que sí se jugó.',
-      empate: 'Todo igual: {a} a {b} en rondas y la misma cuenta al sumar. Es un empate de verdad. Si quieren, vuelven a jugar con retos nuevos.',
+      empate: 'Quedaron iguales: {a} a {b}. Es un empate de verdad: aquí no hay desempate. Si quieren, vuelven a jugar y los retos cambian.',
       rotuloTabla: 'Ronda por ronda',
       gana: 'gana',
       sinJugar: 'sin jugar',

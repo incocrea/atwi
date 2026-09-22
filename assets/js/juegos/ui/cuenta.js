@@ -1,8 +1,8 @@
-/* ATWI · minijuegos · el tablero de «Cuenta», el juego de mentira
+/* ATWI · minijuegos · el tablero de «Cuenta»
    ==========================================================================
-   La mitad con DOM de `logica/prueba.js`: una cuadrícula de números y nada
-   más. Existe para recorrer la carcasa entera antes de que haya un juego de
-   verdad, y se va con él (Fase 11 de docs/10).
+   La mitad con DOM de `logica/cuenta.js`: una cuadrícula de números y nada
+   más. Nació como el juego de mentira de la Fase 0 y el titular lo conservó
+   en el catálogo (2026-09-21); se mejora después.
 
    Un tablero no decide nada: llama a `ctx.jugar(i)` y la carcasa contesta
    —aplica la lógica, anota la jugada y llama a `actualizar`—. Aquí se dibuja
@@ -12,7 +12,7 @@
   var J = window.ATWI.juegos = window.ATWI.juegos || Object.create(null);
   J.ui = J.ui || Object.create(null);
 
-  J.ui.prueba = {
+  J.ui.cuenta = {
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
       var lado = Math.min(ctx.ancho, ctx.alto);

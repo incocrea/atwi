@@ -166,3 +166,85 @@
 /* Quién se llevó la ronda: en negrita y con el fondo del modo, sin más
    marcas —un signo de «ganó» en cada fila leería como marcador—. */
 .tabla-juego__gana { font-weight: 800; background: color-mix(in srgb, var(--competencia) 18%, transparent); border-radius: 8px; }
+
+/* ==========================================================================
+   «CHOQUE»: las cinco cartas de elemento y el duelo (docs/10 §8.1)
+   ========================================================================== */
+.jg-choque { width: 100%; max-width: 340px; display: grid; gap: var(--e-3); justify-items: center; align-content: center; }
+.jg-choque__cartas {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%;
+}
+/* Cinco en rejilla de tres: las dos de abajo, centradas. */
+.jg-el:nth-child(4) { grid-column: 1 / 2; transform: translateX(55%); }
+.jg-el:nth-child(5) { grid-column: 3 / 4; transform: translateX(-55%); }
+.jg-el {
+  display: grid; justify-items: center; gap: 2px; padding: 10px 4px 8px;
+  border-radius: var(--radio-carta); background: var(--superficie); box-shadow: var(--sombra-1);
+  border: 3px solid transparent; transition: transform .15s, border-color .15s, opacity .2s;
+  position: relative;
+}
+.jg-el__nombre {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-mini); color: #fff;
+  padding: 2px 10px; border-radius: 999px; background: var(--el, var(--tinta-suave));
+}
+/* La placa de cada elemento, como la infografía: el color dice cuál es. */
+.jg-el--fuego  { --el: #E14B3B; }
+.jg-el--agua   { --el: #2E8FE0; }
+.jg-el--planta { --el: #3AA655; }
+.jg-el--rayo   { --el: #E0A32E; }
+.jg-el--metal  { --el: #7B8494; }
+/* Tocar EXPLORA: el puesto crece con su aro por dentro; verde a los que vence,
+   rojo a los que lo vencen. El renglón de debajo lo dice en palabras, que el
+   color solo no es información (y con daltonismo, menos). */
+.jg-el--puesto { border-color: var(--el); transform: scale(1.06); }
+.jg-el:nth-child(4).jg-el--puesto { transform: translateX(55%) scale(1.06); }
+.jg-el:nth-child(5).jg-el--puesto { transform: translateX(-55%) scale(1.06); }
+.jg-el--gana   { border-color: #3AA655; background: #EAF7EE; }
+.jg-el--pierde { border-color: #E14B3B; background: #FDEEEC; }
+.jg-el--usado  { opacity: .35; filter: grayscale(.7); }
+.jg-el__que { font-size: var(--t-mini); font-weight: 800; min-height: 14px; }
+.jg-el--gana  .jg-el__que { color: #2C7F41; }
+.jg-el--pierde .jg-el__que { color: #B93A2C; }
+.jg-choque__pie { width: 100%; }
+.jg-choque__elegida { display: grid; justify-items: center; gap: 4px; margin-top: 4px; }
+
+/* El rótulo dibujado del juego, en la presentación de la ronda. */
+.jg-rotulo { width: min(70%, 240px); height: auto; }
+
+/* --- El duelo: dos cartas boca abajo que se voltean --------------------- */
+.jg--duelo { gap: var(--e-4); }
+.jg-duelo { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.jg-duelo__lado { display: grid; justify-items: center; gap: 6px; }
+.jg-duelo__quien {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: var(--display); font-weight: 800; font-size: var(--t-chico);
+  text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+}
+.jg-duelo__vs {
+  font-family: var(--display); font-weight: 800; font-size: var(--t-h2);
+  color: var(--competencia-oscuro); text-shadow: 0 0 6px #fff;
+}
+/* El volteo es una carta de verdad: dos caras y perspectiva. El dorso es la
+   pieza `carta-reverso.webp`; el frente, el elemento con su nombre. */
+.jg-carta {
+  width: 108px; height: 148px; position: relative;
+  transform-style: preserve-3d; transition: transform .6s;
+  transform: rotateY(0deg); perspective: 600px;
+}
+.jg-carta--abierta { transform: rotateY(180deg); }
+.jg-carta__cara {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  display: grid; place-items: center; align-content: center; gap: 4px;
+  border-radius: 12px; background: var(--superficie); box-shadow: var(--sombra-1);
+  overflow: hidden;
+}
+.jg-carta__cara--dorso img { width: 100%; height: 100%; object-fit: cover; }
+.jg-carta__cara--frente { transform: rotateY(180deg); }
+.jg-duelo__frase {
+  min-height: 44px; max-width: 320px; text-align: center;
+  font-family: var(--display); font-weight: 800; font-size: var(--t-base);
+  color: var(--competencia-oscuro); text-shadow: 0 0 5px #fff, 0 0 10px #fff;
+}
+@media (prefers-reduced-motion: reduce) {
+  .jg-carta { transition: none; }
+}
