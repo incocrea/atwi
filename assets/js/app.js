@@ -2566,10 +2566,18 @@
        desaparecen: las del abogado son un dibujo leyendo un texto. */
     /* Desde el 2026-09-18 no hay grabaciones propias: la original no se guarda
        nunca y todo se oye con la voz del personaje. */
-    var texto = t.length
-      ? 'Se van las ' + t.length + ' intervenciones y el resultado. ' +
-        'Todas se oyen con la voz del personaje; tu voz nunca se guardó.'
-      : 'Esta partida no llegó a tener intervenciones.';
+    /* ⚠️ QUIÉNGANE NO TIENE INTERVENCIONES NUNCA, así que el texto de siempre
+       decía «no llegó a tener intervenciones» hasta en una partida jugada
+       entera (titular, 2026-09-21). Allí lo que hay son rondas de minijuego y,
+       si terminó, su resultado: no hay voz que se vaya ni nada que oír. */
+    var texto = d.modo === 'competencia'
+      ? (d.resultado
+          ? 'Se va esta partida de QuiénGane, con su resultado.'
+          : 'Esta partida de QuiénGane no llegó a terminarse.')
+      : (t.length
+          ? 'Se van las ' + t.length + ' intervenciones y el resultado. ' +
+            'Todas se oyen con la voz del personaje; tu voz nunca se guardó.'
+          : 'Esta partida no llegó a tener intervenciones.');
 
     /* Y EL ACTA SE VA CON ELLA, que es lo que nadie espera (lo señaló el
        titular, 2026-09-15). `acuerdos.debate` es `on delete cascade`, así que
@@ -3131,6 +3139,17 @@
        que no está. Se dice y se ofrece la papelera. */
     if (e === 'se-fue') {
       var elOtro = nombreDelOtro(d);
+      /* En QuiénGane no hay nada que oír: se mira el resultado, si llegó a
+         haberlo, y si no, no queda nada. */
+      if (d.modo === 'competencia') {
+        if (!d.resultado) {
+          return window.ATWI.aviso(elOtro + ' borró esta partida antes de que terminara. ' +
+            'Puedes quitarla con la papelera.');
+        }
+        window.ATWI.aviso(elOtro + ' borró esta partida, así que no se puede seguir. ' +
+          'El resultado sigue aquí.');
+        return window.ATWI.partida.repasar(d);
+      }
       if (!(d.turnos_grabados || []).length) {
         return window.ATWI.aviso(elOtro + ' borró esta partida antes de empezar. ' +
           'No hay nada que oír: puedes quitarla con la papelera.');
