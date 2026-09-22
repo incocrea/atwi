@@ -446,7 +446,11 @@
 }
 .jg-d__quien b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
 
-.jg-d__filas { display: flex; flex-direction: column; gap: var(--e-3); min-height: 0; }
+/* LAS FILAS SE REPARTEN UNIFORMEMENTE EN EL ALTO (titular, 2026-09-22): el
+   contenedor crece hasta llenar lo que deja la cabecera (`flex: 1`) y `space-evenly`
+   deja el mismo aire delante, entre y detrás de las filas —sin hueco muerto abajo y
+   sin scroll—. El `gap` es el mínimo por si en un teléfono bajo no sobra espacio. */
+.jg-d__filas { display: flex; flex-direction: column; justify-content: space-evenly; gap: var(--e-3); flex: 1; min-height: 0; }
 /* Dos columnas de elemento con el choque en medio, y la explicación debajo
    cruzando las tres. El número de ronda va en el canto, chico: sitúa sin
    competir con los dibujos. */
@@ -479,36 +483,35 @@
 /* El número de ronda y el nombre también se leen sobre el fondo dibujado. */
 .jg-d__ronda { text-shadow: 0 0 5px #fff, 0 0 8px #fff; }
 
-/* EL VUELO, EL CHOQUE Y EL REBOTE. Los dos lados se lanzan desde fuera, se cruzan
-   en el centro —ahí es el golpe— y después REBOTAN COMO UN BALÓN hasta caer a su
-   sitio (titular, 2026-09-22): cada bote más bajo que el anterior, y el suelo es
-   la posición final de comparación (translateY 0). El `animation-timing-function`
-   por tramo da el peso de una pelota: subir frena (ease-out), caer acelera
-   (ease-in). El perdedor se apaga y el ganador se enciende DENTRO de la misma
-   animación (abajo), así el estado final no depende de ningún temporizador. */
+/* EL VUELO, EL CHOQUE Y EL REBOTE (titular, 2026-09-22, corregido). Tres tramos:
+   1) INGRESO RECTO: se lanza desde fuera en línea recta hasta el centro (Y=0).
+   2) EL CHOQUE LO REBOTA EN ARCO: no vuelve recto a su sitio; sale despedido
+      hacia ARRIBA describiendo una curva —sube frenando (ease-out), baja
+      acelerando (ease-in)— y cae en su posición final de comparación.
+   3) BOTE AL CAER: uno o dos botes cada vez más bajos hasta asentarse.
+   El suelo es translateY 0. El perdedor se apaga y el ganador se enciende dentro
+   de la misma animación (abajo), así el estado final no depende de temporizadores. */
 @keyframes jg-d-izq {
-  0%   { transform: translateX(-150%); opacity: 0; animation-timing-function: cubic-bezier(.4, 0, .7, .5); }
+  0%   { transform: translate(-150%, 0); opacity: 0; animation-timing-function: cubic-bezier(.35, 0, .6, .4); }
   25%  { opacity: 1; }
-  40%  { transform: translateX(32%); animation-timing-function: ease-out; }   /* choque en el centro */
-  52%  { transform: translate(0, 0); animation-timing-function: ease-out; }   /* cae a su sitio (1.er bote) */
-  63%  { transform: translateY(-32%); animation-timing-function: ease-in; }
-  72%  { transform: translateY(0); animation-timing-function: ease-out; }
-  81%  { transform: translateY(-15%); animation-timing-function: ease-in; }
-  88%  { transform: translateY(0); animation-timing-function: ease-out; }
-  94%  { transform: translateY(-6%); animation-timing-function: ease-in; }
-  100% { transform: translateY(0); }
+  40%  { transform: translate(32%, 0); animation-timing-function: ease-out; }    /* choque en el centro */
+  56%  { transform: translate(15%, -52%); animation-timing-function: ease-in; }  /* cima del arco de rebote */
+  70%  { transform: translate(0, 0); animation-timing-function: ease-out; }      /* cae en su sitio */
+  81%  { transform: translate(0, -18%); animation-timing-function: ease-in; }    /* bote */
+  89%  { transform: translate(0, 0); animation-timing-function: ease-out; }
+  95%  { transform: translate(0, -6%); animation-timing-function: ease-in; }
+  100% { transform: translate(0, 0); }
 }
 @keyframes jg-d-der {
-  0%   { transform: translateX(150%); opacity: 0; animation-timing-function: cubic-bezier(.4, 0, .7, .5); }
+  0%   { transform: translate(150%, 0); opacity: 0; animation-timing-function: cubic-bezier(.35, 0, .6, .4); }
   25%  { opacity: 1; }
-  40%  { transform: translateX(-32%); animation-timing-function: ease-out; }
-  52%  { transform: translate(0, 0); animation-timing-function: ease-out; }
-  63%  { transform: translateY(-32%); animation-timing-function: ease-in; }
-  72%  { transform: translateY(0); animation-timing-function: ease-out; }
-  81%  { transform: translateY(-15%); animation-timing-function: ease-in; }
-  88%  { transform: translateY(0); animation-timing-function: ease-out; }
-  94%  { transform: translateY(-6%); animation-timing-function: ease-in; }
-  100% { transform: translateY(0); }
+  40%  { transform: translate(-32%, 0); animation-timing-function: ease-out; }
+  56%  { transform: translate(-15%, -52%); animation-timing-function: ease-in; }
+  70%  { transform: translate(0, 0); animation-timing-function: ease-out; }
+  81%  { transform: translate(0, -18%); animation-timing-function: ease-in; }
+  89%  { transform: translate(0, 0); animation-timing-function: ease-out; }
+  95%  { transform: translate(0, -6%); animation-timing-function: ease-in; }
+  100% { transform: translate(0, 0); }
 }
 /* Se pone en gris a partir del choque y se queda: «toma posición pero se pone
    en gris expresando que perdió». Y ENCOGE UN 20 % (titular, 2026-09-22): el
