@@ -344,8 +344,24 @@
      `seguirEnLinea()`, que pregunta qué quedó enviado y ofrece asignar solo lo
      que falta. `empezar` puede encontrarse un intento «por confirmar» de una
      caída anterior: se confirma y se sigue. */
+  /* ⚠️ UNA LLAMADA QUE RECHAZA NO PUEDE QUEDARSE SIN CONTESTAR (titular,
+     2026-09-21: «al invitado, una vez jugó sus turnos, se le quedó paralizado en
+     enviando; tuve que salir y volver a entrar»). `secuenciaEnLinea` encadena
+     TRES llamadas por ronda --empezar, terminar, confirmar--, o sea NUEVE
+     seguidas con tres rondas, y ninguna tenía `.catch`: bastaba que una sola se
+     cayera --un hipo de red, la pestaña dormida, cualquier cosa-- para que la
+     promesa quedara sin manejar y la pantalla se quedara en «Enviando» sin
+     salida. Aquí el rechazo se traduce a `{error}`, que es lo que el código de
+     abajo ya sabe atender: enseña el fallo y ofrece «Volver a intentar», y
+     `seguirEnLinea` recalcula desde el servidor sin perder nada --las tres
+     acciones son idempotentes--. */
+  function pedirJuego(accion, cuerpo) {
+    return nube().juego(accion, cuerpo).catch(function (e) {
+      return { error: (e && e.message) || 'no se pudo conectar con el servidor' };
+    });
+  }
+
   function secuenciaEnLinea(elementos, ms) {
-    var n = nube();
     C.estado = 'enviando';
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--enviando">' +
@@ -363,7 +379,7 @@
       }
       var r = C.ronda + k;
       function confirma(ronda) {
-        n.juego('confirmar', { debate: C.P.debate, ronda: ronda }).then(function (c) {
+        pedirJuego('confirmar', { debate: C.P.debate, ronda: ronda }).then(function (c) {
           if (!C) return;
           if (!c || c.error) return fallar((c && c.error) || ('No se pudo confirmar la ronda ' + ronda + '.'), seguirEnLinea);
           if (c.resultado) return entregar(c.resultado);
@@ -371,12 +387,12 @@
           una();
         });
       }
-      n.juego('empezar', { debate: C.P.debate, ronda: r, version: J().VERSION_REGLAS })
+      pedirJuego('empezar', { debate: C.P.debate, ronda: r, version: J().VERSION_REGLAS })
         .then(function (e) {
           if (!C) return;
           if (e && e.error && /por confirmar/.test(e.error)) return confirma(r);
           if (!e || e.error) return fallar((e && e.error) || ('No se pudo sellar la ronda ' + r + '.'), seguirEnLinea);
-          n.juego('terminar', { debate: C.P.debate, ronda: r, jugadas: [elementos[k]], ms: ms })
+          pedirJuego('terminar', { debate: C.P.debate, ronda: r, jugadas: [elementos[k]], ms: ms })
             .then(function (x) {
               if (!C) return;
               if (!x || x.error) return fallar((x && x.error) || ('No se pudo entregar la ronda ' + r + '.'), seguirEnLinea);
@@ -666,7 +682,10 @@
         entregar(filaDe(v));
       }, 900);
     }
-    nube().juego('local', { debate: C.P.debate, version: J().VERSION_REGLAS, rondas: rondas })
+    /* Por `pedirJuego`, que traduce un rechazo a `{error}`: sin él, la partida
+       local se quedaba en «Comparando» para siempre ante cualquier hipo de red,
+       que es el mismo cuelgue que el titular vio en línea. */
+    pedirJuego('local', { debate: C.P.debate, version: J().VERSION_REGLAS, rondas: rondas })
       .then(function (r) {
         if (!C) return;
         if (r && r.resultado) return entregar(r.resultado);

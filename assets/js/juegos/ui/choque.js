@@ -318,66 +318,80 @@
        gana, frase}), `personas` los dos con nombre y lado, `fin` lo que sigue
        (la revelación). Cada ronda: las dos cartas boca abajo entran, se
        voltean, la frase del cruce, y a la siguiente. Todo con reloj. */
+    /* ------------------------------------------------------------------------
+       LA REVELACIÓN: TODAS LAS RONDAS A LA VEZ (titular, 2026-09-21).
+       Antes era una carta por ronda que se destapaba, y el titular lo corrigió
+       entero: «no son cards, son elementos; cada uno entra volando desde su
+       lado, chocan, y después del choque el que gana toma posición y se queda
+       de color mientras que el otro toma posición pero se pone en gris; todas
+       las rondas se muestran en simultánea».
+
+       UN SOLO ENCABEZADO con los dos avatares —antes se repetía en cada ronda—
+       y debajo una fila por encuentro: el elemento de cada quien en su columna,
+       el destello del choque en medio y la explicación debajo.
+
+       ⚠️ TODA LA ESCENA ES UNA ANIMACIÓN CSS DECLARADA DE UNA VEZ, sin
+       temporizadores que la vayan pintando por pasos. Es la lección de S29 por
+       el lado bueno: si la pestaña deja de pintar a mitad —el teléfono se
+       bloquea— al volver no queda a medias, porque el estado final (ganador a
+       color, perdedor en gris) está en el último fotograma y no en un `setTimeout`
+       que ya pasó. El único temporizador que queda es el que avisa de que
+       terminó. */
     duelo: function (caja, filas, personas, fin) {
       var quieto = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var quien = { propone: personas[0], invitado: personas[1] };
 
-      function cartaDuelo(res, lado) {
-        var dentro = res && typeof res.elemento === 'number'
-          ? pieza(res.elemento, 56) + '<span class="jg-el__nombre">' + nombre(res.elemento) + '</span>'
-          : '<span class="jg-el__nombre">No jugó</span>';
-        return '<div class="jg-duelo__lado">' +
-          '<span class="jg-duelo__quien">' + window.ATWI.fichaHTML(quien[lado].avatar, 'avatar--mini', quien[lado].color) +
-            esc(quien[lado].nombre) + '</span>' +
-          '<div class="jg-carta' + (quieto ? ' jg-carta--abierta' : '') + '" data-lado="' + lado + '">' +
-            '<div class="jg-carta__cara jg-carta__cara--dorso">' +
-              '<img src="../assets/img/juegos/carta-reverso.webp" alt="" decoding="async">' +
-            '</div>' +
-            '<div class="jg-carta__cara jg-carta__cara--frente">' + dentro + '</div>' +
-          '</div>' +
-        '</div>';
+      function ladoHTML(res, lado, gana) {
+        var hay = res && typeof res.elemento === 'number';
+        /* El que pierde se apaga; el que gana se queda a color. En empate no se
+           apaga ninguno: nadie perdió. */
+        var pierde = hay && gana !== 'empate' && gana !== lado;
+        return '<div class="jg-d__lado jg-d__lado--' + (lado === 'propone' ? 'izq' : 'der') +
+            (pierde ? ' jg-d__lado--pierde' : '') + (gana === lado ? ' jg-d__lado--gana' : '') + '">' +
+            (hay ? pieza(res.elemento, 62) +
+                   '<span class="jg-el__nombre">' + nombre(res.elemento) + '</span>'
+                 : '<span class="jg-el__nombre">No jugó</span>') +
+          '</div>';
       }
 
-      var k = 0;
-      var timers = [];
-      /* CON REDUCED MOTION SE VA EL VOLTEO, NO EL TIEMPO DE LEER: las cartas
-         salen ya abiertas y cada ronda se queda su ratito. Colapsarlo a cero
-         convertía la escena en un parpadeo. */
-      function luego(f, ms) { timers.push(setTimeout(f, quieto ? Math.min(ms, 1500) : ms)); }
+      var cab =
+        '<div class="jg-d__cab">' +
+          '<span class="jg-d__quien">' +
+            window.ATWI.fichaHTML(quien.propone.avatar, 'avatar--mini', quien.propone.color) +
+            '<b>' + esc(quien.propone.nombre) + '</b></span>' +
+          '<span class="jg-d__quien jg-d__quien--der">' +
+            window.ATWI.fichaHTML(quien.invitado.avatar, 'avatar--mini', quien.invitado.color) +
+            '<b>' + esc(quien.invitado.nombre) + '</b></span>' +
+        '</div>';
 
-      function ronda() {
-        if (k >= filas.length) {
-          luego(function () { timers.forEach(clearTimeout); fin(); }, 700);
-          return;
-        }
-        var f = filas[k];
+      var cuerpo = filas.map(function (f) {
         var dice = f.gana === 'empate'
           ? (f.propone && f.invitado ? 'Mismo elemento: la ronda queda en tablas.' : 'Ronda sin jugar.')
-          : (f.frase ? f.frase + '.' : 'Ronda para ' + esc(quien[f.gana].nombre) + '.');
-        caja.innerHTML =
-          '<div class="sala sala--centrada jg jg--duelo">' +
-            '<p class="jg-ficha-ronda__t">Ronda ' + f.ronda + '</p>' +
-            '<div class="jg-duelo">' + cartaDuelo(f.propone, 'propone') +
-              '<span class="jg-duelo__vs">VS</span>' + cartaDuelo(f.invitado, 'invitado') + '</div>' +
-            '<p class="jg-duelo__frase" id="jg-duelo-frase" aria-live="polite"></p>' +
+          : (f.frase ? f.frase + '.' : 'Ronda para ' + quien[f.gana].nombre + '.');
+        return '<div class="jg-d__fila">' +
+            '<span class="jg-d__ronda">' + f.ronda + '</span>' +
+            ladoHTML(f.propone, 'propone', f.gana) +
+            '<span class="jg-d__chispa" aria-hidden="true"></span>' +
+            ladoHTML(f.invitado, 'invitado', f.gana) +
+            '<p class="jg-d__dice">' + esc(dice) + '</p>' +
           '</div>';
-        /* El volteo: primero uno, después el otro, después la frase. El estado
-           inicial tiene que estar calculado antes de girar (offsetHeight). */
-        var cartas = caja.querySelectorAll('.jg-carta');
-        void caja.offsetHeight;
-        var s = window.ATWI.sonido;
-        luego(function () { if (cartas[0]) cartas[0].classList.add('jg-carta--abierta'); if (s && s.hay()) s.clac(0.6); }, 700);
-        luego(function () { if (cartas[1]) cartas[1].classList.add('jg-carta--abierta'); if (s && s.hay()) s.clac(0.8); }, 1500);
-        luego(function () {
-          var p = caja.querySelector('#jg-duelo-frase');
-          if (p) p.textContent = dice;
-          if (s && s.hay()) { if (f.gana === 'empate') s.clac(0.4); else s.choque(); }
-        }, 2300);
-        k++;
-        luego(ronda, 3900);
-      }
-      ronda();
-      /* Por si la sala se cierra a mitad: quien nos montó puede pararlo. */
+      }).join('');
+
+      caja.innerHTML =
+        '<div class="jg jg--duelo2' + (quieto ? ' jg--duelo2-quieto' : '') + '" aria-live="polite">' +
+          cab + '<div class="jg-d__filas">' + cuerpo + '</div>' +
+        '</div>';
+
+      var timers = [];
+      var s = window.ATWI.sonido;
+      /* El golpe suena cuando chocan, que es el 45 % de una animación de 900 ms
+         —los dos lados llegan al centro a la vez, así que es UN sonido y no uno
+         por fila—. Con `reduced-motion` no hay vuelo y tampoco golpe. */
+      if (!quieto && s && s.hay()) timers.push(setTimeout(function () { s.choque(); }, 420));
+      /* Y el aviso de que terminó: el vuelo dura 900 ms y lo demás es tiempo de
+         leer las explicaciones, que ahora están todas juntas. */
+      timers.push(setTimeout(function () { fin(); }, quieto ? 2600 : 4200));
+
       return function parar() { timers.forEach(clearTimeout); };
     }
   };
