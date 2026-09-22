@@ -277,6 +277,14 @@
   padding: 2px 10px; border-radius: 999px; background: var(--el, var(--tinta-suave));
   transition: background .15s;
 }
+/* El signo que acompaña a un número dentro de la píldora —el reloj de arena del
+   tiempo—. Va en línea con el texto y alineado a su centro, no a la base: es una
+   pegatina redonda y sobre la línea base se lee como si estuviera cayéndose.
+   ⚠️ Y NO ES DIFERIDO (`icono()` no lo pinta): la escena entera aparece de golpe,
+   así que una imagen que llega después sale DENTRO de la animación. Es la quinta
+   vez que aparece el mismo patrón en este proyecto. */
+.jg-el__nombre { display: inline-flex; align-items: center; gap: 4px; }
+.jg-el__signo { width: 18px; height: 18px; flex: none; }
 /* La placa de cada elemento, como la infografía: el color dice cuál es. */
 .jg-el--fuego  { --el: #E14B3B; }
 .jg-el--agua   { --el: #2E8FE0; }

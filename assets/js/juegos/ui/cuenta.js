@@ -164,6 +164,11 @@
     chocante: function (r) {
       if (!r) return null;
       var n = Math.max(1, Math.min(16, r.hechas || 1));
+      /* ⚠️ LA PÍLDORA DICE SOLO EL TIEMPO, con el reloj de arena delante
+         (titular, 2026-09-22: «el icono que acompaña los tiempos… es el de
+         reloj de arena que tenemos entre nuestros iconos ilustrados»). Decía
+         «16 en 1.8 s» y el 16 ya está escrito EN LA FICHA que vuela: lo que
+         falta saber al comparar dos lados es en cuánto. */
       return {
         /* ⚠️ SET FIJO Y NO `sets()`: ese memo es el de la RONDA EN CURSO y
            preguntarle desde aquí --la revelación, que corre cuando la partida
@@ -171,7 +176,8 @@
            revelación no tiene ronda, así que tampoco tiene por qué sortear. */
         icono: '<span class="jg-el__dibujo jg-conteo-ficha jg-conteo-ficha--chocante" ' +
           'style="--set:0;--n:' + (n - 1) + '" aria-hidden="true"></span>',
-        nombre: r.hechas + ' en ' + (Math.round(r.ms / 100) / 10) + ' s'
+        signo: 'historial',
+        nombre: (Math.round(r.ms / 100) / 10) + ' s'
       };
     },
 

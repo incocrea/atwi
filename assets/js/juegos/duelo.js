@@ -13,13 +13,16 @@
 
    EL CONTRATO CON UN JUEGO es una sola función, opcional:
 
-     ui.<id>.chocante(resumen) -> { icono: '<html>', nombre: 'Fuego' }
+     ui.<id>.chocante(resumen) -> { icono: '<html>', nombre: 'Fuego', signo: 'historial' }
 
    `icono` es el dibujo que vuela --lleva la clase `jg-el__dibujo`, que es lo
-   que el CSS escala y apaga-- y `nombre` la píldora de debajo. Un juego que no
-   la traiga cae a `resumenCorto`, así que ninguno se queda fuera de la escena
-   por no haberse enterado de que existe: es la lección de las listas escritas a
-   mano que este proyecto tiene anotada cuatro veces.
+   que el CSS escala y apaga--, `nombre` la píldora de debajo y `signo` una
+   pegatina opcional DENTRO de la píldora, delante del texto: la lleva lo que se
+   mide con un número --en Cuenta, el reloj de arena que acompaña al tiempo
+   (titular, 2026-09-22)-- y no lo que se nombra, como un elemento de Choque. Un
+   juego que no traiga `chocante` cae a `resumenCorto`, así que ninguno se queda
+   fuera de la escena por no haberse enterado de que existe: es la lección de las
+   listas escritas a mano que este proyecto tiene anotada cuatro veces.
 
    CON REPARTO MIXTO CADA FILA DICE A QUÉ SE JUGÓ, y solo entonces: si las tres
    rondas son del mismo juego, el rótulo lo repetiría tres veces.
@@ -68,7 +71,10 @@
       var pierde = c && gana !== 'empate' && gana !== lado;
       return '<div class="jg-d__lado jg-d__lado--' + (lado === 'propone' ? 'izq' : 'der') +
           (pierde ? ' jg-d__lado--pierde' : '') + (gana === lado ? ' jg-d__lado--gana' : '') + '">' +
-          (c ? c.icono + '<span class="jg-el__nombre">' + esc(c.nombre) + '</span>'
+          (c ? c.icono + '<span class="jg-el__nombre">' +
+                 (c.signo ? '<img class="jg-el__signo" src="../assets/img/iconos/' + esc(c.signo) +
+                            '.png" width="18" height="18" alt="" decoding="async">' : '') +
+                 esc(c.nombre) + '</span>'
              : '<span class="jg-el__nombre">No jugó</span>') +
         '</div>';
     }
