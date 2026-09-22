@@ -369,6 +369,14 @@ window.ATWI = window.ATWI || {};
     return rpc('perfil_por_apodo', { p_apodo: String(apodo || '').trim() });
   }
 
+  /* LOS CONTACTOS SON CON QUIEN YA SE JUGÓ (0081), no a quien se invitó. Se
+     derivan de `debates` en cada consulta, así que no hay nada que sincronizar
+     y una partida borrada deja de contar sola.
+     DEVUELVE [] Y NO RECHAZA, como `misBloqueos`: esto es un adorno del globo
+     de invitar --unos accesos rápidos-- y si no se puede preguntar, lo que
+     tiene que quedar es el campo de escribir, no un error. */
+  function misContactos() { if (!hayNube()) return Promise.resolve([]); return rpc('mis_contactos', {}); }
+
   /* BLOQUEAR Y REPORTAR (titular, 2026-09-19). Por APODO, que es lo único que
      se ve del otro; la base lo resuelve a su id y lo guarda así, porque el
      apodo se puede cambiar. */
@@ -1080,6 +1088,7 @@ window.ATWI = window.ATWI || {};
     aceptarInvitacion: conTokenVivo(aceptarInvitacion),
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
     perfilPorApodo: conTokenVivo(perfilPorApodo),
+    misContactos: conTokenVivo(misContactos),
     borrarMiCuenta: conTokenVivo(borrarMiCuenta),
     bloquear: conTokenVivo(bloquear),
     desbloquear: conTokenVivo(desbloquear),

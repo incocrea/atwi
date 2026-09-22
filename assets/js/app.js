@@ -3872,6 +3872,12 @@
     var puesto = propuesta.invitadoNombre || propuesta.correo || '';
     var cuerpo =
       '<div class="correo-editor">' +
+        /* LOS CONTACTOS VAN ARRIBA DEL CAMPO (titular, 2026-09-21) porque son
+           el camino corto: con quien ya se jugó es con quien más se vuelve a
+           jugar, y escribir el apodo entero es el trabajo que esta fila
+           ahorra. Nace vacío y se llena cuando llegan —o no se llena nunca, y
+           entonces el globo es exactamente el de antes—. */
+        '<div class="contactos globo__cede" id="p-contactos" hidden></div>' +
         '<input class="campo" id="p-correo" type="text" inputmode="email" ' +
           'autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="254" ' +
           'placeholder="Su apodo o su correo" value="' + esc(puesto) + '">' +
@@ -3887,7 +3893,77 @@
         etiqueta: 'A quién invitas', cuerpo: cuerpo,
         acciones: '<button class="boton boton--bloque boton--' + claseDeModo() + '" ' +
                   'data-accion="guardar-correo">Listo</button>' });
-    setTimeout(function () { var n = $('#p-correo'); if (n) n.focus(); }, 60);
+
+    pintarContactos();
+    /* ⚠️ SI HAY CONTACTOS NO SE ENFOCA EL CAMPO, y no es un detalle: el foco en
+       un teléfono LEVANTA EL TECLADO, que se come media pantalla y tapa justo
+       la fila de caras que acaba de aparecer. Es la misma regla que la puerta
+       —«que el user decida dónde va a escribir»—, y aquí además elige por él:
+       quien tiene contactos casi siempre viene a tocar uno, no a teclear.
+       Se puede saber al abrir porque los contactos se piden al entrar a esta
+       pantalla y no al abrir el globo; si todavía no llegaron, se enfoca como
+       siempre y la fila aparece debajo. */
+    if (!(contactos && contactos.length)) {
+      setTimeout(function () { var n = $('#p-correo'); if (n) n.focus(); }, 60);
+    }
+  }
+
+  /* CON QUIÉN SE HA JUGADO, para tocar en vez de escribir (titular, 2026-09-21;
+     0081). La regla de qué es un contacto la decide la base: partidas en línea
+     COMPLETADAS, no invitaciones mandadas.
+     Se piden UNA VEZ por visita a «Antes de empezar» y no al abrir el globo:
+     así se sabe si los hay antes de decidir si se enfoca el campo, y abrir el
+     globo dos veces no son dos viajes a Oregón. */
+  var contactos = null;       // null = todavía no se preguntó
+  function pedirContactos() {
+    if (contactos || !window.ATWI.nube || !window.ATWI.nube.hay()) return;
+    window.ATWI.nube.misContactos().then(function (lista) {
+      contactos = Array.isArray(lista) ? lista : [];
+      /* Si el globo ya está abierto cuando llegan, se pintan ahí mismo. */
+      if ($('#p-contactos')) pintarContactos();
+    }).catch(function () { contactos = []; });
+  }
+
+  function pintarContactos() {
+    var caja = $('#p-contactos');
+    if (!caja) return;
+    if (!contactos || !contactos.length) { caja.hidden = true; caja.innerHTML = ''; return; }
+    var h = '';
+    for (var i = 0; i < contactos.length; i++) {
+      var c = contactos[i];
+      /* El id va en el botón y el apodo también: el id es lo que identifica
+         —el apodo se puede cambiar (0064)— y el apodo es lo que se escribe en
+         la columna y lo que se lee. */
+      h += '<button class="contacto" data-contacto="' + esc(c.id) + '" ' +
+             'data-apodo="' + esc(c.apodo) + '" data-avatar="' + esc(c.avatar || 'kai') + '" ' +
+             'data-color="' + esc(c.color || 'azul') + '" ' +
+             'title="Invitar a ' + esc(c.apodo) + '">' +
+             /* ⚠️ NI ÉSTAS VAN DIFERIDAS, por el mismo motivo que la pegatina
+                del globo y el lápiz de las tarjetas: `fichaHTML` escribe
+                `loading="lazy"` y aquí las caras SON el contenido de una pieza
+                que acaba de aparecer. Medido: el globo entra con cuatro discos
+                vacíos y los dibujos caen dentro después. Son fichas de 200 px,
+                8 KB, y quien tiene contactos las ve en cada partida. */
+             window.ATWI.fichaHTML(c.avatar || 'kai', 'contacto__f', c.color || 'azul')
+               .replace('loading="lazy"', 'loading="eager"') +
+             '<span class="contacto__n">' + esc(c.apodo) + '</span>' +
+           '</button>';
+    }
+    caja.innerHTML = h;
+    caja.hidden = false;
+    if (window.ATWI.globo) window.ATWI.globo.recolocar();
+  }
+
+  /* Un toque y listo: se llena lo que el campo habría llenado y se cierra el
+     globo, igual que pulsar «Listo». NO SE MANDA LA INVITACIÓN AQUÍ —eso lo
+     hace «Enviar invitación» en la pantalla de atrás—: tocar una cara no puede
+     gastar una vida ni mandar un correo sin pasar por el botón que lo dice. */
+  function elegirContacto(boton) {
+    propuesta.correo = '';
+    propuesta.invitadoPerfil = boton.dataset.contacto;
+    propuesta.invitadoNombre = boton.dataset.apodo;
+    propuesta.invitadoFicha = { avatar: boton.dataset.avatar, color: boton.dataset.color };
+    cerrarInvitar();
   }
 
   function guardarCorreo() {
@@ -4841,6 +4917,12 @@
        se comía un juez de la vuelta —cuatro toques y la vuelta de seis se había
        gastado sin jugar una sola partida—. */
     if (!repintando || !propuesta.juez) propuesta.juez = sortearJuez();
+
+    /* Con quién se ha jugado, para el globo de invitar. Se pide al ENTRAR y no
+       al abrir el globo: cuando se abra ya tiene que saberse si los hay (de eso
+       depende si se levanta el teclado). No se pide al repintar —cambiar de vía
+       no cambia con quién se jugó—. */
+    if (!repintando) pedirContactos();
     propuesta.otro = propuesta.otro || (invitadosPrevios()[0] || {}).nombre || INVITADO;
     var g = fichaDelInvitado(propuesta.otro);
     propuesta.otroAvatar = g.avatar;
@@ -6198,6 +6280,10 @@
       }
       return;
     }
+
+    /* Un contacto del globo de invitar: llena y cierra, de un toque. */
+    var con = e.target.closest('[data-contacto]');
+    if (con) { elegirContacto(con); return; }
 
     /* Los globos. Hoy solo hay uno —el descargo de IA de la portada—; la tabla
        existe para que añadir el siguiente sea una fila y no un `if` más. */

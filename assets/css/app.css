@@ -4105,6 +4105,43 @@ body.app {
 .correo-editor p { margin: 0; }
 .correo-editor #p-correo-error:empty { display: none; }
 
+/* CON QUIEN YA SE JUGO, PARA TOCAR EN VEZ DE ESCRIBIR (titular, 2026-09-21).
+   ⚠️ ENVUELVE, NO SCROLLEA DE LADO: la regla de este proyecto es que nada lo
+   hace, y una fila horizontal dentro de un globo esconde a los de la derecha
+   justo a quien tiene varios. Con `wrap` se ven todos y lo que crece es el
+   alto, que el globo ya sabe ceder (`globo__cede`).
+   Y van CENTRADOS porque la última fila casi nunca viene llena: alineados a la
+   izquierda, dos contactos sueltos quedan colgando de una esquina. */
+.contactos {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px 12px;
+  /* El aire de los lados es el del anillo de foco, igual que en `.globo__cede`:
+     este bloque puede acabar con `overflow` cuando el globo no cabe. */
+  padding-inline: 4px; margin-inline: -4px;
+  padding-block: 2px;
+}
+/* 72 px de ancho: medido, tres por fila en el globo, que es lo que cabe con la
+   cara a 48 y el apodo debajo. Con cuatro habría que bajar la cara a 36 —la del
+   selector de personaje, que ahí se toca para elegir entre seis y aquí para
+   reconocer a alguien—. */
+.contacto {
+  padding: 0; border: 0; background: none; font: inherit; cursor: pointer;
+  width: 72px; display: grid; justify-items: center; gap: 3px;
+  transition: transform var(--dur-corta) var(--rebote);
+}
+.contacto__f { width: 48px; height: 48px; }
+.contacto__n {
+  font-size: .72rem; font-weight: 700; color: var(--tinta-suave);
+  /* Un apodo largo no puede ensanchar su ficha: se corta con puntos y el
+     completo vive en el `title`. */
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.contacto:active { transform: scale(.94); }
+@media (prefers-reduced-motion: reduce) {
+  .contacto { transition: none; }
+  .contacto:active { transform: none; }
+}
+
 .mi-personaje {
   display: grid; justify-items: center; gap: 2px;
   width: 100%; margin: var(--e-2) 0 var(--e-1);
