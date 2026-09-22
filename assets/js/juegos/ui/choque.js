@@ -354,11 +354,16 @@
           '</div>';
       }
 
+      /* Cada avatar va ARRIBA y CENTRADO sobre su columna (titular, 2026-09-22):
+         avatar encima, nombre debajo. El hueco de en medio copia la columna de la
+         chispa de las filas, para que los dos avatares caigan centrados sobre sus
+         elementos. */
       var cab =
         '<div class="jg-d__cab">' +
           '<span class="jg-d__quien">' +
             window.ATWI.fichaHTML(quien.propone.avatar, 'avatar--mini', quien.propone.color) +
             '<b>' + esc(quien.propone.nombre) + '</b></span>' +
+          '<span class="jg-d__quien-hueco" aria-hidden="true"></span>' +
           '<span class="jg-d__quien jg-d__quien--der">' +
             window.ATWI.fichaHTML(quien.invitado.avatar, 'avatar--mini', quien.invitado.color) +
             '<b>' + esc(quien.invitado.nombre) + '</b></span>' +
@@ -384,10 +389,11 @@
 
       var timers = [];
       var s = window.ATWI.sonido;
-      /* El golpe suena cuando chocan, que es el 45 % de una animación de 900 ms
-         —los dos lados llegan al centro a la vez, así que es UN sonido y no uno
-         por fila—. Con `reduced-motion` no hay vuelo y tampoco golpe. */
-      if (!quieto && s && s.hay()) timers.push(setTimeout(function () { s.choque(); }, 420));
+      /* El golpe suena cuando chocan, que es el 40 % de una animación de 1290 ms
+         (un 30 % más lenta que antes, titular 2026-09-22) —los dos lados llegan al
+         centro a la vez, así que es UN sonido y no uno por fila—. Con
+         `reduced-motion` no hay vuelo y tampoco golpe. */
+      if (!quieto && s && s.hay()) timers.push(setTimeout(function () { s.choque(); }, 520));
 
       /* ⚠️ NO SE PASA SOLO AL RESULTADO (titular, 2026-09-21: «después de
          presentar el choque no sigas automáticamente al resultado, agrega un
@@ -404,7 +410,7 @@
         var b = pie.querySelector('[data-el-ver]');
         if (b) b.addEventListener('click', function () { b.disabled = true; fin(); });
       }
-      timers.push(setTimeout(ponerBoton, quieto ? 200 : 1100));
+      timers.push(setTimeout(ponerBoton, quieto ? 200 : 1450));
 
       return function parar() {
         timers.forEach(clearTimeout);
