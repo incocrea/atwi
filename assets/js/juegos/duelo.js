@@ -98,25 +98,24 @@
        partida terminó-- y la pose de versus contaría otra cosa. Van con
        `fondo: null` porque la mancha de color de detrás es del avatar redondo,
        y `mira` las voltea hacia el centro. */
+    /* ⚠️ SIN NOMBRE DEBAJO (titular, 2026-09-22: «no les pongas el nombre a los
+       avatares, cada quien reconoce el suyo»). En una partida local los dos
+       están delante y en línea solo hay dos figuras: el rótulo decía lo que la
+       cara ya dice, y encima obligaba a colgarlo por arriba de la figura para
+       que no se lo comiera el recorte. */
     var abajo =
       '<div class="jg-d__abajo" aria-hidden="true">' +
         '<span class="jg-d__jug jg-d__jug--izq">' +
           window.ATWI.retrato(quien.propone.avatar, 'frente',
             { fondo: null, mira: 'derecha', color: quien.propone.color, clase: 'jg-d__fig' }) +
-          '<b>' + esc(quien.propone.nombre) + '</b>' +
         '</span>' +
         '<span class="jg-d__jug jg-d__jug--der">' +
           window.ATWI.retrato(quien.invitado.avatar, 'frente',
             { fondo: null, mira: 'izquierda', color: quien.invitado.color, clase: 'jg-d__fig' }) +
-          '<b>' + esc(quien.invitado.nombre) + '</b>' +
         '</span>' +
       '</div>';
 
     var cuerpo = filas.map(function (f) {
-      var dice = f.gana === 'empate'
-        ? (f.propone && f.invitado ? (f.frase ? f.frase + '.' : 'La ronda queda en tablas.')
-                                   : 'Ronda sin jugar.')
-        : (f.frase ? f.frase + '.' : 'Ronda para ' + quien[f.gana].nombre + '.');
       var m = J.juego(f.juego);
       /* Sin número de ronda (titular, 2026-09-22): la frase de cada choque ya
          dice qué pasó y son pocas filas; el número no situaba nada.
@@ -125,12 +124,25 @@
          de cada par de resultado»). Antes iba en el canto y solo con reparto
          mixto; centrado encabeza su par y es lo que separa una ronda de la
          siguiente cuando las figuras de abajo ocupan el sitio del encabezado. */
+      /* ⚠️ EL NOMBRE DEL JUEGO VA EN MEDIO, Y SALE AL FINAL (titular,
+         2026-09-22: «centra el nombre del juego entre los dos elementos que
+         chocan; el nombre aparece después de que termina la animación»). Antes
+         encabezaba su par desde el primer fotograma, y así compite con lo único
+         que hay que mirar mientras las piezas vuelan. En el centro ocupa el
+         hueco que la chispa deja cuando se apaga: primero el golpe, después
+         quién ganó, y al final de qué juego era la ronda.
+         ⚠️ Y SE FUE LA FRASE («Ronda para Dos», «El agua apaga el fuego»): eso
+         lo dice el veredicto del juez dos pantallas después, y aquí era la misma
+         cosa contada dos veces --con el agravante de que ocupaba un renglón por
+         ronda, que es justo lo que hacía encoger los dibujos en un teléfono
+         bajo--. */
       return '<div class="jg-d__fila">' +
-          '<span class="jg-d__juego">' + esc((m && m.nombre) || f.juego) + '</span>' +
           ladoHTML(f.propone, 'propone', f.gana, f.juego) +
-          '<span class="jg-d__chispa" aria-hidden="true"></span>' +
+          '<span class="jg-d__medio">' +
+            '<span class="jg-d__chispa" aria-hidden="true"></span>' +
+            '<span class="jg-d__juego">' + esc((m && m.nombre) || f.juego) + '</span>' +
+          '</span>' +
           ladoHTML(f.invitado, 'invitado', f.gana, f.juego) +
-          '<p class="jg-d__dice">' + esc(dice) + '</p>' +
         '</div>';
     }).join('');
 
