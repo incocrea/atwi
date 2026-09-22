@@ -5380,12 +5380,22 @@
       /* EN QUIÉNGANE, EL MINIJUEGO ENTRE LOS DOS Y EL JUEZ: es lo que se juega,
          y va antes que quién lo presenta. Con el mismo retrato que los otros
          tres, para que la mesa se lea de una pieza. */
-      (esJuego && propuesta.juego ? '<div class="duo prep__bloque duo--uno">' + bloqueDelJuego() + '</div>' : '') +
-
-      /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
-         juzga es de la partida y los turnos son el último parámetro —cuánto
-         rato quieren estar—, así que van en ese orden de importancia. */
-      bloqueJuez +
+      /* ⚠️ Y EN QUIÉNGANE VAN EN LA MISMA FILA (titular, 2026-09-21: «ubica el
+         selector de juego al lado del indicador de juez para reducir la altura y
+         evitar que la interfaz genere scroll en viewports pequeños»). Eran dos
+         bloques centrados, uno debajo del otro, o sea **dos filas para dos
+         piezas que caben en una** —y este modo tiene una sección más que los
+         otros dos, así que es justo el que primero se sale de la pantalla—.
+         Comparten la fila de `.duo` que ya usan los dos que juegan: mismo
+         retrato, mismo ancho, misma rejilla de dos columnas. El orden es el de
+         siempre —a qué se juega y quién lo juzga—, solo que ahora leído de
+         izquierda a derecha en vez de de arriba abajo. */
+      (esJuego && propuesta.juego
+        ? '<div class="duo prep__bloque">' + bloqueDelJuego() + pintarJuez() + '</div>'
+        /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
+           juzga es de la partida y los turnos son el último parámetro —cuánto
+           rato quieren estar—, así que van en ese orden de importancia. */
+        : bloqueJuez) +
 
       '<div class="turnos-linea prep__bloque">' +
         /* «Turnos por persona» y no «¿Cuántos turnos?» (decisión del titular):
