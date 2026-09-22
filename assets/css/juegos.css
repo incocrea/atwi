@@ -827,3 +827,16 @@
   color: var(--tinta-suave); margin-bottom: 4px;
 }
 
+
+/* EL LOGO DEL JUEGO EN LA CABECERA, mientras se juega (titular, 2026-09-22).
+   Va en el sitio del título y sin sus destellos: el rótulo es un dibujo con su
+   propio perfil, y dos rayas doradas a los lados lo convertían en un título
+   con adornos. El alto lo manda la fila de la cabecera --la flecha de volver
+   mide 44--: más alto la empujaría hacia abajo y movería el tablero. */
+.modal__titulo--logo { line-height: 0; }
+.modal__titulo--logo::before, .modal__titulo--logo::after { content: none; }
+.jg-logo-cabecera {
+  display: inline-block;
+  height: 44px; width: auto; max-width: 100%;
+  object-fit: contain;
+}

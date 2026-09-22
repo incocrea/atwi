@@ -69,6 +69,29 @@
   function pie() { return $('#m-partida .modal__pie'); }
 
   /** Una pieza de `assets/img/juegos/` (pegatina, sin disco detrás). */
+  /* LA CABECERA DEL MODAL (titular, 2026-09-22: «tanto en los intros de los
+     juegos como en la partida quita el título del modal; en la partida en
+     curso reemplázalo por el logo del juego actual»). En la presentación y en
+     el relevo manda el rótulo grande del centro, y un título arriba decía lo
+     mismo dos veces; así que ahí va VACÍA. Mientras se juega, el rótulo ya no
+     está y lo que sitúa es el logo, en el sitio del título.
+     Es el logo del juego de ESTA ronda: con reparto mixto cambia entre rondas.
+     Sin rótulo dibujado, el nombre en texto, que es mejor que una cabecera
+     muda en medio de un tablero. */
+  function cabecera(conLogo) {
+    var t = $('#t-partida');
+    if (!t) return;
+    var m = M();
+    t.classList.toggle('modal__titulo--logo', Boolean(conLogo && m.rotulo));
+    if (!conLogo) { t.textContent = ''; return; }
+    if (m.rotulo) {
+      t.innerHTML = '<img class="jg-logo-cabecera" src="../assets/img/juegos/rotulo-' + esc(juegoActual()) +
+        '.webp" alt="' + esc(m.nombre || '') + '" decoding="async">';
+    } else {
+      t.textContent = m.nombre || 'Minijuego';
+    }
+  }
+
   function pieza(nombre, px, clase) {
     return '<img class="jg-pieza' + (clase ? ' ' + clase : '') + '" ' +
       'src="../assets/img/juegos/' + nombre + '.webp" width="' + px + '" height="' + px + '" ' +
@@ -279,6 +302,13 @@
        partida sea es `partida.js`. */
     var m = document.getElementById('m-partida');
     if (m) m.removeAttribute('data-juego');
+    /* Y el logo de la cabecera: lo que viene después pone su propio título con
+       `textContent`, que se lleva la imagen pero no la clase. */
+    var t = document.getElementById('t-partida');
+    if (t && t.classList.contains('modal__titulo--logo')) {
+      t.classList.remove('modal__titulo--logo');
+      t.textContent = '';
+    }
   }
 
   /* ==========================================================================
@@ -289,8 +319,7 @@
     C.estado = 'presentacion';
     var q = jugador(C.lado);
     var m = M();
-    var titulo = $('#t-partida');
-    if (titulo) titulo.textContent = m.nombre || 'Minijuego';
+    cabecera(false);
     /* El rótulo dibujado, si el juego lo tiene (`rotulo-<id>.webp`): manda
        sobre el nombre en texto, como el logo del modo en el versus. */
     var cabeza = m.rotulo
@@ -384,6 +413,7 @@
     C.estado = 'jugando';
     C.t0 = performance.now();
     var q = jugador(C.lado);
+    cabecera(true);
     caja().innerHTML =
       '<div class="jg jg--juego">' +
         '<div class="jg-cabecera">' +
@@ -554,6 +584,7 @@
      ========================================================================== */
   function montarTablero(bloqueado) {
     var q = jugador(C.lado);
+    cabecera(true);
     C.tablero = J().tablero(juegoActual(), C.semilla, C.nivel, C.lado);
     C.estadoJuego = M().inicial(C.tablero);
     C.jugadas = [];
@@ -799,8 +830,7 @@
   function pintarRelevo() {
     C.estado = 'relevo';
     var q = jugador(C.lado);
-    var titulo = $('#t-partida');
-    if (titulo) titulo.textContent = M().nombre || 'Minijuego';
+    cabecera(false);
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--relevo">' +
         pieza('jg-relevo', 96, 'jg-relevo__signo') +
