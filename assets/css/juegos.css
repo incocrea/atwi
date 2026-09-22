@@ -915,3 +915,26 @@
    en el pie del modal, como en los demás juegos. */
 .jg-choque { align-self: stretch; height: 100%; align-content: space-evenly; }
 .jg-choque .jg-turnos { margin-bottom: var(--e-4); }
+
+/* LA FIGURA DE LA PORTADA DEL JUEGO (titular, 2026-09-22): de pie sobre el
+   botón de comenzar, visible de la rodilla hacia arriba. Cuelga del modal por
+   detrás del pie, así que lo que la corta es el botón --no una caja con
+   `overflow`, que dibujaría una línea recta donde no la hay--. */
+.jg-portada-fig {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+  z-index: 1; pointer-events: none;
+}
+.jg-portada-fig__jug {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: var(--jg-p-ancho, 58%);
+  bottom: var(--jg-p-hunde, -20px);
+  display: grid; justify-items: center;
+}
+.jg-portada-fig__img { display: block; width: 100%; aspect-ratio: 620 / 960; }
+.jg-portada-fig__img .retrato__fig { width: 100%; height: auto; display: block; }
+/* La columna de la portada se centra en lo que QUEDA encima de la figura: con
+   el cuerpo en rejilla ocupa su caja menos el relleno reservado, y sin el
+   `min-height: 60vh` de `.sala--centrada`, que la mantenía alta y convertía la
+   reserva en scroll. */
+#m-partida .modal__cuerpo:has(.jg--presenta) { display: grid; }
+.jg--presenta { min-height: 0; }

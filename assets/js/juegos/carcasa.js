@@ -75,7 +75,68 @@
     var id = juegoActual();
     if (id && m.getAttribute('data-juego') !== id) m.setAttribute('data-juego', id);
   }
-  function caja() { marcarFondo(); return $('#m-partida .modal__cuerpo'); }
+  function caja() { marcarFondo(); quitarFigura(); return $('#m-partida .modal__cuerpo'); }
+
+  /* LA FIGURA DE LA PORTADA (titular, 2026-09-22: «quita el avatar en círculo
+     y usa el mismo avatar pero parado sobre el botón de comenzar, de la rodilla
+     hacia arriba»). Cuelga del MODAL y no del cuerpo, antes del pie en el DOM:
+     así queda por detrás del botón y es el botón el que la corta a la altura de
+     la rodilla, como las figuras de la escena de resultados.
+     ⚠️ Como vive fuera del cuerpo, repintar el cuerpo no se la lleva: la quita
+     `caja()`, que es el único sitio por el que pasan TODAS las pantallas, y
+     `cerrar()`. La presentación la vuelve a poner después de pintar. */
+  function quitarFigura() {
+    var modal = document.getElementById('m-partida');
+    if (!modal) return;
+    [].forEach.call(modal.querySelectorAll('.jg-portada-fig'), function (n) {
+      if (n.parentNode) n.parentNode.removeChild(n);
+    });    var cuerpo = modal.querySelector('.modal__cuerpo');
+    if (cuerpo) cuerpo.style.paddingBottom = '';
+  }
+  function ponerFigura(q) {
+    var modal = document.getElementById('m-partida');
+    var pieModal = modal && modal.querySelector('.modal__pie');
+    if (!modal || !pieModal) return;
+    quitarFigura();
+    var d = document.createElement('div');
+    d.className = 'jg-portada-fig';
+    d.innerHTML =
+      '<span class="jg-portada-fig__jug">' +
+        window.ATWI.retrato(q.avatar, 'frente', { fondo: null, color: q.color, clase: 'jg-portada-fig__img' }) +
+      '</span>';
+    modal.insertBefore(d, pieModal);
+    reservarFigura(d);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
+      if (d.parentNode) reservarFigura(d);
+    });
+  }
+  /* LO DE ARRIBA NO PUEDE CAER SOBRE LA CABEZA: el cuerpo reserva abajo lo que
+     ocupa la figura por encima del botón --medido desde la cabeza--, y el logo y la ficha se centran en lo que queda. Si ni así
+     cabe (un teléfono bajo), la figura se achica por pasos antes de dejar que
+     el cuerpo scrollee: lo que se viene a leer es la ficha.
+     Se mide con `offsetTop`: `getBoundingClientRect` trae la escala de la
+     entrada del modal y daría un número que cambia mientras anima. */
+  function reservarFigura(d) {
+    var cuerpo = $('#m-partida .modal__cuerpo');
+    var jug = d.querySelector('.jg-portada-fig__jug');
+    var img = d.querySelector('.jg-portada-fig__img');
+    if (!cuerpo || !jug || !img) return;
+    var ancho = 58;
+    for (var i = 0; i < 6; i++) {
+      jug.style.setProperty('--jg-p-ancho', ancho + '%');
+      cuerpo.style.paddingBottom = '0px';
+      /* Del borde de abajo del cuerpo a lo alto de la CABEZA, todo en
+         coordenadas del modal: `d` cuelga de él y `jug` de `d` (posicionados),
+         y el cuerpo es hijo directo del modal. La cabeza no arranca en el borde
+         de la pieza: el dibujo empieza al 9,6 % del lienzo (medido en `frente`),
+         y se toma el 8 % para dejar el pelo con aire. */
+      var cabeza = d.offsetTop + jug.offsetTop + img.offsetTop + img.offsetHeight * 0.08;
+      var alto = (cuerpo.offsetTop + cuerpo.offsetHeight) - cabeza;
+      cuerpo.style.paddingBottom = Math.max(0, Math.round(alto + 12)) + 'px';
+      if (cuerpo.scrollHeight <= cuerpo.clientHeight + 1 || ancho <= 38) break;
+      ancho -= 4;
+    }
+  }
   function pie() { return $('#m-partida .modal__pie'); }
 
   /** Una pieza de `assets/img/juegos/` (pegatina, sin disco detrás). */
@@ -312,6 +373,7 @@
        partida sea es `partida.js`. */
     var m = document.getElementById('m-partida');
     if (m) m.removeAttribute('data-juego');
+    quitarFigura();
     /* Y el logo de la cabecera: lo que viene después pone su propio título con
        `textContent`, que se lleva la imagen pero no la clase. */
     var t = document.getElementById('t-partida');
@@ -339,12 +401,6 @@
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--presenta">' +
         cabeza +
-        '<div class="jg-quien">' +
-          window.ATWI.fichaHTML(q.avatar, 'avatar--duelo', q.color) +
-          /* Sin «Te toca jugar» (titular, 2026-09-22): la cara y el nombre ya
-             dicen de quién es el turno. */
-          '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
-        '</div>' +
         '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
           /* Con `deUnaVez` las rondas de su TRAMO se asignan juntas en una
              pantalla, así que la presentación es una sola y lo dice en plural
@@ -361,6 +417,9 @@
         '</div>' +
         (aviso ? '<p class="chico centrado jg-aviso">' + esc(aviso) + '</p>' : '') +
       '</div>';
+    /* Sin círculo y sin nombre (titular, 2026-09-22): la persona de pie sobre
+       el botón ya dice de quién es el turno. */
+    ponerFigura(q);
     /* Y SI LA PARTIDA TODAVÍA SE ESTÁ ABRIENDO EN EL SERVIDOR --la primera
        ronda de una partida nueva--, el botón espera al id: la semilla local
        sale de él y sin él no hay tablero que generar. Nadie mira una ruedita:
