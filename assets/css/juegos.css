@@ -115,6 +115,19 @@
   background: var(--superficie); border-radius: var(--radio-boton); box-shadow: var(--sombra-1);
   transition: transform .12s, opacity .25s;
 }
+/* LA CELDA CON FICHA (titular, 2026-09-21): el icono ES el numero, asi que se
+   va el cuadro pintado --sin fondo, sin borde, sin sombra: la ficha trae su
+   propio perfil-- y se pinta desde la hoja `cuenta-fichas.webp`.
+   La hoja es 8 sets (ancho) x 16 numeros (alto); con `background-size` a 800% y
+   1600% cada sub-celda vale un boton, y la posicion elige set (columna) y
+   numero (fila). Los porcentajes cuadran porque las celdas del tablero son
+   cuadradas —`aspect-ratio: cols/filas` con columnas de `1fr`—. */
+.jg-cuadricula--fichas .jg-celda {
+  background: url(../img/juegos/cuenta-fichas.webp) no-repeat;
+  background-size: 800% 1600%;
+  background-position: calc(var(--set) / 7 * 100%) calc(var(--n) / 15 * 100%);
+  box-shadow: none; border-radius: 0; border: 0;
+}
 .jg-celda:active { transform: scale(.94); }
 .jg-celda--fuera { opacity: 0; pointer-events: none; transform: scale(.6); }
 .jg-celda--mal { animation: jg-mal .3s ease-out; color: var(--peligro); }

@@ -16,13 +16,22 @@
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
       var lado = Math.min(ctx.ancho, ctx.alto);
+      /* UN SET DE ICONOS AL AZAR EN CADA CARGA (titular, 2026-09-21): la ficha
+         ES el numero. Es COSMETICO --no toca la logica ni la jugada-- asi que
+         va con `Math.random` y no con la semilla; da igual que los dos lados en
+         linea vean formas distintas. Son 8 sets (columnas de la hoja) y el
+         numero es la fila. */
+      var set = Math.floor(Math.random() * 8);
       caja.innerHTML =
-        '<div class="jg-cuadricula" style="--cols:' + t.cols + ';--filas:' + t.filas +
-          ';--lado:' + Math.floor(lado) + 'px">' +
+        '<div class="jg-cuadricula jg-cuadricula--fichas" style="--cols:' + t.cols + ';--filas:' + t.filas +
+          ';--lado:' + Math.floor(lado) + 'px;--set:' + set + '">' +
           t.celdas.map(function (n, i) {
+            /* La ficha se pinta con `background-position`; el numero va en
+               `aria-label` porque en pantalla lo dice el dibujo. `--n` es la
+               fila (0..15) del numero en la hoja. */
             return '<button type="button" class="jg-celda' + (estado.quitadas[i] ? ' jg-celda--fuera' : '') +
-              '" data-celda="' + i + '"' + (estado.quitadas[i] || ctx.bloqueado ? ' disabled' : '') + '>' +
-              n + '</button>';
+              '" data-celda="' + i + '" style="--n:' + (n - 1) + '" aria-label="' + n + '"' +
+              (estado.quitadas[i] || ctx.bloqueado ? ' disabled' : '') + '></button>';
           }).join('') +
         '</div>' +
         '<p class="jg-pista">Toca los números en orden: sigue el <b>' + estado.sig + '</b></p>';
