@@ -4732,38 +4732,23 @@
     try { j = localStorage.getItem(JUEGO); } catch (e) {}
     return juegosDisponibles().indexOf(j) !== -1 ? j : (juegosDisponibles()[0] || null);
   }
-  /* ⚠️ SE RECUERDA EL REPARTO ENTERO, no un juego (pivote del titular,
-     2026-09-22). Quien montó «Choque, Cuenta, Choque» no tiene que volver a
-     montarlo cada partida, igual que el juez o la ficha del invitado. La clave
-     vieja se sigue leyendo: quien tenía uno guardado lo encuentra en todas las
-     rondas, que es exactamente la partida que jugaba antes. */
-  var REPARTO = 'atwi-juegos';
-  function repartoRecordado(rondas) {
-    var l = null;
-    try { l = JSON.parse(localStorage.getItem(REPARTO) || 'null'); } catch (e) {}
-    if (!Array.isArray(l)) l = [juegoRecordado()];
-    return cuadrarRepartoDe(l, rondas);
-  }
-  /* Uno por ronda: lo que sobra se corta y lo que falta hereda el anterior, que
-     es lo que alguien espera al subir de 2 a 3 rondas. */
-  function cuadrarRepartoDe(lista, rondas) {
-    var hay = juegosDisponibles();
-    var n = Math.max(1, Number(rondas) || 1);
-    var l = (Array.isArray(lista) ? lista : []).slice(0, n);
-    for (var i = 0; i < n; i++) {
-      if (hay.indexOf(l[i]) === -1) l[i] = l[i - 1] || hay[0] || null;
-    }
-    return l;
-  }
+  /* ⚠️ SE RECUERDA EL ÚLTIMO JUEGO, no el reparto entero (titular, 2026-09-22).
+     Se guardaba la lista completa para repetirla en la partida siguiente, y con
+     las rondas arrancando vacías esa lista no tiene dónde ponerse: lo que hace
+     falta es que el globo de cada ronda abra con algo marcado, y para eso basta
+     uno. La clave `atwi-juegos` deja de escribirse; la vieja (`atwi-juego`)
+     sigue, que es la que lee `juegoRecordado()`. */
   function recordarReparto(l) {
     propuesta.juegos = l.slice();
+    /* ⚠️ LAS RONDAS SON CUÁNTOS JUEGOS HAY, y no un número aparte: el selector
+       de cantidad se fue, así que si esto no se escribiera aquí la partida se
+       abriría con los turnos de fábrica y la base la rechazaría por desfase
+       («el reparto tiene 2 juegos y la partida 3 rondas»). */
+    if (l.length) propuesta.turnos = l.length;
     /* `juego` es el primero, derivado, como en la base: los textos de la
        invitación y el chip de la tarjeta hablan en singular. */
     propuesta.juego = l[0];
-    try {
-      localStorage.setItem(REPARTO, JSON.stringify(l));
-      localStorage.setItem(JUEGO, l[0]);
-    } catch (e) {}
+    try { if (l.length) localStorage.setItem(JUEGO, l[l.length - 1]); } catch (e) {}
   }
   /* La pegatina del juego: `juego-<id>.webp` de la plancha. «Cuenta» todavía
      no tiene la suya --está pedida-- y mientras tanto lleva la diana. */
@@ -4777,50 +4762,85 @@
     var m = J && id ? J.juego(id) : null;
     return { id: id, nombre: (m && m.nombre) || 'Minijuego', como: (m && m.como) || '' };
   }
-  function bloqueDelJuego() {
-    var l = propuesta.juegos || [propuesta.juego];
-    var mismo = l.every(function (x) { return x === l[0]; });
-    var j = datosDelJuego(l[0]);
-    /* MIXTO SE DICE Y SE ENSEÑA: con el nombre de uno solo, una partida de tres
-       juegos distintos se anunciaría como si fuera de ése. El retrato es el de
-       la primera ronda --el que abre-- y debajo va el orden. */
-    return perfilEnDuo({
-      accion: 'elegir-juego',
-      retrato: '<span class="avatar avatar--duelo jg-retrato-juego">' + piezaDelJuego(j.id, 64) + '</span>',
-      quien: mismo ? j.nombre : 'Mixto',
-      como: mismo ? 'El minijuego del reto'
-                  : l.map(function (id) { return datosDelJuego(id).nombre; }).join(' · '),
-      tocar: juegosDisponibles().length > 1 ? 'Cambiar' : 'Único por ahora',
-      etiqueta: 'Elegir los minijuegos'
-    });
+  /* ⚠️ EN QUIÉNGANE EL SELECTOR DE RONDAS ES EL SELECTOR DE JUEGO (titular,
+     2026-09-22: «el mismo selector de cantidad de ronda fuerza la selección de
+     su juego… cada turno funciona como selector de su juego»). Antes eran dos
+     controles separados —cuántas rondas por un lado, a qué se juega por otro— y
+     desde el pivote el juego es de la RONDA, así que elegir «3» sin decir a qué
+     se juega cada una dejaba el dato a medias y había que ir a buscarlo a otro
+     sitio. Ahora tocar una ronda abre su globo, y la partida tiene tantas
+     rondas como juegos elegidos.
+     **EN CASCADA**: la ronda N solo se puede tocar si la N-1 ya tiene juego.
+     Sin eso se podría elegir el juego de la 3 dejando la 2 vacía, que es un
+     reparto con un hueco en medio --y la base lo rechaza entero--. */
+  function rondasElegidas() { return (propuesta.juegos || []).filter(Boolean).length; }
+
+  function filaDeRondas() {
+    var puestas = rondasElegidas();
+    return '<div class="rondas-fila">' +
+      opcionesDeTurnos().map(function (n) {
+        var id = (propuesta.juegos || [])[n - 1] || null;
+        /* La siguiente por elegir se puede tocar; las de más allá, no todavía.
+           ⚠️ NO van `disabled`: un botón deshabilitado no emite el clic, así que
+           no habría manera de contestar por qué no se puede. Es la lección del
+           globo «Para esta partida». */
+        var lista = n <= puestas + 1;
+        return '<button type="button" class="ronda-op' + (id ? ' ronda-op--puesta' : '') +
+            (lista ? '' : ' ronda-op--espera') + '" data-ronda-juego="' + n + '"' +
+            (lista ? '' : ' aria-disabled="true"') +
+            ' aria-label="Ronda ' + n + (id ? ': ' + esc(datosDelJuego(id).nombre) : ', sin minijuego') + '">' +
+          '<span class="ronda-op__disco">' +
+            (id ? piezaDelJuego(id, 52) : '<span class="ronda-op__n">' + n + '</span>') +
+            (id ? '<span class="ronda-op__badge">' + n + '</span>' : '') +
+          '</span>' +
+          '<span class="ronda-op__que">' + (id ? esc(datosDelJuego(id).nombre) : 'Elegir') + '</span>' +
+        '</button>';
+      }).join('') +
+    '</div>';
   }
-  function refrescarJuego() {
-    var b = $('#m-preparar [data-accion="elegir-juego"]');
-    if (b) b.outerHTML = bloqueDelJuego();
+
+  /* Repinta SOLO la fila de rondas y su pista. La pantalla entera no se puede
+     repintar aquí: se llevaría por delante lo que haya a medio escribir, que es
+     la misma razón por la que el abogado se encendía sin repintar. */
+  function refrescarRondas() {
+    var f = $('#m-preparar .rondas-fila');
+    if (!f) return;
+    var pista = f.nextElementSibling;
+    f.outerHTML = filaDeRondas();
+    if (pista && pista.classList.contains('chico')) {
+      pista.textContent = rondasElegidas()
+        ? 'Toca una ronda para cambiar su minijuego.'
+        : 'Toca la ronda 1 para elegir a qué juegan.';
+    }
+    revisarPreparar();
   }
-  /* El globo: los juegos que hay, en rejilla, el puesto marcado. Tocar uno lo
-     deja puesto y cierra: no hay nada más que decidir ahí dentro. */
-  function abrirJuego(disparador) {
+
+  /* El globo de UNA ronda: a qué se juega esa, y nada más. Lo que sale marcado
+     es lo que ya tenía, o --si está vacía-- el último con el que se jugó, para
+     que repetir cueste un toque. */
+  function abrirJuego(disparador, ronda) {
     var lista = juegosDisponibles();
-    var puesto = propuesta.juegos || [propuesta.juego];
-    /* UNA FILA POR RONDA (pivote del titular, 2026-09-22: «se podrá seleccionar
-       un minijuego diferente para cada ronda»). Con una sola el rótulo sobra:
-       no hay nada que distinguir. */
-    var cuerpo = puesto.map(function (id, i) {
-      return '<div class="jg-selector-ronda">' +
-        (puesto.length > 1 ? '<span class="jg-selector-ronda__t">Ronda ' + (i + 1) + '</span>' : '') +
-        '<div class="jg-selector" role="group" aria-label="Minijuego de la ronda ' + (i + 1) + '">' +
-          lista.map(function (x) {
-            var j = datosDelJuego(x);
-            return '<button type="button" class="jg-selector__op" data-juego="' + esc(x) + '"' +
-              ' data-juego-ronda="' + i + '" aria-pressed="' + (x === id) + '">' +
-              piezaDelJuego(x, 56) + '<span>' + esc(j.nombre) + '</span></button>';
-          }).join('') +
-        '</div>' +
-      '</div>';
-    }).join('');
-    abrirGlobo(disparador, { titulo: puesto.length > 1 ? '¿A qué juegan cada ronda?' : '¿A qué juegan?' },
-      { tinte: 'competencia', signo: 'ayuda-azul', etiqueta: 'Elegir los minijuegos', cuerpo: cuerpo });
+    var puesto = (propuesta.juegos || [])[ronda - 1] || juegoRecordado();
+    var cuerpo = '<div class="jg-selector" role="group" aria-label="Minijuego de la ronda ' + ronda + '">' +
+      lista.map(function (x) {
+        var j = datosDelJuego(x);
+        return '<button type="button" class="jg-selector__op" data-juego="' + esc(x) + '"' +
+          ' data-juego-ronda="' + (ronda - 1) + '" aria-pressed="' + (x === puesto) + '">' +
+          piezaDelJuego(x, 56) + '<span>' + esc(j.nombre) + '</span></button>';
+      }).join('') +
+    '</div>';
+    /* Quitar la ronda es la única manera de acortar la partida, y solo se
+       ofrece en la ÚLTIMA elegida: quitar una de en medio dejaría el hueco que
+       la cascada existe para impedir. La ronda 1 no se puede quitar --sin ella
+       no hay partida-- y por eso ahí no sale el botón. */
+    var puestas = rondasElegidas();
+    var acciones = (ronda > 1 && ronda === puestas)
+      ? '<button class="boton boton--suave boton--bloque boton--grande boton--borrar" ' +
+        'data-accion="quitar-ronda" data-ronda="' + ronda + '">Quitar esta ronda</button>'
+      : '';
+    abrirGlobo(disparador, { titulo: 'Ronda ' + ronda + ': ¿a qué juegan?' },
+      { tinte: 'competencia', signo: 'ayuda-azul', etiqueta: 'Elegir el minijuego de la ronda ' + ronda,
+        cuerpo: cuerpo, acciones: acciones });
   }
 
   /* EL ULTIMO JUEZ SE RECUERDA, igual que la ficha del invitado. Quien
@@ -5458,8 +5478,15 @@
     /* Y EL MINIJUEGO, en QuiénGane: el recordado, o el primero que haya. Al
        abrir y no al repintar, por lo mismo que el juez. */
     var esJuego = propuesta.modo === 'competencia';
-    if (esJuego && (!repintando || !propuesta.juegos)) {
-      recordarReparto(repartoRecordado(propuesta.turnos));
+    /* ⚠️ ARRANCA SIN NINGUNA RONDA PUESTA (titular, 2026-09-22): «si es 1, al
+       dar clic en el turno sale el globo y se selecciona el juego». Traer el
+       reparto de la última partida dejaría las tres rondas puestas y entonces
+       el mecanismo que se pidió --que elegir la ronda obligue a elegir su
+       juego-- no ocurriría nunca. Lo recordado no se pierde: es lo que sale
+       marcado dentro del globo, así que repetir cuesta un toque por ronda. */
+    if (esJuego && !repintando) {
+      propuesta.juegos = [];
+      propuesta.juego = null;
     }
 
     /* Con quién se ha jugado, para el globo de invitar. Se pide al ENTRAR y no
@@ -5592,12 +5619,14 @@
          retrato, mismo ancho, misma rejilla de dos columnas. El orden es el de
          siempre —a qué se juega y quién lo juzga—, solo que ahora leído de
          izquierda a derecha en vez de de arriba abajo. */
-      (esJuego && propuesta.juegos && propuesta.juegos[0]
-        ? '<div class="duo prep__bloque">' + bloqueDelJuego() + pintarJuez() + '</div>'
-        /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
-           juzga es de la partida y los turnos son el último parámetro —cuánto
-           rato quieren estar—, así que van en ese orden de importancia. */
-        : bloqueJuez) +
+      /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
+         juzga es de la partida y los turnos son el último parámetro —cuánto
+         rato quieren estar—, así que van en ese orden de importancia.
+         ⚠️ Y EN QUIÉNGANE EL JUEZ VUELVE A IR SOLO (titular, 2026-09-22): lo
+         compartía con el bloque del minijuego para ahorrar 153 px de alto, y
+         ese bloque se fue --ahora el juego se elige en la propia fila de
+         rondas--, así que la fila de dos columnas se quedaba con una. */
+      bloqueJuez +
 
       '<div class="turnos-linea prep__bloque">' +
         /* «Turnos por persona» y no «¿Cuántos turnos?» (decisión del titular):
@@ -5615,23 +5644,31 @@
         /* En QuiénGane lo que se elige son RONDAS del minijuego (docs/10): la
            misma cifra, otra palabra, y el juez las lee de `turnos` igual. */
         '<h3 class="centrado" style="margin:0">' + (esJuego ? 'Rondas' : 'Turnos') + '</h3>' +
-        '<div class="turnos-fila">' +
-        /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
-           `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
-           la pantalla habría seguido ofreciendo cinco y la base los habría
-           rechazado al guardar. */
-        opcionesDeTurnos().map(function (n) {
-          var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
-          return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
-            'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
-            /* SIN LOS MINUTOS (titular, 2026-09-18). Eran una estimación —«3
-               min», «5 min»— debajo de cada número, y decían lo que ya dice el
-               número: más turnos, más rato. Lo que no decían es cuánto dura de
-               verdad una partida, que depende de lo que hable cada quien. */
-            '<span class="turno-ficha__n">' + n + '</span>' +
-          '</button>';
-        }).join('') +
-        '</div>' +
+        (esJuego
+          ? filaDeRondas() +
+            '<p class="chico tenue centrado" style="margin:var(--e-2) 0 0">' +
+              (rondasElegidas()
+                ? 'Toca una ronda para cambiar su minijuego.'
+                : 'Toca la ronda 1 para elegir a qué juegan.') + '</p>'
+          : '') +
+        (esJuego ? '' :
+          '<div class="turnos-fila">' +
+          /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
+             `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
+             la pantalla habría seguido ofreciendo cinco y la base los habría
+             rechazado al guardar. */
+          opcionesDeTurnos().map(function (n) {
+            var conCupo = cfg.reglas.turnosConCupo.indexOf(n) !== -1;
+            return '<button class="turno-ficha' + (conCupo ? ' turno-ficha--cupo' : '') + '" ' +
+              'data-turnos="' + n + '"' + (propuesta.turnos === n ? ' aria-pressed="true"' : '') + '>' +
+              /* SIN LOS MINUTOS (titular, 2026-09-18). Eran una estimación —«3
+                 min», «5 min»— debajo de cada número, y decían lo que ya dice el
+                 número: más turnos, más rato. Lo que no decían es cuánto dura de
+                 verdad una partida, que depende de lo que hable cada quien. */
+              '<span class="turno-ficha__n">' + n + '</span>' +
+            '</button>';
+          }).join('') +
+          '</div>') +
       '</div>' +
       (cfg.reglas.turnosConCupo.length
         ? '<p class="chico tenue" style="margin:var(--e-2) 0 var(--e-5)">' +
@@ -5923,6 +5960,11 @@
        Tenía la suya —dos letras y nada más— y eso dejaba encender el botón con
        un nombre que luego no pasaba, que es la peor de las dos opciones. */
     var b = $('#m-preparar .modal__pie button');
+    if (!b) return;
+    /* ⚠️ SIN MINIJUEGO NO HAY PARTIDA DE QUIÉNGANE, y esto se mira ANTES que la
+       vía: en línea la propuesta viaja con su reparto, así que un correo válido
+       no basta. */
+    if (propuesta.modo === 'competencia' && !rondasElegidas()) { b.disabled = true; return; }
     /* CADA VIA SE VALIDA CONTRA LO QUE PIDE. En línea lo que hay es un correo, y
        un nombre de una palabra no sirve para mandarle nada a nadie; la regla es
        la de la puerta de entrada, no una segunda escrita aquí. */
@@ -6967,14 +7009,8 @@
         if (Number(x.dataset.turnos) === propuesta.turnos) x.setAttribute('aria-pressed', 'true');
         else x.removeAttribute('aria-pressed');
       });
-      /* ⚠️ EN QUIÉNGANE, LAS RONDAS Y EL REPARTO SON EL MISMO NÚMERO MIRADO POR
-         DOS SITIOS: subir de 2 a 3 tiene que dar juego a la tercera, o la base
-         rechazaría la partida entera («el reparto tiene 2 juegos y la partida 3
-         rondas»). Se cuadra aquí, que es donde cambia. */
-      if (propuesta.modo === 'competencia') {
-        recordarReparto(cuadrarRepartoDe(propuesta.juegos || [propuesta.juego], propuesta.turnos));
-        refrescarJuego();
-      }
+      /* En QuiénGane esta fila no existe: las rondas se eligen con su juego
+         (`data-ronda-juego`) y `turnos` sale de cuántas tienen uno. */
       return;
     }
 
@@ -7001,21 +7037,38 @@
 
     /* El minijuego elegido en su globo: queda puesto, se recuerda y el globo
        se cierra —no hay nada más que decidir ahí dentro—. */
+    var qr = e.target.closest('[data-accion="quitar-ronda"]');
+    if (qr) {
+      var l2 = (propuesta.juegos || []).slice(0, Number(qr.dataset.ronda) - 1);
+      recordarReparto(l2);
+      cerrarGlobo();
+      refrescarRondas();
+      return;
+    }
+
+    /* EN QUIÉNGANE, LA RONDA ES SU PROPIO SELECTOR DE JUEGO. */
+    var rj = e.target.closest('[data-ronda-juego]');
+    if (rj) {
+      var nR = Number(rj.dataset.rondaJuego);
+      if (nR > rondasElegidas() + 1) {
+        /* Se dice por qué no se puede: un círculo que no responde se lee como
+           un fallo del formulario. Es la lección de «Crear mi cuenta y jugar». */
+        ATWI.aviso('Primero elige el minijuego de la ronda ' + (nR - 1) + '.');
+        return;
+      }
+      abrirJuego(rj, nR);
+      return;
+    }
+
     var jg = e.target.closest('.jg-selector [data-juego]');
     if (jg) {
-      var l = (propuesta.juegos || [propuesta.juego]).slice();
+      var l = (propuesta.juegos || []).slice();
       l[Number(jg.dataset.juegoRonda) || 0] = jg.dataset.juego;
       recordarReparto(l);
-      refrescarJuego();
-      /* ⚠️ CON VARIAS RONDAS EL GLOBO NO SE CIERRA AL PRIMER TOQUE: quien está
-         montando un reparto tiene que poder elegir las tres seguidas, y cerrar
-         en cada una obligaría a reabrirlo dos veces. Con una sola ronda no hay
-         nada más que decidir ahí dentro y se cierra, como antes. */
-      if (l.length === 1) { cerrarGlobo(); return; }
-      [].forEach.call(document.querySelectorAll('.jg-selector [data-juego-ronda="' +
-        jg.dataset.juegoRonda + '"]'), function (b) {
-        b.setAttribute('aria-pressed', String(b.dataset.juego === jg.dataset.juego));
-      });
+      /* El globo es de UNA ronda, así que al elegir no queda nada que decidir
+         ahí dentro: se cierra, como cualquier selector de una sola cosa. */
+      cerrarGlobo();
+      refrescarRondas();
       return;
     }
 
@@ -7196,7 +7249,6 @@
       } else if (a === 'sortear') sortearYJugar();
       else proponer();
     }
-    else if (a === 'elegir-juego') { if (juegosDisponibles().length > 1) abrirJuego(acc); }
     else if (a === 'proponer') { conMicrofono(proponer, 'enviar', false); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { conMicrofono(sortearYJugar, 'empezar', true); }

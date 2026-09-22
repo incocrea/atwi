@@ -5958,3 +5958,62 @@ body[data-demo] { background: var(--crema); }
 .borrar-cuenta__lista li { font-size: .9rem; line-height: 1.45; }
 .borrar-cuenta .campo { text-align: center; }
 .borrar-cuenta .chico:empty { display: none; }
+
+/* ==========================================================================
+   LAS RONDAS DE QUIÉNGANE SON SU PROPIO SELECTOR DE JUEGO (titular, 2026-09-22)
+   Tres círculos grandes: el que tiene juego enseña su dibujo con el número en
+   una insignia, el siguiente por elegir enseña el número y espera, y los de más
+   allá se ven apagados hasta que les toque.
+   ⚠️ MÁS GRANDES QUE LAS FICHAS DE TURNO (44) y a propósito: aquí no se elige
+   un número, se elige a QUÉ se juega, que es la decisión de esta pantalla en
+   este modo. Con 44 no cabía ningún dibujo dentro.
+   ========================================================================== */
+.rondas-fila {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  width: min(100%, var(--fila-opciones, 272px));
+  margin: var(--e-2) auto 0;
+}
+.ronda-op {
+  display: grid; justify-items: center; gap: 6px;
+  border: 0; background: none; padding: 0; width: 76px;
+  cursor: pointer; font: inherit; color: inherit;
+}
+.ronda-op__disco {
+  position: relative;
+  width: 72px; aspect-ratio: 1; border-radius: 50%;
+  display: grid; place-items: center;
+  /* Mismo material que la ficha de turno: borde del modo, cara clara y el
+     brillo interior. Lo que cambia es el tamaño y lo que va dentro. */
+  border: 3px solid var(--del-modo, var(--linea)); background: var(--superficie);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .55), var(--sombra-1);
+  transition: transform var(--dur-corta) var(--suave);
+}
+.ronda-op:active .ronda-op__disco { transform: scale(.94); }
+.ronda-op__n {
+  font-family: var(--display); font-weight: 800; font-size: 1.5rem;
+  color: var(--del-modo, var(--lavanda));
+}
+/* La pegatina del juego trae su propio perfil blanco, así que va suelta dentro
+   del disco: un aro más sería el tercer borde de la misma pieza. */
+.ronda-op__disco .jg-pieza { width: 52px; height: 52px; }
+/* EL NÚMERO NO SE VA CUANDO HAY DIBUJO: sin él, tres discos con tres dibujos no
+   dicen en qué orden se juegan. Va de insignia, como la cuenta del buzón. */
+.ronda-op__badge {
+  position: absolute; right: -2px; bottom: -2px;
+  min-width: 24px; height: 24px; padding: 0 5px; border-radius: 999px;
+  display: grid; place-items: center;
+  background: var(--del-modo, var(--lavanda)); color: #fff;
+  font-family: var(--display); font-weight: 800; font-size: .8rem;
+  box-shadow: 0 0 0 3px var(--superficie);
+}
+.ronda-op__que {
+  font-size: var(--t-chico); font-weight: 700; color: var(--tinta-suave);
+  max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ronda-op--puesta .ronda-op__que { color: var(--tinta); }
+/* La que todavía no toca: apagada, pero se puede tocar —contesta por qué—. */
+.ronda-op--espera { opacity: .45; }
+.ronda-op--espera .ronda-op__disco { border-style: dashed; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) {
+  .ronda-op:active .ronda-op__disco { transform: none; }
+}
