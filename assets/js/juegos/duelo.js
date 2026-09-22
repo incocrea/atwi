@@ -13,16 +13,20 @@
 
    EL CONTRATO CON UN JUEGO es una sola función, opcional:
 
-     ui.<id>.chocante(resumen) -> { icono: '<html>', nombre: 'Fuego', signo: 'historial' }
+     ui.<id>.chocante(resumen) -> { icono: '<html>', nombre: 'Fuego' }
 
-   `icono` es el dibujo que vuela --lleva la clase `jg-el__dibujo`, que es lo
-   que el CSS escala y apaga--, `nombre` la píldora de debajo y `signo` una
-   pegatina opcional DENTRO de la píldora, delante del texto: la lleva lo que se
-   mide con un número --en Cuenta, el reloj de arena que acompaña al tiempo
-   (titular, 2026-09-22)-- y no lo que se nombra, como un elemento de Choque. Un
-   juego que no traiga `chocante` cae a `resumenCorto`, así que ninguno se queda
-   fuera de la escena por no haberse enterado de que existe: es la lección de las
-   listas escritas a mano que este proyecto tiene anotada cuatro veces.
+   `icono` es el dibujo que vuela --lleva la clase `jg-el__dibujo`, que es lo que
+   el CSS escala y apaga-- y `nombre` la píldora de debajo.
+
+   ⚠️ LO QUE SE COMPARA POR TIEMPO VUELA CON EL RELOJ DE ARENA, Y ESO LO DECIDE
+   LA ESCENA (titular, 2026-09-22: «independientemente del juego, el icono que
+   acompaña el tiempo del jugador es el de reloj de arena; Choque es un caso
+   especial, pues sí tiene sentido comparar los elementos»). Cuenta hacía volar
+   su ficha de número y eso decía «se compara el 16 contra el 12» cuando lo que
+   decide es el reloj. Por eso `icono` es OPCIONAL: un juego que no lo traiga y
+   cuyo resumen tenga `ms` vuela con el reloj, sin declarar nada —que es lo que
+   van a ser ocho de los diez—. Declarar icono propio es la excepción, y hoy
+   solo la usa Choque.
 
    CON REPARTO MIXTO CADA FILA DICE A QUÉ SE JUGÓ, y solo entonces: si las tres
    rondas son del mismo juego, el rótulo lo repetiría tres veces.
@@ -37,17 +41,28 @@
     });
   }
 
+  /* El reloj de arena: el mismo de la pestaña Historial, que ya está publicado
+     y en la ola `nucleo` --no hay pieza nueva que bajar--. */
+  function relojHTML() {
+    return '<img class="jg-el__dibujo" src="../assets/img/iconos/historial.png" ' +
+      'alt="" decoding="async">';
+  }
+  function segundos(ms) { return (Math.round((ms || 0) / 100) / 10) + ' s'; }
+
   /** Lo que se ve de una jugada: del juego si lo dice, y si no, su resumen. */
   function chocanteDe(idJuego, resumen) {
     if (!resumen) return null;
     var ui = (J.ui || {})[idJuego];
-    if (ui && typeof ui.chocante === 'function') {
-      var c = ui.chocante(resumen);
-      if (c) return c;
+    var c = (ui && typeof ui.chocante === 'function') ? ui.chocante(resumen) : null;
+    if (!c) {
+      /* Sin ficha del juego: el tiempo, que es lo que comparan casi todos. */
+      c = { nombre: resumen.ms != null ? segundos(resumen.ms)
+                                       : ((ui && ui.resumenCorto) ? ui.resumenCorto(resumen) : '—') };
     }
-    var m = J.juego(idJuego);
-    /* Sin dibujo: la píldora sola. Se lee igual y vuela igual. */
-    return { icono: '', nombre: (m && ui && ui.resumenCorto) ? ui.resumenCorto(resumen) : '—' };
+    /* El icono es opcional: si el juego no trae el suyo y la ronda se midió con
+       reloj, vuela el reloj. */
+    if (!c.icono) c.icono = resumen.ms != null ? relojHTML() : '';
+    return c;
   }
 
   /**
@@ -71,10 +86,7 @@
       var pierde = c && gana !== 'empate' && gana !== lado;
       return '<div class="jg-d__lado jg-d__lado--' + (lado === 'propone' ? 'izq' : 'der') +
           (pierde ? ' jg-d__lado--pierde' : '') + (gana === lado ? ' jg-d__lado--gana' : '') + '">' +
-          (c ? c.icono + '<span class="jg-el__nombre">' +
-                 (c.signo ? '<img class="jg-el__signo" src="../assets/img/iconos/' + esc(c.signo) +
-                            '.png" width="18" height="18" alt="" decoding="async">' : '') +
-                 esc(c.nombre) + '</span>'
+          (c ? c.icono + '<span class="jg-el__nombre">' + esc(c.nombre) + '</span>'
              : '<span class="jg-el__nombre">No jugó</span>') +
         '</div>';
     }

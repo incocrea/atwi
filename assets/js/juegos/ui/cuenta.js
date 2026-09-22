@@ -157,28 +157,19 @@
         ';--n:' + (n - 1) + '" aria-hidden="true"></span>';
     },
 
-    /* LO QUE ENSEÑA EN LA REVELACIÓN (contrato de `juegos/duelo.js`). Lo que
-       vuela es la ficha del ÚLTIMO número que llegó a tocar --que es su marca
-       en una imagen-- y debajo, cuántos y en cuánto. Sin fichas, la ronda
-       aparecía como «No jugó» al lado de una de Choque que sí se veía. */
+    /* LO QUE ENSEÑA EN LA REVELACIÓN (contrato de `juegos/duelo.js`).
+       ⚠️ AQUÍ NO SE DECLARA ICONO, Y ESO ES LA DECISIÓN (titular, 2026-09-22:
+       «el icono que acompaña el tiempo del jugador es el de reloj de arena, no
+       uno del juego»). Volaba la ficha del número, y eso decía «se compara el 16
+       contra el 12» cuando lo que decide la ronda es el reloj. Sin icono propio,
+       la escena pone el suyo: el reloj de arena, igual para los ocho juegos que
+       se miden con tiempo.
+       El TEXTO sí es suyo: con la ficha fuera, «12 de 16» no se ve en ningún
+       sitio, y no haber completado es justo lo que explica un tiempo alto. */
     chocante: function (r) {
       if (!r) return null;
-      var n = Math.max(1, Math.min(16, r.hechas || 1));
-      /* ⚠️ LA PÍLDORA DICE SOLO EL TIEMPO, con el reloj de arena delante
-         (titular, 2026-09-22: «el icono que acompaña los tiempos… es el de
-         reloj de arena que tenemos entre nuestros iconos ilustrados»). Decía
-         «16 en 1.8 s» y el 16 ya está escrito EN LA FICHA que vuela: lo que
-         falta saber al comparar dos lados es en cuánto. */
-      return {
-        /* ⚠️ SET FIJO Y NO `sets()`: ese memo es el de la RONDA EN CURSO y
-           preguntarle desde aquí --la revelación, que corre cuando la partida
-           ya terminó-- lo invalidaría con un estado que no es ninguno. La
-           revelación no tiene ronda, así que tampoco tiene por qué sortear. */
-        icono: '<span class="jg-el__dibujo jg-conteo-ficha jg-conteo-ficha--chocante" ' +
-          'style="--set:0;--n:' + (n - 1) + '" aria-hidden="true"></span>',
-        signo: 'historial',
-        nombre: (Math.round(r.ms / 100) / 10) + ' s'
-      };
+      var s = (Math.round(r.ms / 100) / 10) + ' s';
+      return { nombre: r.completo ? s : (r.hechas + ' de 16 · ' + s) };
     },
 
     /* Una celda de la tabla del juez: cuántos, y en cuánto. */
