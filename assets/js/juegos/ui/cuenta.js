@@ -21,6 +21,13 @@
      la ronda, distinto entre rondas. Y el CONTEO usa OTRO set --distinto al del
      tablero-- para dar variedad al empezar. */
   var memo = null;
+  /* LOS SETS QUE SE JUEGAN. La hoja trae ocho (estrella, círculo, corazón,
+     hoja, hexágono, zanahoria, cuadrado, nube), y la ZANAHORIA (índice 5) está
+     fuera por decisión del titular (2026-09-22): ni se sortea para el tablero,
+     ni para el 3-2-1, ni sale en el probador. Sigue en la hoja --quitarla
+     obligaría a recortar las dos y cambiarles el hash--, así que devolverla es
+     volver a meter el 5 en esta lista. */
+  var ACTIVOS = [0, 1, 2, 3, 4, 6, 7];
   /* ⚠️ EL SET SE PUEDE FIJAR DESDE EL PROBADOR (titular, 2026-09-22: «para
      Cuenta quiero poder escoger una variante de números y que todas las
      partidas salgan con ese set, para auditar mejor sus ilustraciones sin
@@ -38,19 +45,22 @@
     var puesto = fijo === undefined
       ? (memo ? memo.fijo : null)
       : ((fijo === 0 || fijo) && fijo !== '' ? Number(fijo) : null);
-    if (puesto !== null && !(puesto >= 0 && puesto <= 7)) puesto = null;
+    if (puesto !== null && ACTIVOS.indexOf(puesto) === -1) puesto = null;
     if (!memo || memo.estado !== estado || memo.fijo !== puesto) {
-      var j = puesto !== null ? puesto : Math.floor(Math.random() * 8);
-      var c = Math.floor(Math.random() * 7); if (c >= j) c += 1;   // c en [0,8) sin j
+      var j = puesto !== null ? puesto : ACTIVOS[Math.floor(Math.random() * ACTIVOS.length)];
+      /* El del conteo, de los activos y distinto del tablero. */
+      var otros = ACTIVOS.filter(function (x) { return x !== j; });
+      var c = otros[Math.floor(Math.random() * otros.length)];
       memo = { estado: estado, fijo: puesto, juego: j, conteo: c };
     }
     return memo;
   }
 
-  /** Los ocho sets de la hoja, para el selector del probador. */
+  /** Los sets que se juegan, para el selector del probador. El nombre
+      conserva su número de la hoja («Set 7» sigue siendo el cuadrado). */
   function setsDisponibles() {
     var l = [{ clave: '', nombre: 'Al azar' }];
-    for (var i = 0; i < 8; i++) l.push({ clave: String(i), nombre: 'Set ' + (i + 1) });
+    ACTIVOS.forEach(function (i) { l.push({ clave: String(i), nombre: 'Set ' + (i + 1) }); });
     return l;
   }
 
