@@ -158,15 +158,6 @@
       };
     },
 
-    /* LA CUENTA ATRÁS (3-2-1) USA OTRO SET (titular, 2026-09-22): la carcasa la
-       pinta y aquí le damos la ficha del número n (1..3) de un set DISTINTO al
-       del tablero, para dar variedad al empezar. `aria-hidden` porque la carcasa
-       ya anuncia el número por su región `aria-live`. */
-    conteo: function (estado, n) {
-      return '<span class="jg-conteo-ficha" style="--set:' + sets(estado).conteo +
-        ';--n:' + (n - 1) + '" aria-hidden="true"></span>';
-    },
-
     /* LO QUE ENSEÑA EN LA REVELACIÓN (contrato de `juegos/duelo.js`).
        ⚠️ AQUÍ NO SE DECLARA ICONO, Y ESO ES LA DECISIÓN (titular, 2026-09-22:
        «el icono que acompaña el tiempo del jugador es el de reloj de arena, no

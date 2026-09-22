@@ -88,7 +88,7 @@
   function quitarFigura() {
     var modal = document.getElementById('m-partida');
     if (!modal) return;
-    [].forEach.call(modal.querySelectorAll('.jg-portada-fig'), function (n) {
+    [].forEach.call(modal.querySelectorAll('.jg-portada-fig, #m-partida > .jg-cuenta'), function (n) {
       if (n.parentNode) n.parentNode.removeChild(n);
     });    var cuerpo = modal.querySelector('.modal__cuerpo');
     if (cuerpo) cuerpo.style.paddingBottom = '';
@@ -121,7 +121,9 @@
     var jug = d.querySelector('.jg-portada-fig__jug');
     var img = d.querySelector('.jg-portada-fig__img');
     if (!cuerpo || !jug || !img) return;
-    var ancho = 58;
+    /* Un poco más grande (titular, 2026-09-22): de 58 a 66 %. Si no cabe, el
+       bucle la baja por pasos como antes. */
+    var ancho = 66;
     for (var i = 0; i < 6; i++) {
       jug.style.setProperty('--jg-p-ancho', ancho + '%');
       cuerpo.style.paddingBottom = '0px';
@@ -401,6 +403,10 @@
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--presenta">' +
         cabeza +
+        /* LA FICHA SE CENTRA EN EL HUECO ENTRE EL LOGO Y LA CABEZA (titular,
+           2026-09-22): el logo va arriba y lo que queda hasta la figura --que el
+           cuerpo ya reserva abajo-- es de la ficha, que se coloca en medio sola. */
+        '<div class="jg-presenta__centro">' +
         '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
           /* Con `deUnaVez` las rondas de su TRAMO se asignan juntas en una
              pantalla, así que la presentación es una sola y lo dice en plural
@@ -416,6 +422,7 @@
           (m.como ? '<p class="jg-ficha-ronda__como">' + esc(m.como) + '</p>' : '') +
         '</div>' +
         (aviso ? '<p class="chico centrado jg-aviso">' + esc(aviso) + '</p>' : '') +
+        '</div>' +
       '</div>';
     /* Sin círculo y sin nombre (titular, 2026-09-22): la persona de pie sobre
        el botón ya dice de quién es el turno. */
@@ -613,12 +620,13 @@
      usa una ficha de un set distinto al del tablero), su HTML; si no, el número
      a secas. El número siempre va en un `solo-lectores` para que la región
      `aria-live` lo anuncie aunque la vista sea un dibujo. */
+  /* LA CUENTA ATRÁS OFICIAL (titular, 2026-09-22: «que el conteo no sea en
+     números ilustrados; números de texto con decoración similar a los nombres
+     del ganador en la pantalla de victoria, pero más grande y centrado en el
+     viewport… será el conteo regresivo oficial para todos los juegos que lo
+     requieran»). Es la misma en todos: ningún juego la pinta ni la coloca. */
   function conteoContenido(n) {
-    var ui = (J().ui || {})[juegoActual()];
-    if (ui && typeof ui.conteo === 'function') {
-      return '<span class="solo-lectores">' + n + '</span>' + ui.conteo(C.estadoJuego, n);
-    }
-    return String(n);
+    return '<span class="jg-cuenta__n">' + n + '</span>';
   }
 
   /* El 3-2-1. Tres segundos con su sonido, y el tablero ya está debajo pintado
@@ -627,25 +635,13 @@
     C.estado = 'cuenta';
     montarTablero(true);
     var velo = $('#m-partida .jg-cuenta');
-    /* Con muestra, el número no puede plantarse en medio del tablero: es justo
-       lo que hay que mirar. Se va a una esquina y deja ver lo de debajo. */
-    if (velo && M().muestra) velo.classList.add('jg-cuenta--muestra');
-    /* ⚠️ Y SI EL TABLERO MARCA UN SITIO (`[data-conteo]`), FLOTA AHÍ (titular,
-       2026-09-22: «el conteo flotante, que no ocupe interfaz ni mueva nada»).
-       Sin marca iba al pie de la sala, y en Calco caía justo donde ahora está la
-       paleta —que se enseña desde la muestra para que la rejilla no salte al
-       empezar— y el número salía medio cortado por el borde. Se mide una vez:
-       durante el 3-2-1 no cambia nada de sitio, que es justo lo que se busca. */
-    var ancla = velo && $('#jg-tablero [data-conteo]');
-    if (ancla) {
-      var base = velo.parentNode.getBoundingClientRect(), r = ancla.getBoundingClientRect();
-      velo.classList.add('jg-cuenta--anclada');
-      velo.style.inset = 'auto';
-      velo.style.left = (r.left - base.left) + 'px';
-      velo.style.top = (r.top - base.top) + 'px';
-      velo.style.width = r.width + 'px';
-      velo.style.height = r.height + 'px';
-    }
+    /* CENTRADA EN LA PANTALLA, NO EN EL TABLERO: se cuelga del modal, encima de
+       todo --cabecera y pie incluidos--. Antes vivía dentro del hueco del
+       juego, y en Calco se apartaba a una banda para no tapar el patrón; la
+       cuenta oficial es una sola y va al centro en todos los juegos. La quitan
+       `caja()` y `cerrar()` si se sale a mitad. */
+    var modal = document.getElementById('m-partida');
+    if (velo && modal) modal.appendChild(velo);
     var n = segundosDeCuenta();
     var s = sonido();
     function paso() {
@@ -856,33 +852,78 @@
     var quedan = Math.max(0, (m.reintentos || 0) - C.gastados);
     var ui = (J().ui || {})[juegoActual()];
     var detalle = ui && ui.resumenHTML ? ui.resumenHTML(C.resumen) : resumenGenerico(C.resumen);
+    /* EL RECIBO ES LA PORTADA DE DESPUÉS (titular, 2026-09-22: «la pantalla de
+       resumen post juego también tendrá al personaje en la misma forma que en
+       el pre game»). Misma forma que la presentación —el logo grande arriba, la
+       ficha centrada en el hueco y la persona de pie sobre el botón— y por eso
+       usa sus mismas clases: la ronda empieza y acaba en la misma pantalla, y
+       solo cambia lo que dice la ficha. El círculo con el nombre se fue: la
+       figura ya dice de quién es la ronda. Y la cabecera va vacía, como en la
+       presentación: el logo grande del centro lo dice. */
+    cabecera(false);
+    var cabeza = m.rotulo
+      ? '<img class="jg-rotulo" src="../assets/img/juegos/rotulo-' + esc(juegoActual()) + '.webp" alt="' +
+          esc(m.nombre || '') + '" decoding="async">'
+      : '';
     caja().innerHTML =
-      '<div class="sala sala--centrada jg jg--recibo">' +
-        '<div class="jg-quien jg-quien--chica">' +
-          window.ATWI.fichaHTML(q.avatar, 'avatar--duelo', q.color) +
-          '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
+      '<div class="sala sala--centrada jg jg--presenta jg--recibo">' +
+        cabeza +
+        '<div class="jg-presenta__centro">' +
+          '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
+            '<p class="jg-ficha-ronda__t">' + (C.resumen.completo ? '¡Ronda completa!' : 'Se acabó el tiempo') + '</p>' +
+            '<p class="jg-ficha-ronda__nivel">Ronda ' + C.ronda + ' de ' + C.rondas +
+              (C.intento > 1 ? ' · intento ' + C.intento : '') + '</p>' +
+            detalle +
+          '</div>' +
         '</div>' +
-        '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
-          '<p class="jg-ficha-ronda__t">' + (C.resumen.completo ? '¡Ronda completa!' : 'Se acabó el tiempo') + '</p>' +
-          '<p class="jg-ficha-ronda__nivel">Ronda ' + C.ronda + ' de ' + C.rondas +
-            (C.intento > 1 ? ' · intento ' + C.intento : '') + '</p>' +
-          detalle +
-        '</div>' +
-        /* SOLO CUENTA LO QUE SE ENVÍA (titular, D13): si reintenta, lo de ahora
-           se reemplaza. Se dice antes de que elija, no después. */
-        '<p class="chico centrado jg-aviso">' + (quedan
-          ? 'Si reintentas, se juega la misma ronda otra vez y cuenta solo la que envíes.'
-          : 'No quedan reintentos: esta es la que cuenta.') + '</p>' +
       '</div>';
-    /* Los dos del mismo tamaño y el blanco punteado: regla de los pares.
-       ⚠️ EL BOTÓN DICE ADÓNDE LLEVA (titular, 2026-09-22: «solo dice Enviar si
+    ponerFigura(q);
+    /* ⚠️ EL BOTÓN DICE ADÓNDE LLEVA (titular, 2026-09-22: «solo dice Enviar si
        es la última; si sigue otra ronda, "Siguiente reto"»). Hace lo mismo en
        los dos casos —deja firme esta ronda—, pero con más rondas por delante lo
        que viene es el reto siguiente, y «Enviar» se leía como que la partida se
-       acababa ahí. */
+       acababa ahí.
+       REINTENTAR YA NO ES UN BOTÓN DEL PAR, ES UN ICONO CON LO QUE QUEDA DENTRO
+       (titular, 2026-09-22): la flecha de volver a empezar con el número de
+       intentos en el centro, al lado del botón grande. Y no reintenta al toque:
+       abre un globo que dice que lo de ahora se REEMPLAZA y pide confirmarlo
+       —eso es lo que antes decía un párrafo encima del par, y en el globo se lee
+       justo cuando se va a decidir—. Sin intentos no hay icono: el botón grande
+       se queda solo y a todo lo ancho. */
     var hayOtra = C.ronda < C.rondas;
-    pie().innerHTML = (quedan ? secundario('reintentar', 'Reintentar (' + (quedan === 1 ? 'queda 1' : 'quedan ' + quedan) + ')') : '') +
-                      principal('enviar', hayOtra ? 'Siguiente reto' : 'Enviar');
+    pie().innerHTML = quedan
+      ? '<div class="jg-pie-fila">' + botonReintento(quedan) +
+          principal('enviar', hayOtra ? 'Siguiente reto' : 'Enviar') + '</div>'
+      : principal('enviar', hayOtra ? 'Siguiente reto' : 'Enviar');
+  }
+
+  function botonReintento(quedan) {
+    return '<button class="jg-reintento" type="button" data-jg="pedir-reintento" ' +
+      'aria-label="Reintentar la ronda (' + (quedan === 1 ? 'queda 1 intento' : 'quedan ' + quedan + ' intentos') + ')">' +
+      window.ATWI.iconoSVG('repetir', 44) +
+      '<span class="jg-reintento__n" aria-hidden="true">' + quedan + '</span>' +
+    '</button>';
+  }
+
+  /* El globo que pregunta antes de reintentar. Lo que se juega es LA MISMA
+     ronda —mismo tablero—, y lo que cuenta es lo último que se envía: eso es lo
+     que hay que saber antes de tocar, porque un reintento peor también
+     reemplaza. */
+  function pedirReintento(boton) {
+    if (!C || C.estado !== 'recibo') return;
+    var quedan = Math.max(0, (M().reintentos || 0) - C.gastados);
+    if (!quedan || !window.ATWI.globo) return;
+    window.ATWI.globo.abrir(boton,
+      /* La `clave` del globo sale entre comillas: es la frase que hay que
+         llevarse, y aquí es que lo de ahora se pierde. */
+      { titulo: '¿Intentarlo otra vez?',
+        texto: 'Se juega la misma ronda desde el principio. ' +
+          (quedan === 1 ? 'Es el último intento que te queda.' : 'Te quedan ' + quedan + ' intentos.'),
+        clave: 'Lo que hagas reemplaza lo de ahora, aunque te salga peor.' },
+      { tinte: 'competencia', etiqueta: 'Reintentar la ronda',
+        acciones:
+          '<button class="boton boton--bloque boton--competencia" data-jg-globo="reintentar">Reintentar</button>' +
+          '<button class="boton boton--suave boton--bloque boton--punteado" data-cerrar-globo>Me quedo con esta</button>' });
   }
 
   function resumenGenerico(r) {
@@ -1221,11 +1262,19 @@
   /* --- Los toques --------------------------------------------------------- */
   document.addEventListener('click', function (e) {
     if (!C) return;
+    /* El «Reintentar» del globo vive FUERA del modal (el globo cuelga del
+       marco), así que no lo coge el `#m-partida [data-jg]` de abajo. */
+    if (e.target.closest('.globo [data-jg-globo="reintentar"]')) {
+      if (window.ATWI.globo) window.ATWI.globo.cerrar();
+      reintentar();
+      return;
+    }
     var b = e.target.closest('#m-partida [data-jg]');
     if (!b) return;
     var a = b.dataset.jg;
     if (a === 'comenzar') comenzar();
     else if (a === 'reintentar') reintentar();
+    else if (a === 'pedir-reintento') pedirReintento(b);
     else if (a === 'enviar') enviar();
     else if (a === 'relevo-listo') pintarPresentacion();
     else if (a === 'otra-vez') { var f = C.otraVez; C.otraVez = null; if (f) f(); }
