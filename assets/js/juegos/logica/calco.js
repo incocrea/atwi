@@ -1,18 +1,26 @@
 /* ATWI · minijuegos · «Calco»
    ==========================================================================
-   Sale un patrón de colores sobre una cuadrícula, se mira unos segundos, se
-   esconde, y hay que calcarlo de memoria: tocar un color, tocar una celda.
-   Tocar otra vez la misma celda la borra. El reloj empieza cuando el patrón se
-   esconde, no antes (docs/10 §8.2).
+   Sale un patrón de STICKERS sobre una cuadrícula, se mira unos segundos, se
+   esconde, y hay que calcarlo de memoria: se ARRASTRA cada sticker de la paleta
+   a su casilla, y tocar una casilla que ya tiene uno lo quita. El reloj empieza
+   cuando el patrón se esconde, no antes (docs/10 §8.2).
 
-   DIFICULTAD ÚNICA (pivote del titular, 2026-09-22): 4×4 con 7 celdas y 4
-   colores. El plan traía tres niveles; se queda el de en medio, y el motivo es
-   que los otros dos miden otra cosa: con 5 celdas se calca sin esfuerzo y con 9
-   en 5×5 la ronda la decide la memoria bruta y no la atención.
+   DIFICULTAD ÚNICA (pivote del titular, 2026-09-22): 4×4 con 7 casillas y 4
+   stickers distintos. El plan traía tres niveles; se queda el de en medio, y el
+   motivo es que los otros dos miden otra cosa: con 5 casillas se calca sin
+   esfuerzo y con 9 en 5×5 la ronda la decide la memoria bruta y no la atención.
 
-   ⚠️ CADA COLOR LLEVA ADEMÁS UNA FORMA, y no es decoración: la pista no puede
-   depender solo del color (docs/10 §10, punto 6). La forma vive en la interfaz;
-   aquí lo que se guarda es el índice, y el índice ES la forma.
+   ⚠️ STICKERS Y NO COLORES CON FORMA (titular, 2026-09-22: «para Calco no
+   usaremos colores y formas, usaremos stickers»). Cuatro colores obligaban a
+   dibujarles una forma encima para no depender del tono; un sticker ya ES una
+   cosa reconocible —un gato, una pizza, una luna— y se recuerda por lo que es,
+   no por su color. Es además el primer uso de la hoja de stickers, que después
+   heredan Frascos, Despensa, Dúos y Revoltijo.
+
+   ⚠️ QUÉ CUATRO SALEN ES DEL TABLERO (`fichas`), no de la interfaz: si los
+   eligiera la pantalla, el teléfono y el servidor verían rondas distintas. La
+   lógica guarda el ÍNDICE dentro de `fichas` (0..3) y quién es cada uno lo dice
+   `fichas`; la interfaz solo traduce ese índice a un archivo.
 
    LO QUE SE GUARDA ES LA CUADRÍCULA FINAL, no los aciertos: el resultado lo
    saca el servidor repitiendo las jugadas sobre el patrón de verdad. El cliente
@@ -23,19 +31,25 @@
   var J = raiz.ATWI.juegos = raiz.ATWI.juegos || Object.create(null);
 
   var NIVELES = [
-    { cols: 4, filas: 4, pintadas: 7, colores: 4, muestraMs: 3000 }
+    { cols: 4, filas: 4, pintadas: 7, distintos: 4, muestraMs: 3000 }
   ];
+
+  /* Cuántos stickers hay en la hoja. Los nombres viven en la interfaz --aquí no
+     se sabe ni se quiere saber cómo se llama el archivo--; lo único que hace
+     falta es de cuántos se puede elegir, porque eso SÍ cambia el tablero y
+     tiene que ser igual en el teléfono y en el servidor. */
+  var STICKERS = 24;
 
   var VACIA = -1;
 
-  /* Una jugada es un entero: `celda * PASOS + k`, con k = 0 borrar y k = 1..4
-     pintar del color k-1. Entero y no objeto porque esta lista viaja al
-     servidor y se repite allí: cuanto menos forma tenga, menos puede discrepar
-     un JSON de otro. */
+  /* Una jugada es un entero: `celda * PASOS + k`, con k = 0 quitar y k = 1..4
+     poner la ficha k-1. Entero y no objeto porque esta lista viaja al servidor
+     y se repite allí: cuanto menos forma tenga, menos puede discrepar un JSON
+     de otro. */
   var PASOS = 5;
 
   function celdaDe(jugada) { return Math.floor(jugada / PASOS); }
-  function colorDe(jugada) { return (jugada % PASOS) - 1; }   // -1 = borrar
+  function fichaDe(jugada) { return (jugada % PASOS) - 1; }   // -1 = quitar
 
   function generar(semilla, nivel) {
     var n = NIVELES[nivel] || NIVELES[0];
@@ -46,24 +60,29 @@
     var elegidas = az.barajar(todas).slice(0, n.pintadas);
     var patron = [];
     for (var c = 0; c < total; c++) patron.push(VACIA);
-    /* ⚠️ LOS CUATRO COLORES SALEN TODOS, y eso no es un adorno: si el azar deja
-       uno fuera, la paleta enseña un color que no está en el patrón y la ronda
-       se vuelve más fácil para quien lo note.
-       ⚠️ PERO EL QUE SE LLEVA CADA UNO SE SORTEA, y esto costó reescribirlo: la
+    /* QUÉ CUATRO STICKERS SALEN, de los 24 de la hoja: cada ronda trae otros,
+       así que dos rondas seguidas de Calco no se parecen aunque el patrón caiga
+       en las mismas casillas. */
+    var hoja = [];
+    for (var h = 0; h < STICKERS; h++) hoja.push(h);
+    var fichas = az.barajar(hoja).slice(0, n.distintos);
+    /* ⚠️ LOS CUATRO SALEN TODOS, y eso no es un adorno: si el azar deja uno
+       fuera, la paleta enseña un sticker que no está en el patrón y la ronda se
+       vuelve más fácil para quien lo note.
+       ⚠️ Y A QUIÉN LE TOCA CADA UNO SE SORTEA, que costó reescribirlo: la
        primera versión repartía los cuatro garantizados por ORDEN DE LECTURA
-       --la primera celda pintada siempre coral, la segunda azul, la tercera
-       verde, la cuarta morada-- así que quien lo notara solo tenía que
-       recordar las posiciones y el color de las tres últimas. La mitad del
-       juego, regalada. Ahora los colores obligatorios caen en cuatro de las
-       siete al azar. */
+       --la primera casilla siempre el primer sticker, la segunda el segundo…--
+       así que quien lo notara solo tenía que recordar las posiciones y las tres
+       últimas fichas. La mitad del juego, regalada. */
     var reparto = [];
     for (var k = 0; k < elegidas.length; k++) {
-      reparto.push(k < n.colores ? k : az.entero(n.colores));
+      reparto.push(k < n.distintos ? k : az.entero(n.distintos));
     }
     reparto = az.barajar(reparto);
     for (var j = 0; j < elegidas.length; j++) patron[elegidas[j]] = reparto[j];
     return {
-      cols: n.cols, filas: n.filas, colores: n.colores,
+      fichas: fichas,
+      cols: n.cols, filas: n.filas, distintos: n.distintos,
       muestraMs: n.muestraMs, patron: patron
     };
   }
@@ -88,14 +107,14 @@
        app: ahí la ronda ya terminó sola. */
     if (calcado(estado)) return null;
     var celda = celdaDe(jugada);
-    var color = colorDe(jugada);
+    var ficha = fichaDe(jugada);
     if (celda < 0 || celda >= estado.pintadas.length) return null;
-    if (color < -1 || color >= estado.tablero.colores) return null;
-    /* Borrar una celda vacía, o pintar el color que ya tiene, no lo puede
-       producir la interfaz: la celda cambia de estado con cada toque. Una lista
-       que lo traiga no salió de la app. */
-    if (estado.pintadas[celda] === color) return null;
-    estado.pintadas[celda] = color;
+    if (ficha < -1 || ficha >= estado.tablero.distintos) return null;
+    /* Quitar de una casilla vacía, o poner la ficha que ya tiene, no lo puede
+       producir la interfaz: la casilla cambia de estado con cada gesto. Una
+       lista que lo traiga no salió de la app. */
+    if (estado.pintadas[celda] === ficha) return null;
+    estado.pintadas[celda] = ficha;
     estado.pasos++;
     return estado;
   }
@@ -116,7 +135,7 @@
       } else if (puso === VACIA) {
         faltan++;
       } else {
-        demas++;   // celda del patrón con el color cambiado: ni acierto ni hueco
+        demas++;   // casilla del patrón con OTRA ficha: ni acierto ni hueco
       }
     }
     return {
@@ -133,19 +152,19 @@
   }
 
   /* ⚠️ LO DE MÁS RESTA, y por eso no basta con contar aciertos: sin ese término
-     pintar la cuadrícula entera de los cuatro colores sacaría los 7 aciertos
-     por fuerza bruta. `completo` va primero porque es lo que suma a favor. */
+     llenar la cuadrícula entera de stickers sacaría los 7 aciertos por fuerza
+     bruta. `completo` va primero porque es lo que suma a favor. */
   function marca(r) {
     return [r.completo, r.aciertos - r.demas, -r.ms];
   }
 
-  /* El mismo patrón en espejo y con los colores permutados: misma dificultad
-     --las mismas celdas que recordar y los mismos toques-- y distinto dibujo. */
+  /* El mismo patrón en espejo y con las fichas permutadas: misma dificultad
+     --las mismas casillas que recordar y los mismos gestos-- y distinto dibujo. */
   function gemelo(tablero, semilla) {
     var az = J.azar.crear(semilla);
     var cual = 1 + az.entero(3);                 // 1 izq-der, 2 arr-abajo, 3 las dos
     var orden = [];
-    for (var i = 0; i < tablero.colores; i++) orden.push(i);
+    for (var i = 0; i < tablero.distintos; i++) orden.push(i);
     var permuta = az.barajar(orden);
     var cols = tablero.cols, filas = tablero.filas;
     var patron = [];
@@ -157,8 +176,12 @@
         patron.push(v === VACIA ? VACIA : permuta[v]);
       }
     }
+    /* `fichas` NO se toca: los dos ven los mismos cuatro stickers en la
+       paleta --si no, la pantalla del otro sería otro juego-- y lo que cambia
+       es dónde va cada uno. */
     return {
-      cols: cols, filas: filas, colores: tablero.colores,
+      fichas: tablero.fichas.slice(),
+      cols: cols, filas: filas, distintos: tablero.distintos,
       muestraMs: tablero.muestraMs, patron: patron
     };
   }

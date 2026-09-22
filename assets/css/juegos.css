@@ -213,60 +213,47 @@
 }
 
 /* Una casilla de Calco. Vacía es un hueco con su marco punteado --dice «aquí
-   puede ir algo» sin pesar como una pieza--; puesta es la pieza de color. */
+   puede ir algo» sin pesar como una pieza--; puesta lleva su sticker.
+   ⚠️ `touch-action: none` es lo que deja arrastrar con el dedo sin que la
+   pantalla scrollee, y va en el CSS y no en un `preventDefault`, que se
+   comería el toque de quitar. */
 .jg-cal {
   border: 2px dashed var(--linea-fuerte); background: rgba(255, 255, 255, .45);
   border-radius: var(--radio-chip); padding: 0;
-  display: grid; place-items: center;
-  transition: transform .12s, background .15s, border-color .15s;
+  display: grid; place-items: center; touch-action: none;
+  transition: transform .12s, background .15s, border-color .15s, box-shadow .15s;
 }
 .jg-cal:not(:disabled):active { transform: scale(.92); }
 .jg-cal--puesta { border-style: solid; border-color: transparent; background: transparent; }
-
-/* ⚠️ EL COLOR NO VA SOLO: CADA TONO LLEVA SU FORMA (docs/10 §10.6). Cuatro
-   colores que solo se distinguen por el tono dejan fuera a quien no los separa,
-   y este juego va entero de recordar cuál iba dónde. La forma se recorta con
-   `clip-path` sobre la misma pieza: ni un archivo más. */
-.jg-cal__forma {
-  display: block; width: 100%; height: 100%;
-  background: var(--tinta-color);
-  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .18), inset 0 3px 0 rgba(255, 255, 255, .45);
+/* EL ÁREA DE SUELTA, al pasar el sticker por encima (titular, 2026-09-22):
+   sólida, en el color del modo y con su halo. Tiene que leerse con el dedo
+   tapando media pantalla, así que no basta con aclarar el fondo. */
+.jg-cal--diana {
+  border-style: solid; border-color: var(--jg-color);
+  background: color-mix(in srgb, var(--jg-color) 16%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--jg-color) 35%, transparent);
+  transform: scale(1.06);
 }
-/* ⚠️ SIEMPRE PREFIJADOS CON SU PIEZA, nunca `[style*="--tono:0"]` a secas: un
-   selector de atributo sin clase delante alcanza a CUALQUIER elemento de la app
-   que lleve esa variable en su `style`, y este proyecto ya pagó dos colisiones
-   de nombres (`.hoja`, `.opcion`). Aquí solo pintan una casilla o una tinta. */
-.jg-cal[style*="--tono:0"], .jg-tinta[style*="--tono:0"] { --tinta-color: #F2683C; }   /* coral  · círculo */
-.jg-cal[style*="--tono:1"], .jg-tinta[style*="--tono:1"] { --tinta-color: #2D9CDB; }   /* azul   · cuadrado */
-.jg-cal[style*="--tono:2"], .jg-tinta[style*="--tono:2"] { --tinta-color: #3AA655; }   /* verde  · triángulo */
-.jg-cal[style*="--tono:3"], .jg-tinta[style*="--tono:3"] { --tinta-color: #9B5DE5; }   /* morado · rombo */
-.jg-cal[style*="--tono:0"] > .jg-cal__forma,
-.jg-tinta[style*="--tono:0"] > .jg-cal__forma { border-radius: 50%; }
-.jg-cal[style*="--tono:1"] > .jg-cal__forma,
-.jg-tinta[style*="--tono:1"] > .jg-cal__forma { border-radius: var(--radio-chip); }
-.jg-cal[style*="--tono:2"] > .jg-cal__forma,
-.jg-tinta[style*="--tono:2"] > .jg-cal__forma { clip-path: polygon(50% 4%, 96% 92%, 4% 92%); }
-.jg-cal[style*="--tono:3"] > .jg-cal__forma,
-.jg-tinta[style*="--tono:3"] > .jg-cal__forma { clip-path: polygon(50% 2%, 98% 50%, 50% 98%, 2% 50%); }
+.jg-st { display: block; pointer-events: none; }
 
-/* La paleta: los cuatro colores, y el puesto crece y se le enciende el aro POR
-   DENTRO --la lección del aro de la carita: por fuera no cabe en el hueco entre
-   vecinos y cualquier `overflow` lo recorta--. */
+/* La paleta: los cuatro stickers de la ronda, de donde se arrastran. NO tiene
+   estado «elegido» porque tocarla ya no elige nada --poner es arrastrar, y el
+   toque quedó para QUITAR de la cuadrícula--; lo único que marca es el foco,
+   que es del teclado. `touch-action: none` por lo mismo que la casilla: sin él
+   el dedo scrollea en vez de arrastrar. */
 .jg-paleta {
   display: flex; justify-content: center; gap: var(--e-3);
   margin-top: var(--e-4);
 }
 .jg-tinta {
-  width: var(--disco, 44px); height: var(--disco, 44px); padding: 6px;
-  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .55);
-  display: grid; place-items: center;
+  width: var(--disco, 44px); height: var(--disco, 44px); padding: 5px;
+  border: 0; border-radius: 50%; background: rgba(255, 255, 255, .6);
+  display: grid; place-items: center; touch-action: none; cursor: grab;
   box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
   transition: transform .12s, box-shadow .15s;
 }
-.jg-tinta--puesta {
-  transform: scale(1.12);
-  box-shadow: inset 0 0 0 3px var(--jg-color), 0 3px 8px rgba(0, 0, 0, .18);
-}
+.jg-tinta:active { cursor: grabbing; transform: scale(.94); }
+.jg-tinta:focus-visible { box-shadow: inset 0 0 0 3px var(--jg-color), 0 3px 8px rgba(0, 0, 0, .18); }
 
 /* ⚠️ CON MUESTRA EL NÚMERO SE APARTA (Calco): la cuenta atrás corre mientras el
    patrón está a la vista, así que plantarla en el centro taparía justo lo que
