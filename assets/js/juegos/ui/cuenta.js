@@ -66,10 +66,20 @@
         });
       }
 
-      /* Repintar solo lo que cambió: la celda que se fue y el número que sigue. */
+      /* Repintar solo lo que cambió: la celda que se fue y el número que sigue.
+         AL ACERTAR NO DESAPARECE DE GOLPE (titular, 2026-09-22): pasa 500 ms a su
+         icono ROTO, con un sonido de algo que se rompe, y luego se va. `actualizar`
+         solo corre en el acierto --el toque errado suma fallo y no quita celda--,
+         así que aquí siempre es una ficha que se rompe. */
       return function actualizar(est, jugada) {
         var b = caja.querySelector('[data-celda="' + jugada + '"]');
-        if (b && est.quitadas[jugada]) { b.classList.add('jg-celda--fuera'); b.disabled = true; }
+        if (b && est.quitadas[jugada]) {
+          b.disabled = true;
+          b.classList.add('jg-celda--rota');
+          var s = window.ATWI.sonido;
+          if (s && s.hay()) s.romper();
+          setTimeout(function () { b.classList.add('jg-celda--fuera'); }, 500);
+        }
         var p = caja.querySelector('.jg-pista b');
         if (p) p.textContent = est.sig;
       };

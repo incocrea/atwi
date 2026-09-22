@@ -108,7 +108,7 @@
 }
 @keyframes jg-late { from { transform: scale(1.5); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) {
-  .jg-cuenta--late, .jg-pildora--urge { animation: none; }
+  .jg-cuenta--late, .jg-pildora--urge, .jg-celda--rota { animation: none; }
 }
 
 /* --- El relevo y el envío -------------------------------------------------- */

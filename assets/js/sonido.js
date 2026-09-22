@@ -237,6 +237,38 @@ window.ATWI = window.ATWI || {};
       o.start(t); o.stop(t + 0.32);
     },
 
+    /**
+     * Algo que se rompe: la ficha del tablero de «Cuenta» al tocarla. Un crujido
+     * corto y brillante --ruido de banda alta que cae rápido-- más una lluvia de
+     * tres chispas agudas escalonadas, que suenan a esquirlas. Suave y breve
+     * porque suena en CADA toque, y pueden venir rápidos.
+     */
+    romper: function () {
+      var c = contexto();
+      if (!c) return;
+      var t = c.currentTime;
+      var f = c.createBufferSource();
+      f.buffer = ruido(c);
+      f.playbackRate.value = 1.7;
+      var paso = c.createBiquadFilter();
+      paso.type = 'bandpass';
+      paso.frequency.value = 2200;
+      paso.Q.value = 0.8;
+      var g = c.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.22, t + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      f.connect(paso); paso.connect(g); g.connect(c.destination);
+      f.start(t); f.stop(t + 0.12);
+
+      var maestro = c.createGain();
+      maestro.gain.value = 0.6;
+      maestro.connect(c.destination);
+      for (var i = 0; i < 3; i++) {
+        golpe(c, maestro, t + 0.02 + i * 0.03, 0.12 - i * 0.03);
+      }
+    },
+
     /** Un tic por cada número de la cuenta atrás. */
     tic: function () {
       var c = contexto();
