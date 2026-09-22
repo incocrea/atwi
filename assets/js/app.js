@@ -3543,9 +3543,13 @@
       return;
     }
     caja.innerHTML = cabecera +
+      /* ⚠️ DICE QUE MARCARLO BORRA (0086). El renglón explicaba el estado
+         «pendiente» y no lo que pasa al salir de él, que desde hoy es que el
+         premio y su partida se van: enterarse después de pulsar sería enterarse
+         tarde de algo que no se deshace. */
       '<p class="chico tenue" style="margin-bottom:var(--e-4)">Lo que se apostó jugando. ' +
-        'El que gana lo marca como recibido cuando se lo den; hasta entonces queda ' +
-        'pendiente. No es una deuda de verdad, es un recordatorio entre ustedes.</p>' +
+        'El que gana lo marca como recibido cuando se lo den, y ahí el premio y su ' +
+        'partida se van. No es una deuda de verdad, es un recordatorio entre ustedes.</p>' +
       '<div class="ruleta">' +
       premios.map(function (p) {
         var soyGanador = p.soy === 'ganador';
@@ -3584,11 +3588,48 @@
     ajustarRuleta();
   }
 
+  /* ⚠️ AHORA SE PREGUNTA, PORQUE MARCARLO BORRA (titular, 2026-09-22: «cuando un
+     premio es marcado como reclamado desaparece y también su partida que lo
+     generó; esto purga el sistema»). Hasta hoy «Recibido» solo cambiaba un
+     estado y por eso iba a un toque seco —no borraba material—; desde la 0086
+     se lleva la partida entera, y en línea también del historial del otro. Eso
+     no se pulsa sin leerlo, que es la misma regla de la papelera del historial.
+     NO SE PIDE ESCRIBIR NADA, al revés que borrar la cuenta: lo que se va es un
+     marcador y unas rondas de minijuego, no una conversación. El peaje de
+     teclear se reserva para lo que no se puede volver a tener. */
+  function confirmarPremioRecibido(debate, disparador) {
+    var p = (premios || []).filter(function (x) { return x.debate === debate; })[0] || {};
+    var texto = 'Se va el premio y también la partida de QuiénGane que lo puso en juego, ' +
+      'con su resultado.';
+    if (p.otro) texto += ' Desaparece también del historial de ' + p.otro + '.';
+    var acciones =
+      '<button class="boton boton--bloque boton--suave boton--borrar"' +
+        ' data-premio-cobrar-ya="' + esc(debate) + '">Sí, ya me lo dieron</button>' +
+      '<button class="boton boton--suave boton--bloque boton--punteado" ' +
+        'data-cerrar-globo>Todavía no</button>';
+    abrirGlobo(disparador,
+      { titulo: '¿Ya te lo dieron?',
+        /* Sin el punto del final: los premios se escriben como frase y
+           «…traen.». Se va» deja tres signos seguidos. */
+        texto: (p.premio ? '«' + String(p.premio).replace(/\s*\.\s*$/, '') + '». ' : '') + texto,
+        clave: 'No se puede deshacer.' },
+      { tinte: 'competencia', signo: 'papelera', signoTam: 83,
+        etiqueta: 'Marcar el premio como recibido', acciones: acciones });
+  }
+
   function marcarPremioRecibido(debate, boton) {
     if (boton) { boton.disabled = true; boton.textContent = 'Guardando…'; }
     window.ATWI.nube.marcarPremioRecibido(debate).then(function () {
-      premios = null;                 // se vuelve a pedir con el estado nuevo
+      cerrarGlobo();
+      premios = null;                 // se vuelve a pedir: la tarjeta ya no está
+      /* Y EL HISTORIAL TAMBIÉN CADUCA: la partida se fue con el premio, así que
+         la lista en memoria enseña una tarjeta que el servidor ya no tiene. Es
+         el mismo caso de la partida fantasma. */
+      historialCaducado = true;
+      unaMenos((historial || []).filter(function (x) { return x.id === debate; })[0]);
+      historial = (historial || []).filter(function (x) { return x.id !== debate; });
       if (vistaActual === 'historial') pintarHistorial();
+      if (window.ATWI.aviso) window.ATWI.aviso('Listo. El premio y su partida se fueron.');
     }).catch(function (e) {
       var porque = (e && e.message) || '';
       /* ⚠️ «NO EXISTE ESE PREMIO» NO SE REINTENTA (titular, 2026-09-22). Es la
@@ -3598,7 +3639,9 @@
          algo que nunca va a funcionar. Se vuelve a pedir la lista, que es lo que
          hace desaparecer la tarjeta, y se dice qué pasó. */
       if (/no existe ese premio/i.test(porque)) {
+        cerrarGlobo();
         premios = null;
+        historialCaducado = true;
         if (vistaActual === 'historial') pintarHistorial();
         if (window.ATWI.aviso) {
           window.ATWI.aviso('Ese premio ya no está: la partida se borró.');
@@ -6985,8 +7028,11 @@
     /* Marcar un premio como recibido (solo el ganador). Va ANTES que la tarjeta
        porque el botón vive dentro de ella. Sin confirmación: no borra nada, solo
        registra que ya te lo dieron, y si te equivocas el rival lo ve igual. */
+    /* «Recibido» PREGUNTA; quien borra de verdad es el botón del globo. */
     var cobrar = e.target.closest('[data-premio-recibido]');
-    if (cobrar) { marcarPremioRecibido(cobrar.dataset.premioRecibido, cobrar); return; }
+    if (cobrar) { confirmarPremioRecibido(cobrar.dataset.premioRecibido, cobrar); return; }
+    var cobrarYa = e.target.closest('[data-premio-cobrar-ya]');
+    if (cobrarYa) { marcarPremioRecibido(cobrarYa.dataset.premioCobrarYa, cobrarYa); return; }
 
     /* Desde un acta se va a su partida. Ya no hay modal que cerrar antes: la
        lista vive en el historial. */

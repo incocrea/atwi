@@ -123,7 +123,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '483a449',
+  version: '7ef8730',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -418,7 +418,17 @@ window.ATWI.config = {
       rotuloTabla: 'Ronda por ronda',
       gana: 'gana',
       sinJugar: 'sin jugar',
-      empateRonda: 'iguales'
+      empateRonda: 'iguales',
+      /* EL PREMIO SE DICE DONDE SE ACABA DE GANAR (titular, 2026-09-22). La
+         pantalla decía quién ganó y cuántas rondas, y no decía LO QUE SE GANÓ,
+         que es a lo único que se jugaba: el premio quedaba anotado en una
+         pestaña que todavía nadie había visitado. Y dice dónde vive y hasta
+         cuándo, porque un premio que no se sabe dónde está no se cobra.
+         ⚠️ SOLO CON GANADOR: en empate no se consigna ninguno (migración 0082),
+         así que prometerlo aquí sería afirmar algo falso. */
+      premioGana: '{ganador} se lleva el premio',
+      premioDonde: 'Queda guardado en Historial, en «Premios», hasta que {ganador} ' +
+                   'lo marque como recibido.'
     },
     empate: {
       /* LOS 8 PUNTOS LOS DICE LA PANTALLA, NO EL JUEZ (v2.3, S16): la regla de

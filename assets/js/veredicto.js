@@ -969,7 +969,8 @@ window.ATWI = window.ATWI || {};
       var frase = String(jg[clave] || '')
         .replace('{ganador}', r.ganador || '').replace('{otro}', otroNombre)
         .replace('{a}', a).replace('{b}', b);
-      dice = '<p class="dice__linea">' + esc(frase) + '</p>' + tablaJuegoHTML(r, jg);
+      dice = '<p class="dice__linea">' + esc(frase) + '</p>' + tablaJuegoHTML(r, jg) +
+             premioHTML(r, jg);
     } else if (r.modo === 'negociacion') {
       var n = v.juezNegociacion || {};
       /* El acuerdo se lee con SUS palabras, entrecomillado: lo escribieron
@@ -1039,6 +1040,29 @@ window.ATWI = window.ATWI || {};
     if (res.ms != null) partes.push((Math.round(res.ms / 100) / 10) + ' s');
     return partes.join(' · ');
   }
+  /* LO QUE SE GANÓ, debajo de la tabla. La pantalla decía quién ganó y cuántas
+     rondas y no decía el premio, que es a lo único que se jugaba: quedaba
+     anotado en una pestaña que nadie había abierto todavía. Va al final porque
+     es la consecuencia de la tabla, no su encabezado.
+     ⚠️ Y DICE DÓNDE VIVE Y HASTA CUÁNDO: un premio que no se sabe dónde está no
+     se cobra, y el estado «pendiente» no se explica solo. */
+  function premioHTML(r, jg) {
+    var p = r.juego && r.juego.premio;
+    if (!p || !p.texto) return '';
+    var quien = p.ganador || '';
+    var dice = function (plantilla) { return String(plantilla || '').replace(/\{ganador\}/g, quien); };
+    return '<div class="premio-ganado">' +
+        /* ⚠️ SIN PEGATINA, y no por gusto: no existe ningún icono de premio ni de
+           QuiénGane --`ATWI.icono('competencia')` devuelve vacío, y el estado
+           vacío de la lista de Premios lleva ese mismo hueco con un `|| ''` que
+           lo disimula--. Lo que dice de qué familia es esto es el tinte azul de
+           la tarjeta, que es el del modo. Cuando llegue la pieza, va aquí. */
+        '<p class="premio-ganado__quien">' + esc(dice(jg.premioGana)) + '</p>' +
+        '<p class="premio-ganado__texto">«' + esc(p.texto) + '»</p>' +
+        '<p class="premio-ganado__donde">' + esc(dice(jg.premioDonde)) + '</p>' +
+      '</div>';
+  }
+
   function tablaJuegoHTML(r, jg) {
     var J = r.juego;
     var per = J.personas || [];
@@ -1048,15 +1072,33 @@ window.ATWI = window.ATWI || {};
       return '<th><span class="tabla-juego__quien">' +
         window.ATWI.fichaHTML(q.avatar, 'avatar--mini', q.color) + esc(q.nombre) + '</span></th>';
     }).join('');
+    /* ⚠️ EL RESUMEN DE UNA RONDA SOLO LO SABE LEER SU JUEGO. Esto usaba el id de
+       la PARTIDA para las tres filas, y desde el pivote una partida reparte un
+       juego por ronda: la de Cuenta leída por Calco daba «undefined/7 en NaN s»
+       en la pantalla del juez. `J.id` se queda de respaldo para las partidas de
+       antes del pivote, cuyas filas no traen juego. */
+    var juegoDe = function (f) { return f.juego || J.id; };
+    /* CON REPARTO MIXTO CADA FILA DICE A QUÉ SE JUGÓ, igual que la escena del
+       choque, y solo entonces: si las tres rondas son del mismo juego, el
+       rótulo lo repetiría tres veces. Y hace falta para poder LEER la tabla —un
+       «7/7» y un «Fuego» en la misma columna no se comparan sin saber que son
+       juegos distintos—. */
+    var mixto = filas.some(function (f) { return juegoDe(f) !== juegoDe(filas[0]); });
+    var nombreJuego = function (id) {
+      var m = window.ATWI.juegos && window.ATWI.juegos.juego ? window.ATWI.juegos.juego(id) : null;
+      return (m && m.nombre) || '';
+    };
     var cuerpo = filas.map(function (f) {
       var celda = function (lado) {
         var res = f[lado];
         var gano = f.gana && per.some(function (q) { return q.lado === lado && q.nombre === f.gana; });
         return '<td class="' + (gano ? 'tabla-juego__gana' : '') + '">' +
-          (res ? esc(resumenCortoDe(J.id, res)) : '<span class="tenue">' + esc(jg.sinJugar || '—') + '</span>') +
+          (res ? esc(resumenCortoDe(juegoDe(f), res)) : '<span class="tenue">' + esc(jg.sinJugar || '—') + '</span>') +
           '</td>';
       };
-      return '<tr><th scope="row">' + f.ronda + '</th>' + celda('propone') + celda('invitado') + '</tr>';
+      var rotulo = mixto && nombreJuego(juegoDe(f))
+        ? '<span class="tabla-juego__juego">' + esc(nombreJuego(juegoDe(f))) + '</span>' : '';
+      return '<tr><th scope="row">' + f.ronda + rotulo + '</th>' + celda('propone') + celda('invitado') + '</tr>';
     }).join('');
     return '<p class="dice__rotulo">' + esc(jg.rotuloTabla || '') + '</p>' +
       '<table class="tabla-juego"><thead><tr><th></th>' + cabeza + '</tr></thead>' +

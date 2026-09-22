@@ -4157,8 +4157,24 @@ window.ATWI = window.ATWI || {};
         nombre: nombreDelJuego(),
         como: d.como || null,
         marcador: d.marcador || null,
+        /* LO QUE SE GANÓ. En QuiénGane el «enunciado» de la partida ES el
+           premio, así que sale de ahí y no de otra consulta.
+           ⚠️ SOLO SI HAY GANADOR: sin `ganador_lado` la base no consigna ningún
+           premio (migración 0082), y anunciar uno que no existe dejaría a
+           alguien buscándolo en una lista vacía. */
+        premio: (res.ganador_lado && P.tema && P.tema.enunciado)
+          ? { texto: P.tema.enunciado, ganador: persona(res.ganador_lado).nombre } : null,
+        /* ⚠️ CADA FILA LLEVA SU JUEGO, y sin eso la tabla del juez enseñaba
+           `undefined` y `NaN` (lo vio el titular, 2026-09-22). Desde el pivote
+           una partida puede repartir tres juegos distintos, y el resumen de una
+           ronda solo lo sabe leer SU juego: con el id de la partida para todas,
+           la ronda de Cuenta se leía con el lector de Calco —que busca
+           `aciertos` donde hay `hechas`— y salía «undefined/7 en NaN s». El
+           servidor ya mandaba `juego` en cada fila; lo que faltaba era no
+           tirarlo aquí. */
         rondas: (d.filas || []).map(function (f) {
-          return { ronda: f.ronda, gana: f.gana === 'empate' ? null : (f.gana ? persona(f.gana).nombre : null),
+          return { ronda: f.ronda, juego: f.juego || null,
+                   gana: f.gana === 'empate' ? null : (f.gana ? persona(f.gana).nombre : null),
                    propone: f.propone, invitado: f.invitado };
         }),
         personas: ['propone', 'invitado'].map(function (l) {

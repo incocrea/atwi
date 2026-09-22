@@ -353,6 +353,14 @@
 .tabla-juego thead th { border-top: 0; font-weight: 800; font-family: var(--display); }
 .tabla-juego tbody th { font-family: var(--display); font-weight: 800; color: var(--tinta-suave); width: 28px; }
 .tabla-juego__quien { display: inline-flex; align-items: center; gap: 4px; }
+/* CON REPARTO MIXTO, bajo el número de ronda va a qué se jugó. Sin eso la tabla
+   no se puede leer: un «7/7» y un «Fuego» caen en la misma columna y no son la
+   misma medida. Va chico y en su propio renglón para no robarle ancho a lo que
+   hay que comparar, que son las dos celdas de al lado. */
+.tabla-juego__juego {
+  display: block; font-weight: 600; font-size: 0.6875rem;
+  color: var(--tinta-suave); line-height: 1.15; white-space: nowrap;
+}
 /* Quién se llevó la ronda: en negrita y con el fondo del modo, sin más
    marcas —un signo de «ganó» en cada fila leería como marcador—. */
 .tabla-juego__gana { font-weight: 800; background: color-mix(in srgb, var(--competencia) 18%, transparent); border-radius: 8px; }
