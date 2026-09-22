@@ -947,10 +947,19 @@
 }
 .jg-reintento:active { transform: translateY(3px) scale(.96); }
 .jg-reintento__dibujo { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-/* El número va en el hueco del círculo, oscuro y con su filo blanco para que
-   se lea sobre el amarillo de las flechas si las roza. */
+/* EL NÚMERO VA EN SU PASTILLA, COMO LAS VIDAS (titular, 2026-09-22: «para
+   garantizar contraste ponle un fondo como en la cantidad de vidas, un poco más
+   pequeño y centrado en el icono»). Suelto sobre las flechas amarillas se leía
+   a medias; con fondo sólido y letra blanca se lee siempre. Es la misma pieza
+   que `.vidas__cuenta` —disco de color, número blanco, filo blanco que lo
+   despega del dibujo— un pelo más grande porque aquí va sola y en el centro, y
+   en el azul de QuiénGane, que es el del botón de al lado. */
 .jg-reintento__n {
-  position: relative; font-family: var(--display); font-weight: 900;
-  font-size: 1.3rem; line-height: 1; color: var(--competencia-oscuro);
-  text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff;
+  position: relative;
+  min-width: 22px; height: 22px; padding: 0 5px;
+  display: grid; place-items: center;
+  border-radius: var(--radio-pastilla);
+  background: var(--competencia-oscuro); color: var(--blanco);
+  font-family: var(--display); font-weight: 800; font-size: 13px; line-height: 1;
+  border: 2px solid var(--blanco);
 }
