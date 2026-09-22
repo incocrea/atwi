@@ -115,7 +115,11 @@
         '</span>' +
       '</div>';
 
-    var cuerpo = filas.map(function (f) {
+    /* Lo que dura la entrada de UN par, en el mismo sitio que `--jg-d-dur` del
+       CSS: si los dos números se separan, los pares se solapan o dejan un hueco
+       muerto entre uno y otro. */
+    var MS_FILA = 1290;
+    var cuerpo = filas.map(function (f, i) {
       var m = J.juego(f.juego);
       /* Sin número de ronda (titular, 2026-09-22): la frase de cada choque ya
          dice qué pasó y son pocas filas; el número no situaba nada.
@@ -136,7 +140,10 @@
          cosa contada dos veces --con el agravante de que ocupaba un renglón por
          ronda, que es justo lo que hacía encoger los dibujos en un teléfono
          bajo--. */
-      return '<div class="jg-d__fila">' +
+      /* Cada par entra cuando el anterior ha terminado (titular, 2026-09-22).
+         El retraso es del CSS --una variable por fila-- y no de un
+         temporizador: ver la nota de `animation-delay` en `juegos.css`. */
+      return '<div class="jg-d__fila" style="--jg-d-retraso:' + (i * MS_FILA) + 'ms">' +
           ladoHTML(f.propone, 'propone', f.gana, f.juego) +
           '<span class="jg-d__medio">' +
             '<span class="jg-d__chispa" aria-hidden="true"></span>' +
@@ -254,7 +261,15 @@
        (un 30 % más lenta que antes, titular 2026-09-22) —los dos lados llegan al
        centro a la vez, así que es UN sonido y no uno por fila—. Con
        `reduced-motion` no hay vuelo y tampoco golpe. */
-    if (!quieto && s && s.hay()) timers.push(setTimeout(function () { s.choque(); }, 520));
+    /* ⚠️ UN GOLPE POR PAR, y cada uno en SU momento: antes era uno solo --los
+       tres entraban a la vez, así que era un único choque-- y ahora que entran
+       uno detrás de otro, un sonido suelto se despegaría de los dos últimos. El
+       520 es el instante del contacto dentro de la animación de una fila. */
+    if (!quieto && s && s.hay()) {
+      filas.forEach(function (_, i) {
+        timers.push(setTimeout(function () { s.choque(); }, 520 + i * MS_FILA));
+      });
+    }
 
     /* ⚠️ NO SE PASA SOLO AL RESULTADO (titular, 2026-09-21: «después de
        presentar el choque no sigas automáticamente al resultado, agrega un
@@ -271,7 +286,11 @@
       var b = pie.querySelector('[data-el-ver]');
       if (b) b.addEventListener('click', function () { b.disabled = true; fin(); });
     }
-    timers.push(setTimeout(ponerBoton, quieto ? 200 : 1450));
+    /* El botón sale cuando ha entrado el ÚLTIMO par, no el primero: si saliera
+       antes se podría saltar la escena a mitad, que es justo lo que este botón
+       existe para no hacer. */
+    timers.push(setTimeout(ponerBoton,
+      quieto ? 200 : (Math.max(0, filas.length - 1) * MS_FILA + 1450)));
 
     return function parar() {
       timers.forEach(clearTimeout);

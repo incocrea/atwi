@@ -626,7 +626,8 @@
   z-index: 1; pointer-events: none;
 }
 .jg-d__jug {
-  position: absolute; width: 48%;
+  /* 48 % + 5 (titular, 2026-09-22). */
+  position: absolute; width: 50.4%;
   /* ⚠️ SE HUNDEN (titular, 2026-09-22: «baja más los personajes, ocultándolos
      más en el bottom»). Estaban prácticamente enteras --acababan 10 px antes
      del canto-- y una figura entera al pie compite con los resultados, que es
@@ -637,11 +638,16 @@
      94 px de abajo, así que de la figura solo se ve lo que queda por encima de
      él. Con 92 px de hundido asomaban las cabezas y nada más --medido: 119 px
      de figura a la vista--; con 48 se ven 166, que es de cintura para arriba. */
-  bottom: var(--jg-d-hunde, -48px);
+  bottom: var(--jg-d-hunde, -68px);
   display: grid; justify-items: center;
 }
-.jg-d__jug--izq { left: -6%; }
-.jg-d__jug--der { right: -6%; }
+/* Un poco más hacia el centro cada uno (titular, 2026-09-22): estaban a -6 %.
+   ⚠️ NO SE PUEDE IR MUCHO MÁS: con un 50 % de ancho cada una, las dos suman más
+   que la pantalla, así que a -1 % se tocaban en el centro --medido: 5 px de
+   hueco--. A -4 % queda un pasillo de 31 px entre ellas y lo que se sale por el
+   canto son 15 px, que es el corte por la posición que sí vale. */
+.jg-d__jug--izq { left: -4%; }
+.jg-d__jug--der { right: -4%; }
 /* El nombre, sobre la cabeza y con el halo de la escena: sin caja que lo
    sostenga, es lo que lo despega del dibujo del fondo. */
 .jg-d__jug b {
@@ -742,6 +748,25 @@
 /* El nombre entra cuando el golpe ya pasó: la misma curva que traía la
    frase, que es la que estaba medida para caer al final del vuelo. */
 .jg-d__juego { animation: jg-d-dice var(--jg-d-dur) ease-out both; }
+
+/* ⚠️ LAS COMPARACIONES ENTRAN UNA DETRÁS DE OTRA (titular, 2026-09-22: «no
+   entran las 3 comparaciones al tiempo: entra el primer resultado, cuando
+   termina su animación entra el segundo, y al terminar la suya el tercero»).
+   Entraban las tres a la vez, así que el choque se leía como un solo golpe y no
+   como tres rondas que se van resolviendo.
+   ⚠️ SE HACE CON `animation-delay` Y NO CON TEMPORIZADORES, que es la lección de
+   S29: lo que cuelga de un reloj no ocurre si la pestaña deja de pintar, y aquí
+   el estado final --ganador a color, perdedor en gris-- tiene que estar puesto
+   al volver. Con el retraso declarado, el navegador lo resuelve solo.
+   VA DESPUÉS DE LAS DECLARACIONES: el atajo `animation:` de arriba escribe un
+   retraso de cero, así que una regla anterior no serviría de nada. */
+.jg-d__fila { --jg-d-retraso: 0ms; }
+.jg-d__lado--izq, .jg-d__lado--der,
+.jg-d__lado--pierde .jg-el__dibujo, .jg-d__lado--pierde .jg-el__nombre,
+.jg-d__lado--gana .jg-el__dibujo, .jg-d__lado--gana .jg-el__nombre,
+.jg-d__chispa, .jg-d__juego {
+  animation-delay: var(--jg-d-retraso, 0ms);
+}
 
 /* Sin movimiento: se ve el resultado, no el viaje. */
 .jg--duelo2-quieto .jg-d__lado--izq,
