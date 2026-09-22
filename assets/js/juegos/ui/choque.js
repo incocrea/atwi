@@ -58,12 +58,21 @@
 
       caja.innerHTML =
         '<div class="jg-choque">' +
+          /* LOS TURNOS SON LOS CÍRCULOS DE ARRIBA, y son el ESTADO: lo que hay
+             dentro de cada uno se juega en ese orden. */
+          '<div class="jg-turnos">' +
+            rondas.map(function (r) {
+              return '<button type="button" class="jg-turno" data-turno="' + r + '">' +
+                  '<span class="jg-turno__hueco"></span>' +
+                  '<span class="jg-turno__n">' + r + '</span>' +
+                '</button>';
+            }).join('') +
+          '</div>' +
           '<div class="jg-choque__cartas">' +
             m().ELEMENTOS.map(function (_, i) {
               return '<button type="button" class="jg-el jg-el--' + m().ELEMENTOS[i] +
                 '" data-el="' + i + '">' +
-                '<span class="jg-el__nums" aria-hidden="true"></span>' +
-                pieza(i, 80) +
+                pieza(i, 92) +
                 '<span class="jg-el__nombre">' + nombre(i) + '</span>' +
               '</button>';
             }).join('') +
@@ -88,47 +97,129 @@
           '</div>' +
         '</div>';
 
-      var asignado = Object.create(null);   // elemento -> [rondas]
-      /* `ultima` se fue con los rótulos: existía solo para iluminar las cartas
-         según la última tocada, que es justo lo que confundía. */
+      /* EL ESTADO ES EL DE LOS CÍRCULOS: `puesto[ronda] = elemento` o nulo.
+         Los cinco de abajo son una PALETA —siempre a color, siempre
+         disponibles— y por eso repetir sale gratis: el mismo elemento se
+         arrastra a dos turnos. */
+      var puesto = Object.create(null);
+      rondas.forEach(function (r) { puesto[r] = -1; });
 
-      function suyas(i) { return asignado[i] || []; }
-      function libres() {
-        var puestos = [];
-        Object.keys(asignado).forEach(function (k) { puestos = puestos.concat(asignado[k]); });
-        return rondas.filter(function (r) { return puestos.indexOf(r) === -1; });
-      }
-      function enLetra(ns) {
-        return ns.length === 1 ? 'la ronda ' + ns[0]
-          : 'las rondas ' + ns.slice(0, -1).join(', ') + ' y ' + ns[ns.length - 1];
-      }
+      function libres() { return rondas.filter(function (r) { return puesto[r] < 0; }); }
 
       function repinta() {
         var quedan = libres();
-        [].forEach.call(caja.querySelectorAll('.jg-el'), function (c) {
-          var i = Number(c.dataset.el);
-          var mias = suyas(i);
-          /* Los números se PINTAN, no se esconden: un `hidden` sobre algo con
-             `display` propio no oculta nada (lo enseñó `.micro-prueba`, y el
-             círculo vacío que el titular vio en tres figuras era eso mismo). */
-          var nums = c.querySelector('.jg-el__nums');
-          if (nums) nums.innerHTML = mias.map(function (n) {
-            return '<b class="jg-el__num">' + n + '</b>';
-          }).join('');
-          c.classList.toggle('jg-el--puesto', mias.length > 0);
-          c.setAttribute('aria-label', nombre(i) + (mias.length ? ', ' + enLetra(mias) : ', sin asignar'));
+        [].forEach.call(caja.querySelectorAll('.jg-turno'), function (c) {
+          var r = Number(c.dataset.turno), e = puesto[r];
+          var hueco = c.querySelector('.jg-turno__hueco');
+          /* Se PINTA, no se esconde: un `hidden` sobre algo con `display` propio
+             no oculta nada —lo enseñó `.micro-prueba`, y los círculos vacíos que
+             el titular vio sobre tres figuras eran exactamente eso—. */
+          if (hueco) hueco.innerHTML = e < 0 ? '' : pieza(e, 56);
+          c.classList.toggle('jg-turno--lleno', e >= 0);
+          if (e >= 0) c.dataset.el = String(e); else delete c.dataset.el;
+          c.setAttribute('aria-label', 'Turno ' + r + (e < 0 ? ', vacío' : ': ' + nombre(e) + '. Tócalo para vaciarlo.'));
         });
-        /* LA PISTA DICE QUÉ HACER, y nada más. La frase «X vence a Y y a Z»
-           se fue con los rótulos de las cartas: hablaba del último tocado, que
-           con varias rondas asignadas no se sabe cuál es. Vive en el globo. */
         var p = caja.querySelector('#jg-choque-pista');
         if (p) {
           p.textContent = quedan.length
-            ? 'Toca un elemento para darle la ronda ' + quedan[0] + '. Puedes repetir el mismo.'
-            : 'Ya están ' + enLetra(rondas) + '. Toca uno asignado para soltar su última.';
+            ? 'Arrastra cada elemento al turno en que quieras jugarlo. Puedes repetir el mismo.'
+            : 'Listos los ' + rondas.length + ' turnos. Toca un círculo para vaciarlo o arrastra otro encima.';
         }
         var b = caja.querySelector('[data-el-confirmar]');
         if (b) b.disabled = quedan.length > 0;
+      }
+
+      /* --- ARRASTRAR (titular, 2026-09-21: «el jugador arrastra el elemento al
+         círculo del turno en que quiere que se juegue»). Con eventos de puntero,
+         que valen igual para el dedo y para el ratón.
+         ⚠️ El arrastre NO empieza en `pointerdown` sino al MOVERSE seis píxeles:
+         así un toque sigue siendo un toque —y con él siguen vivos el teclado y
+         el lector de pantalla, que no saben arrastrar—. Lo que impide que el
+         dedo scrollee en vez de arrastrar es `touch-action: none` en el CSS, no
+         un `preventDefault` que se comería el toque. */
+      var UMBRAL = 6;
+      var ar = null;        // {el, desde, x0, y0, fantasma}
+      var comerClic = false;
+
+      function fantasmaEn(i, x, y) {
+        var g = document.createElement('div');
+        g.className = 'jg-arrastre';
+        g.innerHTML = pieza(i, 84);
+        document.body.appendChild(g);
+        mover(g, x, y);
+        return g;
+      }
+      function mover(g, x, y) { g.style.left = x + 'px'; g.style.top = y + 'px'; }
+      function turnoBajo(x, y) {
+        var n = document.elementFromPoint(x, y);
+        return n && n.closest ? n.closest('[data-turno]') : null;
+      }
+      function marcarDiana(t) {
+        [].forEach.call(caja.querySelectorAll('.jg-turno'), function (c) {
+          c.classList.toggle('jg-turno--diana', c === t);
+        });
+      }
+
+      caja.addEventListener('pointerdown', function (e) {
+        if (e.button) return;
+        /* ⚠️ El candado que se traga el clic de después de un arrastre se suelta
+           aquí, al empezar el gesto siguiente: en táctil no SIEMPRE llega ese
+           clic, y si el candado se quedara puesto se comería el toque de más
+           tarde —medido: el toque siguiente a un arrastre no hacía nada—. */
+        comerClic = false;
+        var n = e.target.closest('[data-el]');
+        if (!n) return;
+        /* De un círculo solo se arrastra si tiene algo dentro. */
+        ar = { el: Number(n.dataset.el), desde: n.dataset.turno ? Number(n.dataset.turno) : -1,
+               x0: e.clientX, y0: e.clientY, fantasma: null };
+      });
+
+      /* Los oyentes viven en `window` porque el dedo se sale de la caja a mitad
+         del gesto, y SE QUITAN SOLOS cuando la pantalla se fue: `caja` ya no
+         está en el documento, así que la siguiente ronda no hereda los de la
+         anterior. Se limpia aquí y no desde la carcasa para que el juego no
+         necesite que nadie le avise de que lo cerraron. */
+      function seFue() {
+        if (caja.isConnected) return false;
+        window.removeEventListener('pointermove', alMover);
+        window.removeEventListener('pointerup', alSoltar);
+        window.removeEventListener('pointercancel', alSoltar);
+        if (ar && ar.fantasma) ar.fantasma.remove();
+        ar = null;
+        return true;
+      }
+
+      window.addEventListener('pointermove', alMover);
+      function alMover(e) {
+        if (seFue() || !ar) return;
+        /* ⚠️ SI EL DEDO YA NO ESTÁ APOYADO, NO HAY GESTO. Un `pointerup` se
+           puede perder —lo enseñó el probador del navegador, que emite el
+           `down` y el `move` y no el `up`— y sin esto el puntero quedaría
+           arrastrando un elemento sin que nadie lo esté tocando. */
+        if (!e.buttons) { if (ar.fantasma) ar.fantasma.remove(); ar = null; marcarDiana(null); return; }
+        if (!ar.fantasma) {
+          if (Math.abs(e.clientX - ar.x0) < UMBRAL && Math.abs(e.clientY - ar.y0) < UMBRAL) return;
+          ar.fantasma = fantasmaEn(ar.el, e.clientX, e.clientY);
+          if (ar.desde >= 0) { puesto[ar.desde] = -1; repinta(); }
+        }
+        mover(ar.fantasma, e.clientX, e.clientY);
+        marcarDiana(turnoBajo(e.clientX, e.clientY));
+      }
+
+      window.addEventListener('pointerup', alSoltar);
+      window.addEventListener('pointercancel', alSoltar);
+      function alSoltar(e) {
+        if (seFue() || !ar) return;
+        var esto = ar; ar = null;
+        if (!esto.fantasma) return;                 // fue un toque, lo atiende `click`
+        esto.fantasma.remove();
+        marcarDiana(null);
+        comerClic = true;
+        var t = turnoBajo(e.clientX, e.clientY);
+        if (t) puesto[Number(t.dataset.turno)] = esto.el;
+        /* Soltar fuera de un círculo viniendo de uno lo deja vacío: ése es el
+           gesto de quitar, y es el mismo que ya hizo al levantarlo. */
+        repinta();
       }
 
       /* EL CÍRCULO ENTERO, a un toque: los cinco con lo que vencen, en el mismo
@@ -152,6 +243,8 @@
       }
 
       caja.addEventListener('click', function (e) {
+        /* El clic que cierra un arrastre no es un toque: se come. */
+        if (comerClic) { comerClic = false; return; }
         var ay = e.target.closest('[data-el-ayuda]');
         if (ay) {
           if (window.ATWI.globo) {
@@ -160,31 +253,27 @@
           }
           return;
         }
+        /* TOCAR SIGUE VALIENDO, y no es un atajo de más: es el único camino con
+           teclado o lector de pantalla, que no saben arrastrar. Un elemento se
+           va al primer turno vacío; un círculo con algo dentro se vacía. */
+        var t = e.target.closest('[data-turno]');
+        if (t) {
+          puesto[Number(t.dataset.turno)] = -1;
+          repinta();
+          return;
+        }
         var c = e.target.closest('[data-el]');
         if (c) {
-          var i = Number(c.dataset.el);
           var q = libres();
-          if (q.length) asignado[i] = suyas(i).concat(q[0]);
-          else if (suyas(i).length) {
-            /* Sin rondas libres, el toque en uno asignado suelta su última:
-               es el único gesto de quitar, y por eso la pista lo dice. */
-            asignado[i] = suyas(i).slice(0, -1);
-            if (!asignado[i].length) delete asignado[i];
-          }
+          if (q.length) puesto[q[0]] = Number(c.dataset.el);
           repinta();
           return;
         }
         var b = e.target.closest('[data-el-confirmar]');
         if (b && !b.disabled) {
-          /* Una jugada por ronda pendiente, EN SU ORDEN: la figura con el 1 es
-             la ronda 1, aunque se haya asignado la última. */
-          var porRonda = rondas.map(function (r) {
-            var cual = -1;
-            Object.keys(asignado).forEach(function (k) {
-              if (asignado[k].indexOf(r) !== -1) cual = Number(k);
-            });
-            return cual;
-          });
+          /* Una jugada por ronda pendiente, EN SU ORDEN: lo que haya en el
+             círculo 1 se juega primero. */
+          var porRonda = rondas.map(function (r) { return puesto[r]; });
           if (porRonda.indexOf(-1) !== -1) return;
           ctx.confirmar(porRonda);
         }

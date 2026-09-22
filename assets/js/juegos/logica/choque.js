@@ -11,18 +11,19 @@
    programa en el banco: cada uno vence a dos, pierde con dos y no hay ningún
    par que se venza mutuamente.
 
-   UNA RONDA ES UN ELEMENTO. Con N rondas se eligen N elementos DISTINTOS, en
-   orden («te quedan 2 por usar»). Sin reloj que apure y sin gemelo: no hay
-   tablero que mirar de reojo, lo secreto es la ELECCIÓN, y eso lo protege el
-   servidor —en línea las cartas del otro no salen de ahí hasta el veredicto—.
+   UNA RONDA ES UN ELEMENTO, Y SE PUEDE REPETIR (titular, 2026-09-21: «se deben
+   poder asignar varios turnos a la misma carta»). Aquí decía que los N tenían
+   que ser DISTINTOS y que un repetido se anulaba; eso se cae. Repetir no es una
+   trampa, es una apuesta: tres fuegos ganan las tres rondas contra quien no lo
+   contrarresta y las pierden todas contra quien sí. Sin reloj que apure y sin
+   gemelo: no hay tablero que mirar de reojo, lo secreto es la ELECCIÓN, y eso lo
+   protege el servidor —en línea las cartas del otro no salen de ahí hasta el
+   veredicto—.
 
    EL VEREDICTO ES PROPIO (docs/10 §5.1): ganar una ronda no es tener la marca
-   mayor, es la relación entre las dos cartas. Y guarda las dos reglas duras:
-   - un elemento REPETIDO por el mismo lado se anula —la pantalla no deja
-     repetir, así que una lista con repetidos no salió de la app; anularlo
-     cierra la trampa de mandar tres veces fuego por la API—;
-   - SIN DESEMPATE: el empate es un resultado (titular, 2026-09-21), y no hay
-     total al que caer porque aquí no hay tiempo ni puntos que sumar. */
+   mayor, es la relación entre las dos cartas. Y guarda la regla dura que queda:
+   SIN DESEMPATE —el empate es un resultado (titular, 2026-09-21), y no hay total
+   al que caer porque aquí no hay tiempo ni puntos que sumar—. */
 (function (raiz) {
   'use strict';
   raiz.ATWI = raiz.ATWI || {};
@@ -99,13 +100,10 @@
   /* --- El veredicto propio -------------------------------------------------
      `dePropone` y `deInvitado` traen una casilla por ronda: {marca, resumen}
      o nulo si no se jugó. El elemento sale de `resumen.elemento`. */
-  function elementoDe(fila, usados) {
+  function elementoDe(fila) {
     if (!fila || !fila.resumen || !fila.resumen.completo) return -1;
     var e = fila.resumen.elemento;
     if (typeof e !== 'number' || e < 0 || e > 4) return -1;
-    /* Repetido: se anula ESTA ronda, no la partida. */
-    if (usados[e]) return -1;
-    usados[e] = true;
     return e;
   }
 
@@ -113,10 +111,9 @@
     var filas = [];
     var a = 0, b = 0;
     var jugoA = false, jugoB = false;
-    var usadosA = {}, usadosB = {};
     for (var r = 0; r < rondas; r++) {
-      var eA = elementoDe(dePropone[r], usadosA);
-      var eB = elementoDe(deInvitado[r], usadosB);
+      var eA = elementoDe(dePropone[r]);
+      var eB = elementoDe(deInvitado[r]);
       if (eA !== -1) jugoA = true;
       if (eB !== -1) jugoB = true;
       var gana = 'empate';
@@ -145,7 +142,7 @@
   J.registrar({
     id: 'choque',
     nombre: 'Choque',
-    como: 'Asigna un elemento a cada ronda, en secreto: cada uno vence a dos y pierde con dos.',
+    como: 'Reparte tus rondas entre cinco elementos, en secreto: cada uno vence a dos y pierde con dos.',
     compara: 'rondas',
     /* Sin reintentos y sin recibo: la seleccion se reasigna libre en la misma
        pantalla hasta confirmar (titular, 2026-09-21), asi que «pensarlo mejor»

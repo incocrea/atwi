@@ -35,7 +35,7 @@
      una marca. El cliente la manda en `empezar` y el servidor se niega ANTES de
      arrancar el reloj si no es la suya: un teléfono con el JS viejo generaría
      otro tablero y su ronda se rechazaría después de haberla jugado. */
-  J.VERSION_REGLAS = '0.2';
+  J.VERSION_REGLAS = '0.3';
 
   var MAX_JUGADAS = 600;
   var SAL_DEL_GEMELO = 0x67656D65;      // «geme»: la semilla hija del gemelo
