@@ -32,6 +32,12 @@
   background: url(../img/fondos/game-cuenta.webp) center top / cover no-repeat,
               var(--competencia-tinte);
 }
+/* Y el de Calco (titular, 2026-09-22). */
+#m-partida[data-juego="calco"],
+#m-partida[data-juego="calco"] .revelacion--competencia {
+  background: url(../img/fondos/game-calco.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
+}
 
 /* --- El armazón --------------------------------------------------------- */
 .jg { --jg-color: var(--ctx-acento, var(--competencia-oscuro)); }
@@ -212,27 +218,39 @@
   justify-content: center; align-content: center;
 }
 
-/* Una casilla de Calco. Vacía es un hueco con su marco punteado --dice «aquí
-   puede ir algo» sin pesar como una pieza--; puesta lleva su sticker.
+/* Una casilla de Calco ES UNA CAJA DE MADERA (titular, 2026-09-22: «reemplaza
+   las cajas punteadas por la caja calco, que solo se vea la ilustración»). Sin
+   borde ni velo: lo único que se pinta es el dibujo, y el sticker se pone
+   DENTRO de la caja --la caja se queda debajo también cuando está llena, así el
+   patrón y el tablero son la misma rejilla de cajas--.
+   ⚠️ El área de suelta NO cambia: es la casilla entera, cuadrada, que mide
+   `--celda`. La caja se pinta con `contain` porque el dibujo es un 6 % más
+   ancho que alto; estirarla a cuadrado sería el achatamiento de las fichas de
+   Cuenta otra vez.
    ⚠️ `touch-action: none` es lo que deja arrastrar con el dedo sin que la
    pantalla scrollee, y va en el CSS y no en un `preventDefault`, que se
    comería el toque de quitar. */
 .jg-cal {
-  border: 2px dashed var(--linea-fuerte); background: rgba(255, 255, 255, .45);
-  border-radius: var(--radio-chip); padding: 0;
+  border: 0; padding: 0; border-radius: 0;
+  background: url(../img/juegos/jg-caja-calco.webp) center / contain no-repeat;
   display: grid; place-items: center; touch-action: none;
-  transition: transform .12s, background .15s, border-color .15s, box-shadow .15s;
+  transition: transform .12s, filter .15s;
 }
 .jg-cal:not(:disabled):active { transform: scale(.92); }
-.jg-cal--puesta { border-style: solid; border-color: transparent; background: transparent; }
 /* EL ÁREA DE SUELTA, al pasar el sticker por encima (titular, 2026-09-22):
-   sólida, en el color del modo y con su halo. Tiene que leerse con el dedo
-   tapando media pantalla, así que no basta con aclarar el fondo. */
+   tiene que leerse con el dedo tapando media pantalla. Con la caja de madera
+   ya no hay borde que encender ni fondo que teñir, así que la caja crece y se
+   enciende en el color del modo con `drop-shadow`, que sigue la silueta del
+   dibujo --un `box-shadow` dibujaría un cuadrado de luz alrededor de una caja
+   con las esquinas redondeadas, la lección de la campana del historial--.
+   ⚠️ PRIMERO UN FILO BLANCO Y DESPUÉS EL COLOR: el azul del modo sobre el cielo
+   azul del fondo de Calco apenas se leía (medido en pantalla: un contorno
+   oscuro de un píxel). El blanco despega la caja de cualquier fondo y el color
+   dice que es la diana. */
 .jg-cal--diana {
-  border-style: solid; border-color: var(--jg-color);
-  background: color-mix(in srgb, var(--jg-color) 16%, #fff);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--jg-color) 35%, transparent);
-  transform: scale(1.06);
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 3px #fff)
+          drop-shadow(0 0 7px var(--jg-color)) brightness(1.08);
+  transform: scale(1.1);
 }
 .jg-st { display: block; pointer-events: none; }
 
