@@ -6852,6 +6852,22 @@
 
   /* Los motivos del reporte viven en el globo, que se cuelga del MARCO y no de
      la vista: el manejador de `#v-perfil [data-accion]` no los alcanza. */
+  /* NINGÚN ARRASTRE NATIVO (titular, 2026-09-22): la red de Firefox para lo
+     que el CSS ya corta en los demás (`-webkit-user-drag` y `user-select` en
+     `app.css`). Arrastrar una imagen o un trozo de texto no hace nada en esta
+     app; los arrastres del juego van con eventos de puntero y no pasan por
+     aquí. Los campos se dejan: arrastrar texto dentro de uno sí es escribir. */
+  document.addEventListener('dragstart', function (e) {
+    var t = e.target;
+    if (t && t.closest && t.closest('input, textarea, [contenteditable="true"]')) return;
+    e.preventDefault();
+  });
+  document.addEventListener('selectstart', function (e) {
+    var t = e.target && e.target.nodeType === 1 ? e.target : e.target && e.target.parentElement;
+    if (t && t.closest && t.closest('input, textarea, [contenteditable="true"]')) return;
+    e.preventDefault();
+  });
+
   document.addEventListener('click', function (e) {
     var mot = e.target.closest('.globo [data-motivo]');
     if (!mot) return;
