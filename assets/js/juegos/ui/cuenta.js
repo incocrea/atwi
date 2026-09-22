@@ -122,8 +122,12 @@
               '" data-celda="' + i + '" style="--n:' + (n - 1) + '" aria-label="' + n + '"' +
               (estado.quitadas[i] || ctx.bloqueado ? ' disabled' : '') + '></button>';
           }).join('') +
-        '</div>' +
-        '<p class="jg-pista">Toca los números en orden: sigue el <b>' + estado.sig + '</b></p>';
+        '</div>';
+      /* ⚠️ SIN PISTA DEBAJO (titular, 2026-09-22: «quita este texto y haz que
+         los iconos aprovechen todo el alto disponible»). «Toca los números en
+         orden: sigue el N» repetía lo que ya dice la presentación de la ronda,
+         y además le quitaba alto a la rejilla. Sin ella, la rejilla ocupa el
+         hueco entero y reparte las filas en él (`juegos.css`). */
 
       if (!ctx.bloqueado) {
         caja.addEventListener('click', function (e) {
@@ -153,8 +157,6 @@
           if (s && s.hay()) s.romper();
           setTimeout(function () { b.classList.add('jg-celda--fuera'); }, 500);
         }
-        var p = caja.querySelector('.jg-pista b');
-        if (p) p.textContent = est.sig;
       };
     },
 
