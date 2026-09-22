@@ -4108,17 +4108,22 @@ body.app {
 /* CON QUIEN YA SE JUGO, PARA TOCAR EN VEZ DE ESCRIBIR (titular, 2026-09-21).
    ⚠️ ENVUELVE, NO SCROLLEA DE LADO: la regla de este proyecto es que nada lo
    hace, y una fila horizontal dentro de un globo esconde a los de la derecha
-   justo a quien tiene varios. Con `wrap` se ven todos y lo que crece es el
-   alto, que el globo ya sabe ceder (`globo__cede`).
+   justo a quien tiene varios. Con `wrap` se ven todos y lo que crece es el alto.
    Y van CENTRADOS porque la última fila casi nunca viene llena: alineados a la
-   izquierda, dos contactos sueltos quedan colgando de una esquina. */
+   izquierda, dos contactos sueltos quedan colgando de una esquina.
+   ⚠️ Y VA DEBAJO DEL DISCLAIMER CON SCROLL PROPIO (titular, 2026-09-21): pueden
+   ser muchos, y encima empujaban el input y la explicación fuera de la vista.
+   El tope de alto deja ver ~dos filas y media, así que se nota que hay más y se
+   baja a por ellos sin perder el campo ni el disclaimer, que se quedan quietos
+   arriba. Debajo del tope no scrollea y no pasa nada. */
 .contactos {
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: 10px 12px;
-  /* El aire de los lados es el del anillo de foco, igual que en `.globo__cede`:
-     este bloque puede acabar con `overflow` cuando el globo no cabe. */
-  padding-inline: 4px; margin-inline: -4px;
-  padding-block: 2px;
+  max-height: 190px; overflow-y: auto; overscroll-behavior: contain;
+  margin-top: 2px; padding-top: 8px; border-top: 1px solid var(--linea);
+  /* Sitio para la barra de scroll y para el crecimiento de la ficha puesta, sin
+     que el primero de cada fila se pegue al canto. */
+  padding-inline: 6px; padding-bottom: 2px;
 }
 /* 72 px de ancho: medido, tres por fila en el globo, que es lo que cabe con la
    cara a 48 y el apodo debajo. Con cuatro habría que bajar la cara a 36 —la del
@@ -5334,7 +5339,7 @@ body.app {
 }
 .terminos-caja--fila .terminos-caja__signo {
   flex: 0 0 auto; display: grid; place-items: center;
-  width: 42px; height: 42px; border-radius: var(--r-2);
+  width: 42px; height: 42px; border-radius: var(--radio-chip);
   background: color-mix(in srgb, var(--lavanda) 12%, #fff);
   color: var(--lavanda);
 }
@@ -5355,7 +5360,7 @@ body.app {
   text-align: center;
   padding: var(--e-4);
   margin-bottom: var(--e-4);
-  border-radius: var(--r-3);
+  border-radius: var(--radio-tarjeta);
   background: color-mix(in srgb, var(--lavanda) 10%, #fff);
 }
 .invita-cabeza__quien {
@@ -5370,7 +5375,7 @@ body.app {
 .invita-cinta {
   margin: 0 0 var(--e-4);
   padding: var(--e-3) var(--e-4);
-  border-radius: var(--r-3);
+  border-radius: var(--radio-tarjeta);
   background: color-mix(in srgb, var(--lavanda) 12%, #fff);
   color: var(--tinta);
   font-size: var(--t-chico);
@@ -5876,7 +5881,7 @@ body[data-demo] { background: var(--crema); }
   display: flex; align-items: flex-start; gap: var(--e-3);
   width: 100%; margin-top: var(--e-3);
   padding: var(--e-4);
-  border-radius: var(--r-3);
+  border-radius: var(--radio-tarjeta);
   background: color-mix(in srgb, var(--lavanda) 14%, rgba(255, 255, 255, .86));
   text-align: left;
 }
@@ -5898,7 +5903,7 @@ body[data-demo] { background: var(--crema); }
 .bloqueados { list-style: none; margin: var(--e-3) 0 0; padding: 0; display: grid; gap: var(--e-2); }
 .bloqueados__uno {
   display: flex; align-items: center; gap: var(--e-3);
-  background: var(--superficie); border-radius: var(--r-2);
+  background: var(--superficie); border-radius: var(--radio-chip);
   padding: var(--e-2) var(--e-3); box-shadow: var(--sombra-1);
 }
 .bloqueados__apodo { font-weight: 800; margin-right: auto; display: grid; }

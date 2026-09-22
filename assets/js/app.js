@@ -1085,6 +1085,19 @@
     window.ATWI.partida.ensayarDesdeElFinal(mesa);
   }
 
+  /* EL MINIJUEGO, DESDE EL PROBADOR (docs/10, bloque 0.4): la mesa de
+     mentira con el juego que haya —hoy, «Cuenta»— y el número de rondas de
+     serie. Recorre el sorteo, la cortinilla, la carcasa entera con su relevo
+     y la revelación, sin partida en el servidor. */
+  function ensayarElJuego() {
+    var mesa = mesaDelProbador();
+    mesa.modo = 'competencia';
+    mesa.juego = juegosDisponibles()[0] || 'prueba';
+    mesa.rondas = cfg.reglas.turnosPorDefecto;
+    cerrarModales(['m-probador']);
+    window.ATWI.partida.ensayarElJuego(mesa);
+  }
+
   function abrirProbador() {
     estadoProbador();
     repintarProbador();
@@ -2331,6 +2344,12 @@
            los dos nombres: los apretaba hasta «Mo…» y «Di…». La frase no hacía
            falta —el estado ya dice qué es— y los nombres sí. */
         var avance = t.length + ' de ' + total;
+        /* En QuiénGane no hay intervenciones que contar: el avance es cuántas
+           rondas tiene la partida, y el minijuego lo dice el rótulo de abajo. */
+        if (d.modo === 'competencia') {
+          var mJ = window.ATWI.juegos && d.juego ? window.ATWI.juegos.juego(d.juego) : null;
+          avance = (mJ && mJ.nombre ? mJ.nombre + ' · ' : '') + (d.turnos || 1) + (d.turnos === 1 ? ' ronda' : ' rondas');
+        }
         /* LOS DATOS ARRIBA Y LA PREGUNTA DE CUERPO (rediseño pedido por el
            titular, 2026-09-15, sobre la tarjeta dibujada). Antes la pregunta iba
            en medio y todo lo demás repartido encima y debajo, así que para saber
@@ -2447,6 +2466,21 @@
       (lista.length ? '</div>' : '');
 
     ajustarRuleta();
+
+    /* DESLIZA A LA PARTIDA ENFOCADA, si la hay y su tarjeta ya está pintada. No
+       se limpia `enfocarPartida` hasta encontrarla: `irA('historial')` pinta
+       primero la lista vieja —sin la propuesta nueva— y la repinta al llegar el
+       refresco, y es en esa segunda pasada donde la tarjeta existe. La ruleta
+       del historial no da la vuelta, así que es un scroll normal: se lleva su
+       borde de arriba al de la caja. */
+    if (enfocarPartida) {
+      var foco = caja.querySelector('[data-partida="' + enfocarPartida + '"]');
+      var rul = caja.querySelector('.ruleta');
+      if (foco && rul) {
+        rul.scrollTop += foco.getBoundingClientRect().top - rul.getBoundingClientRect().top;
+        enfocarPartida = null;
+      }
+    }
   }
 
   /* LA TANDA SIGUIENTE. Se pide saltándose las que ya están, y se añaden al
@@ -2694,6 +2728,19 @@
        manda ya no es cuántas intervenciones hay sino que no hay con quién
        seguir. Se puede oír lo grabado; lo que no se puede es continuar. */
     if (seFueElOtro(d)) return 'se-fue';
+    /* QUIÉNGANE NO TIENE INTERVENCIONES (docs/10): lo que hay son rondas de
+       minijuego, y el historial no las trae. Lo que decide es el RESULTADO: con
+       él, se estrena o se repasa; sin él, en línea sigue en curso —la fila la
+       cierra el servidor— y en local no hay nada que ver, porque las rondas
+       viajan todas juntas al final. Sin esto caía en `sin-empezar` para
+       siempre y una partida jugada no salía en la lista. */
+    if (d.modo === 'competencia') {
+      if (d.resultado) {
+        var vistoJ = miLadoEn(d) === 'invitado' ? d.resultado.visto_invitado : d.resultado.visto;
+        return vistoJ ? 'terminada' : 'sin-ver';
+      }
+      return d.en_linea ? 'en-curso' : 'sin-empezar';
+    }
     if (d.en_linea && d.abandono && d.modo === 'negociacion') return 'abandonada';
     if (!hechos) return 'sin-empezar';
     /* Una Controversia abandonada llega con menos intervenciones de las
@@ -2894,6 +2941,14 @@
      vuelve a mirar al minuto siguiente, y volver siempre a «local» le esconde
      lo que venía a ver. */
   var vistaHistorial = 'local';
+  /* AL VOLVER DE ENVIAR UNA INVITACIÓN, EL HISTORIAL ABRE MOSTRÁNDOLA (titular,
+     2026-09-21). Una propuesta recién enviada es la más nueva pero NO `meEspera`
+     —espera al otro—, así que el orden de dos grupos la deja debajo de lo que sí
+     me toca, no arriba del todo. En vez de pelear con ese orden —que existe por
+     una razón— se la enfoca: `pintarHistorial` la desliza al tope de la ruleta
+     cuando la pinta. Se limpia sola en cuanto lo hace. */
+  var enfocarPartida = null;
+  var ultimaEnviada = null;
 
   /* La de acuerdos solo sale si hay Negociaciones jugadas. Un chip que lleva
      siempre a una lista vacía es un chip que enseña a no tocarlo. */
@@ -3872,18 +3927,21 @@
     var puesto = propuesta.invitadoNombre || propuesta.correo || '';
     var cuerpo =
       '<div class="correo-editor">' +
-        /* LOS CONTACTOS VAN ARRIBA DEL CAMPO (titular, 2026-09-21) porque son
-           el camino corto: con quien ya se jugó es con quien más se vuelve a
-           jugar, y escribir el apodo entero es el trabajo que esta fila
-           ahorra. Nace vacío y se llena cuando llegan —o no se llena nunca, y
-           entonces el globo es exactamente el de antes—. */
-        '<div class="contactos globo__cede" id="p-contactos" hidden></div>' +
         '<input class="campo" id="p-correo" type="text" inputmode="email" ' +
           'autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="254" ' +
           'placeholder="Su apodo o su correo" value="' + esc(puesto) + '">' +
         '<p class="chico tenue">Si ya juega en ATWI, con su apodo basta. ' +
           'Le llega un aviso y un correo; elige su personaje al entrar.</p>' +
         '<p class="chico" id="p-correo-error" style="color:var(--peligro)"></p>' +
+        /* LOS CONTACTOS VAN DEBAJO DEL DISCLAIMER, NO ENCIMA (titular,
+           2026-09-21). Encima, y como pueden llegar a ser muchos, empujaban el
+           campo y la explicación fuera de la vista —que es justo lo que hay que
+           tener siempre delante—. Debajo, con SCROLL PROPIO, la lista se recorre
+           sin perder de vista el input ni el disclaimer, y da igual cuántos
+           sean. Por eso NO lleva `globo__cede`: no cede la caja del globo, se
+           desplaza esta lista. Nace vacía y se llena cuando llegan —o no se
+           llena nunca, y entonces el globo es exactamente el de antes—. */
+        '<div class="contactos" id="p-contactos" hidden></div>' +
       '</div>';
     abrirGlobo(disparador, { titulo: '¿A quién invitas?' },
       /* EL SIGNO ES EL «+» DEL HUECO, no el buzón: en esta app la campana del
@@ -4283,6 +4341,82 @@
   function recordarDonde(d) {
     propuesta.donde = d;
     try { localStorage.setItem(DONDE, d); } catch (e) {}
+  }
+
+  /* ==========================================================================
+     EL MINIJUEGO DE QUIÉNGANE (docs/10, bloque 0.4)
+     En «Antes de empezar», entre los dos jugadores y el juez, va el juego al
+     que se apuesta el premio: un retrato del tamaño de los otros tres y un
+     «Cambiar» que abre el globo con los que hay. LO ELIGE EL HOST; en línea el
+     invitado lo acepta o propone otro (bloque 0.6).
+
+     SE RECUERDA (`atwi-juego`), como la mesa y el juez; y SE PONE AL ABRIR, NO
+     AL REPINTAR —la lección del juez—: el formulario se vuelve a dibujar
+     entero al tocar el interruptor de vía y el juego es de la partida.
+
+     ⚠️ SOLO LOS JUEGOS CONSTRUIDOS: `ATWI.juegos.ids()` lista lo que la app
+     lleva de verdad, y mientras se construyen los diez eso es el juego de
+     mentira «Cuenta» —`soloPruebas`, que solo ve el titular—. Para todos los
+     demás la lista está vacía y el toast de «en desarrollo» sigue puesto. */
+  var JUEGO = 'atwi-juego';
+  function juegosDisponibles() {
+    var J = window.ATWI.juegos;
+    if (!J) return [];
+    return J.ids().filter(function (id) {
+      var m = J.juego(id);
+      return m && (!m.soloPruebas || puedeProbar());
+    });
+  }
+  function juegoRecordado() {
+    var j = null;
+    try { j = localStorage.getItem(JUEGO); } catch (e) {}
+    return juegosDisponibles().indexOf(j) !== -1 ? j : (juegosDisponibles()[0] || null);
+  }
+  function recordarJuego(j) {
+    propuesta.juego = j;
+    try { localStorage.setItem(JUEGO, j); } catch (e) {}
+  }
+  /* La pegatina del juego: `juego-<id>.webp` de la plancha, o el signo de
+     aciertos para el de mentira, que no tiene dibujo propio. */
+  function piezaDelJuego(id, px) {
+    var nombre = id === 'prueba' ? 'jg-aciertos' : 'juego-' + id;
+    return '<img src="../assets/img/juegos/' + nombre + '.webp" width="' + px + '" height="' + px +
+      '" alt="" decoding="async" class="jg-pieza">';
+  }
+  function datosDelJuego(id) {
+    var J = window.ATWI.juegos;
+    var m = J && id ? J.juego(id) : null;
+    return { id: id, nombre: (m && m.nombre) || 'Minijuego', como: (m && m.como) || '' };
+  }
+  function bloqueDelJuego() {
+    var j = datosDelJuego(propuesta.juego);
+    return perfilEnDuo({
+      accion: 'elegir-juego',
+      retrato: '<span class="avatar avatar--duelo jg-retrato-juego">' + piezaDelJuego(j.id, 64) + '</span>',
+      quien: j.nombre,
+      como: 'El minijuego del reto',
+      tocar: juegosDisponibles().length > 1 ? 'Cambiar' : 'Único por ahora',
+      etiqueta: 'Elegir el minijuego'
+    });
+  }
+  function refrescarJuego() {
+    var b = $('#m-preparar [data-accion="elegir-juego"]');
+    if (b) b.outerHTML = bloqueDelJuego();
+  }
+  /* El globo: los juegos que hay, en rejilla, el puesto marcado. Tocar uno lo
+     deja puesto y cierra: no hay nada más que decidir ahí dentro. */
+  function abrirJuego(disparador) {
+    var lista = juegosDisponibles();
+    var cuerpo = '<div class="jg-selector" role="group" aria-label="Minijuego">' +
+      lista.map(function (id) {
+        var j = datosDelJuego(id);
+        return '<button type="button" class="jg-selector__op" data-juego="' + esc(id) + '"' +
+          ' aria-pressed="' + (id === propuesta.juego) + '">' +
+          piezaDelJuego(id, 56) + '<span>' + esc(j.nombre) + '</span></button>';
+      }).join('') +
+    '</div>';
+    abrirGlobo(disparador, { titulo: '¿A qué juegan?' },
+      { tinte: 'competencia', signo: 'ayuda-azul', etiqueta: 'Elegir el minijuego', cuerpo: cuerpo });
   }
 
   /* EL ULTIMO JUEZ SE RECUERDA, igual que la ficha del invitado. Quien
@@ -4917,6 +5051,10 @@
        se comía un juez de la vuelta —cuatro toques y la vuelta de seis se había
        gastado sin jugar una sola partida—. */
     if (!repintando || !propuesta.juez) propuesta.juez = sortearJuez();
+    /* Y EL MINIJUEGO, en QuiénGane: el recordado, o el primero que haya. Al
+       abrir y no al repintar, por lo mismo que el juez. */
+    var esJuego = propuesta.modo === 'competencia';
+    if (esJuego && (!repintando || !propuesta.juego)) propuesta.juego = juegoRecordado();
 
     /* Con quién se ha jugado, para el globo de invitar. Se pide al ENTRAR y no
        al abrir el globo: cuando se abra ya tiene que saberse si los hay (de eso
@@ -5035,6 +5173,11 @@
       '<div class="duo prep__bloque">' + bloqueMio + (enLinea ? bloqueCorreo : bloqueInvitado) + '</div>' +
       '<p class="chico aviso-aro centrado" id="p-aviso-ficha"></p>' +
 
+      /* EN QUIÉNGANE, EL MINIJUEGO ENTRE LOS DOS Y EL JUEZ: es lo que se juega,
+         y va antes que quién lo presenta. Con el mismo retrato que los otros
+         tres, para que la mesa se lea de una pieza. */
+      (esJuego && propuesta.juego ? '<div class="duo prep__bloque duo--uno">' + bloqueDelJuego() + '</div>' : '') +
+
       /* JUEZ DEBAJO DE LOS DOS y TURNOS AL FINAL (titular, 2026-09-18): quién
          juzga es de la partida y los turnos son el último parámetro —cuánto
          rato quieren estar—, así que van en ese orden de importancia. */
@@ -5053,7 +5196,9 @@
            queda pegado a la fila del juez —que son seis discos sin caja— y los
            dos se tocaban. Antes iba el primero del formulario y no le hacía
            falta. */
-        '<h3 class="centrado" style="margin:0">Turnos</h3>' +
+        /* En QuiénGane lo que se elige son RONDAS del minijuego (docs/10): la
+           misma cifra, otra palabra, y el juez las lee de `turnos` igual. */
+        '<h3 class="centrado" style="margin:0">' + (esJuego ? 'Rondas' : 'Turnos') + '</h3>' +
         '<div class="turnos-fila">' +
         /* LA LISTA SALE DE LA CONFIGURACIÓN, no escrita a mano. Estaba fija en
            `[1,2,3,4,5]`, así que bajar `turnosMax` no habría cambiado nada:
@@ -5545,10 +5690,17 @@
     /* DOS FIGURAS IGUALES NO SE PUEDEN LANZAR. El veto se aplica al abrir la
        ficha del invitado y al guardar la mía, y esto es la red: pasó de verdad
        --dos Nico enfrentados en el versus-- y hasta la sala no se notaba. */
-    if (fichaMia.avatar === fichaSuya.avatar) {
+    /* EN QUIÉNGANE LO QUE NO PUEDE COINCIDIR ES LA FIGURA ENTERA (titular,
+       2026-09-18): no se locutan voces, así que dos Kai valen; dos Kai en azul
+       son el mismo dibujo y ahí sí hay que cambiar uno. La base aplica la misma
+       regla al aceptar en línea (`mismo_color`). */
+    var esJuego = propuesta.modo === 'competencia';
+    if (fichaMia.avatar === fichaSuya.avatar && (!esJuego || fichaMia.color === fichaSuya.color)) {
       var comoSe = window.ATWI.nombrePersonaje(fichaMia.avatar);
-      $('#p-error').textContent = 'Los dos van con ' + comoSe + ': en la sala serían ' +
-        'la misma figura y no habría cómo distinguirlos. Cambiá uno de los dos.';
+      $('#p-error').textContent = esJuego
+        ? 'Los dos van con ' + comoSe + ' del mismo color: serían la misma figura. Cambia el color de uno.'
+        : 'Los dos van con ' + comoSe + ': en la sala serían ' +
+          'la misma figura y no habría cómo distinguirlos. Cambia uno de los dos.';
       return;
     }
 
@@ -5565,7 +5717,8 @@
       publico: modoPublico || 'pareja',
       posturas: [fichaMia, fichaSuya],
       abre: abre,                // índice sobre esa lista: quién habla primero
-      juez: propuesta.juez || juezPorDefecto()
+      juez: propuesta.juez || juezPorDefecto(),
+      juego: esJuego ? propuesta.juego : null
     });
   }
 
@@ -5614,6 +5767,7 @@
     window.ATWI.nube.abrirPartida({
       donde: 'linea', correo: porApodo ? '' : quien, invitadoPerfil: propuesta.invitadoPerfil || null,
       tema: t, modo: propuesta.modo, turnos: turnos, juez: propuesta.juez || juezPorDefecto(),
+      juego: propuesta.modo === 'competencia' ? propuesta.juego : null,
       yo: { nombre: datos.limpiarNombre(p.nombre), avatar: p.avatar, color: p.avatarBorde }
     }).then(function (id) {
       if (b) { b.disabled = false; b.textContent = 'Enviar invitación'; }
@@ -5628,6 +5782,7 @@
         return;
       }
       historialCaducado = true;
+      ultimaEnviada = id;
       sondear();
       /* Centrado en vertical y con la campana en el eje (titular, 2026-09-18):
          `.enviada` es una columna flex que reparte el alto del cuerpo. */
@@ -6403,6 +6558,11 @@
     var col = e.target.closest('.ficha-editor .colores [data-color]');
     if (col) { colorElegido = col.dataset.color; sincronizarFichaEditor(); return; }
 
+    /* El minijuego elegido en su globo: queda puesto, se recuerda y el globo
+       se cierra —no hay nada más que decidir ahí dentro—. */
+    var jg = e.target.closest('.jg-selector [data-juego]');
+    if (jg) { recordarJuego(jg.dataset.juego); refrescarJuego(); cerrarGlobo(); return; }
+
     var pj = e.target.closest('[data-personaje]');
     if (pj && !pj.disabled) {
       /* EL GRIS CONTESTA EN VEZ DE NO HACER NADA. Es la misma regla que el gate
@@ -6478,6 +6638,7 @@
        la revelación, así que de paso se ve el empalme entero. */
     else if (a === 'pb-votar') { ensayarDesdeElFinal(); }
     else if (a === 'pb-entrada') { ensayarLaEntrada(); }
+    else if (a === 'pb-juego') { ensayarElJuego(); }
     /* AL CERRARLO SE BORRA LO BUSCADO, y es lo que hace que plegarlo sea
        seguro: un campo escondido que sigue filtrando deja una lista recortada
        sin nada en pantalla que explique por qué faltan temas. Los chips no se
@@ -6525,6 +6686,16 @@
       pintarCatalogo();
     }
     else if (a === 'mas-historial') { masHistorial(); }
+    /* HECHO, TRAS ENVIAR: al historial, en la pestaña de en línea —que es donde
+       vive una invitación— y con la partida recién creada enfocada. `irA` deja
+       el historial caducado, así que se repinta con la propuesta ya dentro y el
+       enfoque la encuentra en esa segunda pintada. */
+    else if (a === 'invitacion-al-historial') {
+      cerrarModal('m-invitar');
+      vistaHistorial = 'linea';
+      enfocarPartida = ultimaEnviada;
+      irA('historial');
+    }
     /* LA INVITACIÓN TAMBIÉN PASA POR EL MICRÓFONO (titular, 2026-09-18: «el
        permiso se debe consultar siempre antes de cada sorteo o envío de
        invitación»): quien invita va a grabar su turno en este mismo teléfono. */
@@ -6536,9 +6707,16 @@
        invitar— y ANTES del micrófono: pedir permiso para algo que no va a
        arrancar sería un peaje sin partida detrás. Lo que sigue (la sala, la base)
        no sabe nada de este modo; ver «El tercer modo: QuiénGane». */
+    /* Y DESDE EL BLOQUE 0.4 (2026-09-21) SE ABRE PARA QUIEN TENGA JUEGOS: hoy
+       solo el titular, con el de mentira. QUIÉNGANE NO PASA POR EL MICRÓFONO
+       —no se graba nada, se juega— así que va derecho a sortear o a invitar. */
     else if ((a === 'proponer' || a === 'sortear') && propuesta.modo === 'competencia') {
-      window.ATWI.aviso('QuiénGane está en desarrollo: falta elegir el minijuego. Muy pronto.');
+      if (!juegosDisponibles().length || !propuesta.juego) {
+        window.ATWI.aviso('QuiénGane está en desarrollo: falta elegir el minijuego. Muy pronto.');
+      } else if (a === 'sortear') sortearYJugar();
+      else proponer();
     }
+    else if (a === 'elegir-juego') { if (juegosDisponibles().length > 1) abrirJuego(acc); }
     else if (a === 'proponer') { conMicrofono(proponer, 'enviar', false); }
     else if (a === 'jugar-aqui') { abrirPreparar(); }
     else if (a === 'sortear') { conMicrofono(sortearYJugar, 'empezar', true); }
