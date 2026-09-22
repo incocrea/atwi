@@ -341,8 +341,9 @@
         cabeza +
         '<div class="jg-quien">' +
           window.ATWI.fichaHTML(q.avatar, 'avatar--duelo', q.color) +
+          /* Sin «Te toca jugar» (titular, 2026-09-22): la cara y el nombre ya
+             dicen de quién es el turno. */
           '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
-          '<p class="jg-quien__que">Te toca jugar</p>' +
         '</div>' +
         '<div class="jg-ficha-ronda">' + PEANA_DE_FICHA +
           /* Con `deUnaVez` las rondas de su TRAMO se asignan juntas en una

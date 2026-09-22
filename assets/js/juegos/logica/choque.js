@@ -168,7 +168,7 @@
   J.registrar({
     id: 'choque',
     nombre: 'Choque',
-    como: 'Reparte tus rondas entre cinco elementos, en secreto: cada uno vence a dos y pierde con dos.',
+    como: 'Selecciona un elemento para enfrentar a tu oponente: ¡como piedra, papel o tijera, pero con más opciones!',
     compara: 'rondas',
     /* Sin reintentos y sin recibo: la seleccion se reasigna libre en la misma
        pantalla hasta confirmar (titular, 2026-09-21), asi que «pensarlo mejor»
