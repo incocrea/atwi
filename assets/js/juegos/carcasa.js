@@ -45,8 +45,10 @@
   function nube() { return window.ATWI.nube; }
   function sonido() { return window.ATWI.sonido; }
 
-  /* Los mismos que la función de borde (`CUENTA_ATRAS_MS`): el 3-2-1 no cuenta. */
-  var CUENTA_ATRAS_MS = 3000;
+  /* El conteo antes de cada ronda: 3 s salvo que el juego diga otra cosa
+     (`cuentaS`; Calco mira su patrón 5). La función de borde lee el MISMO campo
+     y descuenta exactamente eso: el conteo no es tiempo de juego. */
+  function segundosDeCuenta() { return (M() && M().cuentaS) || 3; }
   var MS_TIC = 100;
 
   var C = null;   // la carcasa viva, o nulo
@@ -569,7 +571,7 @@
       velo.style.width = r.width + 'px';
       velo.style.height = r.height + 'px';
     }
-    var n = 3;
+    var n = segundosDeCuenta();
     var s = sonido();
     function paso() {
       if (!C) return;
@@ -587,10 +589,10 @@
       if (velo) { velo.innerHTML = conteoContenido(n); velo.classList.remove('jg-cuenta--late'); void velo.offsetWidth; velo.classList.add('jg-cuenta--late'); }
       if (s && s.hay()) s.clac(0.6);
       n--;
-      /* Los tres pasos se reparten los 3 s ENTEROS: los 350 ms que antes se
-         apartaban eran los del «¡Ya!», y el servidor descuenta 3.000 exactos
-         (`CUENTA_ATRAS_MS`), así que la cuenta tiene que durar eso. */
-      luego(paso, CUENTA_ATRAS_MS / 3);
+      /* Un segundo por número y nada más: los 350 ms que antes se apartaban
+         eran los del «¡Ya!», y el servidor descuenta los segundos del conteo
+         EXACTOS (`cuentaS`), así que la cuenta tiene que durar eso. */
+      luego(paso, 1000);
     }
     paso();
   }
@@ -634,7 +636,7 @@
       /* ⚠️ LA MUESTRA ES LA CUENTA ATRÁS, NO UN TIEMPO APARTE (Calco, 2026-09-22).
          Un juego que se mira antes de jugarse (`m.muestra`) enseña su tablero
          DURANTE el 3-2-1 y lo esconde al empezar. Se aprovecha esa cuenta en vez
-         de añadir una pausa propia porque el servidor descuenta `CUENTA_ATRAS_MS`
+         de añadir una pausa propia porque el servidor descuenta el conteo (`cuentaS`)
          exactos del tiempo de la ronda: con una espera aparte, los segundos de
          mirar contarían como tiempo de juego. Y de paso el 3-2-1 dice cuánto
          queda para que el patrón desaparezca, que es lo que hace falta saber. */

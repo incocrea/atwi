@@ -31,7 +31,7 @@
   var J = raiz.ATWI.juegos = raiz.ATWI.juegos || Object.create(null);
 
   var NIVELES = [
-    { cols: 4, filas: 4, pintadas: 7, distintos: 4, muestraMs: 3000 }
+    { cols: 4, filas: 4, pintadas: 7, distintos: 4 }
   ];
 
   /* Cuántos stickers hay en la hoja. Los nombres viven en la interfaz --aquí no
@@ -83,7 +83,7 @@
     return {
       fichas: fichas,
       cols: n.cols, filas: n.filas, distintos: n.distintos,
-      muestraMs: n.muestraMs, patron: patron
+      patron: patron
     };
   }
 
@@ -182,7 +182,7 @@
     return {
       fichas: tablero.fichas.slice(),
       cols: cols, filas: filas, distintos: tablero.distintos,
-      muestraMs: tablero.muestraMs, patron: patron
+      patron: patron
     };
   }
 
@@ -206,12 +206,19 @@
     /* Tiene su rotulo dibujado (titular, 2026-09-22): manda sobre el nombre
        en texto, como el logo del modo en el versus. */
     rotulo: true,
-    como: 'Mira el patrón, y cuando se esconda cálcalo: toca un color y toca su celda.',
+    como: 'Mira el patrón y, cuando se esconda, cálcalo: arrastra cada sticker a su caja.',
     compara: 'rondas',
     reintentos: 2,
-    topeS: 30,
-    /* El patrón se mira antes de que arranque el reloj: la carcasa lo pinta y
-       espera esto, que es del TABLERO y no del reloj de la ronda. */
+    /* 5 S PARA MIRAR Y 15 PARA CALCAR (titular, 2026-09-22; eran 3 y 30). Con
+       más tiempo de mirada y menos de respuesta, lo que se mide es la memoria y
+       no el tanteo: con 30 s se podía ir probando hasta dar con él. */
+    topeS: 15,
+    /* El patrón se mira DURANTE la cuenta atrás (`muestra`), así que su duración
+       es la del conteo: `cuentaS` lo alarga a 5-4-3-2-1 solo en este juego. Lo
+       leen la carcasa Y el servidor, que descuenta exactamente esos segundos
+       del tiempo de la ronda: si solo lo supiera el teléfono, en línea los dos
+       segundos de más contarían como tiempo de juego. */
+    cuentaS: 5,
     muestra: true,
     niveles: NIVELES,
     generar: generar,

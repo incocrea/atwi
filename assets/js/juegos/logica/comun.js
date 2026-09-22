@@ -41,7 +41,12 @@
      y su ronda se rechazaria despues de jugada. */
   /* 0.6: Calco pasa de colores con forma a STICKERS (titular), asi que su
      tablero trae ademas `fichas` --que cuatro de los 24 salen-- y cambia. */
-  J.VERSION_REGLAS = '0.6';
+  /* 0.7: Calco se mira 5 s y se calca en 15 (eran 3 y 30), y el conteo pasa a
+     ser de cada juego (`cuentaS`). No cambia ningun tablero salvo que el de
+     Calco deja de llevar `muestraMs`, pero SI el tiempo oficial: un telefono con
+     el JS de antes contaria 3 s de muestra donde el servidor descuenta 5, y
+     jugaria 30 s en una ronda que el servidor corta a 15. */
+  J.VERSION_REGLAS = '0.7';
 
   var MAX_JUGADAS = 600;
   var SAL_DEL_GEMELO = 0x67656D65;      // «geme»: la semilla hija del gemelo

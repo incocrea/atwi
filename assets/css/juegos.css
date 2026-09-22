@@ -62,7 +62,10 @@
 .jg-ficha-ronda {
   width: 100%; max-width: 340px; display: grid; gap: 6px; justify-items: center;
   padding: var(--e-4) var(--e-4) var(--e-3); border-radius: var(--radio-tarjeta);
-  background: var(--superficie); box-shadow: var(--sombra-2); text-align: center;
+  /* Un 30 % transparente (titular, 2026-09-22): deja pasar el fondo dibujado del
+     juego sin dejar de sostener el texto. */
+  background: color-mix(in srgb, var(--superficie) 70%, transparent);
+  box-shadow: var(--sombra-2); text-align: center;
 }
 .jg-ficha-ronda__nivel { font-size: var(--t-chico); color: var(--tinta-suave); font-weight: 700; }
 .jg-ficha-ronda__t { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); color: var(--jg-color); }
