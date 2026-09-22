@@ -889,8 +889,24 @@
       publico: 'pareja',
       uno: { nombre: p.nombre || 'Tú', avatar: p.avatar || 'kai',
              color: window.ATWI.elColor(p.avatarBorde) },
-      dos: { nombre: 'Diana', avatar: distintoDeMi(p.avatar), color: 'verde' }
+      dos: { nombre: 'Diana', avatar: distintoDeMi(p.avatar), color: 'verde' },
+      /* EL MINIJUEGO, PARA PROBARLO SIN MONTAR UNA PARTIDA (titular,
+         2026-09-22). Lo único que se elige es a qué y cuántas rondas; el resto
+         —las fichas, el juez, la mesa— se sortea en cada tirada, que es lo que
+         pidió: «solo defino juego y número de rondas y el resto randomízalo». */
+      juego: 'cuenta',
+      rondasJuego: 2
     };
+  }
+
+  /** Los juegos que esta versión de la app trae cargados, con su nombre. */
+  function juegosDelProbador() {
+    var J = window.ATWI.juegos;
+    if (!J || !J.ids) return [];
+    return J.ids().map(function (id) {
+      var m = J.juego(id);
+      return { clave: id, nombre: (m && m.nombre) || id };
+    });
   }
 
   /* LO GUARDADO NO SE CREE, SE REVISA CAMPO A CAMPO. Lo que hay en
@@ -922,6 +938,11 @@
       publico: MESAS_PROBADOR.some(function (m) { return m.clave === e.publico; })
         ? e.publico : base.publico,
       juez: window.ATWI.esJuez(e.juez) ? e.juez : base.juez,
+      /* El juego guardado puede ser de una versión que ya no lo trae —o de antes
+         de que existiera este control—: si no está cargado, al de fábrica. */
+      juego: enLista(juegosDelProbador(), e.juego, base.juego),
+      rondasJuego: [1, 2, 3].indexOf(Number(e.rondasJuego)) >= 0
+        ? Number(e.rondasJuego) : base.rondasJuego,
       /* UNA RESPUESTA POR MODO, no una sola compartida: «gana» no existe en
          Negociación ni «dos» en Controversia, así que con una sola cambiar de
          modo dejaba elegida una respuesta imposible. */
@@ -1051,6 +1072,27 @@
         '</div>' +
       '</div>' +
 
+      /* EL MINIJUEGO, SIN MONTAR UNA PARTIDA (titular, 2026-09-22: «solo quiero
+         poder probar los juegos reales directa y rápidamente sin generar
+         partidas; solo defino juego y número de rondas y el resto randomízalo;
+         estas partidas no generan historial, son dummy»). Por eso estos dos
+         controles están aquí y no las fichas: lo de arriba tiñe la escena, y
+         para probar un tablero lo que hace falta es a QUÉ y CUÁNTAS veces. */
+      (juegosDelProbador().length
+        ? '<div><span class="pb-ficha__t">El minijuego</span>' +
+            '<p class="chico tenue" style="margin:2px 0 6px">Para «Reproducir un minijuego». ' +
+              'Las fichas, el juez y la mesa se sortean en cada tirada, y no queda ' +
+              'nada en el historial.</p>' +
+            chipsProbador('juego', juegosDelProbador(), e.juego) +
+            '<div style="margin-top:var(--e-2)">' +
+              chipsProbador('rondasJuego', [{ clave: '1', nombre: '1 ronda' },
+                                            { clave: '2', nombre: '2 rondas' },
+                                            { clave: '3', nombre: '3 rondas' }],
+                            String(e.rondasJuego)) +
+            '</div>' +
+          '</div>'
+        : '') +
+
       fichaProbador('uno', e.uno, 'La ficha de la izquierda') +
       fichaProbador('dos', e.dos, 'La ficha de la derecha') +
 
@@ -1123,13 +1165,35 @@
      mentira con el juego que haya —hoy, «Cuenta»— y el número de rondas de
      serie. Recorre el sorteo, la cortinilla, la carcasa entera con su relevo
      y la revelación, sin partida en el servidor. */
+  /** Uno al azar de una lista. */
+  function unoDe(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
+
   function ensayarElJuego() {
-    var mesa = mesaDelProbador();
-    mesa.modo = 'competencia';
-    /* El RECORDADO, no el primero: así el probador ensaya el mismo juego que
-       se eligió la última vez en «Antes de empezar». */
-    mesa.juego = juegoRecordado() || 'cuenta';
-    mesa.rondas = cfg.reglas.turnosPorDefecto;
+    var e = estadoProbador();
+    /* ⚠️ AQUÍ NO SE USA `mesaDelProbador()` (titular, 2026-09-22): lo que se
+       elige para un minijuego es el juego y las rondas, y «el resto
+       randomízalo». Las fichas de arriba tiñen las ESCENAS —el VS, el choque de
+       puños, el veredicto— y aquí lo que se viene a mirar es el tablero; tener
+       que ir a cambiarlas para ver otra pareja sería trabajo que no aporta.
+       Dos caras DISTINTAS, que es la regla del juego: el mismo personaje en los
+       dos lados es la misma figura. */
+    var caras = window.ATWI.quienes().map(function (q) { return q.clave; });
+    var colores = window.ATWI.colores().map(function (c) { return c.clave; });
+    var unaCara = unoDe(caras);
+    var otraCara = unoDe(caras.filter(function (c) { return c !== unaCara; }));
+    var jueces = window.ATWI.jueces ? window.ATWI.jueces() : [];
+
+    var mesa = {
+      modo: 'competencia',
+      juego: e.juego,
+      rondas: e.rondasJuego,
+      quien: [{ nombre: 'Uno', avatar: unaCara, color: unoDe(colores) },
+              { nombre: 'Dos', avatar: otraCara, color: unoDe(colores) }],
+      juez: jueces.length ? unoDe(jueces).clave : e.juez,
+      publico: unoDe(MESAS_PROBADOR).clave,
+      /* Sin sorteo ni cortinilla: aquí se viene a ver el tablero. */
+      directo: true
+    };
     cerrarModales(['m-probador']);
     window.ATWI.partida.ensayarElJuego(mesa);
   }
@@ -6836,6 +6900,9 @@
     if (pbo) {
       var campo = pbo.dataset.pb;
       if (campo === 'contesta') estadoProbador().contesta[estadoProbador().modo] = pbo.dataset.val;
+      /* Las rondas son un número: guardarlas como la cadena del chip dejaría
+         `turnos: '2'` en la mesa, y la carcasa compara con `<` contra números. */
+      else if (campo === 'rondasJuego') estadoProbador().rondasJuego = Number(pbo.dataset.val);
       else estadoProbador()[campo] = pbo.dataset.val;
       /* Cambiar de modo cambia la lista de finales, y el que estaba puesto
          puede no existir en la nueva: se cae al primero de la lista. */

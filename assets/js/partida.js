@@ -4134,6 +4134,12 @@ window.ATWI = window.ATWI || {};
       window.ATWI.precarga.listas([piezaDelEncuentro(P.modo, P.publico)])
     ]);
     precargarElFinal();
+    /* ⚠️ DIRECTO AL TABLERO SI SE PIDE (titular, 2026-09-22: «solo quiero poder
+       probar los juegos reales directa y rápidamente»). El sorteo y la
+       cortinilla son cuatro segundos de escena, y valen cuando lo que se ensaya
+       ES la escena; cuando lo que se va a mirar es el tablero, se pagan en cada
+       tirada. El probador entra derecho; el resto de caminos siguen igual. */
+    if (op.directo) return arrancarJuego();
     pintarAviso();
   }
 
