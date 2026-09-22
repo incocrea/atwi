@@ -4407,6 +4407,24 @@ body.app {
 /* Y el enunciado se aparta de ella, o el renglon de abajo le pasaria por
    debajo. Solo el enunciado: las dos filas de cabecera terminan mucho antes. */
 .partida__tema { padding-right: 42px; }
+
+/* EL BOTÓN DE MARCAR UN PREMIO RECIBIDO (titular, 2026-09-21). Va hermano de la
+   tarjeta como la papelera —un `<button>` dentro de otro no es válido— y se
+   ancla al pie, sobre la peana, donde no pisa el texto. Lleva el color de premio
+   (dorado), que es el de QuiénGane. */
+.partida-fila .premio-cobrar {
+  position: absolute;
+  right: var(--e-4); bottom: 44px;
+  z-index: 1;
+  padding: 7px 14px;
+  border: 0; border-radius: 999px;
+  background: var(--premio, #F5C243);
+  color: #4A3B10; font-weight: 800; font-size: .82rem;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(46, 42, 63, .18);
+}
+.partida-fila .premio-cobrar:active { transform: translateY(1px); }
+.partida-fila .premio-cobrar:disabled { opacity: .6; cursor: default; }
 /* TODAS MIDEN LO MISMO, que es lo que la ruleta necesita para que ninguna quede
    cortada: dos renglones de enunciado y lo que sobre se recorta. Medido antes:
    las tarjetas salían a 153 o a 170 según el tema, y esos 17 px son la tercera

@@ -155,8 +155,15 @@
     var nivel = J().nivelDe(C.rondas, C.ronda);
     var titulo = $('#t-partida');
     if (titulo) titulo.textContent = m.nombre || 'Minijuego';
+    /* El rótulo dibujado, si el juego lo tiene (`rotulo-<id>.webp`): manda
+       sobre el nombre en texto, como el logo del modo en el versus. */
+    var cabeza = m.rotulo
+      ? '<img class="jg-rotulo" src="../assets/img/juegos/rotulo-' + esc(C.P.juego) + '.webp" alt="' +
+          esc(m.nombre || '') + '" decoding="async">'
+      : '';
     caja().innerHTML =
       '<div class="sala sala--centrada jg jg--presenta">' +
+        cabeza +
         '<div class="jg-quien">' +
           window.ATWI.fichaHTML(q.avatar, 'avatar--duelo', q.color) +
           '<p class="jg-quien__nombre">' + esc(q.nombre) + '</p>' +
@@ -164,9 +171,9 @@
         '</div>' +
         '<div class="jg-ficha-ronda">' +
           '<p class="jg-ficha-ronda__t">Ronda ' + C.ronda + ' de ' + C.rondas + '</p>' +
-          '<p class="jg-ficha-ronda__nivel">' + esc(nombreDeNivel(nivel)) + '</p>' +
+          (m.sinNiveles ? '' : '<p class="jg-ficha-ronda__nivel">' + esc(nombreDeNivel(nivel)) + '</p>') +
           '<div class="jg-datos">' +
-            '<span class="jg-dato">' + pieza('jg-tiempo', 28) + esc(mmss(topeMs())) + '</span>' +
+            (m.sinReloj ? '' : '<span class="jg-dato">' + pieza('jg-tiempo', 28) + esc(mmss(topeMs())) + '</span>') +
             (m.reintentos ? '<span class="jg-dato">' + pieza('jg-pasos', 28) +
               (C.gastados ? (m.reintentos - C.gastados) : m.reintentos) + ' reintento' +
               ((m.reintentos - C.gastados) === 1 ? '' : 's') + '</span>' : '') +
@@ -211,6 +218,10 @@
     C.semilla = J().azar.deTexto(texto);
     C.nivel = J().nivelDe(C.rondas, C.ronda);
     C.topeMs = (C.m.topeS || 60) * 1000;
+    /* SIN RELOJ NO HAY CUENTA ATRÁS (Choque): el 3-2-1 existe para que nadie
+       pierda segundos que puntúan mirando cómo aparece el tablero, y aquí el
+       tiempo ni apura ni puntúa. Se entra derecho a elegir. */
+    if (C.m.sinReloj) { montarTablero(false); jugarRonda(); return; }
     cuentaAtras(jugarRonda);
   }
 
@@ -255,8 +266,9 @@
             '<span>' + esc(q.nombre) + '</span>' +
           '</span>' +
           '<span class="jg-pildora">Ronda ' + C.ronda + '/' + C.rondas + '</span>' +
-          '<span class="jg-pildora jg-pildora--reloj" id="jg-reloj">' + pieza('jg-tiempo', 22) +
-            '<span id="jg-reloj-n">' + esc(mmss(topeMs())) + '</span></span>' +
+          (C.m.sinReloj ? '' :
+            '<span class="jg-pildora jg-pildora--reloj" id="jg-reloj">' + pieza('jg-tiempo', 22) +
+              '<span id="jg-reloj-n">' + esc(mmss(topeMs())) + '</span></span>') +
         '</div>' +
         '<div class="jg-tablero" id="jg-tablero"></div>' +
         (bloqueado ? '<div class="jg-cuenta" aria-live="assertive">3</div>' : '') +
@@ -276,7 +288,11 @@
          juego vive dentro de un teléfono dibujado. `clientWidth` es el hueco
          interior, sin bordes. */
       ancho: area ? area.clientWidth : 300,
-      alto: area ? area.clientHeight : 300
+      alto: area ? area.clientHeight : 300,
+      /* Los resúmenes de MIS rondas anteriores ya enviadas: Choque agota con
+         ellos los elementos usados. En local salen de lo jugado aquí; en línea,
+         de lo que contó `estado_del_juego`. */
+      previas: previas()
     };
   }
 
@@ -291,14 +307,21 @@
     C.actualizar = typeof actualizar === 'function' ? actualizar : null;
   }
 
+  function previas() {
+    if (!C) return [];
+    if (C.P.enLinea) {
+      return (C.enviadasEnLinea || []).map(function (r) { return r.resumen; }).filter(Boolean);
+    }
+    return (C.hechas[C.lado] || []).map(function (r) { return r && r.resumen; }).filter(Boolean);
+  }
+
   function jugarRonda() {
     if (!C) return;
     C.estado = 'jugando';
     C.bloqueado = false;
     C.t0 = performance.now();
     pintarJuego();   // desbloqueado
-    C.reloj = setInterval(tic, MS_TIC);
-    tic();
+    if (!C.m.sinReloj) { C.reloj = setInterval(tic, MS_TIC); tic(); }
   }
 
   function tic() {
@@ -533,12 +556,22 @@
       /* `mias` son las rondas que ya envié; la siguiente es la que sigue. La
          RPC solo dice SI hay resultado; la fila la trae `partida()`, que es la
          misma forma que lee el historial. */
-      var enviadas = (e.mias || []).filter(function (r) { return r.estado === 'enviada'; }).length;
+      C.enviadasEnLinea = (e.mias || []).filter(function (r) { return r.estado === 'enviada'; });
+      var enviadas = C.enviadasEnLinea.length;
       if (e.hay_resultado) {
+        /* ⚠️ CON `.catch`: sin él, si `partida()` fallaba o colgaba la pantalla
+           se quedaba en «Cargando» para siempre —lo vio el titular al reabrir una
+           partida en línea terminada—. Y `resultado` se acepta como objeto o como
+           array de uno, según cómo PostgREST resuelva la relación embebida. */
         return n.partida(C.P.debate).then(function (d) {
           if (!C) return;
-          if (d && d.resultado) return entregar(d.resultado);
+          var res = d && d.resultado;
+          if (Array.isArray(res)) res = res[0];
+          if (res) return entregar(res);
           fallar('El resultado está, pero no se pudo leer.', seguirEnLinea);
+        }).catch(function (err) {
+          if (!C) return;
+          fallar('No se pudo leer el resultado. ' + ((err && err.message) || ''), seguirEnLinea);
         });
       }
       if (enviadas >= C.rondas) { var g = C.ganchos; cerrar(); return g.esperar(elOtroLado(C.lados[0])); }
@@ -546,6 +579,9 @@
       C.gastados = 0;
       C.intento = 1;
       pintarPresentacion();
+    }).catch(function (err) {
+      if (!C) return;
+      fallar('No se pudo leer el estado de la partida. ' + ((err && err.message) || ''), seguirEnLinea);
     });
   }
 
@@ -579,6 +615,10 @@
           jugarRonda();
           if (C && C.transcurrido) C.t0 -= C.transcurrido;
         });
+      }).catch(function (err) {
+        if (!C) return;
+        fallar('No se pudo pedir el tablero. ' + ((err && err.message) || ''),
+          function () { pintarPresentacion(); });
       });
   }
 
@@ -590,6 +630,9 @@
         C.resumen = r.resumen;
         C.intento = r.intento;
         pintarRecibo();
+      }).catch(function (err) {
+        if (!C) return;
+        fallar('No se pudo entregar la ronda. ' + ((err && err.message) || ''), terminarEnLinea);
       });
   }
 
@@ -602,12 +645,24 @@
         if (!C) return;
         if (!r || r.error) { C.estado = 'recibo'; return fallar((r && r.error) || 'No se pudo confirmar.', pintarRecibo); }
         if (r.resultado) return entregar(r.resultado);
+        /* La ronda confirmada pasa a las previas: la siguiente agota con ella. */
+        C.enviadasEnLinea = (C.enviadasEnLinea || []).concat([{ resumen: C.resumen, estado: 'enviada' }]);
         C.gastados = 0;
         C.intento = 1;
         if (C.ronda < C.rondas) { C.ronda++; return pintarPresentacion(); }
         var g = C.ganchos;
         cerrar();
         g.esperar(elOtroLado(C.lados[0]));
+      }).catch(function (err) {
+        /* ⚠️ SIN ESTE `.catch` EL BOTÓN «ENVIAR» SE QUEDABA APAGADO PARA SIEMPRE
+           (lo vio el titular: «al enviar la segunda ronda uno de los jugadores se
+           quedó así y no pasa nada»). `confirmar` en el servidor hace veredicto y
+           POST a `resultados`, así que puede tardar o fallar; sin manejarlo, la
+           promesa rechazada dejaba la pantalla en «Ronda completa» con el botón
+           muerto. Se vuelve al recibo, desde donde se puede reintentar. */
+        if (!C) return;
+        C.estado = 'recibo';
+        fallar('No se pudo confirmar. ' + ((err && err.message) || ''), pintarRecibo);
       });
   }
 

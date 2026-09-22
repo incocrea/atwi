@@ -1092,7 +1092,9 @@
   function ensayarElJuego() {
     var mesa = mesaDelProbador();
     mesa.modo = 'competencia';
-    mesa.juego = juegosDisponibles()[0] || 'prueba';
+    /* El RECORDADO, no el primero: así el probador ensaya el mismo juego que
+       se eligió la última vez en «Antes de empezar». */
+    mesa.juego = juegoRecordado() || 'cuenta';
     mesa.rondas = cfg.reglas.turnosPorDefecto;
     cerrarModales(['m-probador']);
     window.ATWI.partida.ensayarElJuego(mesa);
@@ -2272,6 +2274,7 @@
        chip, se cambia de lo que se está mirando sin moverse de sitio: las
        partidas de este móvil, las de en línea, o lo que acordaron. */
     if (vistaHistorial === 'actas') return pintarActas(caja, titulo);
+    if (vistaHistorial === 'premios') return pintarPremios(caja, titulo);
 
     /* EL FILTRO NO TIENE «TODAS» (decisión del titular, 2026-09-15). Local y en
        línea son dos maneras de jugar que esperan cosas distintas: en la local
@@ -2955,6 +2958,10 @@
   function hayNegociaciones() {
     return (historial || []).some(function (d) { return d.modo === 'negociacion'; });
   }
+  /* Y la de premios, si hay QuiénGane jugado. Misma regla que «Acuerdos». */
+  function hayCompetencias() {
+    return (historial || []).some(function (d) { return d.modo === 'competencia'; });
+  }
 
   function barraDondeJuego() {
     var op = [['local', 'En este móvil'], ['linea', 'En línea']];
@@ -2962,6 +2969,9 @@
        chips son dos palabras y uno de cuatro los descolocaba. Además la frase
        larga ya está dentro, en el aviso de que es un recordatorio. */
     if (hayNegociaciones()) op.push(['actas', 'Acuerdos']);
+    /* PREMIOS: la lista de QuiénGane, hermana de «Acuerdos» (titular,
+       2026-09-21). El premio se consigna al ganador y el deudor lo ve en deuda. */
+    if (hayCompetencias()) op.push(['premios', 'Premios']);
     return '<div class="filtros filtros--donde">' +
       op.map(function (x) {
         /* `data-lista` Y NO `data-donde` (2026-09-18): los chips llevaban el
@@ -3236,6 +3246,85 @@
 
   /* Al firmar una nueva, la lista en memoria ya no es la de ahora. */
   window.ATWI.olvidarActas = function () { actas = null; };
+
+  /* ==========================================================================
+     LOS PREMIOS DE QUIÉNGANE (titular, 2026-09-21), hermana de la lista de
+     actas. El premio se consigna al ganador —lo guarda para reclamarlo, y al
+     recibirlo lo marca— y el deudor lo ve «en deuda» hasta que el ganador lo
+     salde. Se conserva siempre; lo que cambia es la marca de pendiente.
+     ========================================================================== */
+  var premios = null;
+  window.ATWI.olvidarPremios = function () { premios = null; };
+
+  function pintarPremios(caja, titulo) {
+    var cabecera = titulo + barraDondeJuego();
+    if (!premios) {
+      caja.innerHTML = cabecera + '<p class="chico tenue">Buscando sus premios…</p>';
+      window.ATWI.nube.misPremios().then(function (l) {
+        premios = l || [];
+        if (vistaActual === 'historial') pintarHistorial();
+      });
+      return;
+    }
+    if (!premios.length) {
+      caja.innerHTML = cabecera + estadoVacio(icono('competencia', 76) || '', 'Todavía no hay premios',
+        'Cuando terminen una partida de QuiénGane, aquí queda lo que se apostó: ' +
+        'lo que te llevas si ganaste, o lo que debes si no. Nadie está obligado ' +
+        'a nada; es un recordatorio entre ustedes.');
+      return;
+    }
+    caja.innerHTML = cabecera +
+      '<p class="chico tenue" style="margin-bottom:var(--e-4)">Lo que se apostó jugando. ' +
+        'El que gana lo marca como recibido cuando se lo den; hasta entonces queda ' +
+        'pendiente. No es una deuda de verdad, es un recordatorio entre ustedes.</p>' +
+      '<div class="ruleta">' +
+      premios.map(function (p) {
+        var soyGanador = p.soy === 'ganador';
+        var pagado = p.estado === 'pagado';
+        /* El estado tiene DOS CARAS según de qué lado estoy, que es justo lo que
+           pidió el titular: para el ganador «Por cobrar», para el deudor «En
+           deuda»; y para los dos «Recibido» con su fecha cuando se saldó. */
+        var estado = pagado ? 'Recibido'
+                   : soyGanador ? 'Por cobrar' : 'En deuda';
+        var conQuien = p.otro
+          ? (soyGanador ? 'Te lo debe ' + esc(p.otro) : 'Se lo debes a ' + esc(p.otro))
+          : (soyGanador ? 'Lo ganaste' : 'Lo perdiste');
+        return '<div class="tarjeta partida-fila partida-fila--acta" ' +
+            'data-tipo="' + (pagado ? 'acuerdo' : 'desacuerdo') + '" data-modo="competencia">' +
+            '<button class="partida" data-acta-de="' + esc(p.debate || '') + '">' +
+              '<span class="partida__alto">' +
+                '<span class="partida__estado">' + estado + '</span>' +
+                '<span class="partida__cuando">' +
+                  esc(pagado && p.pagado_en ? 'Pagado ' + cuando(p.pagado_en) : cuando(p.creado)) +
+                '</span>' +
+              '</span>' +
+              '<span class="partida__tema">' + esc(p.premio || 'Un premio') + '</span>' +
+              '<span class="acta-fila__texto">' + conQuien + '</span>' +
+            '</button>' +
+            /* El botón de marcar recibido SOLO para el ganador y mientras esté
+               pendiente. Va hermano de la tarjeta —no dentro del botón, que un
+               `<button>` dentro de otro no es válido—, como la papelera. */
+            (soyGanador && !pagado
+              ? '<button class="premio-cobrar" data-premio-recibido="' + esc(p.debate) + '">' +
+                  'Recibido</button>'
+              : '') +
+            '<img class="partida__base" src="../assets/img/iconos/base-competencia.png" ' +
+              'alt="" aria-hidden="true">' +
+          '</div>';
+      }).join('') + '</div>';
+    ajustarRuleta();
+  }
+
+  function marcarPremioRecibido(debate, boton) {
+    if (boton) { boton.disabled = true; boton.textContent = 'Guardando…'; }
+    window.ATWI.nube.marcarPremioRecibido(debate).then(function () {
+      premios = null;                 // se vuelve a pedir con el estado nuevo
+      if (vistaActual === 'historial') pintarHistorial();
+    }).catch(function (e) {
+      if (boton) { boton.disabled = false; boton.textContent = 'Recibido'; }
+      if (window.ATWI.aviso) window.ATWI.aviso('No se pudo marcar: ' + ((e && e.message) || ''));
+    });
+  }
 
   /* De vuelta al historial después de estrenar un veredicto guardado, con la
      lista recién pedida para que la insignia de «sin ver» ya no esté. */
@@ -4376,10 +4465,10 @@
     propuesta.juego = j;
     try { localStorage.setItem(JUEGO, j); } catch (e) {}
   }
-  /* La pegatina del juego: `juego-<id>.webp` de la plancha, o el signo de
-     aciertos para el de mentira, que no tiene dibujo propio. */
+  /* La pegatina del juego: `juego-<id>.webp` de la plancha. «Cuenta» todavía
+     no tiene la suya --está pedida-- y mientras tanto lleva la diana. */
   function piezaDelJuego(id, px) {
-    var nombre = id === 'prueba' ? 'jg-aciertos' : 'juego-' + id;
+    var nombre = id === 'cuenta' ? 'jg-aciertos' : 'juego-' + id;
     return '<img src="../assets/img/juegos/' + nombre + '.webp" width="' + px + '" height="' + px +
       '" alt="" decoding="async" class="jg-pieza">';
   }
@@ -6479,6 +6568,12 @@
        vuelva a entrar en la tarjeta no abra la partida al tocarla. */
     var lista = e.target.closest('[data-lista]');
     if (lista) { vistaHistorial = lista.dataset.lista; pintarHistorial(); return; }
+
+    /* Marcar un premio como recibido (solo el ganador). Va ANTES que la tarjeta
+       porque el botón vive dentro de ella. Sin confirmación: no borra nada, solo
+       registra que ya te lo dieron, y si te equivocas el rival lo ve igual. */
+    var cobrar = e.target.closest('[data-premio-recibido]');
+    if (cobrar) { marcarPremioRecibido(cobrar.dataset.premioRecibido, cobrar); return; }
 
     /* Desde un acta se va a su partida. Ya no hay modal que cerrar antes: la
        lista vive en el historial. */

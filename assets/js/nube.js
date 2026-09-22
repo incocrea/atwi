@@ -377,6 +377,16 @@ window.ATWI = window.ATWI || {};
      tiene que quedar es el campo de escribir, no un error. */
   function misContactos() { if (!hayNube()) return Promise.resolve([]); return rpc('mis_contactos', {}); }
 
+  /* LOS PREMIOS DE QUIÉNGANE (0082), hermana de `acuerdos`: los que cobro
+     (ganador) y los que debo (deudor). Como la lista de actas, devuelve [] si no
+     se puede preguntar: es una pantalla de repaso, no un flujo bloqueante. */
+  function misPremios() { if (!hayNube()) return Promise.resolve([]); return rpc('mis_premios', {}); }
+  /* Marcar recibido: solo el ganador. Rechaza para que la pantalla diga por qué. */
+  function marcarPremioRecibido(debate) {
+    if (!hayNube()) return Promise.reject(new Error('sin sesión'));
+    return rpc('marcar_premio_recibido', { p_debate: debate });
+  }
+
   /* ------------------------------------------------------------------ */
   /* LOS MINIJUEGOS DE QUIÉNGANE (migración 0076, función de borde `juego`) */
   /* ------------------------------------------------------------------ */
@@ -1150,6 +1160,8 @@ window.ATWI = window.ATWI || {};
     rechazarInvitacion: conTokenVivo(rechazarInvitacion),
     perfilPorApodo: conTokenVivo(perfilPorApodo),
     misContactos: conTokenVivo(misContactos),
+    misPremios: conTokenVivo(misPremios),
+    marcarPremioRecibido: conTokenVivo(marcarPremioRecibido),
     /* Los minijuegos (0076). */
     juego: conTokenVivo(juego),
     estadoDelJuego: conTokenVivo(estadoDelJuego),
