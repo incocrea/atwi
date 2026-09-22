@@ -895,8 +895,19 @@
          —las fichas, el juez, la mesa— se sortea en cada tirada, que es lo que
          pidió: «solo defino juego y número de rondas y el resto randomízalo». */
       juego: 'cuenta',
-      rondasJuego: 2
+      rondasJuego: 2,
+      /* Lo que cada juego deja configurar, por juego: `{ cuenta: { set: '3' } }`.
+         Se guarda por separado para que cambiar de juego y volver conserve lo
+         que se había elegido en cada uno. */
+      ajustes: {}
     };
+  }
+
+  /** Lo que el juego `id` deja configurar en el probador, o lista vacía. */
+  function ajustesDelJuego(id) {
+    var J = window.ATWI.juegos;
+    var ui = J && J.ui ? J.ui[id] : null;
+    return (ui && Array.isArray(ui.ajustes)) ? ui.ajustes : [];
   }
 
   /** Los juegos que esta versión de la app trae cargados, con su nombre. */
@@ -943,6 +954,21 @@
       juego: enLista(juegosDelProbador(), e.juego, base.juego),
       rondasJuego: [1, 2, 3].indexOf(Number(e.rondasJuego)) >= 0
         ? Number(e.rondasJuego) : base.rondasJuego,
+      /* Lo guardado puede traer ajustes de un juego que ya no está o de una
+         opción que se quitó: se copia solo lo que hoy existe. */
+      ajustes: (function () {
+        var salida = {};
+        var crudo = (e.ajustes && typeof e.ajustes === 'object') ? e.ajustes : {};
+        juegosDelProbador().forEach(function (j) {
+          var suyos = crudo[j.clave] || {};
+          var vale = {};
+          ajustesDelJuego(j.clave).forEach(function (a) {
+            if (enLista(a.opciones, suyos[a.clave], null) !== null) vale[a.clave] = suyos[a.clave];
+          });
+          if (Object.keys(vale).length) salida[j.clave] = vale;
+        });
+        return salida;
+      })(),
       /* UNA RESPUESTA POR MODO, no una sola compartida: «gana» no existe en
          Negociación ni «dos» en Controversia, así que con una sola cambiar de
          modo dejaba elegida una respuesta imposible. */
@@ -1090,6 +1116,16 @@
                                             { clave: '3', nombre: '3 rondas' }],
                             String(e.rondasJuego)) +
             '</div>' +
+            /* LO QUE EL JUEGO ELEGIDO DEJA CONFIGURAR. Sale de `ui.ajustes` del
+               propio juego, así que el probador no sabe qué son: pinta lo que
+               haya. Un juego sin ajustes no añade nada. */
+            ajustesDelJuego(e.juego).map(function (a) {
+              return '<div style="margin-top:var(--e-3)">' +
+                '<span class="pb-ficha__t">' + esc(a.nombre) + '</span>' +
+                chipsProbador('ajuste:' + a.clave, a.opciones,
+                              ((e.ajustes || {})[e.juego] || {})[a.clave] || '') +
+              '</div>';
+            }).join('') +
           '</div>'
         : '') +
 
@@ -1191,6 +1227,9 @@
               { nombre: 'Dos', avatar: otraCara, color: unoDe(colores) }],
       juez: jueces.length ? unoDe(jueces).clave : e.juez,
       publico: unoDe(MESAS_PROBADOR).clave,
+      /* Lo elegido para ESTE juego. En una partida de verdad no va nada, y los
+         juegos lo leen como «si hay algo puesto, respétalo; si no, sortea». */
+      ajustes: (e.ajustes || {})[e.juego] || {},
       /* Sin sorteo ni cortinilla: aquí se viene a ver el tablero. */
       directo: true
     };
@@ -6903,6 +6942,14 @@
       /* Las rondas son un número: guardarlas como la cadena del chip dejaría
          `turnos: '2'` en la mesa, y la carcasa compara con `<` contra números. */
       else if (campo === 'rondasJuego') estadoProbador().rondasJuego = Number(pbo.dataset.val);
+      /* Los ajustes se guardan POR JUEGO, para que cambiar de juego y volver
+         conserve lo que cada uno tenía puesto. */
+      else if (campo.indexOf('ajuste:') === 0) {
+        var st = estadoProbador();
+        st.ajustes = st.ajustes || {};
+        st.ajustes[st.juego] = st.ajustes[st.juego] || {};
+        st.ajustes[st.juego][campo.slice(7)] = pbo.dataset.val;
+      }
       else estadoProbador()[campo] = pbo.dataset.val;
       /* Cambiar de modo cambia la lista de finales, y el que estaba puesto
          puede no existir en la nueva: se cae al primero de la lista. */

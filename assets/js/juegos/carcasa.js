@@ -311,6 +311,9 @@
       previas: previas(),
       ancho: area.clientWidth,
       alto: area.clientHeight,
+      /* Los mismos ajustes del probador que reciben los de tablero: un juego de
+         selección también puede tener variantes que auditar. */
+      ajustes: (C.P && C.P.ajustes) || {},
       confirmar: enviarSeleccion
     });
   }
@@ -489,7 +492,15 @@
       /* Los resúmenes de MIS rondas anteriores ya enviadas: Choque agota con
          ellos los elementos usados. En local salen de lo jugado aquí; en línea,
          de lo que contó `estado_del_juego`. */
-      previas: previas()
+      previas: previas(),
+      /* LOS AJUSTES DEL PROBADOR (titular, 2026-09-22: «deseo poder escoger por
+         juego ciertas configuraciones; por ejemplo, para Cuenta poder escoger
+         una variante de números y que todas las partidas salgan con ese set,
+         para auditar mejor sus ilustraciones sin esperar que me salgan al
+         azar»). Van SIEMPRE en el contexto y en una partida de verdad llegan
+         vacíos: un juego los lee como «si hay algo puesto, respétalo; si no,
+         sortea», así que la partida real no cambia de comportamiento. */
+      ajustes: (C.P && C.P.ajustes) || {}
     };
   }
 

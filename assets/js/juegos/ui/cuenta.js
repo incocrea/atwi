@@ -21,16 +21,47 @@
      la ronda, distinto entre rondas. Y el CONTEO usa OTRO set --distinto al del
      tablero-- para dar variedad al empezar. */
   var memo = null;
-  function sets(estado) {
-    if (!memo || memo.estado !== estado) {
-      var j = Math.floor(Math.random() * 8);
+  /* ⚠️ EL SET SE PUEDE FIJAR DESDE EL PROBADOR (titular, 2026-09-22: «para
+     Cuenta quiero poder escoger una variante de números y que todas las
+     partidas salgan con ese set, para auditar mejor sus ilustraciones sin
+     esperar que me salgan al azar»). `fijo` es el valor elegido o vacío; vacío
+     es lo de siempre, o sea al azar, así que la partida de verdad --que nunca
+     trae ajustes-- no cambia de comportamiento.
+     El del CONTEO sigue sorteándose aparte y distinto del tablero: son dos
+     hojas que se ven seguidas y con el mismo set el 3-2-1 se confundiría con
+     las fichas de debajo. */
+  function sets(estado, fijo) {
+    /* ⚠️ SIN ARGUMENTO SIGNIFICA «EL QUE YA HABÍA», y esa distinción hace falta:
+       `conteo()` no recibe `ctx` --la carcasa lo llama con el número y nada
+       más-- así que si «sin valor» se tomara como «al azar», pintar el 3-2-1
+       invalidaría el memo y el set fijado se perdería justo antes de jugar. */
+    var puesto = fijo === undefined
+      ? (memo ? memo.fijo : null)
+      : ((fijo === 0 || fijo) && fijo !== '' ? Number(fijo) : null);
+    if (puesto !== null && !(puesto >= 0 && puesto <= 7)) puesto = null;
+    if (!memo || memo.estado !== estado || memo.fijo !== puesto) {
+      var j = puesto !== null ? puesto : Math.floor(Math.random() * 8);
       var c = Math.floor(Math.random() * 7); if (c >= j) c += 1;   // c en [0,8) sin j
-      memo = { estado: estado, juego: j, conteo: c };
+      memo = { estado: estado, fijo: puesto, juego: j, conteo: c };
     }
     return memo;
   }
 
+  /** Los ocho sets de la hoja, para el selector del probador. */
+  function setsDisponibles() {
+    var l = [{ clave: '', nombre: 'Al azar' }];
+    for (var i = 0; i < 8; i++) l.push({ clave: String(i), nombre: 'Set ' + (i + 1) });
+    return l;
+  }
+
   J.ui.cuenta = {
+    /* LO QUE ESTE JUEGO DEJA CONFIGURAR EN EL PROBADOR. Es el contrato genérico:
+       el probador pinta lo que haya aquí y devuelve los valores en
+       `ctx.ajustes`, así que un juego nuevo trae sus opciones sin que el
+       probador sepa nada de él. */
+    ajustes: [
+      { clave: 'set', nombre: 'Variante de números', opciones: setsDisponibles() }
+    ],
     /* Lo que tarda una ficha en irse del todo: 500 ms rota más los 250 del
        desvanecido (`transition: opacity .25s` en `.jg-celda`). La carcasa lo lee
        para no congelar el tablero encima de la última rotura. Si cambia el CSS,
@@ -69,7 +100,7 @@
       /* La ficha ES el numero (cosmetico: no toca la logica ni la jugada). El
          set del tablero es el mismo en toda la ronda --lo fija `sets()`-- y el
          numero es la fila. */
-      var set = sets(estado).juego;
+      var set = sets(estado, ctx && ctx.ajustes && ctx.ajustes.set).juego;
       caja.innerHTML =
         '<div class="jg-cuadricula jg-cuadricula--fichas" style="--cols:' + t.cols + ';--filas:' + t.filas +
           ';--celda:' + lado + 'px;--hueco:' + hueco + 'px;--set:' + set + '">' +

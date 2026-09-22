@@ -4122,6 +4122,8 @@ window.ATWI = window.ATWI || {};
       modo: 'competencia',
       juego: op.juego || 'prueba',
       turnos: op.rondas || 1,
+      /* Lo que el probador fijó para este juego; vacío en una partida real. */
+      ajustes: op.ajustes || {},
       orden: Math.random() < 0.5 ? [0, 1] : [1, 0]
     });
     separarFichas();
