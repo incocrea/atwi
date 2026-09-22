@@ -896,3 +896,13 @@
 }
 .jg-choque__lema::before { margin-right: .36em; }
 .jg-choque__lema::after { margin-left: .36em; transform: scaleX(-1); }
+
+/* CHOQUE USA EL ALTO ENTERO, REPARTIDO (titular, 2026-09-22: «como en todas
+   las interfaces, que estos elementos usen de forma balanceada el alto del
+   viewport»). La columna ocupa todo el hueco del tablero y reparte lo que sobra
+   por igual arriba, entre y abajo, sin medir nada: si no sobra, no inventa
+   hueco. Y entre el círculo y la paleta hay un mínimo propio (el que pidió el
+   titular), que el reparto solo puede agrandar. El botón ya no vive aquí: va
+   en el pie del modal, como en los demás juegos. */
+.jg-choque { align-self: stretch; height: 100%; align-content: space-evenly; }
+.jg-choque .jg-turnos { margin-bottom: var(--e-4); }

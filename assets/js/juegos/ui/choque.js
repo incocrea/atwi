@@ -63,6 +63,18 @@
       var rondas = [];
       for (var r = ctx.desde; r <= ctx.hasta; r++) rondas.push(r);
 
+      /* ⚠️ EL BOTÓN VA EN EL PIE DEL MODAL (titular, 2026-09-22: «igual al de
+         los otros juegos, para que se entienda como un solo flujo entre juegos
+         consecutivos y en la misma posición»). Dentro del cuerpo quedaba en otro
+         sitio y con otro tamaño que el «Siguiente reto» del recibo de Cuenta o
+         Calco, y al encadenar juegos saltaba de sitio. Lo arma la carcasa
+         (`ctx.boton`), así que es literalmente el mismo botón. Sin pie --un
+         llamador viejo-- vuelve al cuerpo, como estaba. */
+      var textoBoton = ctx.hasta >= (ctx.rondas || ctx.hasta) ? 'Enviar' : 'Siguiente reto';
+      function botonHTML() {
+        return ctx.boton ? ctx.boton(textoBoton)
+          : '<button type="button" class="boton boton--bloque boton--competencia">' + textoBoton + '</button>';
+      }
       caja.innerHTML =
         '<div class="jg-choque">' +
           /* LOS TURNOS SON LOS CÍRCULOS DE ARRIBA, y son el ESTADO: lo que hay
@@ -102,14 +114,7 @@
               '<span>¿Quién vence a quién?</span>' +
             '</button>' +
           '</p>' +
-          '<div class="jg-choque__pie">' +
-            /* ⚠️ DICE QUÉ PASA AL PULSARLO Y NUNCA SE APAGA (titular,
-               2026-09-22). «Confirmar selección» no decía a dónde llevaba, y
-               apagado se leía como un botón roto. Si falta el elemento, al
-               pulsarlo se dice y el círculo vacío se enciende. */
-            '<button type="button" class="boton boton--bloque boton--competencia" data-el-confirmar>' +
-              (ctx.hasta >= (ctx.rondas || ctx.hasta) ? 'Enviar' : 'Siguiente reto') + '</button>' +
-          '</div>' +
+          (ctx.pie ? '' : '<div class="jg-choque__pie">' + botonHTML() + '</div>') +
         '</div>';
 
       /* EL ESTADO ES EL DE LOS CÍRCULOS: `puesto[ronda] = elemento` o nulo.
@@ -286,24 +291,27 @@
           repinta();
           return;
         }
-        var b = e.target.closest('[data-el-confirmar]');
-        if (b) {
-          /* Una jugada por ronda pendiente, EN SU ORDEN: lo que haya en el
-             círculo 1 se juega primero. */
-          var porRonda = rondas.map(function (r) { return puesto[r]; });
-          if (porRonda.indexOf(-1) !== -1) {
-            if (window.ATWI.aviso) window.ATWI.aviso(rondas.length === 1
-              ? 'Arrastra un elemento al círculo primero.'
-              : 'Falta poner un elemento en cada círculo.');
-            [].forEach.call(caja.querySelectorAll('.jg-turno:not(.jg-turno--lleno)'), function (c) {
-              c.classList.add('jg-turno--diana');
-              setTimeout(function () { c.classList.remove('jg-turno--diana'); }, 700);
-            });
-            return;
-          }
-          ctx.confirmar(porRonda);
-        }
       });
+
+      function confirmar() {
+        /* Una jugada por ronda pendiente, EN SU ORDEN: lo que haya en el
+           círculo 1 se juega primero. */
+        var porRonda = rondas.map(function (r) { return puesto[r]; });
+        if (porRonda.indexOf(-1) !== -1) {
+          if (window.ATWI.aviso) window.ATWI.aviso(rondas.length === 1
+            ? 'Arrastra un elemento al círculo primero.'
+            : 'Falta poner un elemento en cada círculo.');
+          [].forEach.call(caja.querySelectorAll('.jg-turno:not(.jg-turno--lleno)'), function (c) {
+            c.classList.add('jg-turno--diana');
+            setTimeout(function () { c.classList.remove('jg-turno--diana'); }, 700);
+          });
+          return;
+        }
+        ctx.confirmar(porRonda);
+      }
+      if (ctx.pie) ctx.pie.innerHTML = botonHTML();
+      var elBoton = ctx.pie ? ctx.pie.querySelector('button') : caja.querySelector('.jg-choque__pie button');
+      if (elBoton) elBoton.addEventListener('click', confirmar);
 
       repinta();
     },

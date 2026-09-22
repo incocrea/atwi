@@ -440,6 +440,10 @@
       /* El total, para que el juego sepa si ésta es la última: su botón dice
          «Siguiente reto» o «Enviar» según lo que venga después. */
       rondas: C.rondas,
+      /* Y el pie del modal, para que su botón vaya donde van los de los demás
+         juegos: mismo sitio, mismo estilo, un solo flujo entre retos. */
+      pie: pie(),
+      boton: function (texto) { return principal('el-confirmar', texto); },
       previas: previas(),
       ancho: area.clientWidth,
       alto: area.clientHeight,
