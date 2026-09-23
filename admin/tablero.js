@@ -131,7 +131,12 @@
       'refresh-expired': 'auto',
       callback: function (t) { captcha = t; },
       'expired-callback': function () { captcha = ''; },
-      'error-callback': function () { captcha = ''; }
+      /* El código va a la consola: sin él, «no me deja entrar» no se puede
+         investigar (en localhost sale 600010 y el reto no se resuelve). */
+      'error-callback': function (codigo) {
+        captcha = '';
+        if (window.console) console.warn('[ATWI tablero] Turnstile: ' + codigo);
+      }
     });
   }
 
@@ -151,8 +156,9 @@
           if (t) { captcha = t; return listo(t); }
         }
         if (Date.now() > hasta) {
-          return no(new Error('El antirrobots no respondió. Recargá la página; si ' +
-            'sigue igual, revisá que este dominio esté en la lista del widget de Turnstile.'));
+          return no(new Error('El antirrobots no respondió. Recarga la página; si ' +
+            'sigue igual, revisa que este dominio esté en la lista del widget de Turnstile.' +
+            (enLocal() ? ' En local puedes usar «Entrar en modo desarrollo».' : '')));
         }
         setTimeout(mirar, 250);
       })();
@@ -171,6 +177,38 @@
      tuvo nada que ver, y el mensaje lo culpaba a él. */
   var entrando = false;
 
+  /* EN LOCAL, SIN ANTIRROBOTS (titular, 2026-09-23). En `localhost` el reto de
+     Turnstile no se resuelve, y sin su token Supabase no deja entrar con
+     contraseña, así que el tablero local --el único donde funcionan voces,
+     bocas y micrófono-- no se podía abrir. El servidor de desarrollo abre la
+     sesión del super admin con la clave de gestión del `.env`
+     (`/_sesion_tablero`, ver `tools/servidor-local.php`). En atwi.app ese
+     camino no existe y el botón ni se pinta. */
+  function enLocal() { return /^(localhost|127\.0\.0\.1)$/.test(location.hostname); }
+  function entrarEnDesarrollo() {
+    if (entrando) return;
+    entrando = true;
+    var b = $('#entrar-local');
+    if (b) b.disabled = true;
+    $('#error').style.color = 'var(--suave)';
+    $('#error').textContent = 'Abriendo la sesión de desarrollo…';
+    fetch('/_sesion_tablero', { method: 'POST', headers: { 'X-Atwi': 'tablero' } })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (!x.ok || !x.j || !x.j.access_token) throw new Error((x.j && x.j.error) || 'no contestó el servidor local');
+        sesion = x.j;
+        try { sessionStorage.setItem(CLAVE, JSON.stringify(x.j)); } catch (e) {}
+        $('#error').textContent = 'Comprobando la cuenta…';
+        return comprobarQueEsAdmin();
+      }).catch(function (e) {
+        $('#error').style.color = 'var(--mal)';
+        $('#error').textContent = 'No se pudo: ' + e.message + '. ¿Está levantado tools/servir.ps1?';
+      }).then(function () {
+        entrando = false;
+        if (b) b.disabled = false;
+      });
+  }
+
   function entrar() {
     if (entrando) return;
     var correo = $('#correo').value.trim().toLowerCase();
@@ -180,7 +218,7 @@
 
     entrando = true;
     $('#entrar').disabled = true;
-    $('#error').textContent = 'Comprobando que no sos un robot…';
+    $('#error').textContent = 'Comprobando que no eres un robot…';
     $('#error').style.color = 'var(--suave)';
 
     conElToken().then(function (t) {
@@ -206,7 +244,7 @@
           /* El antirrobots SÍ dio token; lo que pasó es que llegó gastado o
              caducado. Decirlo bien evita que alguien vaya a revisar Cloudflare
              cuando lo que hay que hacer es volver a intentar. */
-          msg = 'La verificación antirrobots caducó. Probá otra vez.';
+          msg = 'La verificación antirrobots caducó. Prueba otra vez.';
         }
         throw new Error(msg);
       }
@@ -1549,6 +1587,14 @@
 
   /* --- Arranque -------------------------------------------------------------- */
   $('#entrar').addEventListener('click', entrar);
+  if (enLocal()) {
+    var bl = document.createElement('button');
+    bl.id = 'entrar-local';
+    bl.className = 'boton boton--suave boton--punteado';
+    bl.textContent = 'Entrar en modo desarrollo';
+    $('#entrar').insertAdjacentElement('afterend', bl);
+    bl.addEventListener('click', entrarEnDesarrollo);
+  }
   $('#clave').addEventListener('keydown', function (e) { if (e.key === 'Enter') entrar(); });
   $('#salir').addEventListener('click', function () {
     sesion = null;
