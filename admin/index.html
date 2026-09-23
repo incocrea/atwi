@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=9acd794">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=9acd794">
-<link rel="stylesheet" href="../assets/css/base.css?v=9acd794">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=4f81874">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=4f81874">
+<link rel="stylesheet" href="../assets/css/base.css?v=4f81874">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -199,6 +199,10 @@
            background: none; border: 0; border-radius: var(--radio-chip); padding: 6px 8px; cursor: pointer; color: var(--tinta); }
   .f-esp:hover { background: var(--crema-hondo); }
   .f-esp--puesto { background: var(--lavanda-tinte); }
+  /* Pantalla con cambios sin guardar: un punto dorado al final de la fila. */
+  .f-esp--pendiente { position: relative; }
+  .f-esp--pendiente::after { content: ''; position: absolute; right: 10px; top: 50%; width: 9px; height: 9px;
+    margin-top: -4px; border-radius: 50%; background: #F5C243; box-shadow: 0 0 0 2px #fff; }
   .f-esp img { width: 34px; height: 48px; object-fit: cover; border-radius: 6px; box-shadow: var(--sombra-1); flex: none; }
   .f-esp span { font-family: var(--display); font-weight: 700; font-size: 14px; line-height: 1.2; }
   .f-esp small { display: block; font-family: var(--texto); font-weight: 600; font-size: 11px; color: var(--tenue); }
@@ -233,6 +237,9 @@
   .f-acciones { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 24px 8px;
                 border-top: 1px solid var(--linea); background: var(--crema); }
   .f-acciones .chico { flex: 1 1 100%; margin: 0; min-height: 18px; }
+  /* `.boton` declara su `display` y le gana al `hidden` del navegador. */
+  .f-acciones [hidden] { display: none !important; }
+  .f-acciones .f-cargar { margin-left: auto; }
   .f-previa { display: grid; justify-items: center; align-content: start; gap: 10px; padding: 18px;
               border-left: 1px solid var(--linea); background: var(--crema-hondo); overflow-y: auto; }
   .f-telefono { width: 400px; height: min(820px, calc(100vh - var(--alto-cab) - 80px)); border: 10px solid #2E2A3F;
@@ -313,6 +320,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=9acd794"></script>
+<script src="../assets/js/paquete-admin.js?v=4f81874"></script>
 </body>
 </html>
