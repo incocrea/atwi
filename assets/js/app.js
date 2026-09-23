@@ -7598,7 +7598,10 @@
       datos.sincronizarPropios().then(function (cambios) {
         if (cambios && vistaActual === 'catalogo') pintarCatalogo();
       });
-    }
+    }    /* EL SIMULADOR, ABIERTO DESDE EL TABLERO (titular, 2026-09-23). El tablero
+       incrusta la app con `?probador=1` y entra directo al probador. Sigue
+       mandando `puedeProbar()`: con otra cuenta el parámetro no hace nada. */
+    if (/[?&]probador=1/.test(location.search) && puedeProbar()) abrirProbador();
   }
   /* La sala la llama cuando una partida en línea se cerró debajo de ella. */
   window.ATWI.refrescarHistorial = function () {

@@ -250,15 +250,71 @@
 
   /* --- Las pestañas ---------------------------------------------------------- */
   function pintar() {
-    document.querySelectorAll('nav button').forEach(function (b) {
+    document.querySelectorAll('nav.menu button').forEach(function (b) {
       if (b.dataset.pest === pestana) b.setAttribute('aria-current', 'page');
       else b.removeAttribute('aria-current');
     });
+    $('#lienzo').className = '';
     $('#lienzo').innerHTML = '<p class="chico">Cargando…</p>';
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
        material: verMaterial, bitacora: verBitacora, navegadores: verNavegadores,
        llamadas: verLlamadas, modelos: verModelos, limites: verLimites,
-       reportes: verReportes })[pestana]();
+       reportes: verReportes, simulador: verSimulador,
+       voces: function () { verLaboratorio('probar-bocas.html#voces', 'Voces'); },
+       bocas: function () { verLaboratorio('probar-bocas.html#bocas', 'Bocas'); },
+       marcar: function () { verLaboratorio('marcar-bocas.html', 'Marcar bocas'); },
+       microfono: function () { verLaboratorio('prueba-microfono.html', 'Micrófono'); }
+    })[pestana]();
+  }
+
+  /* --- CONFIGURACIÓN Y PLAYGROUND, DENTRO DEL TABLERO (titular, 2026-09-23:
+     «vamos a unificar todo allá: la simulación, los controles de bocas y voz,
+     la sección completa de configuración y playground»).
+
+     EL SIMULADOR ES EL DE LA APP, no una copia: `../app/?probador=1` abre el
+     juego y, si la sesión del juego es la del titular, el probador. Va en un
+     marco de teléfono porque el juego es solo móvil. Usa la sesión DEL JUEGO
+     (la de este navegador), no la del tablero: son cuentas aparte.
+
+     ⚠️ LAS HERRAMIENTAS DE LABORATORIO SOLO EXISTEN EN EL SERVIDOR LOCAL. Voces,
+     bocas y micrófono guardan archivos y locutan con Azure a través de
+     `tools/servidor-local.php` (`/_locutar`, `/_aplicar`, `/_guardar`), y sus
+     páginas viven FUERA de `site/` desde la tanda de seguridad del 2026-09-19:
+     publicarlas enseñaba el mapa del servidor de desarrollo. Así que en
+     atwi.app no hay nada que incrustar, y se dice en vez de enseñar un 404
+     dentro de un marco. */
+  function verSimulador() {
+    $('#lienzo').className = 'lleno';
+    $('#lienzo').innerHTML =
+      '<div class="movil">' +
+        '<p class="chico">El simulador de la app, con la sesión del juego de este navegador. ' +
+          'Si pide entrar, entra con la cuenta del titular. ' +
+          '<a href="../app/?probador=1" target="_blank" rel="noopener">Abrir aparte</a></p>' +
+        '<iframe src="../app/?probador=1" title="Simulador" allow="microphone; autoplay"></iframe>' +
+      '</div>';
+  }
+
+  function verLaboratorio(pagina, nombre) {
+    var url = '/laboratorio/' + pagina;
+    var sinAncla = url.split('#')[0];
+    fetch(sinAncla, { method: 'HEAD', cache: 'no-store' })
+      .then(function (r) { return r.ok && /html/.test(r.headers.get('content-type') || ''); })
+      .catch(function () { return false; })
+      .then(function (hay) {
+        if (!$('#lienzo')) return;
+        if (!hay) {
+          $('#lienzo').innerHTML =
+            '<div class="tarjeta solo-aqui"><h2>' + esc(nombre) + ' solo funciona en local</h2>' +
+            '<p>Esta herramienta guarda archivos del proyecto y locuta con Azure desde tu máquina, ' +
+            'así que no se publica en atwi.app. Levanta el servidor de desarrollo y abre el tablero allí:</p>' +
+            '<pre>powershell -ExecutionPolicy Bypass -File tools/servir.ps1</pre>' +
+            '<p class="chico" style="margin-top:10px">y después <b>http://localhost:8127/admin/</b></p></div>';
+          return;
+        }
+        $('#lienzo').className = 'lleno';
+        $('#lienzo').innerHTML = '<iframe class="incrustado" src="' + esc(url) + '" title="' + esc(nombre) +
+          '" allow="microphone; autoplay"></iframe>';
+      });
   }
 
   /* --- Las llamadas: lo que se pidió, lo que costó y lo que contestó ---------
@@ -1244,7 +1300,7 @@
     try { sessionStorage.removeItem(CLAVE); } catch (e) {}
     location.reload();
   });
-  document.querySelector('nav').addEventListener('click', function (e) {
+  document.querySelector('nav.menu').addEventListener('click', function (e) {
     var b = e.target.closest('button[data-pest]');
     if (!b) return;
     pestana = b.dataset.pest;

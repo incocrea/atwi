@@ -14,8 +14,15 @@
      eso la app se ve en blanco y negro.
      ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
      los `<script src>` relativos a su servidor. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
+<!-- EL ESTILO DEL JUEGO (titular, 2026-09-23: «agrega a todo el tablero el
+     estilo gráfico general del juego»). Las mismas tres hojas que la app —las
+     fuentes, los colores y la base con sus botones y campos— y encima lo propio
+     del tablero, que ya solo decide la distribución. -->
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=04eb091">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=04eb091">
+<link rel="stylesheet" href="../assets/css/base.css?v=04eb091">
 <!--
   EL TABLERO NO ES EL JUEGO. Vive en su propia carpeta, no carga ni un archivo
   del juego y no comparte sesión con él: entrar aquí con la cuenta de jugar no
@@ -30,170 +37,214 @@
   devolver una fila. Lo de aquí es comodidad, no una puerta.
 -->
 <style>
+  /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
+     JUEGO: un color que cambie en `tokens.css` cambia aquí también. */
   :root {
-    --tinta: #23202b; --suave: #6b6577; --tenue: #9b95a6;
-    --fondo: #f6f4f1; --papel: #fff; --linea: #e7e3de;
-    --marca: #7a6ad8; --bien: #2e9e7e; --mal: #d2564b; --ojo: #c98a1a;
+    --suave: var(--tinta-suave); --tenue: var(--tinta-tenue);
+    --fondo: var(--crema); --papel: var(--superficie);
+    --marca: var(--lavanda); --bien: var(--negociacion); --mal: var(--peligro); --ojo: var(--sol-oscuro);
+    --lado: 232px; --alto-cab: 60px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--fondo); color: var(--tinta);
-    font: 14px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  header {
-    background: var(--papel); border-bottom: 1px solid var(--linea);
-    padding: 12px 20px; display: flex; align-items: center; gap: 16px;
+  body { font-size: 15px; }
+  main p { margin: 0 0 10px; }
+
+  /* --- La cabecera: el logotipo del juego y quién está dentro --- */
+  header.cab {
+    background: var(--papel); box-shadow: var(--sombra-1); height: var(--alto-cab);
+    padding: 0 22px; display: flex; align-items: center; gap: 14px;
     position: sticky; top: 0; z-index: 10;
   }
-  header h1 { font-size: 15px; margin: 0; font-weight: 700; letter-spacing: .02em; }
-  header .quien { margin-left: auto; color: var(--suave); font-size: 13px; }
-  nav { display: flex; gap: 4px; padding: 0 20px; background: var(--papel);
-        border-bottom: 1px solid var(--linea); position: sticky; top: 49px; z-index: 9; }
-  nav button {
-    font: inherit; font-weight: 600; background: none; border: 0; cursor: pointer;
-    padding: 10px 14px; color: var(--suave); border-bottom: 2px solid transparent;
+  header.cab img { height: 38px; width: auto; }
+  header.cab h1 { font-size: 1.25rem; color: var(--lavanda-oscuro); }
+  header.cab .quien { margin-left: auto; color: var(--suave); font-size: 13px; }
+  header.cab .salir { font: inherit; font-weight: 800; background: none; border: 0;
+    color: var(--lavanda-oscuro); cursor: pointer; }
+
+  /* --- EL MENÚ, AGRUPADO POR TIPO (titular, 2026-09-23) ---
+     Diez pestañas en fila eran una lista sin orden, y con la configuración y el
+     playground dentro serían quince. En la barra lateral van por grupos. */
+  .armazon { display: grid; grid-template-columns: var(--lado) minmax(0, 1fr);
+             min-height: calc(100vh - var(--alto-cab)); }
+  nav.menu {
+    background: var(--papel); border-right: 1px solid var(--linea);
+    padding: 16px 12px 24px; position: sticky; top: var(--alto-cab); align-self: start;
+    height: calc(100vh - var(--alto-cab)); overflow-y: auto;
   }
-  nav button[aria-current] { color: var(--marca); border-bottom-color: var(--marca); }
-  main { padding: 20px; max-width: 1200px; margin: 0 auto; }
+  .grupo + .grupo { margin-top: 16px; }
+  .grupo__t {
+    font-family: var(--display); font-weight: 800; font-size: 12px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--tenue); padding: 0 12px 4px;
+  }
+  nav.menu button {
+    display: block; width: 100%; text-align: left;
+    font-family: var(--display); font-weight: 700; font-size: 15px;
+    background: none; border: 0; cursor: pointer; color: var(--tinta-suave);
+    padding: 7px 12px; border-radius: var(--radio-chip);
+  }
+  nav.menu button:hover { background: var(--crema-hondo); color: var(--tinta); }
+  nav.menu button[aria-current] { background: var(--lavanda-tinte); color: var(--lavanda-oscuro); }
+  nav.menu .solo-local { font-family: var(--texto); font-size: 10px; font-weight: 800;
+    color: var(--tenue); margin-left: 4px; text-transform: uppercase; letter-spacing: .05em; }
+  main { padding: 22px 26px 40px; max-width: 1240px; width: 100%; }
+  main.lleno { max-width: none; padding: 0; }
+
+  /* --- Las piezas de siempre, con la mano del juego --- */
   .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
-  .tarjeta { background: var(--papel); border: 1px solid var(--linea); border-radius: 10px; padding: 14px 16px; }
-  .tarjeta .eti { color: var(--tenue); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
-  .tarjeta .dato { font-size: 24px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .tarjeta { background: var(--papel); border-radius: var(--radio-tarjeta); box-shadow: var(--sombra-1); padding: 14px 18px; }
+  .tarjeta .eti { color: var(--tenue); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
+  .tarjeta .dato { font-family: var(--display); font-size: 26px; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; }
   .tarjeta .pie { color: var(--suave); font-size: 12px; margin-top: 2px; }
-  table { width: 100%; border-collapse: collapse; background: var(--papel);
-          border: 1px solid var(--linea); border-radius: 10px; overflow: hidden; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--papel);
+          border-radius: var(--radio-tarjeta); box-shadow: var(--sombra-1); overflow: hidden; }
   th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--linea); vertical-align: top; }
-  th { background: #fbfaf9; font-size: 11px; text-transform: uppercase;
-       letter-spacing: .06em; color: var(--tenue); font-weight: 700; }
+  th { background: var(--lavanda-tinte); font-family: var(--display); font-size: 12px;
+       letter-spacing: .04em; color: var(--lavanda-oscuro); font-weight: 800; }
   tr:last-child td { border-bottom: 0; }
   td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  h2 { font-size: 14px; margin: 26px 0 10px; letter-spacing: .02em; }
+  h2 { font-size: 1.2rem; margin: 26px 0 10px; color: var(--tinta); }
   h2:first-child { margin-top: 0; }
   .chico { font-size: 12px; color: var(--suave); }
-  .mal { color: var(--mal); } .bien { color: var(--bien); } .ojo { color: var(--ojo); }
-  /* Borrar una cuenta: rojo, chico y sin relleno; que se vea que es otra cosa. */
-  button.peligro { font: inherit; font-size: 12px; font-weight: 700; color: var(--mal);
-    background: none; border: 1px solid var(--mal); border-radius: 999px; padding: 2px 10px;
+  .mal { color: var(--mal); } .bien { color: var(--negociacion-oscuro); } .ojo { color: var(--ojo); }
+  button.peligro { font: inherit; font-size: 12px; font-weight: 800; color: var(--mal);
+    background: var(--papel); border: 2px solid var(--mal); border-radius: 999px; padding: 1px 10px;
     cursor: pointer; }
   button.peligro:disabled { opacity: .5; cursor: default; }
-  .pastilla { display: inline-block; padding: 1px 7px; border-radius: 99px;
-              background: #efecf8; color: var(--marca); font-size: 11px; font-weight: 700; }
-  .aviso { background: #fff7e6; border: 1px solid #f0dcae; color: #6b5316;
-           padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-size: 13px; }
+  .pastilla { display: inline-block; padding: 1px 8px; border-radius: 99px;
+              background: var(--lavanda-tinte); color: var(--lavanda-oscuro); font-size: 11px; font-weight: 800; }
+  .aviso { background: var(--sol-tinte); color: #6b5316; box-shadow: var(--sombra-1);
+           padding: 10px 14px; border-radius: var(--radio-chip); margin-bottom: 18px; font-size: 13px; }
   /* --- El selector de modelo --- */
   .modelos { display: grid; gap: 8px; margin-bottom: 6px; }
-  .modelo { display: block; border: 1px solid var(--linea); border-radius: 8px;
+  .modelo { display: block; border: 2px solid var(--linea); border-radius: var(--radio-chip);
             padding: 10px 14px; cursor: pointer; background: var(--papel); }
   .modelo:hover { border-color: var(--marca); }
-  /* El puesto se ve sin tener que leer el radio: son tres renglones parecidos y
-     a la pregunta «¿cuál está corriendo ahora?» hay que contestarla de un
-     vistazo, que es la razón de que exista esta pestaña. */
-  .modelo--puesto { border-color: var(--marca); background: #f7f5fd; }
-  .modelo input { margin-right: 8px; }
+  .modelo--puesto { border-color: var(--marca); background: var(--lavanda-tinte); }
+  .modelo input { margin-right: 8px; accent-color: var(--lavanda); }
   .modelo .chico { margin-left: 22px; }
-  .boton { font: inherit; font-weight: 700; padding: 9px 20px; cursor: pointer;
-           background: var(--marca); color: #fff; border: 0; border-radius: 8px; }
-  .boton--chico { font-size: 12px; padding: 4px 10px; border-radius: 6px; }
+  /* El botón del juego, con su canto; aquí también hay uno chico. */
+  .boton--chico { min-height: 32px; padding: 0 12px; font-size: 13px; border-width: 2px; --canto: 3px; }
   /* --- Los medidores de tope --- */
-  .tope { background: var(--papel); border: 1px solid var(--linea); border-left-width: 4px;
-          border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
-  .tope--bien { border-left-color: var(--bien); }
-  .tope--ojo  { border-left-color: var(--ojo); }
+  .tope { background: var(--papel); border-left: 5px solid var(--linea); box-shadow: var(--sombra-1);
+          border-radius: var(--radio-chip); padding: 12px 16px; margin-bottom: 10px; }
+  .tope--bien { border-left-color: var(--negociacion); }
+  .tope--ojo  { border-left-color: var(--sol); }
   .tope--mal  { border-left-color: var(--mal); }
-  .tope--nd   { border-left-color: var(--linea); }
+  .tope--nd   { border-left-color: var(--linea-fuerte); }
   .tope__cab { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
   .tope__cifra { margin-left: auto; font-variant-numeric: tabular-nums; font-size: 13px; }
-  .barra { height: 7px; background: #f0eeeb; border-radius: 99px; overflow: hidden; margin-bottom: 7px; }
-  .barra i { display: block; height: 100%; background: var(--bien); }
-  .tope--ojo .barra i { background: var(--ojo); }
+  .barra { height: 8px; background: var(--crema-hondo); border-radius: 99px; overflow: hidden; margin-bottom: 7px; }
+  .barra i { display: block; height: 100%; background: var(--negociacion); }
+  .tope--ojo .barra i { background: var(--sol); }
   .tope--mal .barra i { background: var(--mal); }
   .tope__que { margin-top: 8px; font-size: 13px; }
-  .tope__que summary { cursor: pointer; color: var(--marca); font-weight: 600; font-size: 12px; }
+  .tope__que summary { cursor: pointer; color: var(--lavanda-oscuro); font-weight: 800; font-size: 12px; }
   .tope__que ol { margin: 8px 0; padding-left: 20px; }
   .tope__que li { margin-bottom: 6px; }
-  .tope__que code { background: #f4f2ef; padding: 1px 5px; border-radius: 4px; font-size: 11px; }
-  .copiable { cursor: pointer; border-bottom: 1px dotted var(--linea); }
-  .copiable:hover { color: var(--marca); border-bottom-color: var(--marca); }
-  /* --- El detalle de una llamada ---
-     A pantalla casi completa y no en una ventanita: lo que se viene a mirar
-     aquí es un JSON de cientos de líneas, y leerlo por una rendija es no
-     leerlo. */
-  #detalle { position: fixed; inset: 0; background: rgba(28,24,20,.55);
+  .tope__que code { background: var(--crema-hondo); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
+  .copiable { cursor: pointer; border-bottom: 1px dotted var(--linea-fuerte); }
+  .copiable:hover { color: var(--lavanda-oscuro); border-bottom-color: var(--lavanda); }
+  /* --- El detalle de una llamada: a pantalla casi completa --- */
+  #detalle { position: fixed; inset: 0; background: rgba(46, 42, 63, .5);
              display: none; z-index: 50; }
   #detalle[data-abierto] { display: block; }
   #detalle .caja { position: absolute; inset: 3vh 4vw; background: var(--papel);
-                   border-radius: 12px; display: flex; flex-direction: column;
-                   box-shadow: 0 20px 60px rgba(0,0,0,.3); overflow: hidden; }
+                   border-radius: var(--radio-modal); display: flex; flex-direction: column;
+                   box-shadow: var(--sombra-3); overflow: hidden; }
   #detalle header { display: flex; align-items: center; gap: 14px;
                     padding: 14px 18px; border-bottom: 1px solid var(--linea); }
-  #detalle header h3 { margin: 0; font-size: 14px; }
-  #detalle .pestanas { display: flex; gap: 4px; margin-left: auto; }
-  #detalle .pestanas button { font: inherit; font-size: 12px; font-weight: 700;
-    padding: 6px 14px; border: 1px solid var(--linea); background: #fbfaf9;
-    border-radius: 7px; cursor: pointer; color: var(--suave); }
-  #detalle .pestanas button[aria-current] { background: var(--marca); color: #fff;
-                                            border-color: var(--marca); }
+  #detalle header h3 { margin: 0; font-size: 1.1rem; }
+  #detalle .pestanas { display: flex; gap: 6px; margin-left: auto; }
+  #detalle .pestanas button { font: inherit; font-size: 12px; font-weight: 800;
+    padding: 6px 14px; border: 0; background: var(--crema-hondo);
+    border-radius: 999px; cursor: pointer; color: var(--suave); }
+  #detalle .pestanas button[aria-current] { background: var(--lavanda); color: #fff; }
   #detalle .cuerpo { flex: 1; overflow: auto; margin: 0; padding: 16px 18px;
                      font: 12px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-                     white-space: pre-wrap; word-break: break-word; }
+                     white-space: pre-wrap; word-break: break-word; border: 0; border-radius: 0; }
   #detalle .cerrar { font: inherit; border: 0; background: none; cursor: pointer;
-                     color: var(--suave); font-size: 20px; line-height: 1; padding: 0 4px; }
-  /* El coloreado: sin librería, cuatro reglas. Un JSON de 300 líneas todo del
-     mismo color se lee igual de mal en un tablero que en cualquier sitio. */
-  .j-clave { color: #7a5cc4; } .j-texto { color: #2f6f4f; }
-  .j-num { color: #b5651d; } .j-bool { color: #a33; }
-  /* --- La puerta --- */
-  #puerta { max-width: 340px; margin: 12vh auto; background: var(--papel);
-            border: 1px solid var(--linea); border-radius: 12px; padding: 26px; }
-  #puerta h1 { font-size: 17px; margin: 0 0 4px; }
-  #puerta input {
-    font: inherit; width: 100%; padding: 10px 12px; margin-top: 10px;
-    border: 1px solid var(--linea); border-radius: 8px; background: #fbfaf9;
-  }
-  #puerta button {
-    font: inherit; font-weight: 700; width: 100%; margin-top: 14px; padding: 11px;
-    background: var(--marca); color: #fff; border: 0; border-radius: 8px; cursor: pointer;
-  }
+                     color: var(--suave); font-size: 24px; line-height: 1; padding: 0 4px; }
+  .j-clave { color: var(--lavanda-oscuro); } .j-texto { color: var(--negociacion-oscuro); }
+  .j-num { color: var(--debate-oscuro); } .j-bool { color: var(--peligro); }
+  /* --- La puerta, como la del juego --- */
+  #puerta { max-width: 380px; margin: 10vh auto; background: var(--papel);
+            border-radius: var(--radio-modal); box-shadow: var(--sombra-2); padding: 28px; text-align: center; }
+  #puerta img { height: 56px; width: auto; margin: 0 auto 8px; }
+  #puerta h1 { font-size: 1.35rem; margin: 0 0 4px; color: var(--lavanda-oscuro); }
+  #puerta input { margin-top: 10px; text-align: left; }
+  #puerta button { width: 100%; margin-top: 16px; }
   #puerta .error { color: var(--mal); font-size: 13px; margin-top: 10px; min-height: 18px; }
-  pre { background: #fbfaf9; border: 1px solid var(--linea); border-radius: 8px;
+  #captcha { display: flex; justify-content: center; }
+  pre { background: var(--crema); border-radius: var(--radio-chip);
         padding: 10px; font-size: 12px; white-space: pre-wrap; margin: 0; }
+  /* --- LO INCRUSTADO (titular, 2026-09-23): el simulador de la app y las
+     herramientas de laboratorio, dentro del tablero. El simulador va en un
+     marco de teléfono porque es el juego, que es solo móvil; lo demás ocupa el
+     lienzo entero. */
+  .incrustado { display: block; width: 100%; height: calc(100vh - var(--alto-cab)); border: 0; background: var(--crema); }
+  .movil { display: grid; justify-items: center; gap: 12px; padding: 22px; }
+  .movil iframe { width: 430px; height: min(860px, calc(100vh - var(--alto-cab) - 90px)); border: 10px solid #2E2A3F;
+                  border-radius: 38px; box-shadow: var(--sombra-3); background: var(--crema); }
+  .solo-aqui { max-width: 620px; margin: 40px auto; }
 </style>
 </head>
 <body>
 
 <div id="puerta">
-  <h1>Tablero de ATWI</h1>
+  <img src="../assets/img/logotipo-48.png" alt="ATWI">
+  <h1>Tablero</h1>
   <p class="chico">Cuenta de administración. No es la de jugar.</p>
-  <input id="correo" type="email" autocomplete="username" placeholder="correo">
-  <input id="clave" type="password" autocomplete="current-password" placeholder="contraseña">
+  <input id="correo" class="campo" type="email" autocomplete="username" placeholder="correo">
+  <input id="clave" class="campo" type="password" autocomplete="current-password" placeholder="contraseña">
   <!-- El antirrobots NO es opcional aquí. Supabase Auth tiene el captcha
        obligatorio y lo exige también en la entrada por contraseña, no solo en el
        alta: sin token devuelve `captcha_failed` y no deja pasar. Se comprobó
        pidiendo el token con una cuenta inventada. -->
   <div id="captcha" style="margin-top:12px"></div>
-  <button id="entrar">Entrar</button>
+  <button id="entrar" class="boton">Entrar</button>
   <p class="error" id="error"></p>
 </div>
 
 <div id="tablero" hidden>
-  <header>
-    <h1>ATWI · tablero</h1>
+  <header class="cab">
+    <img src="../assets/img/logotipo-48.png" alt="ATWI">
+    <h1>Tablero</h1>
     <span class="quien" id="quien"></span>
-    <button id="salir" style="font:inherit;background:none;border:0;color:var(--suave);cursor:pointer">Salir</button>
+    <button id="salir" class="salir">Salir</button>
   </header>
-  <nav>
-    <button data-pest="costos" aria-current="page">Costos</button>
-    <button data-pest="gente">Gente</button>
-    <button data-pest="partidas">Partidas</button>
-    <button data-pest="material">Material</button>
-    <button data-pest="bitacora">Bitácora</button>
-    <button data-pest="navegadores">Navegadores</button>
-    <button data-pest="llamadas">Llamadas</button>
-    <button data-pest="modelos">Modelos</button>
-    <button data-pest="limites">Límites</button>
-    <button data-pest="reportes">Reportes</button>
-  </nav>
-  <main id="lienzo"></main>
+  <!-- EL MENÚ, AGRUPADO POR TIPO (titular, 2026-09-23: «agrupa los menús según
+       su tipo… vamos a unificar todo allá: la simulación, los controles de bocas
+       y voz, la sección completa de configuración y playground»). Lo marcado
+       «local» usa el servidor de desarrollo y solo funciona ahí. -->
+  <div class="armazon">
+    <nav class="menu">
+      <div class="grupo"><p class="grupo__t">Reportes</p>
+        <button data-pest="partidas">Partidas</button>
+        <button data-pest="material">Material</button>
+        <button data-pest="bitacora">Bitácora</button>
+        <button data-pest="navegadores">Navegadores</button>
+      </div>
+      <div class="grupo"><p class="grupo__t">Consumo</p>
+        <button data-pest="costos" aria-current="page">Costos</button>
+        <button data-pest="llamadas">Llamadas</button>
+        <button data-pest="limites">Límites</button>
+      </div>
+      <div class="grupo"><p class="grupo__t">Comunidad</p>
+        <button data-pest="gente">Gente</button>
+        <button data-pest="reportes">Denuncias</button>
+      </div>
+      <div class="grupo"><p class="grupo__t">Configuración</p>
+        <button data-pest="modelos">Modelos</button>
+        <button data-pest="voces">Voces <span class="solo-local">local</span></button>
+        <button data-pest="bocas">Bocas <span class="solo-local">local</span></button>
+      </div>
+      <div class="grupo"><p class="grupo__t">Playground</p>
+        <button data-pest="simulador">Simulador</button>
+        <button data-pest="marcar">Marcar bocas <span class="solo-local">local</span></button>
+        <button data-pest="microfono">Micrófono <span class="solo-local">local</span></button>
+      </div>
+    </nav>
+    <main id="lienzo"></main>
+  </div>
 
   <!-- El detalle de una llamada: lo que se mandó y lo que vino. -->
   <div id="detalle" role="dialog" aria-modal="true" aria-labelledby="d-titulo">
@@ -211,7 +262,7 @@
   </div>
 </div>
 
-<script src="../assets/js/config.js?v=22aef4a"></script>
-<script src="tablero.js?v=22aef4a"></script>
+<script src="../assets/js/config.js?v=04eb091"></script>
+<script src="tablero.js?v=04eb091"></script>
 </body>
 </html>
