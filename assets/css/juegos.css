@@ -529,6 +529,12 @@
   transform: translate(-50%, -50%) rotate(-6deg);
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, .25));
 }
+/* LA PIEZA EN LA MANO (piezas/arrastre.js): el sistema cortó el toque y la
+   pieza espera a que el dedo vuelva. Late para decir que sigue cogida y que
+   basta con tocar otra vez. Solo la opacidad: el `transform` es el de colocarla. */
+.jg-en-mano .jg-arrastre { animation: jg-en-mano 0.9s ease-in-out infinite alternate; }
+@keyframes jg-en-mano { from { opacity: 1; } to { opacity: .55; } }
+@media (prefers-reduced-motion: reduce) { .jg-en-mano .jg-arrastre { animation: none; opacity: .75; } }
 .jg-choque__pie { width: 100%; }
 .jg-choque__elegida { display: grid; justify-items: center; gap: 4px; margin-top: 4px; }
 

@@ -35,9 +35,14 @@
      el juego lo quita del DOM a mitad del gesto --Choque vacía el círculo del
      que sale el elemento--. Escuchando en el documento, esos eventos se
      perdían y el arrastre quedaba colgado.
-   · SOLO SE SUELTA AL LEVANTAR EL DEDO (`touchend`) o el botón (`pointerup`).
-     Un `touchcancel` o un `pointercancel` NO son soltar: lo cogido vuelve a su
-     sitio (`cancelar`), nunca cae donde estaba el dedo.
+   · SOLO SE SUELTA AL LEVANTAR EL DEDO QUE COGIÓ LA PIEZA (`touchend` de ese
+     `identifier`) o el botón (`pointerup`). Otro contacto --la palma o la base
+     del pulgar que rozan la pantalla al estirar la mano hacia arriba-- no
+     empieza nada ni suelta nada: era la causa del fallo (lo reproduce
+     `tools/simular_arrastre.js --gesto palma --viejo 36cf6cb`).
+   · Un `touchcancel` del SISTEMA no es soltar: la pieza SE QUEDA EN LA MANO y
+     el siguiente toque la retoma (ver `quedarEnMano`). Un `pointercancel` del
+     ratón la devuelve a su sitio (`cancelar`).
    · Y SI ALGO CORTA EL GESTO, QUEDA ANOTADO en la Bitácora (`arrastre_cortado`)
      con el navegador y el evento: es la parte de la auditoría que desde aquí no
      se puede hacer, porque el teléfono es el de quien juega.
@@ -69,21 +74,23 @@
   /* La Bitácora: una anotación por gesto cortado, con tope propio para no
      inundarla (la base ya topa en veinte por minuto y persona). */
   var anotadas = 0;
-  function anotarCorte(nombre, via, motivo, g, extra) {
+  function anotarCorte(nombre, via, motivo, g, extra, suceso) {
     try {
-      if (window.console) console.warn('[arrastre] ' + nombre + ': cortado por ' + motivo, extra || '');
+      if (window.console) console.warn('[arrastre] ' + nombre + ': ' + motivo, extra || '');
       var nube = window.ATWI.nube;
       if (!nube || !nube.anotar || anotadas >= 5) return;
       anotadas++;
       var datos = {
         juego: nombre, via: via, motivo: motivo,
         empezado: !!(g && g.empezado),
+        otros_toques: g ? g.otros || 0 : 0,
+        version: (window.ATWI.config && window.ATWI.config.version) || '',
         ms: g ? Math.round(performance.now() - g.t0) : null,
         navegador: String(navigator.userAgent || '').slice(0, 240),
         toque: HAY_TOQUE, puntos: navigator.maxTouchPoints || 0
       };
       if (extra) for (var k in extra) datos[k] = extra[k];
-      nube.anotar('arrastre_cortado', { nivel: 'aviso', detalle: nombre + ': ' + motivo, datos: datos });
+      nube.anotar(suceso || 'arrastre_cortado', { nivel: suceso ? 'nota' : 'aviso', detalle: nombre + ': ' + motivo, datos: datos });
     } catch (e) { /* anotar nunca puede romper el juego */ }
   }
 
@@ -101,6 +108,7 @@
     function fin() { ultimoFin = performance.now(); }
     function seFue() {
       if (caja.isConnected) return false;
+      soltarLaMano(false);
       quitarGlobales();
       if (g && g.objetivo) quitarDelObjetivo(g.objetivo);
       if (g && g.empezado && o.cancelar) { try { o.cancelar(g.datos); } catch (e) {} }
@@ -128,16 +136,67 @@
        tiene que llegarle entero al `click` del juego. */
     function terminar(x, y, objetivo) {
       var esto = g; g = null;
+      /* Un arrastre que llegó bien a pesar de otro contacto por el camino (la
+         palma): se anota como nota, porque es justo lo que el código anterior
+         convertía en soltar donde no era y sirve para comprobarlo en el
+         teléfono de quien juega. */
+      if (esto.empezado && esto.otros) anotarCorte(nombre, esto.via, 'otro contacto durante el arrastre', esto, null, 'arrastre_segundo_toque');
       if (esto.empezado) { fin(); o.soltar(esto.datos, x, y); }
       else if (esto.via === 'toque' && o.tocar) { fin(); o.tocar(esto.datos, objetivo); }
     }
-    /* Cortado desde fuera: NUNCA es soltar. Lo cogido vuelve a su sitio. */
+    /* Cortado desde fuera: NUNCA es soltar. */
     function cortar(motivo, extra) {
       var esto = g; g = null;
       if (!esto.empezado) return;
-      fin();
       anotarCorte(nombre, esto.via, motivo, esto, extra);
+      /* Con el dedo, si quien corta es el SISTEMA, la pieza SE QUEDA EN LA
+         MANO (abajo). Lo demás --el ratón, la pestaña que se oculta-- la
+         devuelve a su sitio. */
+      if (esto.via === 'toque' && motivo === 'touchcancel') { quedarEnMano(esto); return; }
+      fin();
       if (o.cancelar) o.cancelar(esto.datos);
+    }
+
+    /* ⚠️ LA PIEZA SE QUEDA EN LA MANO (titular, 2026-09-22: «el drop solo debe
+       contar si suelto el touch, nunca soltarse solos»). Un `touchcancel` lo
+       manda el SISTEMA y no la página: el rechazo de palma de Android cuando la
+       mano se apoya al estirarse hacia arriba, un gesto del sistema, una
+       notificación. Ningún código de página lo puede impedir. Lo que sí se
+       puede es no tratarlo como un final: la pieza se queda flotando donde
+       estaba el dedo, y EL SIGUIENTE TOQUE, esté donde esté, la retoma --si
+       arrastra, sigue el arrastre; si solo toca, la suelta ahí--. Si en seis
+       segundos no llega ningún toque, vuelve a su sitio. */
+    var enMano = null;
+    var MS_EN_MANO = 6000;
+    function quedarEnMano(esto) {
+      enMano = esto;
+      esto.reloj = setTimeout(function () { soltarLaMano(true); }, MS_EN_MANO);
+      document.body.classList.add('jg-en-mano');
+      document.addEventListener('touchstart', retomar, { passive: false, capture: true });
+    }
+    /* Sin retomar: `devolver` la manda a su sitio (el tiempo se acabó). */
+    function soltarLaMano(devolver) {
+      if (!enMano) return;
+      var esto = enMano; enMano = null;
+      clearTimeout(esto.reloj);
+      document.body.classList.remove('jg-en-mano');
+      document.removeEventListener('touchstart', retomar, { capture: true });
+      if (devolver) { fin(); if (o.cancelar) o.cancelar(esto.datos); }
+    }
+    function retomar(e) {
+      if (!enMano) return;
+      var d = e.changedTouches[0];
+      if (!d) return;
+      /* Este toque es de la pieza, no de lo que haya debajo. */
+      e.preventDefault();
+      e.stopPropagation();
+      var esto = enMano;
+      soltarLaMano(false);
+      g = esto;
+      g.id = d.identifier;
+      g.objetivo = e.target;
+      ponerEnObjetivo(e.target);
+      o.mover(g.datos, d.clientX, d.clientY);
     }
 
     /* ---------------------------------------------------------------- DEDO */
@@ -177,9 +236,10 @@
     }
     function alApoyarDedo(e) {
       if (g) {
-        /* Un segundo dedo mientras el primero arrastra: no empieza nada y
+        /* Un segundo contacto mientras el primero arrastra --otro dedo, o la
+           palma al estirar la mano--: no empieza nada, no suelta nada y
            tampoco deja que el navegador lo use para hacer zum. */
-        if (g.via === 'toque') e.preventDefault();
+        if (g.via === 'toque') { e.preventDefault(); g.otros = (g.otros || 0) + 1; }
         return;
       }
       var d = e.changedTouches[0];
@@ -214,8 +274,9 @@
 
     /* ------------------------------------------------------------ GLOBALES */
     function alEsconderse() {
-      if (seFue() || !g || document.visibilityState !== 'hidden') return;
-      cortar('pestana-oculta');
+      if (seFue() || document.visibilityState !== 'hidden') return;
+      if (enMano) { soltarLaMano(true); return; }
+      if (g) cortar('pestana-oculta');
     }
     /* La pulsación larga con el ratón derecho o, si algún navegador la cuela,
        con el dedo: mientras hay gesto, ningún menú. */
@@ -239,6 +300,7 @@
     /* Apagar: quitar TODO lo puesto y soltar lo que hubiera cogido (vuelve a
        su sitio). Lo llama el siguiente arrastre montado sobre la misma caja. */
     function apagar() {
+      soltarLaMano(true);
       caja.removeEventListener('touchstart', alApoyarDedo);
       caja.removeEventListener('pointerdown', alBajarPuntero);
       caja.removeEventListener('contextmenu', sinMenu);
