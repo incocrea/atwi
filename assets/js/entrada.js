@@ -369,13 +369,6 @@ window.ATWI = window.ATWI || {};
       '</div>';
   }
 
-  /* TRES RAYAS A CADA LADO DEL ESLOGAN, como en el mockup. Se giran con el
-     mismo path para no tener dos dibujos que mantener. */
-  var CHISPA =
-    '<svg class="portal__chispa" width="22" height="30" viewBox="0 0 22 30" fill="none" ' +
-      'stroke="currentColor" stroke-width="3.4" stroke-linecap="round" aria-hidden="true">' +
-      '<path d="M4 7h7M2.6 15h6M4 23h7"/></svg>';
-
   /** Un campo con su signo dentro, sin rótulo encima. */
   /* El campo del rediseño de la invitación: rótulo encima, signo dentro y pista
      debajo. Es `campo()` y `campoConSigno()` juntos, y no sustituye a ninguno:
@@ -789,10 +782,9 @@ window.ATWI = window.ATWI || {};
           : '') +
         '<div class="portal">' +
           '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
-          '<p class="portal__eslogan">' + CHISPA +
-            '<span>¡Resuélvelo Jugando!</span>' +
-            '<span style="transform:scaleX(-1);display:flex">' + CHISPA + '</span>' +
-          '</p>' +
+          /* Sin las tres rayas a cada lado (titular, 2026-09-22: «quita estas
+             rayitas amarillas de decoración de los textos»). */
+          '<p class="portal__eslogan"><span>¡Resuélvelo Jugando!</span></p>' +
         '</div>' +
         '<div style="margin-top:var(--e-5)">' +
           campoConSigno('c-correo2', 'sobre',

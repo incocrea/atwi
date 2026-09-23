@@ -670,11 +670,14 @@
     C.estado = 'cuenta';
     montarTablero(true);
     var velo = $('#m-partida .jg-cuenta');
-    /* CENTRADA EN LA PANTALLA, NO EN EL TABLERO: se cuelga del modal, encima de
-       todo --cabecera y pie incluidos--. Antes vivía dentro del hueco del
-       juego, y en Calco se apartaba a una banda para no tapar el patrón; la
-       cuenta oficial es una sola y va al centro en todos los juegos. La quitan
-       `caja()` y `cerrar()` si se sale a mitad. */
+    /* ABAJO, EN EL PIE, Y NO SOBRE EL TABLERO (titular, 2026-09-22: «la
+       cuenta regresiva está muy grande y en juegos como Calco tapa los
+       elementos del preview; que sea más pequeña y aparezca en la parte
+       inferior, no sobre el tablero»). Estuvo centrada en la pantalla, y en el
+       juego que se MIRA durante la cuenta eso era taparle a alguien justo lo
+       que tiene que memorizar. Se cuelga del modal —el pie está vacío mientras
+       dura— y su sitio lo reserva `jg--con-cuenta`. La quitan `caja()` y
+       `cerrar()` si se sale a mitad. */
     var modal = document.getElementById('m-partida');
     if (velo && modal) modal.appendChild(velo);
     var n = segundosDeCuenta();
@@ -713,8 +716,11 @@
     C.estadoJuego = M().inicial(C.tablero);
     C.jugadas = [];
     C.bloqueado = bloqueado;
+    /* `jg--con-cuenta` le guarda sitio al 3-2-1 en el pie (ver `.jg-cuenta`):
+       se pone al montar el tablero bloqueado y se queda durante la ronda, o el
+       tablero crecería justo en el instante en que la cuenta se va. */
     caja().innerHTML =
-      '<div class="jg jg--juego">' +
+      '<div class="jg jg--juego' + (bloqueado ? ' jg--con-cuenta' : '') + '">' +
         '<div class="jg-cabecera">' +
           '<span class="jg-pildora jg-pildora--quien">' +
             window.ATWI.fichaHTML(q.avatar, 'avatar--mini', q.color) +

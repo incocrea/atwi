@@ -5019,32 +5019,17 @@ body.app {
   align-items: center;
 }
 /* --- La decoracion de los titulos (mockup del titular, 2026-09-17) -----------
-   Tres destellos amarillos a cada lado y el texto virando de la tinta al
-   lavanda. La llevan los CINCO titulos de vista —que pinta `tituloVista()` en
-   `app.js`— y los TRECE de modal, con UNA sola regla.
-
-   LOS DESTELLOS VAN PEGADOS AL TEXTO, NO A LOS CANTOS, y eso no es estetica:
-   casi todos estos titulos comparten fila con controles —la flecha de volver,
-   la lupa del catalogo, el turno de la sala— y unos destellos anclados al borde
-   caerian justo encima. Pegados al texto funcionan en los dieciocho.
-
-   ⚠️ SON `inline-block` Y NO CAJAS FLEXIBLES, y la razon es de fondo: el
-   degradado se pinta con `background-clip: text`, que recorta el fondo del
-   ELEMENTO a la forma de su texto, y para eso el texto tiene que ser contenido
-   directo. Con el titulo hecho `display: flex` el texto queda en una caja
-   anonima que no se puede pintar, y hacia falta un `span` envolviendolo — que
-   en los modales es imposible, porque alli el texto lo fija el JS con
-   `textContent` y borraria el envoltorio. Inline, los dieciocho comparten
-   regla y ninguno necesita envoltorio.
-
-   MIDEN EN `em`, asi que el destello de un titulo de vista (28 px) y el de uno
-   de modal (17 px) salen proporcionados sin dos juegos de numeros.
-
-   Y SON UN SVG EN `background`, no una imagen de `assets/`: son tres trazos,
-   pesan menos que la peticion que costaria bajarlos y no entran en el
-   manifiesto de la cache.
-   ⚠️ Su amarillo va escrito dentro del `url(data:…)`, donde no se pueden leer
-   variables CSS: es `--sol`, #F5C243, y si ese token cambia hay que venir aqui. */
+   El texto vira de la tinta al lavanda, y lo llevan los CINCO titulos de vista
+   —que pinta `tituloVista()` en `app.js`— y los TRECE de modal, con UNA sola
+   regla. El degradado se pinta con `background-clip: text`, y por eso el borde
+   blanco de estos titulos va con `drop-shadow` y no con `text-stroke` (ver las
+   notas sobre el fondo, mas arriba).
+   ⚠️ SIN LOS DESTELLOS AMARILLOS A LOS LADOS (titular, 2026-09-22: «quita estas
+   rayitas amarillas de decoracion de los textos que sean puestas por CSS»).
+   Eran tres trazos en un `::before`/`::after`; con el borde blanco puesto el
+   titulo ya se separa del dibujo, y las rayas eran un adorno mas compitiendo
+   con el fondo. Se fueron tambien del eslogan de la puerta y del lema de
+   Choque, que eran el mismo dibujo. Las del logotipo se quedan: son del PNG. */
 .vista__titulo, .vista__bajada { text-align: center; }
 
 .vista__titulo, .modal__titulo {
@@ -5052,20 +5037,6 @@ body.app {
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
 }
-.vista__titulo::before, .vista__titulo::after,
-.modal__titulo::before, .modal__titulo::after {
-  content: '';
-  display: inline-block; vertical-align: -.15em;
-  width: .62em; height: 1.05em;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 30'%3E%3Cg stroke='%23F5C243' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M14 6 L5 2'/%3E%3Cpath d='M13 15 L3 15'/%3E%3Cpath d='M14 24 L5 28'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
-}
-.vista__titulo::before, .modal__titulo::before { margin-right: .42em; }
-.vista__titulo::after, .modal__titulo::after { margin-left: .42em; transform: scaleX(-1); }
-
-/* ⚠️ UN TITULO VACIO NO SE DECORA. `#t-partida` se vacia a proposito en el
-   versus —alli manda el rotulo del modo, no un titulo— y sin esto quedaban dos
-   destellos flotando solos en la cabecera. */
-.modal__titulo:empty::before, .modal__titulo:empty::after { content: none; }
 
 /* --- Las tres mesas: con quién juegas (mockup del titular, 2026-09-16) -------
    Eran dos botones anchos con un icono a la izquierda y un párrafo al lado, y
@@ -5316,15 +5287,13 @@ body.app {
      para veinte caracteres en la display extrabold, y a 2rem no caben —se
      partía en «¡Resuélvelo / Jugando!», que es justo lo que el mockup no
      hace—. Con 5,6vw mide ~265 a 430 px de marco y ~230 a 375: cabe en los
-     dos. El `nowrap` es la red: antes que partirse, se sale y se ve. */
+     dos. El `nowrap` es la red: antes que partirse, se sale y se ve.
+     (Las chispas se fueron el 2026-09-22; el tamaño se queda, y ahora sobra.) */
   font-size: clamp(1.1rem, 5.6vw, 1.75rem); line-height: 1.1;
   white-space: nowrap;
   color: var(--lavanda-oscuro);
   display: flex; align-items: center; justify-content: center; gap: var(--e-2);
 }
-/* Los destellos del mockup. Van en CSS y no en una lámina nueva: son tres
-   rayas: dibujarlas cuesta menos que bajar un PNG a cada teléfono. */
-.portal__chispa { flex: 0 0 auto; color: var(--sol); }
 
 /* EL SIGNO VA DENTRO DEL CAMPO, así que el campo le hace sitio con relleno y el
    signo se coloca encima sin quitarle el clic: `pointer-events: none` o tocar

@@ -131,25 +131,47 @@
 /* LA CUENTA ATRÁS OFICIAL (titular, 2026-09-22), la misma en todos los juegos.
    Número de TEXTO y no ficha ilustrada, con el tratamiento del nombre del
    ganador en la revelación --trazo blanco con `paint-order: stroke`, para que el
-   borde no se coma la letra por dentro, y la sombra que lo apoya-- pero más
-   grande, y centrado en la PANTALLA: cuelga del modal (`carcasa.js`), encima de
-   la cabecera, del tablero y del pie. Sin velo: lo despega su trazo.
-   El color es el acento del juego, puesto aquí a mano porque fuera de `.jg` no
-   hay `--jg-color`. */
+   borde no se coma la letra por dentro, y la sombra que lo apoya--. Sin velo:
+   lo despega su trazo. El color es el acento del juego, puesto aquí a mano
+   porque fuera de `.jg` no hay `--jg-color`.
+   ⚠️ ABAJO Y CHICA, NO EN MEDIO Y GRANDE (titular, el mismo día: «está muy
+   grande y en juegos como Calco tapa los elementos del preview… que sea más
+   pequeña y aparezca en la parte inferior, no sobre el tablero»). Centrada en
+   la pantalla y a 176 px tapaba justo el patrón que hay que memorizar. Ahora
+   cuelga del modal (`carcasa.js`) pegada al pie, y el sitio se lo guarda
+   `jg--con-cuenta`: el pie crece mientras hay tablero con cuenta, así que el
+   número cae en un hueco propio y no encima de nada. El hueco se QUEDA durante
+   la ronda aunque la cuenta ya se fue: si se soltara, el tablero crecería en el
+   instante de empezar, que es lo que en Calco marea (ya pasó con la paleta). */
+/* ⚠️ Y EN UN CÍRCULO, UN POCO MÁS ARRIBA (titular, el mismo día: «quedó muy
+   abajo, súbela un poco y métela en un círculo para darle contraste»). El
+   número suelto con su trazo se perdía sobre el pie del dibujo; en un disco
+   del color del juego, con la cifra en blanco y un borde blanco grueso («círculo
+   con borde blanco gruesito»), se lee sobre cualquier fondo. El disco
+   es la CAJA y lo que late es el número de dentro: si latiera el disco entero,
+   cada segundo la pieza cambiaría de tamaño en vez de cambiar de cifra.
+   Las cuentas del sitio: el disco mide 64 y queda a 28 del canto, así que el pie
+   tiene que medir 28 + 64 − 16 (el relleno de abajo del cuerpo, que también es
+   aire) + 6 de holgura = 82 para que el disco no toque el tablero. */
 .jg-cuenta {
-  position: absolute; inset: 0; z-index: 5; display: grid; place-items: center;
+  position: absolute; left: 50%; z-index: 5;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 28px);
+  width: 64px; height: 64px; margin-left: -32px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--ctx-acento, var(--competencia-oscuro));
+  border: 4px solid var(--blanco);
+  box-shadow: 0 4px 0 rgba(46, 42, 63, .14), 0 8px 18px rgba(46, 42, 63, .22);
   pointer-events: none;
 }
 .jg-cuenta__n {
   display: block;
   font-family: var(--display); font-weight: 800; line-height: 1;
-  font-size: clamp(7rem, 44vw, 11rem);
-  color: var(--ctx-acento, var(--competencia-oscuro));
-  -webkit-text-stroke: 14px var(--blanco); paint-order: stroke;
-  filter: drop-shadow(0 4px 0 rgba(46, 42, 63, .22))
-          drop-shadow(0 10px 22px rgba(46, 42, 63, .22));
+  font-size: 2.25rem;
+  color: var(--blanco);
   font-variant-numeric: tabular-nums;
 }
+#m-partida:has(.jg--con-cuenta) .modal__pie { min-height: calc(env(safe-area-inset-bottom, 0px) + 82px); }
 .jg-cuenta--late .jg-cuenta__n { animation: jg-late .9s ease-out; }
 @keyframes jg-late { from { transform: scale(1.5); opacity: 0; } 30% { opacity: 1; } to { transform: scale(1); } }
 @media (prefers-reduced-motion: reduce) {
@@ -287,11 +309,6 @@
 .jg-st--se-va { animation: jg-se-va 800ms ease-in forwards; }
 @keyframes jg-se-va { from { opacity: 1; } to { opacity: 0; } }
 
-/* LA MISMA MAQUETA EN LA MUESTRA Y EN EL JUEGO (Calco): entre la rejilla y la
-   paleta hay una banda de alto fijo donde flota el 3-2-1 mientras se mira el
-   patrón. En el juego se queda vacía a propósito: quitarla movería todo. */
-.jg-cal-banda { height: 44px; width: 100%; }
-.jg-cal-banda + .jg-paleta { margin-top: 0; }
 /* La pista cambia de texto entre las dos fases —uno ocupa un renglón y el otro
    dos— y con el alto libre esa diferencia empujaba la rejilla medio renglón. */
 .jg-pista--fija { line-height: 1.4; min-height: 2.8em; }
@@ -935,24 +952,16 @@
 }
 
 /* EL LEMA DE CHOQUE (titular, 2026-09-22: «¡Arrastra tu elemento a jugar!, en
-   negrita, más grandecito y decorado; permanente»). Lleva los destellos
-   dorados de los títulos del juego —el mismo dibujo, para que se lea como
-   parte de la casa y no como un adorno suelto— y el halo blanco de los textos
-   que van sobre el fondo dibujado. */
+   negrita, más grandecito y decorado; permanente»). Llevaba los destellos
+   dorados de los títulos, que se fueron con ellos (titular, 2026-09-22: «quita
+   estas rayitas amarillas»); le queda el halo blanco de los textos que van
+   sobre el fondo dibujado. */
 .jg-choque__lema {
   margin: var(--e-2) 0 0; text-align: center;
   font-family: var(--display); font-weight: 900; font-size: clamp(16px, 4.9vw, 19px);
   line-height: 1.15; color: var(--competencia); white-space: nowrap;
   text-shadow: 0 0 6px #fff, 0 0 12px #fff, 0 0 18px #fff;
 }
-.jg-choque__lema::before, .jg-choque__lema::after {
-  content: '';
-  display: inline-block; vertical-align: -.15em;
-  width: .62em; height: 1.05em;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 30'%3E%3Cg stroke='%23F5C243' stroke-width='3.2' stroke-linecap='round'%3E%3Cpath d='M14 6 L5 2'/%3E%3Cpath d='M13 15 L3 15'/%3E%3Cpath d='M14 24 L5 28'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
-}
-.jg-choque__lema::before { margin-right: .36em; }
-.jg-choque__lema::after { margin-left: .36em; transform: scaleX(-1); }
 
 /* CHOQUE USA EL ALTO ENTERO, REPARTIDO (titular, 2026-09-22: «como en todas
    las interfaces, que estos elementos usen de forma balanceada el alto del

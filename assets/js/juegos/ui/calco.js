@@ -141,12 +141,13 @@
          reservaba 34 px para la pista y el juego 96 para la paleta, así que la
          rejilla cambiaba de tamaño y de sitio justo en el instante en que hay que
          recordar DÓNDE estaba cada sticker. Ahora las dos fases pintan lo mismo
-         —rejilla, la banda del conteo, la paleta y una pista de alto fijo— y lo
-         único que cambia es lo que hay DENTRO de las casillas.
-         La banda es el hueco donde flota el 3-2-1 durante la muestra (la carcasa
-         lo coloca sobre `[data-conteo]`); en el juego se queda vacía, porque
-         quitarla movería todo lo de debajo. */
-      var RESERVA = 44 + 16 + 58 + 12 + 40;   // banda + paleta con su margen + pista
+         —rejilla, la paleta y una pista de alto fijo— y lo único que cambia es
+         lo que hay DENTRO de las casillas.
+         Hubo además una banda de 44 px entre la rejilla y la paleta, que era
+         donde flotaba el 3-2-1. Se fue cuando la cuenta pasó al pie (titular,
+         2026-09-22): quitarla de las DOS fases a la vez no mueve nada entre
+         una y otra, y devuelve ese alto a la rejilla. */
+      var RESERVA = 16 + 58 + 12 + 40;   // paleta con su margen + pista
       var m = medidas(t, ctx.ancho, ctx.alto - RESERVA);
       var disco = Math.max(40, Math.min(58, m.lado - 6));
       /* EL PATRÓN NO DESAPARECE DE GOLPE: se desvanece en 800 ms (titular: «un
@@ -157,7 +158,6 @@
       caja.innerHTML =
         rejillaHTML(t, ctx.muestra ? t.patron : estado.pintadas, m.lado, m.hueco,
           seVa ? t.patron : null) +
-        '<div class="jg-cal-banda"' + (ctx.muestra ? ' data-conteo' : '') + '></div>' +
         paletaHTML(t, disco, ctx.muestra) +
         (ctx.muestra ?
           '<p class="jg-pista jg-pista--fija">Mírate el patrón: en un momento desaparece.</p>' :
