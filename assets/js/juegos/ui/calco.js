@@ -12,10 +12,12 @@
    paleta a su casilla, con el área de suelta resaltada al pasar por encima; y
    TOCAR una casilla que ya tiene sticker lo quita. Son dos gestos que no se
    pisan: uno trae y el otro devuelve.
-   ⚠️ El arrastre NO empieza en `pointerdown` sino al MOVERSE seis píxeles, y
-   eso es lo que deja convivir a los dos: un toque sigue siendo un toque. Lo que
-   impide que el dedo scrollee en vez de arrastrar es `touch-action: none` en el
-   CSS, no un `preventDefault` que se comería el toque.
+   ⚠️ El arrastre NO empieza al apoyar el dedo sino al MOVERSE seis píxeles, y
+   eso es lo que deja convivir a los dos: un toque sigue siendo un toque. El
+   gesto entero lo lleva la pieza común `piezas/arrastre.js` (con el dedo va
+   por eventos táctiles y SOLO suelta al levantarlo: allí está por qué), y el
+   toque para quitar con el dedo lo atiende ella, porque el `click` de ese
+   toque ya no llega.
    ⚠️ Y el teclado sigue vivo por su lado —Enter en un sticker lo toma, Enter en
    una casilla lo pone— porque un lector de pantalla no sabe arrastrar y el
    juego dejaría de poder jugarse. Va en `keydown` y NO en `click`, así que con
@@ -185,9 +187,10 @@
       }
 
       /* --- ARRASTRAR ------------------------------------------------------ */
-      var UMBRAL = 6;
-      var ar = null;            // {ficha, origen, x0, y0, fantasma}
-      var comerClic = false;
+      /* El gesto --dedo o ratón, cuándo empieza, cuándo se suelta y cuándo se
+         corta-- lo lleva la pieza común `piezas/arrastre.js`, la misma de
+         Choque y Canastas. Aquí solo queda lo que es de Calco: qué se coge, el
+         fantasma, la diana y qué pasa al soltar. */
 
       function fantasmaEn(ficha, x, y) {
         var g = document.createElement('div');
@@ -200,74 +203,14 @@
       function mover(g, x, y) { g.style.left = x + 'px'; g.style.top = y + 'px'; }
       function celdaBajo(x, y) {
         var n = document.elementFromPoint(x, y);
-        return n && n.closest ? n.closest('[data-cal]') : null;
+        n = n && n.closest ? n.closest('[data-cal]') : null;
+        return n && caja.contains(n) ? n : null;
       }
       function marcarDiana(c) {
         [].forEach.call(caja.querySelectorAll('.jg-cal'), function (n) {
           n.classList.toggle('jg-cal--diana', n === c);
         });
       }
-
-      /* La red contra el arrastre nativo, para lo que venga después sin tener
-         que acordarse de marcarlo pieza por pieza. */
-      caja.addEventListener('dragstart', function (e) { e.preventDefault(); });
-
-      caja.addEventListener('pointerdown', function (e) {
-        if (e.button) return;
-        /* El candado que se traga el clic posterior a un arrastre se suelta al
-           empezar el gesto siguiente: en táctil ese clic no siempre llega, y si
-           se quedara puesto se comería el toque de más tarde. */
-        comerClic = false;
-        var n = e.target.closest('[data-tinta]');
-        if (n) {
-          ar = { ficha: Number(n.dataset.tinta), origen: -1, x0: e.clientX, y0: e.clientY, fantasma: null };
-          return;
-        }
-        /* UN STICKER YA PUESTO TAMBIÉN SE ARRASTRA (titular, 2026-09-22: «quiero
-           poder arrastrar stickers ya ubicados a otra caja; si es una caja
-           ocupada se intercambian, esto facilita reorganizar para probar»).
-           Hasta soltarlo es el mismo gesto que el de la paleta, y el umbral de
-           seis píxeles sigue separándolo del toque: tocar sin mover todavía
-           QUITA, como antes. */
-        var c = e.target.closest('[data-cal]');
-        if (!c) return;
-        var i = Number(c.dataset.cal);
-        if (estado.pintadas[i] === VACIA) return;
-        ar = { ficha: estado.pintadas[i], origen: i, x0: e.clientX, y0: e.clientY, fantasma: null };
-      });
-
-      /* Los oyentes viven en `window` --el dedo se sale de la caja a mitad del
-         gesto-- y se quitan SOLOS cuando la pantalla ya no está en el documento:
-         así la ronda siguiente no hereda los de la anterior y el juego no
-         necesita que nadie le avise de que lo cerraron. */
-      function seFue() {
-        if (caja.isConnected) return false;
-        window.removeEventListener('pointermove', alMover);
-        window.removeEventListener('pointerup', alSoltar);
-        window.removeEventListener('pointercancel', alSoltar);
-        if (ar && ar.fantasma) ar.fantasma.remove();
-        ar = null;
-        return true;
-      }
-
-      window.addEventListener('pointermove', alMover);
-      function alMover(e) {
-        if (seFue() || !ar) return;
-        /* Si el dedo ya no está apoyado no hay gesto: un `pointerup` se puede
-           perder y sin esto quedaría un sticker arrastrándose solo. */
-        if (!e.buttons) {
-          if (ar.fantasma) ar.fantasma.remove();
-          ar = null; marcarDiana(null); marcarOrigen(-1); return;
-        }
-        if (!ar.fantasma) {
-          if (Math.abs(e.clientX - ar.x0) < UMBRAL && Math.abs(e.clientY - ar.y0) < UMBRAL) return;
-          ar.fantasma = fantasmaEn(ar.ficha, e.clientX, e.clientY);
-          marcarOrigen(ar.origen);
-        }
-        mover(ar.fantasma, e.clientX, e.clientY);
-        marcarDiana(celdaBajo(e.clientX, e.clientY));
-      }
-
       /* La caja de la que sale el sticker se queda con él atenuado mientras
          viaja: se ve de dónde viene y a dónde vuelve si se suelta fuera. */
       function marcarOrigen(i) {
@@ -275,24 +218,56 @@
           n.classList.toggle('jg-cal--origen', Number(n.dataset.cal) === i);
         });
       }
-
-      window.addEventListener('pointerup', alSoltar);
-      window.addEventListener('pointercancel', alSoltar);
-      function alSoltar(e) {
-        if (seFue() || !ar) return;
-        var esto = ar; ar = null;
-        marcarDiana(null);
-        marcarOrigen(-1);
-        /* Sin fantasma no hubo arrastre: fue un toque. En la paleta no pone
-           nada, y en una caja lo atiende el `click`, que quita. */
-        if (!esto.fantasma) return;
-        esto.fantasma.remove();
-        comerClic = true;
-        var c = celdaBajo(e.clientX, e.clientY);
-        if (!c) return;                    // soltar fuera no hace nada: se queda donde estaba
-        if (esto.origen >= 0) moverEntre(esto.origen, Number(c.dataset.cal));
-        else soltarEn(Number(c.dataset.cal), esto.ficha);
+      function quitar(i) {
+        if (estado.pintadas[i] !== VACIA) ctx.jugar(i * PASOS);
       }
+
+      var arrastre = J.arrastre(caja, {
+        nombre: 'calco',
+        coger: function (objetivo) {
+          if (!objetivo.closest) return null;
+          var n = objetivo.closest('[data-tinta]');
+          if (n && caja.contains(n)) return { ficha: Number(n.dataset.tinta), origen: -1, fantasma: null };
+          /* UN STICKER YA PUESTO TAMBIÉN SE ARRASTRA (titular, 2026-09-22:
+             «quiero poder arrastrar stickers ya ubicados a otra caja; si es una
+             caja ocupada se intercambian»). Hasta soltarlo es el mismo gesto
+             que el de la paleta, y el umbral sigue separándolo del toque:
+             tocar sin mover todavía QUITA. */
+          var c = objetivo.closest('[data-cal]');
+          if (!c || !caja.contains(c)) return null;
+          var i = Number(c.dataset.cal);
+          if (estado.pintadas[i] === VACIA) return null;
+          return { ficha: estado.pintadas[i], origen: i, fantasma: null };
+        },
+        empezar: function (a, x, y) {
+          a.fantasma = fantasmaEn(a.ficha, x, y);
+          marcarOrigen(a.origen);
+        },
+        mover: function (a, x, y) {
+          mover(a.fantasma, x, y);
+          marcarDiana(celdaBajo(x, y));
+        },
+        soltar: function (a, x, y) {
+          marcarDiana(null);
+          marcarOrigen(-1);
+          a.fantasma.remove();
+          var c = celdaBajo(x, y);
+          if (!c) return;                    // soltar fuera no hace nada: se queda donde estaba
+          if (a.origen >= 0) moverEntre(a.origen, Number(c.dataset.cal));
+          else soltarEn(Number(c.dataset.cal), a.ficha);
+        },
+        /* Se cortó sin que el dedo se levantara: todo se queda como estaba. */
+        cancelar: function (a) {
+          marcarDiana(null);
+          marcarOrigen(-1);
+          if (a.fantasma) a.fantasma.remove();
+        },
+        /* Un toque con el dedo, sin mover: sobre una casilla con sticker lo
+           QUITA, que es lo que hace el `click` con el ratón; en la paleta, nada
+           --poner es arrastrar--. Con el dedo lo atiende la pieza porque el
+           `click` de ese toque ya no llega. */
+        tocar: function (a) { if (a.origen >= 0) quitar(a.origen); }
+      });
 
       function soltarEn(i, ficha) {
         /* Soltar encima de una casilla que ya tiene ESE sticker es un gesto sin
@@ -337,14 +312,14 @@
       }
 
       caja.addEventListener('click', function (e) {
-        if (comerClic) { comerClic = false; return; }
+        /* El clic que cierra un arrastre con ratón --o el que algún navegador
+           mande tras un toque que la pieza ya atendió-- no es un toque. */
+        if (arrastre.reciente()) return;
         var b = e.target.closest('[data-cal]');
         if (!b) return;
-        var i = Number(b.dataset.cal);
         /* TOCAR SOLO QUITA (titular): poner es arrastrar. Una casilla vacía no
            tiene nada que devolver, así que el toque no hace nada. */
-        if (estado.pintadas[i] === VACIA) return;
-        ctx.jugar(i * PASOS);
+        quitar(Number(b.dataset.cal));
       });
 
       /* El camino de teclado, que el arrastre no cubre. */

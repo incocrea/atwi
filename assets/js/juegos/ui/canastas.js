@@ -18,8 +18,8 @@
    cualquier punto de la torre de destino --la torre entera es la diana--, y se
    encienden los huecos exactos donde caerá. Si no cabe ahí, el tramo vuelve a
    su torre y la diana tiembla.
-   ⚠️ El arrastre NO empieza en `pointerdown` sino al moverse seis píxeles, y
-   `touch-action: none` va en el CSS: las dos lecciones de Calco y Choque.
+   ⚠️ EL GESTO LO LLEVA LA PIEZA COMÚN `piezas/arrastre.js`: con el dedo va por
+   eventos táctiles y solo suelta al levantarlo; ahí está por qué.
    ⚠️ Y EL TECLADO SIGUE VIVO por su lado --Enter en una torre coge su caja,
    Enter en otra la suelta--, porque un lector de pantalla no sabe arrastrar. Va
    en `keydown` y no en `click`, así que con el dedo o el ratón el único gesto
@@ -317,8 +317,10 @@
       function rectsDe(els) { return els.map(function (el) { return el.getBoundingClientRect(); }); }
 
       /* --- ARRASTRAR ------------------------------------------------------ */
-      var UMBRAL = 6;
-      var ar = null;            // {d, tramo, x0, y0, ox, oy, fantasma, id, via}
+      /* El gesto --dedo o ratón, cuándo empieza, cuándo se suelta y cuándo se
+         corta-- lo lleva la pieza común `piezas/arrastre.js`, la misma de
+         Calco y Choque. Aquí solo queda lo que es de Canastas: qué se coge, el
+         fantasma, la diana y qué pasa al soltar. */
 
       /* El fantasma lleva el TRAMO entero apilado: se arrastra lo que se va a
          mover, no una caja que miente. */
@@ -343,155 +345,56 @@
         return n && tablero.contains(n) ? Number(n.dataset.torre) : -1;
       }
 
-      /* La red contra el arrastre nativo, para lo que venga después. */
-      caja.addEventListener('dragstart', function (e) { e.preventDefault(); });
-
-      /* LO COMÚN A LOS DOS CAMINOS --dedo y ratón--, para que no puedan
-         divergir: empezar, mover y soltar son los mismos, y cada camino solo
-         traduce sus eventos a estas tres llamadas.
-         Al empezar se guarda POR DÓNDE se cogió el tramo (`ox`, `oy`): el
-         fantasma se queda bajo el dedo en ese mismo punto, lo cojas por la de
-         arriba o por la de abajo, en vez de saltar a centrarse en él. Lo que
-         decide la diana sigue siendo el DEDO, no el fantasma. */
-      function empezar(c, x, y, id, via) {
-        var d = Number(c.closest('[data-torre]').dataset.torre);
-        var tramo = rachaArriba(estado.torres[d]);
-        var els = cimasEl(d, tramo);
-        if (!els.length) return false;
-        var ra = els[0].getBoundingClientRect(), rb = els[els.length - 1].getBoundingClientRect();
-        ar = {
-          d: d, tramo: tramo, x0: x, y0: y,
-          ox: (Math.min(ra.left, rb.left) + Math.max(ra.right, rb.right)) / 2 - x,
-          oy: (Math.min(ra.top, rb.top) + Math.max(ra.bottom, rb.bottom)) / 2 - y,
-          fantasma: null, id: id, via: via
-        };
-        return true;
-      }
-      function mover(x, y) {
-        if (!ar.fantasma) {
-          if (Math.abs(x - ar.x0) < UMBRAL && Math.abs(y - ar.y0) < UMBRAL) return;
-          ar.fantasma = fantasmaEn(ar.d, ar.tramo, x + ar.ox, y + ar.oy);
+      J.arrastre(tablero, {
+        nombre: 'canastas',
+        /* Se coge el tramo de iguales de arriba, por cualquiera de sus cajas.
+           Se guarda POR DÓNDE (`ox`, `oy`): el fantasma se queda bajo el dedo
+           en ese mismo punto, lo cojas por la de arriba o por la de abajo. Lo
+           que decide la diana sigue siendo el DEDO, no el fantasma. */
+        coger: function (objetivo, x, y) {
+          var c = objetivo.closest ? objetivo.closest('.jg-cn__caja--coge') : null;
+          if (!c || !tablero.contains(c)) return null;
+          var d = Number(c.closest('[data-torre]').dataset.torre);
+          var tramo = rachaArriba(estado.torres[d]);
+          var els = cimasEl(d, tramo);
+          if (!els.length) return null;
+          var ra = els[0].getBoundingClientRect(), rb = els[els.length - 1].getBoundingClientRect();
+          return {
+            d: d, tramo: tramo, fantasma: null,
+            ox: (Math.min(ra.left, rb.left) + Math.max(ra.right, rb.right)) / 2 - x,
+            oy: (Math.min(ra.top, rb.top) + Math.max(ra.bottom, rb.bottom)) / 2 - y
+          };
+        },
+        empezar: function (a, x, y) { a.fantasma = fantasmaEn(a.d, a.tramo, x + a.ox, y + a.oy); },
+        mover: function (a, x, y) {
+          moverFantasma(a.fantasma, x + a.ox, y + a.oy);
+          marcar(a.d, torreBajo(x, y));
+        },
+        soltar: function (a, x, y) {
+          marcar(-1, -1);
+          var desde = rectsDe([].slice.call(a.fantasma.querySelectorAll('.jg-cn__caja')));
+          a.fantasma.remove();
+          var h = torreBajo(x, y);
+          if (h >= 0 && puede(estado.torres, t.cabe, a.d, h)) {
+            vueloDesde = desde;
+            ctx.jugar(a.d * F + h);                 // `actualizar` las asienta
+            return;
+          }
+          /* No cabe ahí --o se soltó fuera--: el tramo vuelve a su torre desde
+             donde se soltó, y si había una torre debajo, ésa tiembla. */
+          asentar(cimasEl(a.d, a.tramo), desde);
+          if (h >= 0 && h !== a.d) temblar(h);
+        },
+        /* Se cortó sin que el dedo se levantara: vuelve a su torre, y nada
+           tiembla porque nadie eligió un destino. */
+        cancelar: function (a) {
+          marcar(-1, -1);
+          if (!a.fantasma) return;
+          var desde = rectsDe([].slice.call(a.fantasma.querySelectorAll('.jg-cn__caja')));
+          a.fantasma.remove();
+          asentar(cimasEl(a.d, a.tramo), desde);
         }
-        moverFantasma(ar.fantasma, x + ar.ox, y + ar.oy);
-        marcar(ar.d, torreBajo(x, y));
-      }
-      function soltar(x, y, cortado) {
-        var esto = ar;
-        ar = null;
-        marcar(-1, -1);
-        if (!esto.fantasma) return;               // fue un toque: no hace nada
-        var desde = rectsDe([].slice.call(esto.fantasma.querySelectorAll('.jg-cn__caja')));
-        esto.fantasma.remove();
-        var h = cortado ? -1 : torreBajo(x, y);
-        if (h >= 0 && puede(estado.torres, t.cabe, esto.d, h)) {
-          vueloDesde = desde;
-          ctx.jugar(esto.d * F + h);              // `actualizar` las asienta
-          return;
-        }
-        /* No cabe ahí --o se soltó fuera--: el tramo vuelve a su torre desde
-           donde se soltó, y si había una torre debajo, ésa tiembla. */
-        asentar(cimasEl(esto.d, esto.tramo), desde);
-        if (h >= 0 && h !== esto.d) temblar(h);
-      }
-      function cancelar() {
-        if (ar && ar.fantasma) ar.fantasma.remove();
-        ar = null;
-        marcar(-1, -1);
-      }
-
-      /* ⚠️ CON EL DEDO VA POR EVENTOS TÁCTILES, NO DE PUNTERO (titular,
-         2026-09-22, dos veces: «se suelta solo al pasar por columnas donde no se
-         puede soltar», y después de un primer arreglo, «persiste en móvil»).
-         Con eventos de puntero el gesto es del navegador hasta que demuestra lo
-         contrario: si en algún momento decide que ese dedo está desplazando la
-         pantalla, haciendo una pulsación larga o arrastrando la imagen, manda
-         `pointercancel` y el arrastre muere a mitad de camino --y `touch-action`
-         y `setPointerCapture`, que fueron el primer arreglo, no lo cumplen igual
-         todos los teléfonos--. Con eventos táctiles se le quita al navegador en
-         el PRIMER instante: `preventDefault` en `touchstart` sobre una caja que
-         se puede coger desactiva todo eso de raíz --no hay desplazamiento, ni
-         menú de pulsación larga, ni selección, ni zum-- y el gesto es nuestro
-         hasta que el dedo se levanta. Es lo que hacen las librerías de arrastre
-         en el móvil.
-         ⚠️ `passive: false` en los cuatro, o el navegador ignora el
-         `preventDefault`. Y el dedo se sigue por su `identifier`: un segundo
-         dedo que se apoye no puede ni empezar otro arrastre ni soltar éste. */
-      var HAY_TOQUE = 'ontouchstart' in window;
-      function elToque(e) {
-        if (!ar || ar.via !== 'toque') return null;
-        for (var i = 0; i < e.changedTouches.length; i++) {
-          if (e.changedTouches[i].identifier === ar.id) return e.changedTouches[i];
-        }
-        return null;
-      }
-      tablero.addEventListener('touchstart', function (e) {
-        if (ar) { e.preventDefault(); return; }   // ya hay un dedo arrastrando
-        var c = e.target.closest ? e.target.closest('.jg-cn__caja--coge') : null;
-        if (!c) return;
-        var d0 = e.changedTouches[0];
-        if (!empezar(c, d0.clientX, d0.clientY, d0.identifier, 'toque')) return;
-        e.preventDefault();
-      }, { passive: false });
-      function alMoverToque(e) {
-        if (seFue() || !ar || ar.via !== 'toque') return;
-        e.preventDefault();                       // mientras hay arrastre, la pantalla no se mueve
-        var d = elToque(e);
-        if (d) mover(d.clientX, d.clientY);
-      }
-      function alSoltarToque(e) {
-        if (seFue()) return;
-        var d = elToque(e);
-        if (!d) return;
-        e.preventDefault();
-        soltar(d.clientX, d.clientY, e.type === 'touchcancel');
-      }
-      document.addEventListener('touchmove', alMoverToque, { passive: false });
-      document.addEventListener('touchend', alSoltarToque, { passive: false });
-      document.addEventListener('touchcancel', alSoltarToque, { passive: false });
-
-      /* Con RATÓN (o lápiz), eventos de puntero, amarrados a la caja que se
-         cogió. En un aparato con pantalla táctil los punteros de tipo `touch` se
-         ignoran: de ese dedo ya se ocupan los eventos táctiles, y atenderlo por
-         las dos vías movería el tramo dos veces. Donde NO hay eventos táctiles
-         --una pantalla táctil de escritorio que solo manda punteros-- el dedo va
-         por aquí, que es mejor que no ir. */
-      tablero.addEventListener('pointerdown', function (e) {
-        if (e.button || ar) return;
-        if (e.pointerType === 'touch' && HAY_TOQUE) return;
-        var c = e.target.closest('.jg-cn__caja--coge');
-        if (!c || !empezar(c, e.clientX, e.clientY, e.pointerId, 'puntero')) return;
-        try { c.setPointerCapture(e.pointerId); } catch (_) { /* sin captura, va por window */ }
       });
-      function alMover(e) {
-        if (seFue() || !ar || ar.via !== 'puntero' || e.pointerId !== ar.id) return;
-        /* La red para un `pointerup` perdido, y solo con ratón: con un toque
-           esa cuenta no es fiable en todos los teléfonos. */
-        if (e.pointerType === 'mouse' && !e.buttons) { cancelar(); return; }
-        mover(e.clientX, e.clientY);
-      }
-      function alSoltar(e) {
-        if (seFue() || !ar || ar.via !== 'puntero' || e.pointerId !== ar.id) return;
-        soltar(e.clientX, e.clientY, e.type === 'pointercancel');
-      }
-      window.addEventListener('pointermove', alMover);
-      window.addEventListener('pointerup', alSoltar);
-      window.addEventListener('pointercancel', alSoltar);
-
-      /* Los oyentes viven en `window` y `document` --el dedo se sale del tablero
-         a mitad del gesto-- y se quitan SOLOS cuando la pantalla ya no está: así
-         la ronda siguiente no hereda los de la anterior. */
-      function seFue() {
-        if (caja.isConnected) return false;
-        window.removeEventListener('pointermove', alMover);
-        window.removeEventListener('pointerup', alSoltar);
-        window.removeEventListener('pointercancel', alSoltar);
-        document.removeEventListener('touchmove', alMoverToque);
-        document.removeEventListener('touchend', alSoltarToque);
-        document.removeEventListener('touchcancel', alSoltarToque);
-        if (ar && ar.fantasma) ar.fantasma.remove();
-        ar = null;
-        return true;
-      }
 
       /* --- EL TECLADO ----------------------------------------------------- */
       var tomada = -1;

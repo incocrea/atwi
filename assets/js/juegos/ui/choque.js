@@ -172,17 +172,13 @@
       }
 
       /* --- ARRASTRAR (titular, 2026-09-21: «el jugador arrastra el elemento al
-         círculo del turno en que quiere que se juegue»). Con eventos de puntero,
-         que valen igual para el dedo y para el ratón.
-         ⚠️ El arrastre NO empieza en `pointerdown` sino al MOVERSE seis píxeles:
-         así un toque sigue siendo un toque —y con él siguen vivos el teclado y
-         el lector de pantalla, que no saben arrastrar—. Lo que impide que el
-         dedo scrollee en vez de arrastrar es `touch-action: none` en el CSS, no
-         un `preventDefault` que se comería el toque. */
-      var UMBRAL = 6;
-      var ar = null;        // {el, desde, x0, y0, fantasma}
-      var comerClic = false;
-
+         círculo del turno en que quiere que se juegue»). El gesto --dedo o
+         ratón, cuándo empieza, cuándo se suelta y cuándo se corta-- lo lleva la
+         pieza común `piezas/arrastre.js`, la misma de Calco y Canastas. Aquí
+         solo queda lo que es de Choque.
+         ⚠️ El arrastre NO empieza al apoyar sino al MOVERSE seis píxeles: así
+         un toque sigue siendo un toque --y con él siguen vivos el teclado y el
+         lector de pantalla, que no saben arrastrar--. */
       function fantasmaEn(i, x, y) {
         var g = document.createElement('div');
         g.className = 'jg-arrastre';
@@ -194,7 +190,8 @@
       function mover(g, x, y) { g.style.left = x + 'px'; g.style.top = y + 'px'; }
       function turnoBajo(x, y) {
         var n = document.elementFromPoint(x, y);
-        return n && n.closest ? n.closest('[data-turno]') : null;
+        n = n && n.closest ? n.closest('[data-turno]') : null;
+        return n && caja.contains(n) ? n : null;
       }
       function marcarDiana(t) {
         [].forEach.call(caja.querySelectorAll('.jg-turno'), function (c) {
@@ -202,77 +199,58 @@
         });
       }
 
-      /* Y LA RED: cualquier arrastre nativo que se cuele se corta aquí. El
-         `draggable="false"` de las piezas es lo que lo evita; esto cubre lo que
-         venga después —un fondo, un nombre seleccionable— sin tener que
-         acordarse de marcarlo pieza por pieza. */
-      caja.addEventListener('dragstart', function (e) { e.preventDefault(); });
-
-      caja.addEventListener('pointerdown', function (e) {
-        if (e.button) return;
-        /* ⚠️ El candado que se traga el clic de después de un arrastre se suelta
-           aquí, al empezar el gesto siguiente: en táctil no SIEMPRE llega ese
-           clic, y si el candado se quedara puesto se comería el toque de más
-           tarde —medido: el toque siguiente a un arrastre no hacía nada—. */
-        comerClic = false;
-        var n = e.target.closest('[data-el]');
-        if (!n) return;
-        /* De un círculo solo se arrastra si tiene algo dentro. */
-        ar = { el: Number(n.dataset.el), desde: n.dataset.turno ? Number(n.dataset.turno) : -1,
-               x0: e.clientX, y0: e.clientY, fantasma: null };
+      var arrastre = J.arrastre(caja, {
+        nombre: 'choque',
+        /* Se coge de la paleta o de un círculo lleno; de uno vacío, nada. */
+        coger: function (objetivo) {
+          var n = objetivo.closest ? objetivo.closest('[data-el]') : null;
+          if (!n || !caja.contains(n)) return null;
+          return { el: Number(n.dataset.el), desde: n.dataset.turno ? Number(n.dataset.turno) : -1, fantasma: null };
+        },
+        /* Al levantarlo de un círculo, el círculo se queda vacío: es lo que se
+           ve, y soltarlo fuera lo deja así --ése es el gesto de quitar--.
+           ⚠️ Vaciar el círculo QUITA DEL DOM la pieza que el dedo tocó. Con los
+           eventos táctiles escuchados en el documento eso colgaba el gesto: un
+           toque se sigue entregando a su elemento de origen aunque ya no esté.
+           La pieza común los escucha EN ese elemento, y por eso esto funciona. */
+        empezar: function (a, x, y) {
+          a.fantasma = fantasmaEn(a.el, x, y);
+          if (a.desde >= 0) { puesto[a.desde] = -1; repinta(); }
+        },
+        mover: function (a, x, y) {
+          mover(a.fantasma, x, y);
+          marcarDiana(turnoBajo(x, y));
+        },
+        soltar: function (a, x, y) {
+          a.fantasma.remove();
+          marcarDiana(null);
+          var t = turnoBajo(x, y);
+          if (t) puesto[Number(t.dataset.turno)] = a.el;
+          repinta();
+        },
+        /* Se cortó sin que el dedo se levantara: nadie eligió nada, así que
+           lo que salió de un círculo VUELVE a ese círculo. Antes se atendía
+           como un soltar en (0, 0) y el elemento se perdía. */
+        cancelar: function (a) {
+          if (a.fantasma) a.fantasma.remove();
+          marcarDiana(null);
+          if (a.desde >= 0 && puesto[a.desde] < 0) puesto[a.desde] = a.el;
+          repinta();
+        },
+        /* Un toque con el dedo sin mover: sobre un círculo lleno lo vacía, que
+           es lo que hace el `click` con el ratón; sobre un elemento de la
+           paleta, NADA (titular, 2026-09-22: «solo por arrastre»). */
+        tocar: function (a) {
+          if (a.desde < 0) return;
+          puesto[a.desde] = -1;
+          repinta();
+        }
       });
 
-      /* Los oyentes viven en `window` porque el dedo se sale de la caja a mitad
-         del gesto, y SE QUITAN SOLOS cuando la pantalla se fue: `caja` ya no
-         está en el documento, así que la siguiente ronda no hereda los de la
-         anterior. Se limpia aquí y no desde la carcasa para que el juego no
-         necesite que nadie le avise de que lo cerraron. */
-      function seFue() {
-        if (caja.isConnected) return false;
-        window.removeEventListener('pointermove', alMover);
-        window.removeEventListener('pointerup', alSoltar);
-        window.removeEventListener('pointercancel', alSoltar);
-        if (ar && ar.fantasma) ar.fantasma.remove();
-        ar = null;
-        return true;
-      }
-
-      window.addEventListener('pointermove', alMover);
-      function alMover(e) {
-        if (seFue() || !ar) return;
-        /* ⚠️ SI EL DEDO YA NO ESTÁ APOYADO, NO HAY GESTO. Un `pointerup` se
-           puede perder —lo enseñó el probador del navegador, que emite el
-           `down` y el `move` y no el `up`— y sin esto el puntero quedaría
-           arrastrando un elemento sin que nadie lo esté tocando. */
-        if (!e.buttons) { if (ar.fantasma) ar.fantasma.remove(); ar = null; marcarDiana(null); return; }
-        if (!ar.fantasma) {
-          if (Math.abs(e.clientX - ar.x0) < UMBRAL && Math.abs(e.clientY - ar.y0) < UMBRAL) return;
-          ar.fantasma = fantasmaEn(ar.el, e.clientX, e.clientY);
-          if (ar.desde >= 0) { puesto[ar.desde] = -1; repinta(); }
-        }
-        mover(ar.fantasma, e.clientX, e.clientY);
-        marcarDiana(turnoBajo(e.clientX, e.clientY));
-      }
-
-      window.addEventListener('pointerup', alSoltar);
-      window.addEventListener('pointercancel', alSoltar);
-      function alSoltar(e) {
-        if (seFue() || !ar) return;
-        var esto = ar; ar = null;
-        if (!esto.fantasma) return;                 // fue un toque: no asigna nada
-        esto.fantasma.remove();
-        marcarDiana(null);
-        comerClic = true;
-        var t = turnoBajo(e.clientX, e.clientY);
-        if (t) puesto[Number(t.dataset.turno)] = esto.el;
-        /* Soltar fuera de un círculo viniendo de uno lo deja vacío: ése es el
-           gesto de quitar, y es el mismo que ya hizo al levantarlo. */
-        repinta();
-      }
-
       caja.addEventListener('click', function (e) {
-        /* El clic que cierra un arrastre no es un toque: se come. */
-        if (comerClic) { comerClic = false; return; }
+        /* El clic que cierra un arrastre con ratón --o el que algún navegador
+           mande tras un toque que la pieza ya atendió-- no es un toque. */
+        if (arrastre.reciente()) return;
         /* Tocar un círculo con algo dentro lo vacía. */
         var t = e.target.closest('[data-turno]');
         if (t) {
