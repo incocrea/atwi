@@ -40,7 +40,13 @@
      minijuegos de QuiénGane (0,7 MB), que se bajan al final porque solo las ve
      quien abre ese modo. */
   var OLAS_PRONTO = ['nucleo', 'marca'];
-  var OLAS_LUEGO = ['fichas', 'figuras', 'juegos'];
+  /* ⚠️ SIN `figuras` (auditoría gráfica, plan D, 2026-09-23). Eran 19 MB que
+     cada teléfono se bajaba en segundo plano --en datos móviles, compitiendo con
+     todo lo demás durante los primeros minutos-- cuando una partida usa las
+     figuras de DOS personajes. Ahora se guardan al usarse: la sala las pide al
+     empezar (`precargarPoses`) y el trabajador las deja en la caché, anotadas
+     con su hash. Siguen en el manifiesto: es lo que dice cuándo una está vieja. */
+  var OLAS_LUEGO = ['fichas', 'juegos'];
 
   var manifiesto = null;
   var trabajador = null;

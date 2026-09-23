@@ -33,6 +33,13 @@
 
 var CACHE = 'atwi-piezas';
 var CLAVE_MANIFIESTO = 'manifiesto-guardado';   /* clave sintetica dentro de la caché */
+/* EL MANIFIESTO VIGENTE, guardado en la caché (auditoría gráfica, plan D,
+   2026-09-23). Desde que las figuras NO se precargan --21 MB por teléfono, y una
+   partida usa las de dos personajes-- se guardan al usarse, en el `fetch` de
+   abajo. Para que un dibujo retocado no se quede viejo para siempre, esa pieza
+   se anota con su hash, y el hash sale de aquí: el trabajador se despierta sin
+   memoria, así que el manifiesto no puede vivir solo en una variable. */
+var CLAVE_VIGENTE = 'manifiesto-vigente';
 var A_LA_VEZ = 6;        /* mas peticiones a la vez no van mas rapido: compiten */
 var CADA_CUANTO_ANOTO = 25;
 
@@ -69,7 +76,13 @@ self.addEventListener('fetch', function (e) {
       return c.match(e.request, { ignoreSearch: true }).then(function (hay) {
         if (hay) return hay;
         return fetch(e.request).then(function (r) {
-          if (r && r.ok) c.put(sinConsulta(e.request), r.clone());
+          if (r && r.ok) {
+            c.put(sinConsulta(e.request), r.clone()).then(function () {
+              /* Guardada al usarse: se anota con el hash vigente, o la
+                 sincronización siguiente no sabría si está al día. */
+              return anotarUna(c, sinConsulta(e.request).url.slice(self.registration.scope.length));
+            }).catch(function () {});
+          }
           return r;
         });
       });
@@ -83,6 +96,38 @@ function sinConsulta(peticion) {
   var u = new URL(peticion.url);
   u.search = '';
   return new Request(u.toString(), { credentials: 'same-origin' });
+}
+
+/* --- Las piezas guardadas al usarse ------------------------------------------ */
+var vigente = null;              /* {ruta: hash}, leído de la caché una vez */
+function hashesDe(manifiesto) {
+  var h = {};
+  Object.keys((manifiesto && manifiesto.olas) || {}).forEach(function (o) {
+    Object.keys(manifiesto.olas[o]).forEach(function (r) { h[r] = manifiesto.olas[o][r][0]; });
+  });
+  return h;
+}
+function leerVigente(c) {
+  if (vigente) return Promise.resolve(vigente);
+  return c.match(new Request(self.registration.scope + CLAVE_VIGENTE))
+    .then(function (r) { return r ? r.json() : {}; })
+    .then(function (v) { vigente = v || {}; return vigente; })
+    .catch(function () { return {}; });
+}
+/* De una en una: anotar es leer, cambiar y escribir el mismo registro, y dos a
+   la vez se pisarían. */
+var colaAnotar = Promise.resolve();
+function anotarUna(c, ruta) {
+  colaAnotar = colaAnotar.then(function () {
+    return Promise.all([leerVigente(c), leerGuardado(c)]).then(function (p) {
+      var hash = p[0][ruta];
+      if (!hash) return;
+      var g = p[1] || {};
+      g[ruta] = hash;
+      return anotarGuardado(c, g);
+    });
+  }).catch(function () {});
+  return colaAnotar;
 }
 
 /* --- Sincronizar ---------------------------------------------------------- */
@@ -132,12 +177,30 @@ function sincronizar(manifiesto, olas) {
       vivas[self.registration.scope + r] = true;
     });
     var muertas = Object.keys(presentes).filter(function (u) {
-      return !vivas[u] && u !== self.registration.scope + CLAVE_MANIFIESTO;
+      return !vivas[u] && u !== self.registration.scope + CLAVE_MANIFIESTO &&
+             u !== self.registration.scope + CLAVE_VIGENTE;
     });
+    /* Y LAS VIEJAS: una pieza que está en la caché con otro hash que el del
+       manifiesto se va, se precargue su ola o no. Es lo que mantiene al día
+       las figuras, que desde el plan D se guardan al usarse: la próxima vez que
+       se pinten, se bajan con el dibujo nuevo. */
+    var hashes = hashesDe(manifiesto);
+    Object.keys(hashes).forEach(function (r) {
+      var u = self.registration.scope + r;
+      if (presentes[u] && guardado[r] !== hashes[r] && muertas.indexOf(u) === -1) {
+        muertas.push(u);
+        delete presentes[u];
+      }
+    });
+    vigente = hashes;
     return Promise.all(muertas.map(function (u) {
       delete guardado[u.slice(self.registration.scope.length)];
       return cache.delete(new Request(u));
     }));
+  }).then(function () {
+    return cache.put(new Request(self.registration.scope + CLAVE_VIGENTE),
+                     new Response(JSON.stringify(vigente),
+                                  { headers: { 'Content-Type': 'application/json' } }));
   }).then(function () {
     return porOlas(manifiesto, olas, cache, guardado, presentes);
   });
