@@ -38,8 +38,12 @@
    · SOLO SE SUELTA AL LEVANTAR EL DEDO QUE COGIÓ LA PIEZA (`touchend` de ese
      `identifier`) o el botón (`pointerup`). Otro contacto --la palma o la base
      del pulgar que rozan la pantalla al estirar la mano hacia arriba-- no
-     empieza nada ni suelta nada: era la causa del fallo (lo reproduce
-     `tools/simular_arrastre.js --gesto palma --viejo 36cf6cb`).
+     empieza nada ni suelta nada (lo reproduce `tools/simular_arrastre.js
+     --gesto palma --viejo 36cf6cb`).
+   · Y SI ESE DEDO «SE LEVANTA» PERO HAY OTRO CONTACTO CERCA, o aparece uno en
+     un instante, ES EL MISMO DEDO que la pantalla perdió y volvió a ver con
+     otro número: el arrastre sigue con él. Era la causa de verdad en el
+     teléfono del titular (ver `relevar`).
    · Un `touchcancel` del SISTEMA no es soltar: la pieza SE QUEDA EN LA MANO y
      el siguiente toque la retoma (ver `quedarEnMano`). Un `pointercancel` del
      ratón la devuelve a su sitio (`cancelar`).
@@ -110,6 +114,8 @@
       if (caja.isConnected) return false;
       soltarLaMano(false);
       quitarGlobales();
+      quitarOtros();
+      if (g && g.pendiente) clearTimeout(g.pendiente.reloj);
       if (g && g.objetivo) quitarDelObjetivo(g.objetivo);
       if (g && g.empezado && o.cancelar) { try { o.cancelar(g.datos); } catch (e) {} }
       g = null;
@@ -119,10 +125,12 @@
     function arrancar(objetivo, x, y, via, id) {
       var datos = o.coger(objetivo, x, y);
       if (datos === null || datos === undefined) return false;
-      g = { datos: datos, x0: x, y0: y, empezado: false, via: via, id: id, objetivo: null, t0: performance.now() };
+      g = { datos: datos, x0: x, y0: y, empezado: false, via: via, id: id, objetivo: null, t0: performance.now(),
+            ux: x, uy: y, otros: 0, relevos: 0, pendiente: null };
       return true;
     }
     function moverA(x, y) {
+      g.ux = x; g.uy = y;
       if (!g.empezado) {
         if (Math.abs(x - g.x0) < UMBRAL && Math.abs(y - g.y0) < UMBRAL) return;
         g.empezado = true;
@@ -140,12 +148,18 @@
          palma): se anota como nota, porque es justo lo que el código anterior
          convertía en soltar donde no era y sirve para comprobarlo en el
          teléfono de quien juega. */
-      if (esto.empezado && esto.otros) anotarCorte(nombre, esto.via, 'otro contacto durante el arrastre', esto, null, 'arrastre_segundo_toque');
+      if (esto.empezado && esto.relevos) {
+        anotarCorte(nombre, esto.via, 'el dedo se volvió a detectar ' + esto.relevos + ' vez(es)', esto,
+          { relevos: esto.relevos, como: esto.comoRelevo, tras_ms: esto.trasMs }, 'arrastre_relevo');
+      } else if (esto.empezado && esto.otros) {
+        anotarCorte(nombre, esto.via, 'otro contacto durante el arrastre', esto, null, 'arrastre_segundo_toque');
+      }
       if (esto.empezado) { fin(); o.soltar(esto.datos, x, y); }
       else if (esto.via === 'toque' && o.tocar) { fin(); o.tocar(esto.datos, objetivo); }
     }
     /* Cortado desde fuera: NUNCA es soltar. */
     function cortar(motivo, extra) {
+      quitarOtros();
       var esto = g; g = null;
       if (!esto.empezado) return;
       anotarCorte(nombre, esto.via, motivo, esto, extra);
@@ -195,9 +209,64 @@
       g = esto;
       g.id = d.identifier;
       g.objetivo = e.target;
+      g.pendiente = null;
       ponerEnObjetivo(e.target);
-      o.mover(g.datos, d.clientX, d.clientY);
+      ponerOtros();
+      moverA(d.clientX, d.clientY);
     }
+
+    /* ⚠️ EL DEDO QUE SE PIERDE Y SE VUELVE A ENCONTRAR ES EL MISMO DEDO (titular,
+       2026-09-22, y lo dijo su propio teléfono: la Bitácora trajo, de un Android
+       10 con Chrome 153, un contacto nuevo en CADA arrastre --en Calco, seis en
+       56 ms--). Hay pantallas táctiles que, en un movimiento rápido o en cierta
+       zona del cristal, PIERDEN el dedo y lo vuelven a ver con otro número: para
+       el navegador, un dedo se levantó y se apoyó otro. Fiarse del número
+       soltaba la pieza sin que nadie levantara nada, que es exactamente «se
+       suelta sola a mitad de camino».
+       La regla: cuando el dedo de la pieza «se levanta», si A LA VEZ hay otro
+       contacto apoyado CERCA, o aparece uno cerca en los `MS_RELEVO` siguientes,
+       el arrastre sigue con ése. Una palma apoyada lejos no cuenta, y un levantar
+       de verdad --nada cerca en ese instante-- suelta como siempre, con esa
+       fracción de segundo de espera. */
+    var RELEVO_PX = 140, MS_RELEVO = 140;
+    function masCerca(lista) {
+      var mejor = null, dmin = RELEVO_PX;
+      for (var i = 0; i < lista.length; i++) {
+        var t = lista[i];
+        if (t.identifier === g.id) continue;
+        var dd = Math.hypot(t.clientX - g.ux, t.clientY - g.uy);
+        if (dd <= dmin) { dmin = dd; mejor = t; }
+      }
+      return mejor;
+    }
+    function relevar(t, como, trasMs) {
+      g.id = t.identifier;
+      g.objetivo = t.target || g.objetivo;   /* donde nació ese contacto: ahí le llegan sus eventos */
+      ponerEnObjetivo(g.objetivo);
+      g.relevos++;
+      g.comoRelevo = como;
+      g.trasMs = trasMs == null ? null : Math.round(trasMs);
+      moverA(t.clientX, t.clientY);
+    }
+    /* Mientras hay arrastre con el dedo, CUALQUIER contacto nuevo, esté donde
+       esté: se cuenta, no deja que el navegador lo use para nada y, si el dedo
+       de la pieza acaba de perderse, se mira si es él. */
+    function alOtroContacto(e) {
+      if (!g || g.via !== 'toque') return;
+      var nuevos = [].filter.call(e.changedTouches, function (t) { return t.identifier !== g.id; });
+      if (!nuevos.length) return;
+      e.preventDefault();
+      g.otros += nuevos.length;
+      if (!g.pendiente) return;
+      var t = masCerca(nuevos);
+      if (!t) return;
+      var p = g.pendiente;
+      clearTimeout(p.reloj);
+      g.pendiente = null;
+      relevar(t, 'despues', performance.now() - p.t);
+    }
+    function ponerOtros() { document.addEventListener('touchstart', alOtroContacto, { passive: false, capture: true }); }
+    function quitarOtros() { document.removeEventListener('touchstart', alOtroContacto, { capture: true }); }
 
     /* ---------------------------------------------------------------- DEDO */
     function elDedo(e) {
@@ -220,8 +289,26 @@
       if (e.cancelable) e.preventDefault();
       var objetivo = g.objetivo;
       quitarDelObjetivo(objetivo);
-      if (e.type === 'touchcancel') cortar('touchcancel');
-      else terminar(d.clientX, d.clientY, objetivo);
+      if (e.type === 'touchcancel') { cortar('touchcancel'); return; }
+      /* ⚠️ TAMBIÉN ANTES DE HABERSE MOVIDO: la pantalla puede perder el dedo en
+         el primer instante, cuando todavía no ha recorrido los seis píxeles que
+         lo convierten en arrastre. Atenderlo como un toque terminaba el gesto y
+         el dedo seguía moviéndose sin nada cogido (lo cazó la simulación). */
+      /* ¿Otro contacto apoyado cerca en este mismo instante? Es el mismo dedo
+         con otro número. */
+      g.ux = d.clientX; g.uy = d.clientY;
+      var otro = masCerca(e.touches);
+      if (otro) { relevar(otro, 'a la vez', 0); return; }
+      /* Si no, se espera un instante: la pantalla puede tardar en volver a
+         verlo. Pasado ese instante sin nada cerca, se suelta donde se levantó. */
+      g.pendiente = { x: d.clientX, y: d.clientY, objetivo: objetivo, t: performance.now(),
+        reloj: setTimeout(function () {
+          if (!g || !g.pendiente) return;
+          var p = g.pendiente;
+          g.pendiente = null;
+          quitarOtros();
+          terminar(p.x, p.y, p.objetivo);
+        }, MS_RELEVO) };
     }
     function ponerEnObjetivo(el) {
       el.addEventListener('touchmove', alMoverDedo, { passive: false });
@@ -236,10 +323,10 @@
     }
     function alApoyarDedo(e) {
       if (g) {
-        /* Un segundo contacto mientras el primero arrastra --otro dedo, o la
-           palma al estirar la mano--: no empieza nada, no suelta nada y
-           tampoco deja que el navegador lo use para hacer zum. */
-        if (g.via === 'toque') { e.preventDefault(); g.otros = (g.otros || 0) + 1; }
+        /* Un segundo contacto mientras el primero arrastra --otro dedo, la
+           palma, o el mismo dedo re-detectado--: aquí no empieza nada. Lo
+           cuenta y lo mira `alOtroContacto`, que lo ve antes, esté donde esté. */
+        if (g.via === 'toque') e.preventDefault();
         return;
       }
       var d = e.changedTouches[0];
@@ -248,6 +335,7 @@
       e.preventDefault();
       g.objetivo = objetivo;
       ponerEnObjetivo(objetivo);
+      ponerOtros();
     }
 
     /* ------------------------------------------------------- RATÓN O LÁPIZ */
@@ -301,6 +389,8 @@
        su sitio). Lo llama el siguiente arrastre montado sobre la misma caja. */
     function apagar() {
       soltarLaMano(true);
+      quitarOtros();
+      if (g && g.pendiente) clearTimeout(g.pendiente.reloj);
       caja.removeEventListener('touchstart', alApoyarDedo);
       caja.removeEventListener('pointerdown', alBajarPuntero);
       caja.removeEventListener('contextmenu', sinMenu);

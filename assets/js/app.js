@@ -1585,8 +1585,18 @@
     if (!r) return;
     var uno = r.firstElementChild;
     if (!uno) return;
-    var alto = uno.offsetHeight;
+    /* ⚠️ CON DECIMALES, NO CON `offsetHeight` (titular, 2026-09-22: en su teléfono
+       la lista «tiembla y suena como si se moviera, sin tocarla»). En una
+       pantalla de alta densidad una tarjeta mide 99,43 px, y `offsetHeight`
+       redondea a 99: la vuelta infinita multiplica ese error por cincuenta
+       tarjetas y salta a un sitio que no es de ninguna tarjeta. */
+    var alto = uno.getBoundingClientRect().height;
     if (!alto) return;
+    /* ⚠️ Y ANTES DE TOCAR NADA SE APUNTA QUÉ TARJETA ESTÁ ARRIBA: rehacer la
+       cuenta cambia el hueco, y con él dónde cae cada tarjeta; sin volver a
+       ponerla arriba después, la lista se corre sola. */
+    var pasoAntes = parseFloat(r.dataset.paso) || 0;
+    var ancla = pasoAntes ? Math.round(r.scrollTop / pasoAntes) : -1;
     /* ⚠️ EL PASO SE MIDE ENTRE DOS TARJETAS, NO SE CALCULA. Sumar el alto y el
        `gap` da por hecho que no hay nada más entre ellas, y una tarjeta con
        `margin-bottom` propio —la del historial lo traía de cuando la lista era
@@ -1595,7 +1605,7 @@
        calculado. Con dos hermanas en pantalla, la distancia entre sus bordes de
        arriba es el paso, lleve lo que lleve en medio. */
     var dos = uno.nextElementSibling;
-    var pasoReal = dos ? dos.offsetTop - uno.offsetTop : 0;
+    var pasoReal = dos ? dos.getBoundingClientRect().top - uno.getBoundingClientRect().top : 0;
 
     /* Se mide SIN el margen de la vez anterior, o cada repintado lo acumularía:
        el margen es el resultado de esta cuenta, no un dato de entrada. */
@@ -1659,8 +1669,31 @@
         return ajustarRuleta(vueltas + 1);
       }
     }
-    darLaVuelta(r, alto + hueco + extra, n);
-    girarRuleta(r, alto + hueco + extra);
+    /* EL PASO SE MIDE YA PUESTO, con decimales: es la distancia de verdad entre
+       dos tarjetas, y de él cuelgan el clic, el empujón y la vuelta. */
+    var paso = dos ? dos.getBoundingClientRect().top - uno.getBoundingClientRect().top : alto + hueco + extra;
+    r.dataset.paso = String(paso);
+    darLaVuelta(r, paso, n);
+    if (r.dataset.vuelta) r.dataset.vuelta = String(medirBloque(r) || parseFloat(r.dataset.vuelta));
+    if (ancla >= 0) ponerScroll(r, ancla * paso);
+    recolocarVuelta(r);
+    girarRuleta(r, paso);
+  }
+
+  /* LO QUE ESCRIBE EL CÓDIGO NO SUENA NI EMPUJA. Poner la tarjeta arriba o dar
+     la vuelta mueven `scrollTop`, y el navegador lo cuenta como un scroll como
+     cualquier otro: sin esta marca sonaba el clic y la lista se lo tomaba como
+     un gesto --el temblor con sonido de rueda que vio el titular--. */
+  function ponerScroll(r, v) {
+    r.__calla = ((window.performance && performance.now()) || 0) + 350;
+    r.scrollTop = v;
+  }
+
+  /* El bloque de la vuelta, MEDIDO: de la primera tarjeta a su copia. */
+  function medirBloque(r) {
+    var cuantas = parseInt(r.dataset.cuantas, 10);
+    var copia = cuantas ? r.children[cuantas] : null;
+    return copia ? copia.getBoundingClientRect().top - r.children[0].getBoundingClientRect().top : 0;
   }
 
   /* ======================================================================
@@ -1693,25 +1726,46 @@
     var trozos = [];
     for (var i = 1; i < copias; i++) trozos.push(molde);
     r.insertAdjacentHTML('beforeend', trozos.join(''));
-    r.dataset.vuelta = String(cuantas * paso);
+    r.dataset.cuantas = String(cuantas);
+    r.dataset.vuelta = String(medirBloque(r) || cuantas * paso);
     /* Se arranca en el segundo bloque para que la primera vez que alguien tire
        hacia ARRIBA también haya lista detrás. */
-    r.scrollTop = cuantas * paso;
+    ponerScroll(r, parseFloat(r.dataset.vuelta));
   }
 
-  /** Devuelve el scroll al bloque de en medio, sin que se note. */
+  /** Devuelve el scroll al bloque de en medio, sin que se note.
+      ⚠️ CON MARGEN DE MEDIO BLOQUE A CADA LADO, no justo en el borde: con el
+      borde exacto, un salto que caía un píxel fuera de sitio volvía a cruzarlo
+      al asentarse y la lista rebotaba entre dos bloques sin que nadie la
+      tocara. Así, después de un salto hace falta mover medio bloque entero
+      --veinticinco tarjetas-- para que haya otro. */
   function recolocarVuelta(r) {
     var bloque = parseFloat(r.dataset.vuelta || 0);
     if (!bloque) return;
-    if (r.scrollTop >= bloque * 2) r.scrollTop -= bloque;
-    else if (r.scrollTop < bloque) r.scrollTop += bloque;
+    var v = r.scrollTop, antes = v;
+    while (v > bloque * 1.5) v -= bloque;
+    while (v < bloque * 0.5) v += bloque;
+    if (v !== antes) ponerScroll(r, v);
   }
 
   /* LA CUENTA SE REHACE CUANDO CAMBIA EL SITIO. Girar el teléfono, abrir el
      teclado o —en escritorio— estirar la ventana cambian el alto disponible, y
      una ruleta calculada para el de antes es exactamente lo que se quería
      evitar: la última tarjeta cortada. */
-  window.addEventListener('resize', function () { ajustarRuleta(); });
+  /* ⚠️ CON PAUSA Y NUNCA CON EL DEDO PUESTO. En el móvil la barra de
+     direcciones se anima durante muchos fotogramas y cada uno es un `resize`:
+     rehacer la cuenta en todos ellos era reacomodar la lista una vez por
+     fotograma. Se rehace cuando el tamaño deja de cambiar. */
+  var reajuste = 0;
+  function reajustarRuleta() {
+    clearTimeout(reajuste);
+    reajuste = setTimeout(function () {
+      var r = $('.vista[data-activa] .ruleta');
+      if (r && r.dataset.tocando) { reajustarRuleta(); return; }
+      ajustarRuleta();
+    }, 160);
+  }
+  window.addEventListener('resize', reajustarRuleta);
   /* LAS FUENTES LLEGAN DESPUÉS Y MUEVEN LO QUE HAY ENCIMA. No están
      autoalojadas (`site/assets/fonts/LEEME.txt`), así que la primera pintada va
      con la de respaldo y el título y los chips miden otra cosa. */
@@ -1723,7 +1777,7 @@
      crece, igual que con el teclado. Es el mismo aviso que ya costó el globo:
      lo que hay que escuchar es `visualViewport`. */
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', function () { ajustarRuleta(); });
+    window.visualViewport.addEventListener('resize', reajustarRuleta);
   }
 
   /* EL CLAC DE LA RULETA (titular, 2026-09-18). El sonido ya existía y estaba
@@ -1763,8 +1817,12 @@
     /* Mientras el dedo esté puesto no hay ni empujón ni salto: los dos son cosas
        que pasan DESPUÉS de soltar. */
     var dedo = false, fueDedo = false;
+    /* El paso VIVO: si la cuenta se rehace (la barra del navegador, las
+       fuentes), el de la primera vez ya no es el de verdad. */
+    var pasoDe = function () { return parseFloat(r.dataset.paso) || paso; };
     r.addEventListener('pointerdown', function (e) {
       dedo = true;
+      r.dataset.tocando = '1';
       /* ⚠️ EL EMPUJÓN ES COSA DEL DEDO, NO DE LA RUEDA (titular, 2026-09-18:
          «se frena como esperando cargar más… el user quiere fluidez siempre»).
          Con el ratón, la rueda manda eventos mientras mi animación corre y las
@@ -1774,19 +1832,22 @@
       fueDedo = e.pointerType !== 'mouse';
     }, { passive: true });
     ['pointerup', 'pointercancel'].forEach(function (e) {
-      r.addEventListener(e, function () { dedo = false; }, { passive: true });
+      r.addEventListener(e, function () { dedo = false; delete r.dataset.tocando; }, { passive: true });
     });
     /* Un giro de rueda cancela lo que estuviera corriendo: manda el usuario. */
     r.addEventListener('wheel', function () { fueDedo = false; cancelAnimationFrame(raf); },
       { passive: true });
 
-    var ultimo = Math.round(r.scrollTop / paso);
+    var ultimo = Math.round(r.scrollTop / pasoDe());
     var cuando = reloj();
     var vel = 0;                 /* tarjetas por milisegundo, con signo */
     var espera = 0, raf = 0;
 
     r.addEventListener('scroll', function () {
-      var i = Math.round(r.scrollTop / paso);
+      var i = Math.round(r.scrollTop / pasoDe());
+      /* Lo movió el código (`ponerScroll`), no una persona: ni suena ni cuenta
+         como gesto. */
+      if (!dedo && reloj() < (r.__calla || 0)) { ultimo = i; clearTimeout(espera); return; }
       if (i !== ultimo) {
         /* ⚠️ LA VELOCIDAD SE MIDE ENTRE TARJETAS, NO ENTRE EVENTOS DE `scroll`.
            Con lo segundo salía siempre el mínimo: el navegador dispara varios
@@ -1827,7 +1888,7 @@
     function empujar(v) {
       var tarjetas = Math.min(EMPUJE_MAX, Math.abs(v) * EMPUJE);
       if (tarjetas < 0.8) { asentar(); return; }
-      var queda = tarjetas * paso * (v < 0 ? -1 : 1);
+      var queda = tarjetas * pasoDe() * (v < 0 ? -1 : 1);
       cancelAnimationFrame(raf);
       (function paso1() {
         if (dedo) { queda = 0; asentar(); return; }
@@ -2681,7 +2742,7 @@
       var foco = caja.querySelector('[data-partida="' + enfocarPartida + '"]');
       var rul = caja.querySelector('.ruleta');
       if (foco && rul) {
-        rul.scrollTop += foco.getBoundingClientRect().top - rul.getBoundingClientRect().top;
+        ponerScroll(rul, rul.scrollTop + foco.getBoundingClientRect().top - rul.getBoundingClientRect().top);
         enfocarPartida = null;
       }
     }
