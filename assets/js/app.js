@@ -7704,8 +7704,29 @@
     window.ATWI.partida.demoDeLanding();
   }
 
+  /* LA VISTA PREVIA DE FONDOS NO PASA POR LA PUERTA (titular, 2026-09-23: «el
+     selector de fondos del tablero no está aplicándolos»). Sí los aplicaba: lo
+     que pasaba es que el teléfono del tablero abre la app, la app no tenía
+     sesión DE JUEGO en ese navegador —el tablero usa la suya, aparte— y se
+     quedaba en la puerta, que tiene su propio fondo; el inicio cambiado estaba
+     detrás. Para pintar una pantalla y su fondo no hace falta sesión, y sin
+     sesión RLS no da ni un dato: la puerta es experiencia, no seguridad.
+     Solo si la abre el tablero (mismo origen, dentro de `/admin/`): un enlace
+     suelto con `?previa=` sigue pasando por la puerta como siempre. La puerta
+     misma se previsualiza pasando por ella. */
+  function previaDelTablero() {
+    var f = window.ATWI.fondos;
+    if (!f || !f.previa || f.previa === 'puerta' || window.self === window.top) return false;
+    try { return /^\/admin\//.test(window.top.location.pathname); } catch (e) { return false; }
+  }
+
   function abrir() {
     if (modoDemo()) return arrancarDemo();
+    if (previaDelTablero()) {
+      var p = $('#puerta');
+      if (p) p.hidden = true;
+      return arrancar();
+    }
     // Nadie entra al juego sin pasar por la puerta. En modo local basta el nombre.
     window.ATWI.entrada.exigir(arrancar);
   }
