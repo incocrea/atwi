@@ -1070,8 +1070,12 @@
   gap: var(--gy) var(--gx);
   justify-content: center; align-content: center;
   /* ⚠️ Lo que deja arrastrar con el dedo sin que la pantalla scrollee (la
-     lección de Calco). En el CSS y no en un `preventDefault`. */
+     lección de Calco). Con el dedo, además, el juego le quita el gesto al
+     navegador en `touchstart` (ui/canastas.js): esto es la primera red.
+     Sin menú de pulsación larga ni selección, que en iOS salen aunque el
+     `touchstart` se cancele si el dedo se queda quieto sobre una imagen. */
   touch-action: none;
+  -webkit-touch-callout: none; -webkit-user-select: none; user-select: none;
 }
 /* La torre entera es la diana: mide lo que una torre llena, así que soltar por
    encima de las cajas que ya tiene también cuenta. */
@@ -1097,9 +1101,9 @@
   width: var(--st); height: var(--st); transform: translate(-50%, -50%);
   pointer-events: none; -webkit-user-drag: none; user-select: none;
 }
-/* Solo la de arriba se coge. */
-.jg-cn__caja--arriba { cursor: grab; }
-.jg-cn__caja--arriba:active { cursor: grabbing; }
+/* Se coge el tramo de iguales de arriba, por cualquiera de sus cajas. */
+.jg-cn__caja--coge { cursor: grab; }
+.jg-cn__caja--coge:active { cursor: grabbing; }
 /* Mientras viaja, el TRAMO que se va --todas las iguales de arriba-- se queda
    en su torre desvaído: se ve qué se mueve, de dónde sale y adónde vuelve si
    se suelta fuera. */
