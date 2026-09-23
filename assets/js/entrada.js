@@ -45,6 +45,10 @@ window.ATWI = window.ATWI || {};
                  /* Y si además está roto SIN ARREGLO —ya se reintentó, o el
                     navegador no puede—: lo único que se enseña en pantalla. */
                  captchaMuerto: '', enviando: false,
+                 /* Cloudflare está pidiendo la casilla; alguien pulsó y espera
+                    el token; y lo que sale solo en cuanto llegue: el correo del
+                    alta o el «Entrar». */
+                 interactivo: false, esperandoToken: false, altaPendiente: '', entrarPendiente: false,
                  /* La invitación que trajo la llave del correo, si está viva, y
                     lo que hay que decir cuando no lo está. */
                  invitacion: null, avisoInvitacion: '' };
@@ -174,8 +178,25 @@ window.ATWI = window.ATWI || {};
         estado.captcha = t;
         estado.captchaFallo = '';
         estado.captchaMuerto = '';
+        estado.interactivo = false;
         quitarFalloCaptcha();
+        llamarALaCasilla(false);
+        /* Si alguien pulsó «Enviar enlace» y se le apartó el globo para que
+           tocara la casilla, su correo sale AHORA, sin volver a pulsar nada. */
+        if (estado.altaPendiente) mandarLoPendiente();
+        else if (estado.entrarPendiente) { estado.entrarPendiente = false; if ($('#c-clave2')) entrar(); }
       },
+      /* ⚠️ CLOUDFLARE PIDE LA CASILLA (titular, 2026-09-22: en un teléfono nuevo
+         el globo de «Entra por primera vez» decía «la verificación de atrás no
+         terminó, espera y toca otra vez» y no dejaba registrarse). No terminaba
+         porque el reto esperaba un toque en una casilla que estaba DETRÁS del
+         globo, bajo el cristal: ni se veía ni se podía tocar. Estos dos avisos
+         de Turnstile dicen cuándo el reto pasa a necesitar a la persona. */
+      'before-interactive-callback': function () {
+        estado.interactivo = true;
+        if (estado.altaPendiente || estado.esperandoToken) llamarALaCasilla(true);
+      },
+      'after-interactive-callback': function () { estado.interactivo = false; },
       /* Y SI AUN ASI CADUCA, SE PIDE OTRO SIN QUE NADIE HAGA NADA. Antes esto
          solo vaciaba el token y se quedaba esperando a que la persona fallara
          para renovarlo. */
@@ -237,17 +258,29 @@ window.ATWI = window.ATWI || {};
      Ahora se espera al token hasta seis segundos. Si llega, se sigue; si no, se
      dice que el antirrobots no terminó, que es lo que pasó de verdad, y no se
      gasta un intento de contraseña fallido. */
-  function conToken() {
+  function conToken(ms, cortarSiPideCasilla) {
     if (estado.captcha) return Promise.resolve(estado.captcha);
     if (!cfg.turnstileSiteKey) return Promise.resolve('');
     return new Promise(function (listo) {
       var t0 = Date.now();
       (function mirar() {
         if (estado.captcha) return listo(estado.captcha);
-        if (Date.now() - t0 > 6000) return listo('');
+        /* Si el reto ya pide la casilla, esperar no sirve: nadie la va a tocar
+           mientras no la vea. */
+        if (cortarSiPideCasilla && estado.interactivo) return listo('');
+        if (Date.now() - t0 > (ms || 6000)) return listo('');
         setTimeout(mirar, 200);
       })();
     });
+  }
+
+  /* LA CASILLA, A LA VISTA Y SEÑALADA. Se ilumina el hueco del widget y se
+     lleva a pantalla; al llegar el token se apaga. */
+  function llamarALaCasilla(si) {
+    var c = document.querySelector('.captcha');
+    if (!c) return;
+    c.classList.toggle('captcha--llama', Boolean(si));
+    if (si && c.scrollIntoView) c.scrollIntoView({ block: 'center', behavior: 'smooth' });
   }
 
   /* TRES INTENTOS AUTOMÁTICOS, NO UNO (titular, 2026-09-21: «seguimos teniendo
@@ -1099,21 +1132,58 @@ window.ATWI = window.ATWI || {};
     /* ⚠️ EL ANTIRROBOTS ES EL DE LA PANTALLA DE DETRÁS, no uno propio del globo.
        Montar un segundo widget de Turnstile aquí dentro sería meter un iframe
        que crece cuando Cloudflare pide resolver un reto en una caja con
-       `overflow`; y no hace falta, porque el token ya está resuelto abajo. Si
-       todavía no lo está, se dice aquí y el reto sigue a la vista al cerrar. */
-    conToken().then(function (ficha) {
-      if (cfg.turnstileSiteKey && !ficha) {
-        ocupadoAlta(false);
-        reintentarCaptcha();
-        return errorAlta('La verificación antirrobots de la pantalla de atrás no terminó. ' +
-                         'Espera un momento y toca otra vez.');
-      }
+       `overflow`; y no hace falta, porque el token casi siempre ya está
+       resuelto abajo. Cuando no, `aLaCasilla` aparta el globo. */
+    /* ⚠️ NUNCA SE LE PIDE A NADIE QUE «ESPERE Y TOQUE OTRA VEZ» (titular,
+       2026-09-22). El botón espera la verificación él solo («Verificando…») y
+       manda en cuanto llega. Si Cloudflare pide la casilla --que vive detrás de
+       este globo, bajo el cristal-- el globo se aparta, la casilla queda a la
+       vista e iluminada, y al tocarla el enlace sale solo y el globo vuelve
+       con «Mira tu correo». */
+    estado.esperandoToken = true;
+    var b = document.querySelector('.globo [data-puerta="enviar"]');
+    if (b && !estado.captcha) b.textContent = 'Verificando…';
+    conToken(10000, true).then(function (ficha) {
+      estado.esperandoToken = false;
+      if (cfg.turnstileSiteKey && !ficha) return aLaCasilla(correo);
       return auth.mandarEnlace(correo, ficha, vuelta)
         .then(function () { estado.enviando = false; abrirAlta(null, true); });
     })
       .catch(function (e) {
+        estado.esperandoToken = false;
         ocupadoAlta(false);
         errorAlta(porQue(e));
+        refrescarCaptcha();
+      });
+  }
+
+  /** Aparta el globo y deja el correo esperando a que la casilla se resuelva. */
+  function aLaCasilla(correo) {
+    estado.altaPendiente = correo;
+    ocupadoAlta(false);
+    if (window.ATWI.globo) window.ATWI.globo.cerrar();
+    /* Si el widget se había rendido (reintentos agotados), se vuelve a montar:
+       ahora sí hay alguien mirándolo. */
+    if (estado.captchaMuerto) reintentarCaptchaAMano();
+    llamarALaCasilla(true);
+    error('Falta un paso: toca la casilla de verificación y el enlace sale solo.');
+  }
+
+  function mandarLoPendiente() {
+    var correo = estado.altaPendiente;
+    estado.altaPendiente = '';
+    if (!correo || !estado.captcha) return;
+    var vuelta = location.origin + location.pathname;
+    estado.enviando = true;
+    auth.mandarEnlace(correo, estado.captcha, vuelta)
+      .then(function () {
+        estado.enviando = false;
+        /* El globo se reabre desde su botón, ya en «Mira tu correo». */
+        abrirAlta(globoAlta, true);
+      })
+      .catch(function (e) {
+        estado.enviando = false;
+        error(porQue(e));
         refrescarCaptcha();
       });
   }
@@ -1237,10 +1307,17 @@ window.ATWI = window.ATWI || {};
     error('');
     ocupado(true);
 
-    conToken().then(function (ficha) {
+    estado.esperandoToken = true;
+    conToken(10000, true).then(function (ficha) {
+      estado.esperandoToken = false;
       if (cfg.turnstileSiteKey && !ficha) {
+        /* Mismo trato que el alta: la casilla a la vista, iluminada, y al
+           resolverla se entra solo, sin volver a pulsar. */
         ocupado(false, 'Entrar');
-        reintentarCaptcha();
+        estado.entrarPendiente = true;
+        if (estado.captchaMuerto) reintentarCaptchaAMano();
+        llamarALaCasilla(true);
+        error('Falta un paso: toca la casilla de verificación y entras solo.');
         throw new Error('__sin_captcha');
       }
       return auth.entrarConContrasena(correo, clave, ficha);

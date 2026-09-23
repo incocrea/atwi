@@ -308,3 +308,18 @@ textarea.campo { min-height: 7rem; resize: vertical; line-height: 1.5; }
    error: no habia error, habia un reto esperando un toque.
    Ahora el widget va en `always` y este hueco se queda puesto. */
 .captcha > div { max-width: 100%; }
+
+/* LA CASILLA QUE HAY QUE TOCAR, SEÑALADA (titular, 2026-09-22). Cuando
+   Cloudflare pide el toque y alguien ya pulsó «Enviar enlace» o «Entrar», el
+   hueco del widget se enciende con un aro que late en el lavanda de la marca:
+   es lo único de la pantalla que hay que hacer. Se apaga al llegar el token.
+   El aro va en el hueco y no en el iframe, que es de Cloudflare. */
+.captcha--llama > div {
+  border-radius: 12px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--lavanda) 55%, transparent);
+  animation: captcha-llama 1.4s ease-in-out infinite;
+}
+@keyframes captcha-llama {
+  50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--lavanda) 25%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) { .captcha--llama > div { animation: none; } }
