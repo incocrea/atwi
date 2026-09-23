@@ -15,22 +15,13 @@
 <title>ATWI · El juego de debate para parejas, amigos y familia</title>
 <meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
 
-<!-- LA POLÍTICA DE CONTENIDO VA EN UN `meta` PORQUE GITHUB PAGES NO DEJA PONER
-     CABECERAS (docs/07, fase 5). No arregla ningún fallo de hoy --no hay XSS
-     explotable: los 60+ `innerHTML` pasan por `esc()`-- sino que convierte el
-     próximo en uno contenido: con esto, un script inyectado no puede cargarse
-     desde fuera ni mandar nada a ningún sitio que no sea Supabase.
-     ⚠️ `style-src` NECESITA 'unsafe-inline': el juego escribe `style="--voz:…"`
-     por todas partes --el color del personaje, el nivel del micrófono-- y sin
-     eso la app se ve en blanco y negro.
-     ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
-     los `<script src>` relativos a su servidor. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=c0cc9a0">
-<link rel="stylesheet" href="assets/css/tokens.css?v=c0cc9a0">
-<link rel="stylesheet" href="assets/css/base.css?v=c0cc9a0">
-<link rel="stylesheet" href="assets/css/landing.css?v=c0cc9a0">
-<link rel="stylesheet" href="assets/css/modal.css?v=c0cc9a0">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=8fadca2">
+<link rel="stylesheet" href="assets/css/tokens.css?v=8fadca2">
+<link rel="stylesheet" href="assets/css/base.css?v=8fadca2">
+<link rel="stylesheet" href="assets/css/landing.css?v=8fadca2">
+<link rel="stylesheet" href="assets/css/modal.css?v=8fadca2">
 </head>
 
 <body class="landing">
@@ -59,16 +50,7 @@
       </p>
     </div>
 
-    <!-- EL VISOR: UNA PARTIDA DE VERDAD, NO UNA MAQUETA (titular, 2026-09-17).
-         Aquí había un pase de cinco pantallas rehechas en HTML. Lo que hay
-         ahora es el JUEGO, corriendo dentro de un iframe: el sorteo, la ronda ya
-         jugada con su reproductor —con los audios reales de Harold contra
-         Julia— y el veredicto con su ceremonia. Enseñar una maqueta de algo que
-         existe es enseñar menos de lo que hay.
-
-         ⚠️ EL IFRAME NO SE CARGA HASTA QUE SE PULSA. Son la app entera más 438 KB
-         de audio, y quien entra a leer qué es ATWI no tiene por qué bajárselos.
-         Lo pone `landing.js` al tocar el botón. -->
+    
     <figure class="visor">
       <div class="telefono" id="visor-caja">
         <div class="visor__portada" id="visor-portada">
@@ -219,10 +201,7 @@
       <a href="app/">Jugar</a>
       <a href="#privacidad" data-pliego="pliego-privacidad">Privacidad y datos</a>
     </div>
-    <!-- LA MISMA REDACCIÓN QUE `config.descargo`, y hay que mantenerlas iguales a
-         mano: la landing no carga config.js. El comentario de allí dice «en un
-         solo sitio» y ya no era verdad —esta copia se quedó con la redacción
-         vieja al cambiarse la otra—. Si se toca una, se tocan las dos. -->
+    
     <p>ATWI usa IA para facilitar la resolución de conflictos y promover el ejercicio
       del debate. Aunque ayuda a mediar diferencias y lograr acuerdos de forma divertida,
       <strong>no reemplaza la terapia ni asesoramiento profesional.</strong></p>
@@ -232,15 +211,7 @@
 
 </div>
 
-<!-- LA INFORMACIÓN DE LA LANDING VA EN LA LANDING, EN HOJAS (titular, 2026-09-18:
-     «no hagas la página de privacidad como link aparte: crea un modal elegante en
-     el mismo landing; el único link aparte es el juego»). Es un `<dialog>` nativo
-     —foco atrapado, Escape y fondo gratis— vestido como pliego: tarjeta centrada con las esquinas redondeadas y el fondo esmerilado; en el teléfono
-     desde abajo, en escritorio es una tarjeta centrada. Se abre desde el pie y
-     desde `#privacidad` en la dirección, para poder enlazarla desde el juego.
-     Lo que dice sale del código y hay que mantenerlo verdad: qué se guarda, qué no
-     se guarda nunca, quién procesa qué, la IA, cuánto tiempo y los derechos.
-     ⚠️ EL CORREO DE CONTACTO ESTÁ PENDIENTE DEL TITULAR. -->
+
 <dialog class="pliego" id="pliego-privacidad" aria-labelledby="t-privacidad">
   <div class="pliego__caja">
     <button class="pliego__cerrar" type="button" data-cerrar-pliego aria-label="Cerrar">✕</button>
@@ -312,11 +283,7 @@
     <p>Todo lo de una partida se conserva hasta que la borras. Cada partida del historial lleva su
       papelera: se van el tema, las intervenciones en texto, la voz del personaje, el resultado y el acta.
       Lo único que queda es la cuenta de lo que costó procesarla, sin saber de quién era.</p>
-    <!-- ⚠️ CADA FRASE DE AQUI TIENE QUE SEGUIR SIENDO VERDAD EN EL CODIGO. Esta
-         se anadio el 2026-09-19 al comprobar que no lo era: una partida en linea
-         es UNA fila y dos historiales, asi que borrarla de un lado no puede
-         borrarsela al otro (migracion 0061). La app lo dice en el globo de
-         borrar; la hoja no lo decia. -->
+    
     <p>En una partida <strong>en línea</strong> el borrado es de tu lado: se va de tu historial y la otra
       persona la conserva en el suyo hasta que ella también la quite. Cuando los dos la han quitado,
       desaparece del todo, con sus audios.</p>
@@ -329,9 +296,7 @@
         acabaron.</li>
       <li><strong>Borrar:</strong> cada partida, desde su papelera, en el momento.</li>
       <li><strong>Cambiar el apodo:</strong> desde Perfil; tus partidas siguen siendo tuyas.</li>
-      <!-- ⚠️ ESTO DECIA «escribenos y lo hacemos» y desde el 2026-09-19 se hace
-           solo: el boton esta en Perfil, al final. Cada frase de esta hoja tiene
-           que seguir siendo verdad en el codigo. -->
+      
       <li><strong>Borrar la cuenta entera:</strong> en <em>Perfil</em>, al final, «Borrar mi cuenta
         para siempre». Se van tus partidas con sus audios, tus temas y tu acceso, y las partidas
         en línea desaparecen también del historial de quien jugó contigo. No se puede deshacer.</li>
@@ -351,12 +316,7 @@
   </div>
 </dialog>
 
-<!-- `config.js` NO se carga aquí, y son 31 KB. Lo traía la versión anterior
-     para sacar de él el descargo de IA; ahora el descargo está escrito arriba
-     —con su aviso de mantener las dos copias iguales— y la landing no usa
-     ninguna otra cosa de la configuración del juego. Bajar la configuración
-     entera de la app para leer un párrafo es caro en la única página que no
-     tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=c0cc9a0"></script>
+
+<script src="assets/js/landing.js?v=8fadca2"></script>
 </body>
 </html>

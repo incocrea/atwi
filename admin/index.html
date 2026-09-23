@@ -4,38 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<!-- LA POLÍTICA DE CONTENIDO VA EN UN `meta` PORQUE GITHUB PAGES NO DEJA PONER
-     CABECERAS (docs/07, fase 5). No arregla ningún fallo de hoy --no hay XSS
-     explotable: los 60+ `innerHTML` pasan por `esc()`-- sino que convierte el
-     próximo en uno contenido: con esto, un script inyectado no puede cargarse
-     desde fuera ni mandar nada a ningún sitio que no sea Supabase.
-     ⚠️ `style-src` NECESITA 'unsafe-inline': el juego escribe `style="--voz:…"`
-     por todas partes --el color del personaje, el nivel del micrófono-- y sin
-     eso la app se ve en blanco y negro.
-     ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
-     los `<script src>` relativos a su servidor. -->
+
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
-<!-- EL ESTILO DEL JUEGO (titular, 2026-09-23: «agrega a todo el tablero el
-     estilo gráfico general del juego»). Las mismas tres hojas que la app —las
-     fuentes, los colores y la base con sus botones y campos— y encima lo propio
-     del tablero, que ya solo decide la distribución. -->
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=c0cc9a0">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=c0cc9a0">
-<link rel="stylesheet" href="../assets/css/base.css?v=c0cc9a0">
-<!--
-  EL TABLERO NO ES EL JUEGO. Vive en su propia carpeta, no carga ni un archivo
-  del juego y no comparte sesión con él: entrar aquí con la cuenta de jugar no
-  sirve de nada si esa cuenta no está en `admins`.
 
-  ESTO NO ES ESCRITORIO-SOLO POR CASUALIDAD. El juego es un móvil de 430 px y
-  aquí hay tablas de consumo con ocho columnas. Son dos productos distintos y se
-  diseñan distinto; la regla de «solo móvil» de CLAUDE.md es para el juego.
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=8fadca2">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=8fadca2">
+<link rel="stylesheet" href="../assets/css/base.css?v=8fadca2">
 
-  LA SEGURIDAD NO LA DA ESTA PÁGINA. La dan las políticas RLS: `es_admin()` en
-  la base. Aunque alguien se descargue este HTML y lo abra, la base no le va a
-  devolver una fila. Lo de aquí es comodidad, no una puerta.
--->
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
      JUEGO: un color que cambie en `tokens.css` cambia aquí también. */
@@ -251,10 +227,7 @@
   <p class="chico">Cuenta de administración. No es la de jugar.</p>
   <input id="correo" class="campo" type="email" autocomplete="username" placeholder="correo">
   <input id="clave" class="campo" type="password" autocomplete="current-password" placeholder="contraseña">
-  <!-- El antirrobots NO es opcional aquí. Supabase Auth tiene el captcha
-       obligatorio y lo exige también en la entrada por contraseña, no solo en el
-       alta: sin token devuelve `captcha_failed` y no deja pasar. Se comprobó
-       pidiendo el token con una cuenta inventada. -->
+  
   <div id="captcha" style="margin-top:12px"></div>
   <button id="entrar" class="boton">Entrar</button>
   <p class="error" id="error"></p>
@@ -267,10 +240,7 @@
     <span class="quien" id="quien"></span>
     <button id="salir" class="salir">Salir</button>
   </header>
-  <!-- EL MENÚ, AGRUPADO POR TIPO (titular, 2026-09-23: «agrupa los menús según
-       su tipo… vamos a unificar todo allá: la simulación, los controles de bocas
-       y voz, la sección completa de configuración y playground»). Lo marcado
-       «local» usa el servidor de desarrollo y solo funciona ahí. -->
+  
   <div class="armazon">
     <nav class="menu">
       <div class="grupo"><p class="grupo__t">Reportes</p>
@@ -301,7 +271,7 @@
     <main id="lienzo"></main>
   </div>
 
-  <!-- El detalle de una llamada: lo que se mandó y lo que vino. -->
+  
   <div id="detalle" role="dialog" aria-modal="true" aria-labelledby="d-titulo">
     <div class="caja">
       <header>
@@ -317,8 +287,8 @@
   </div>
 </div>
 
-<script src="../assets/js/config.js?v=c0cc9a0"></script>
-<script src="../assets/js/fondos.js?v=c0cc9a0"></script>
-<script src="tablero.js?v=c0cc9a0"></script>
+<script src="../assets/js/config.js?v=8fadca2"></script>
+<script src="../assets/js/fondos.js?v=8fadca2"></script>
+<script src="tablero.js?v=8fadca2"></script>
 </body>
 </html>

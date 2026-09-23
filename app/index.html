@@ -11,47 +11,21 @@
 <title>ATWI</title>
 <meta name="description" content="¡Resuélvelo Jugando! Modo ControversIA y modo NegocIAción.">
 
-<!-- ABRIR LA CONEXION CON SUPABASE MIENTRAS SE CARGA EL RESTO.
 
-     La primera llamada al servidor paga DNS + TCP + TLS a Oregón, y eso
 
-     sale del camino crítico si el navegador va abriendo la conexión desde
 
-     que lee la cabecera. Medido en frío: la primera consulta tardó 1,4 s
-
-     contra 270 ms cuando la conexión ya estaba abierta.
-
-     `crossorigin` es obligatorio aquí: sin él el navegador abre una
-
-     conexión anónima que las peticiones con credenciales no reutilizan, y
-
-     el preconnect no sirve de nada. -->
-
-<!-- LA POLÍTICA DE CONTENIDO VA EN UN `meta` PORQUE GITHUB PAGES NO DEJA PONER
-     CABECERAS (docs/07, fase 5). No arregla ningún fallo de hoy --no hay XSS
-     explotable: los 60+ `innerHTML` pasan por `esc()`-- sino que convierte el
-     próximo en uno contenido: con esto, un script inyectado no puede cargarse
-     desde fuera ni mandar nada a ningún sitio que no sea Supabase.
-     ⚠️ `style-src` NECESITA 'unsafe-inline': el juego escribe `style="--voz:…"`
-     por todas partes --el color del personaje, el nivel del micrófono-- y sin
-     eso la app se ve en blanco y negro.
-     ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
-     los `<script src>` relativos a su servidor. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <link rel="preconnect" href="https://vauarfofsfgwnuyjfpni.supabase.co" crossorigin>
-  <!-- Y el respaldo para quien no entienda `preconnect`: al menos que resuelva
-       el nombre. Aquí no es un adorno —medido el 2026-09-18 en la máquina del
-       titular, el DNS interno no contesta para este dominio y la resolución en
-       frío tarda 12 s hasta que responde el secundario. -->
+  
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=c0cc9a0">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=c0cc9a0">
-<link rel="stylesheet" href="../assets/css/base.css?v=c0cc9a0">
-<link rel="stylesheet" href="../assets/css/app.css?v=c0cc9a0">
-<link rel="stylesheet" href="../assets/css/modal.css?v=c0cc9a0">
-<!-- Los minijuegos de QuiénGane: la carcasa y los tableros (prefijo `jg-`). -->
-<link rel="stylesheet" href="../assets/css/juegos.css?v=c0cc9a0">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=8fadca2">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=8fadca2">
+<link rel="stylesheet" href="../assets/css/base.css?v=8fadca2">
+<link rel="stylesheet" href="../assets/css/app.css?v=8fadca2">
+<link rel="stylesheet" href="../assets/css/modal.css?v=8fadca2">
+
+<link rel="stylesheet" href="../assets/css/juegos.css?v=8fadca2">
 </head>
 
 <body class="app">
@@ -60,44 +34,24 @@
 
   <header class="cabecera">
     <div>
-      <!-- EL LOGOTIPO LLEVA A LA PORTADA (titular, 2026-09-19). Es lo que se
-           espera de un logotipo en una cabecera fija, y aquí sale gratis:
-           `data-vista` es el mismo camino que usan las pestañas de la barra. -->
+      
       <button class="cabecera__titulo" data-vista="jugar" aria-label="Ir a la portada"><img src="../assets/img/logotipo-48.webp" alt="ATWI" width="123" height="41"></button>
       <div class="cabecera__sub">¡Resuélvelo <b>Jugando!</b></div>
     </div>
     <div class="monedero">
-      <!-- EL PROBADOR DE RESULTADOS, y solo para quien puede verlo (titular,
-           2026-09-17). Estaba abajo del todo de la portada, con su propio
-           título «Solo para vos» y un botón de ancho completo, o sea dos
-           piezas de interfaz para una puerta de servicio —y encima gastando el
-           alto que ahora se reparten las cartas—. Aquí es un disco más de la
-           cabecera, con el signo de AVISO: es lo único de esta app que no es
-           para quien juega, y el rojo lo dice sin escribirlo.
-           Nace oculto y lo enciende `puedeProbar()`: en el HTML no hay forma
-           de saber quién entró. -->
+      
       <button class="ayuda-cabecera ayuda-cabecera--probar" data-accion="probador"
               hidden aria-label="Probador de resultados" title="Probador de resultados">
         <span data-icono="aviso" data-tam="26"></span>
       </button>
 
-      <!-- EL AVISO DE IA VIVE AQUÍ (titular, 2026-09-17), y es el PRIMERO. Bajo
-           las cartas era un signo suelto en mitad de la portada; arriba está
-           con los otros dos indicadores, con el mismo disco, y el globo sale
-           igual: se cuelga de este botón y baja. Se queda en el HTML y no en
-           `pintarJugar` porque la cabecera es fija y no se repinta con la
-           vista. -->
+      
       <button class="ayuda-cabecera" data-globo="descargo" aria-expanded="false"
               aria-label="Qué hace la IA en ATWI" title="Qué hace la IA en ATWI">
         <span data-icono="ayuda-morado" data-tam="26"></span>
       </button>
 
-      <!-- VIDAS, NO ENERGÍA (titular, 2026-09-17). Era una pastilla con el rayo
-           y un contador de «puntos de razón» que nadie actualizaba nunca. Ahora
-           es un corazón con el número de vidas, y se presenta COMO EL BUZÓN
-           —mismo disco, mismo tipo de insignia— porque son la misma clase de
-           cosa: un indicador de la cabecera con una cuenta encima. Qué gasta y
-           qué repone una vida se define más adelante; esto es la pieza. -->
+      
       <span class="vidas" title="Vidas">
         <span data-icono="corazon" data-tam="24"></span>
         <span class="vidas__cuenta" id="dato-vidas">3</span>
@@ -106,8 +60,7 @@
         <span data-icono="buzon" data-tam="28"></span>
         <span class="buzon-punto" id="buzon-punto" hidden></span>
       </button>
-      <!-- Atajo al perfil. Se esconde en la propia vista de Perfil, donde no
-           tendría a dónde llevar. -->
+      
       <button class="avatar avatar--cabecera" id="ficha-cabecera" data-vista="perfil"
               aria-label="Tu perfil" hidden></button>
     </div>
@@ -121,34 +74,20 @@
   </main>
 
   <nav class="barra" aria-label="Navegación principal">
-    <!-- LAS BURBUJAS DE LA BARRA (propuesta del titular, 2026-09-16).
-         VAN INLINE Y NO COMO IMAGEN DE FONDO, y ese es el motivo de que estén
-         aquí y no en `assets/img/`: este dibujo tiene que TOMAR EL COLOR DE LA
-         PANTALLA. La barra cambia de tinte con el contexto --lavanda en la
-         portada, coral en Juicio, menta en Pacto, azul en QuienGane-- y un PNG
-         o un SVG cargado con `url()` traeria su color quemado y desentonaria
-         en tres de cada cuatro pantallas. Inline hereda `currentColor`, asi
-         que las burbujas son siempre el mismo color de la barra un punto mas
-         saturado, sea cual sea.
-         Es transparente entera: lo que se ve detras es el fondo de la barra,
-         que ya esta puesto. Y `preserveAspectRatio="none"` porque esto no es
-         un dibujo que deba conservar su forma, es una textura que se estira a
-         lo que mida la pantalla. -->
+    
     <svg class="barra__burbujas" viewBox="0 0 430 74" preserveAspectRatio="none" aria-hidden="true">
       <g fill="currentColor">
-        <!-- Las grandes van medio salidas por el borde de abajo: lo que se ve
-             es un casquete, que es lo que las hace parecer burbujas subiendo. -->
+        
         <circle cx="26" cy="70" r="17" opacity=".16"/>
         <circle cx="150" cy="76" r="22" opacity=".12"/>
         <circle cx="290" cy="73" r="19" opacity=".14"/>
         <circle cx="404" cy="78" r="24" opacity=".11"/>
-        <!-- Las medianas, repartidas sin ritmo: a intervalos iguales se leerian
-             como una cenefa y no como algo flotando. -->
+        
         <circle cx="72" cy="30" r="7" opacity=".14"/>
         <circle cx="198" cy="19" r="5.5" opacity=".16"/>
         <circle cx="246" cy="46" r="8" opacity=".10"/>
         <circle cx="344" cy="26" r="6.5" opacity=".15"/>
-        <!-- Y las chicas, que son las que dan la sensacion de movimiento. -->
+        
         <circle cx="104" cy="14" r="3.2" opacity=".18"/>
         <circle cx="176" cy="52" r="2.6" opacity=".16"/>
         <circle cx="312" cy="12" r="3" opacity=".17"/>
@@ -163,7 +102,7 @@
     <button class="barra-item" data-vista="perfil" data-etiqueta="Perfil"></button>
   </nav>
 
-  <!-- La puerta: registro y entrada. Solo nombre y correo. -->
+  
   <div class="modal" id="puerta" hidden role="dialog" aria-modal="true" aria-labelledby="t-puerta">
     <div class="modal__cabecera">
       <h2 class="solo-lectores" id="t-puerta">Entrar a ATWI</h2>
@@ -174,9 +113,9 @@
     </div>
   </div>
 
-  <!-- ================= Modales a pantalla completa ================= -->
+  
 
-  <!-- El buzón: invitaciones, turnos, resultados y avisos del juego -->
+  
   <div class="modal" id="m-buzon" hidden role="dialog" aria-modal="true" aria-labelledby="t-buzon">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-buzon" aria-label="Volver" data-icono="atras"></button>
@@ -185,64 +124,41 @@
     <div class="modal__cuerpo"></div>
   </div>
 
-  <!-- La sala: aquí se juega -->
+  
   <div class="modal" id="m-partida" hidden role="dialog" aria-modal="true" aria-labelledby="t-partida">
     <div class="modal__cabecera">
       <button class="boton-icono" data-accion="p-salir" aria-label="Salir de la partida" data-icono="atras"></button>
       <span class="modal__titulo" id="t-partida">La sala</span>
-      <!-- En qué turno va la partida. Vive en la cabecera y no en la tarjeta:
-           es un dato de estado, se consulta de refilón y no tiene por qué
-           robarle sitio a lo que hay que leer para hablar. -->
+      
       <span class="modal__estado" id="p-turno" hidden></span>
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie"></div>
   </div>
 
-  <!-- Detalle de un tema -->
+  
   <div class="modal" id="m-tema" hidden role="dialog" aria-modal="true" aria-labelledby="t-tema">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-tema" aria-label="Volver" data-icono="atras"></button>
       <span class="modal__titulo" id="t-tema"></span>
-      <!-- LA TERCERA COLUMNA DE LA CABECERA, QUE AQUI SE USA. La rejilla la
-           reserva siempre para que el titulo quede centrado contra el modal y
-           no contra el hueco que deja la flecha; en la sala lleva el turno y en
-           los demas va vacia. Aqui lleva el icono de la MESA —la casa de
-           familia, los corazones de la pareja, el estallido de amigos—, que es
-           el dato que no dice ninguna otra cosa de esta pantalla: de que lista
-           salio este tema. Lo rellena `pintarTema()`. -->
+      
       <span class="modal__mesa" id="t-tema-mesa" aria-hidden="true"></span>
     </div>
     <div class="modal__cuerpo"></div>
-    <!-- UN SOLO BOTON (titular, 2026-09-17). Aquí había un par apilado —«Jugar
-         los dos en este móvil» y «Enviar invitación»—, o sea la pregunta de por
-         qué vía se juega hecha en la última pantalla, cuando ya se eligió modo,
-         mesa y tema. Ahora eso lo dice el interruptor de «¿Con quién juegas?» y
-         aquí solo queda el camino elegido: `pintarTema()` le pone el texto y la
-         acción que toquen. -->
+    
     <div class="modal__pie">
       <button class="boton boton--bloque boton--grande" data-accion="jugar-aqui">Jugar los dos en este móvil</button>
     </div>
-    <!-- LA PEANA DEL MODAL ENTERO (titular, 2026-09-17), la misma idea que el
-         zocalo de las cartas de seleccion pero a lo ancho de la pantalla. Va
-         FUERA del cuerpo —que scrollea y tiene relleno propio— y fuera del pie,
-         para poder quedar DEBAJO de los dos botones sin empujarlos. La pinta
-         `pintarTema()` con la del modo que toca. -->
+    
     <img class="modal__peana" id="t-tema-peana" alt="" aria-hidden="true">
   </div>
 
-  <!-- AQUI ESTABA `m-perfil`, EL EDITOR DE LA FICHA, Y SE FUE (titular,
-       2026-09-18): ahora se edita en un GLOBO colgado del círculo que se tocó
-       —en Perfil, y en «Antes de empezar» tanto el mío como el del invitado—.
-       Era un modal a pantalla completa con tres bloques y tres párrafos para
-       decidir dos cosas: qué cara y de qué color. -->
+  
 
-  <!-- Escribir un tema: uno propio, o reescribir uno del catálogo -->
-  <!-- AQUI VIVIA `m-escribir`, el editor de temas a pantalla completa. Desde el
-       2026-09-18 es un globo colgado del icono de crear que esta junto al titulo
-       «Mis propios temas» (`abrirEscribir()` en app.js). -->
+  
+  
 
-  <!-- Explicación de un modo. Se abre desde su carta y lleva su color. -->
+  
   <div class="modal" id="m-explicar" hidden role="dialog" aria-modal="true" aria-labelledby="t-explicar">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-explicar" aria-label="Volver" data-icono="atras"></button>
@@ -254,7 +170,7 @@
     </div>
   </div>
 
-  <!-- Retocar UNA sección del tema, sin abrir el editor entero -->
+  
   <div class="modal" id="m-retocar" hidden role="dialog" aria-modal="true" aria-labelledby="t-retocar">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-retocar" aria-label="Volver" data-icono="atras"></button>
@@ -266,17 +182,11 @@
     </div>
   </div>
 
-  <!-- Aquí estaba el modal de elegir abogado (`m-abogados`). Se fue el
-       2026-09-18: el personaje de cada quien es su ficha y se elige en
-       `m-perfil`, la misma pantalla del perfil y de la ficha del invitado. -->
+  
 
-  <!-- Aquí estaba el modal de elegir juez (`m-jueces`). Se fue el 2026-09-18:
-       los seis discos van a la vista en «Antes de empezar» y se elige al toque. -->
+  
 
-  <!-- EL PROBADOR DE RESULTADOS. No es para jugadores: solo se ve con la cuenta
-       del titular o en modo de pruebas (localhost con ?local=1). Arma la escena
-       del veredicto a mano —modo, final, juez, las dos fichas— para poder mirar
-       la pantalla sin jugar una partida ni gastar un veredicto de verdad. -->
+  
   <div class="modal" id="m-probador" hidden role="dialog" aria-modal="true" aria-labelledby="t-probador">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-probador" aria-label="Volver" data-icono="atras"></button>
@@ -284,21 +194,8 @@
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
-      <!-- LOS CINCO SON «REPRODUCIR», y lo que cambia es DESDE DÓNDE: la
-           entrada (el sorteo y la cortinilla), un minijuego entero, el fin de
-           ronda (desde que se manda la última intervención), la comparación de
-           las rondas y la victoria. Van en ORDEN DE PARTIDA.
-           ⚠️ SON ICONOS Y NO BOTONES DE BLOQUE (titular, 2026-09-22: «en el
-           simulador reemplaza estos botones grandes por iconos relativos a cada
-           función»). Cinco botones grandes apilados eran media pantalla de pie
-           para un panel que ya llega con scroll, y aquí no hay una acción
-           principal: son cinco atajos del mismo rango. La palabra debajo se
-           queda --es lo que los distingue de un vistazo, como en la barra de
-           abajo del juego-- y el nombre largo vive en `aria-label`. -->
-      <!-- ⚠️ `loading="lazy"` (auditoría gráfica, 2026-09-23): este HTML va en la
-           página de TODOS, y sin él los cinco iconos se bajaban en cada carga
-           --`vs-azul.png` solo son 212 KB-- aunque el simulador no se abra
-           nunca. Diferidos, dentro de un modal oculto no se piden hasta verse. -->
+      
+      
       <div class="pb-atajos">
         <button class="pb-atajo" data-accion="pb-entrada" aria-label="Reproducir la entrada">
           <img src="../assets/img/iconos/vs-azul.webp" alt="" width="44" height="44" loading="lazy" decoding="async">
@@ -319,20 +216,11 @@
     </div>
   </div>
 
-  <!-- AQUI ESTABA `m-olvidar`, LA CONFIRMACION DE BORRADO, Y SE FUE (titular,
-       2026-09-17). Ahora la pregunta sale en un GLOBO colgado de la papelera que
-       se tocó, con el tinte del modo de esa partida: deja ver la tarjeta debajo
-       --así que no hay que repetir de qué partida se habla-- y se cierra tocando
-       fuera. Un modal a pantalla completa es la ceremonia de entrar a algo, y
-       aquí no se entra a ningún sitio. -->
+  
 
-  <!-- AQUÍ HUBO UN `m-actas` Y SE FUE (corrección del titular, 2026-09-15). Las
-       actas eran una pantalla aparte, a la que se entraba desde una tarjeta del
-       historial y de la que había que volver. Ahora son un CHIP más del propio
-       historial —«En este móvil · En línea · Lo que acordaron»— y la lista se
-       carga en el sitio: se cambia de lo que se está mirando sin moverse. -->
+  
 
-  <!-- Antes de empezar: quién defiende qué, y con quién se juega -->
+  
   <div class="modal" id="m-preparar" hidden role="dialog" aria-modal="true" aria-labelledby="t-preparar">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-preparar" aria-label="Volver" data-icono="atras"></button>
@@ -340,11 +228,7 @@
     </div>
     <div class="modal__cuerpo"></div>
     <div class="modal__pie">
-      <!-- EL MICRÓFONO, CENTRADO ENCIMA DEL BOTÓN (titular, 2026-09-18). Va en el
-           PIE y no en el cuerpo: es lo último que se mira antes de pulsar, y el
-           cuerpo puede scrollear. Nace oculto; lo enciende `conMicrofono()` al
-           tocar el botón, y es el icono de nuestra plancha —gris y quieto sin
-           sonido, en color y vibrando cuando capta—. -->
+      
       <div class="micro-prueba" id="p-micro" hidden>
         <span class="micro-prueba__disco" id="p-micro-disco" aria-hidden="true"
               data-icono="micro" data-tam="60"></span>
@@ -354,7 +238,7 @@
     </div>
   </div>
 
-  <!-- Invitación -->
+  
   <div class="modal" id="m-invitar" hidden role="dialog" aria-modal="true" aria-labelledby="t-invitar">
     <div class="modal__cabecera">
       <button class="boton-icono" data-cerrar="m-invitar" aria-label="Volver" data-icono="atras"></button>
@@ -368,25 +252,7 @@
 
 </div>
 
-<!-- ===========================================================================
-     LOS TERMINOS Y CONDICIONES (titular, 2026-09-19): *«este disclaimer ya no
-     va, lo vamos a reemplazar por los términos y condiciones —a mostrar en un
-     globo estilizado con botón de aceptar— que debe leerse y aceptarse para
-     poder continuar la primera vez; la cuenta no se crea y activa sin esto: es
-     nuestro gate de aprobación legal»*.
 
-     ⚠️ ESTO ES TEXTO LEGAL VINCULANTE Y ES UN BORRADOR. Lo escribió Claude a
-     partir de lo que el proyecto ya declara —la hoja de privacidad de la
-     landing, el descargo de IA, las reglas de `docs/02`— y **no lo ha revisado
-     un abogado**. Los huecos marcados con «PENDIENTE» son decisiones del
-     titular y no pueden quedarse así el día del lanzamiento.
-
-     ⚠️ Y VIVE EN HTML, NO EN UN STRING DE JAVASCRIPT, a propósito: es lo que
-     hay que poder leer y corregir sin tocar código. La VERSION va en el propio
-     `data-version` y es la que se guarda en `perfiles` al aceptar: cambiarla
-     vuelve a pedir la aceptación a todo el mundo, que es lo que tiene que pasar
-     cuando estas condiciones cambien.
-     ========================================================================= -->
 <template id="tpl-terminos" data-version="1" data-fecha="19 de septiembre de 2026">
   <p class="legal__fecha">Versión 1 · 19 de septiembre de 2026</p>
 
@@ -477,42 +343,36 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=c0cc9a0"></script>
-<script src="../assets/js/fondos.js?v=c0cc9a0"></script>
-<script src="../assets/js/precarga.js?v=c0cc9a0"></script>
-<script src="../assets/js/iconos.js?v=c0cc9a0"></script>
-<script src="../assets/js/personajes.js?v=c0cc9a0"></script>
-<script src="../assets/js/datos.js?v=c0cc9a0"></script>
-<script src="../assets/js/sonido.js?v=c0cc9a0"></script>
-<script src="../assets/js/veredicto.js?v=c0cc9a0"></script>
-<script src="../assets/js/grabadora.js?v=c0cc9a0"></script>
-<!-- LOS MINIJUEGOS DE QUIÉNGANE (docs/10). La lógica sin DOM va primero —es la
-     MISMA que corre en el servidor, copiada letra por letra a `logica.ts`—,
-     después la carcasa y los tableros. Cada juego construido suma dos scripts:
-     `logica/<id>.js` y `ui/<id>.js`. `prueba` es el juego de mentira. -->
-<script src="../assets/js/juegos/azar.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/logica/comun.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/logica/cuenta.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/logica/choque.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/logica/calco.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/logica/canastas.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/carcasa.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/duelo.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/piezas/stickers.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/piezas/arrastre.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/ui/cuenta.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/ui/choque.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/ui/calco.js?v=c0cc9a0"></script>
-<script src="../assets/js/juegos/ui/canastas.js?v=c0cc9a0"></script>
-<script src="../assets/js/partida.js?v=c0cc9a0"></script>
-<script src="../assets/js/auth.js?v=c0cc9a0"></script>
-<script src="../assets/js/entrada.js?v=c0cc9a0"></script>
-<script src="../assets/js/nube.js?v=c0cc9a0"></script>
-<!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
-     Son 6 KB y no se piden nunca en una partida real: el navegador los baja
-     una vez y la app no los mira si no esta el parametro. Lo escribe
-     `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=c0cc9a0"></script>
-<script src="../assets/js/app.js?v=c0cc9a0"></script>
+<script src="../assets/js/config.js?v=8fadca2"></script>
+<script src="../assets/js/fondos.js?v=8fadca2"></script>
+<script src="../assets/js/precarga.js?v=8fadca2"></script>
+<script src="../assets/js/iconos.js?v=8fadca2"></script>
+<script src="../assets/js/personajes.js?v=8fadca2"></script>
+<script src="../assets/js/datos.js?v=8fadca2"></script>
+<script src="../assets/js/sonido.js?v=8fadca2"></script>
+<script src="../assets/js/veredicto.js?v=8fadca2"></script>
+<script src="../assets/js/grabadora.js?v=8fadca2"></script>
+
+<script src="../assets/js/juegos/azar.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/logica/comun.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/logica/cuenta.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/logica/choque.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/logica/calco.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/logica/canastas.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/carcasa.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/duelo.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/piezas/stickers.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/piezas/arrastre.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/ui/cuenta.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/ui/choque.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/ui/calco.js?v=8fadca2"></script>
+<script src="../assets/js/juegos/ui/canastas.js?v=8fadca2"></script>
+<script src="../assets/js/partida.js?v=8fadca2"></script>
+<script src="../assets/js/auth.js?v=8fadca2"></script>
+<script src="../assets/js/entrada.js?v=8fadca2"></script>
+<script src="../assets/js/nube.js?v=8fadca2"></script>
+
+<script src="../assets/js/demo.js?v=8fadca2"></script>
+<script src="../assets/js/app.js?v=8fadca2"></script>
 </body>
 </html>
