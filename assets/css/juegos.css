@@ -577,6 +577,17 @@
   color: var(--competencia); font-weight: 800; font-size: var(--t-chico);
 }
 .jg-choque__comovence:active, .jg-comojuega:active { transform: translateY(1px); }
+/* BORDE BLANCO TIPO STICKER (titular, 2026-09-22), la misma receta que el número
+   de la cuenta atrás y el nombre del ganador: trazo blanco con
+   `paint-order: stroke` --así el borde crece hacia FUERA y no se come la letra
+   por dentro, que a 13 px la dejaría en un hilo-- y una sombra corta y sin
+   desenfoque que lo despega del fondo, como el canto de una pegatina. La
+   sombra va en el botón entero para que la bombilla, que ya es pegatina, la
+   lleve igual. */
+.jg-comojuega { filter: drop-shadow(0 2px 0 rgba(46, 42, 63, .22)); }
+.jg-comojuega span {
+  -webkit-text-stroke: 6px var(--blanco); paint-order: stroke fill;
+}
 /* El texto de los globos de «¿Cómo se juega?». */
 .jg-como__txt { margin: 0 0 8px; font-size: var(--t-chico); line-height: 1.4; }
 
