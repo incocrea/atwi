@@ -3613,19 +3613,33 @@
          tarde de algo que no se deshace. */
       '<p class="chico tenue" style="margin-bottom:var(--e-4)">Lo que se apostó jugando. ' +
         'El que gana lo marca como recibido cuando se lo den, y ahí el premio y su ' +
-        'partida se van. No es una deuda de verdad, es un recordatorio entre ustedes.</p>' +
+        'partida se van. Si lo ganó tu invitado en este teléfono, lo marcas tú cuando lo ' +
+        'reclame. No es una deuda de verdad, es un recordatorio entre ustedes.</p>' +
       '<div class="ruleta">' +
       premios.map(function (p) {
         var soyGanador = p.soy === 'ganador';
+        /* ⚠️ EL PREMIO DE MI INVITADO (titular, 2026-09-23; migración 0089). En
+           una partida LOCAL que gana el invitado, el ganador no tiene cuenta y no
+           tendrá desde dónde reclamarlo. Salía «En deuda», sin botón y con el
+           nombre en blanco: una deuda que no se podía cerrar nunca. Ahora es lo
+           que es --el premio de Beto, ganado en este teléfono-- y se marca como
+           reclamado desde aquí, con el mismo final que los demás: el premio y su
+           partida se van. */
+        var deInvitado = p.soy === 'invitado';
         var pagado = p.estado === 'pagado';
-        /* El estado tiene DOS CARAS según de qué lado estoy, que es justo lo que
-           pidió el titular: para el ganador «Por cobrar», para el deudor «En
-           deuda»; y para los dos «Recibido» con su fecha cuando se saldó. */
+        var otro = esc(p.otro || '');
+        /* El estado tiene TRES CARAS según de qué lado estoy: para el ganador
+           «Por cobrar», para el deudor «En deuda», y para el premio de mi
+           invitado local «Premio de invitado»; y «Recibido» cuando se saldó. */
         var estado = pagado ? 'Recibido'
-                   : soyGanador ? 'Por cobrar' : 'En deuda';
-        var conQuien = p.otro
-          ? (soyGanador ? 'Te lo debe ' + esc(p.otro) : 'Se lo debes a ' + esc(p.otro))
-          : (soyGanador ? 'Lo ganaste' : 'Lo perdiste');
+                   : soyGanador ? 'Por cobrar'
+                   : deInvitado ? 'Premio de invitado' : 'En deuda';
+        var conQuien = deInvitado
+          ? '<b>Ganó ' + (otro || 'tu invitado') + '</b>, jugando en este teléfono. ' +
+            'Márcalo como reclamado cuando se lo den.'
+          : p.otro
+            ? (soyGanador ? 'Te lo debe ' + otro : 'Se lo debes a ' + otro)
+            : (soyGanador ? 'Lo ganaste' : 'Lo perdiste');
         return '<div class="tarjeta partida-fila partida-fila--acta" ' +
             'data-tipo="' + (pagado ? 'acuerdo' : 'desacuerdo') + '" data-modo="competencia">' +
             '<button class="partida" data-acta-de="' + esc(p.debate || '') + '">' +
@@ -3638,12 +3652,13 @@
               '<span class="partida__tema">' + esc(p.premio || 'Un premio') + '</span>' +
               '<span class="acta-fila__texto">' + conQuien + '</span>' +
             '</button>' +
-            /* El botón de marcar recibido SOLO para el ganador y mientras esté
-               pendiente. Va hermano de la tarjeta —no dentro del botón, que un
-               `<button>` dentro de otro no es válido—, como la papelera. */
-            (soyGanador && !pagado
+            /* El botón de marcar SOLO para quien puede saldarlo y mientras esté
+               pendiente: el ganador, o este teléfono si el premio es del
+               invitado local. Va hermano de la tarjeta —no dentro del botón, que
+               un `<button>` dentro de otro no es válido—, como la papelera. */
+            ((soyGanador || deInvitado) && !pagado
               ? '<button class="premio-cobrar" data-premio-recibido="' + esc(p.debate) + '">' +
-                  'Recibido</button>'
+                  (deInvitado ? 'Reclamado' : 'Recibido') + '</button>'
               : '') +
             '<img class="partida__base" src="../assets/img/iconos/base-competencia.png" ' +
               'alt="" aria-hidden="true">' +
@@ -3663,26 +3678,31 @@
      teclear se reserva para lo que no se puede volver a tener. */
   function confirmarPremioRecibido(debate, disparador) {
     var p = (premios || []).filter(function (x) { return x.debate === debate; })[0] || {};
+    var deInvitado = p.soy === 'invitado';
     var texto = 'Se va el premio y también la partida de QuiénGane que lo puso en juego, ' +
       'con su resultado.';
-    if (p.otro) texto += ' Desaparece también del historial de ' + p.otro + '.';
+    /* ⚠️ SOLO EN LÍNEA: desde la 0089 el nombre llega también en local, y ahí el
+       invitado no tiene cuenta ni historial del que desaparecer. */
+    if (p.otro && p.en_linea) texto += ' Desaparece también del historial de ' + p.otro + '.';
     var acciones =
       '<button class="boton boton--bloque boton--suave boton--borrar"' +
-        ' data-premio-cobrar-ya="' + esc(debate) + '">Sí, ya me lo dieron</button>' +
+        ' data-premio-cobrar-ya="' + esc(debate) + '">' +
+        (deInvitado ? 'Sí, ya lo reclamó' : 'Sí, ya me lo dieron') + '</button>' +
       '<button class="boton boton--suave boton--bloque boton--punteado" ' +
         'data-cerrar-globo>Todavía no</button>';
     abrirGlobo(disparador,
-      { titulo: '¿Ya te lo dieron?',
+      { titulo: deInvitado ? '¿' + (p.otro || 'Tu invitado') + ' ya reclamó su premio?' : '¿Ya te lo dieron?',
         /* Sin el punto del final: los premios se escriben como frase y
            «…traen.». Se va» deja tres signos seguidos. */
         texto: (p.premio ? '«' + String(p.premio).replace(/\s*\.\s*$/, '') + '». ' : '') + texto,
         clave: 'No se puede deshacer.' },
       { tinte: 'competencia', signo: 'papelera', signoTam: 83,
-        etiqueta: 'Marcar el premio como recibido', acciones: acciones });
+        etiqueta: deInvitado ? 'Marcar el premio como reclamado' : 'Marcar el premio como recibido',
+        acciones: acciones });
   }
 
   function marcarPremioRecibido(debate, boton) {
-    if (boton) { boton.disabled = true; boton.textContent = 'Guardando…'; }
+    if (boton) { boton.dataset.texto = boton.textContent; boton.disabled = true; boton.textContent = 'Guardando…'; }
     window.ATWI.nube.marcarPremioRecibido(debate).then(function () {
       cerrarGlobo();
       premios = null;                 // se vuelve a pedir: la tarjeta ya no está
@@ -3712,7 +3732,7 @@
         }
         return;
       }
-      if (boton) { boton.disabled = false; boton.textContent = 'Recibido'; }
+      if (boton) { boton.disabled = false; boton.textContent = boton.dataset.texto || 'Recibido'; }
       if (window.ATWI.aviso) window.ATWI.aviso('No se pudo marcar: ' + porque);
     });
   }

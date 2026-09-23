@@ -4167,7 +4167,10 @@ window.ATWI = window.ATWI || {};
            mentira es un tema de debate cualquiera --salió anunciado como premio
            «¿los platos se lavan en ese momento…?» la primera vez que se probó--. */
         premio: (!P.ensayo && !P.demo && res.ganador_lado && P.tema && P.tema.enunciado)
-          ? { texto: P.tema.enunciado, ganador: persona(res.ganador_lado).nombre } : null,
+          ? { texto: P.tema.enunciado, ganador: persona(res.ganador_lado).nombre,
+              /* Lo ganó el invitado SIN CUENTA de una partida local (0089): el
+                 premio queda en este teléfono y se marca desde aquí. */
+              delInvitado: !P.enLinea && res.ganador_lado === 'invitado' } : null,
         /* ⚠️ CADA FILA LLEVA SU JUEGO, y sin eso la tabla del juez enseñaba
            `undefined` y `NaN` (lo vio el titular, 2026-09-22). Desde el pivote
            una partida puede repartir tres juegos distintos, y el resumen de una

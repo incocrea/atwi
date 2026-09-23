@@ -1059,7 +1059,8 @@ window.ATWI = window.ATWI || {};
            la tarjeta, que es el del modo. Cuando llegue la pieza, va aquí. */
         '<p class="premio-ganado__quien">' + esc(dice(jg.premioGana)) + '</p>' +
         '<p class="premio-ganado__texto">«' + esc(p.texto) + '»</p>' +
-        '<p class="premio-ganado__donde">' + esc(dice(jg.premioDonde)) + '</p>' +
+        '<p class="premio-ganado__donde">' +
+          esc(dice(p.delInvitado && jg.premioDondeLocal ? jg.premioDondeLocal : jg.premioDonde)) + '</p>' +
       '</div>';
   }
 

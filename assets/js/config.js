@@ -123,7 +123,7 @@ window.ATWI.config = {
      sube, y con el mismo sello va el `?v=` de los CSS, los JS y el catálogo.
      Sin esto el navegador del teléfono se queda con los archivos viejos aunque
      el sitio ya esté actualizado, que es justo lo que pasó el 2026-09-12. */
-  version: '01b665d',
+  version: 'f52d0a4',
 
   /* Proyecto de Supabase (región us-west-2, Oregón: hay que declararla en la
      política de privacidad). La clave anon es PÚBLICA por diseño: viaja al
@@ -428,7 +428,11 @@ window.ATWI.config = {
          así que prometerlo aquí sería afirmar algo falso. */
       premioGana: '{ganador} se lleva el premio',
       premioDonde: 'Queda guardado en Historial, en «Premios», hasta que {ganador} ' +
-                   'lo marque como recibido.'
+                   'lo marque como recibido.',
+      /* Cuando lo gana el INVITADO de una partida local (0089): no tiene cuenta,
+         así que el premio queda en este teléfono y se marca desde aquí. */
+      premioDondeLocal: 'Queda en este teléfono, en Historial › «Premios», como premio de ' +
+                        '{ganador}. Se marca como reclamado desde aquí cuando se lo den.'
     },
     empate: {
       /* LOS 8 PUNTOS LOS DICE LA PANTALLA, NO EL JUEZ (v2.3, S16): la regla de
