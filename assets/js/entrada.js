@@ -392,7 +392,7 @@ window.ATWI = window.ATWI || {};
     var esHTML = typeof pieza === 'string' && pieza.charAt(0) === '<';
     return '<div class="centrado" style="padding:var(--e-5) 0 var(--e-5)">' +
         (pieza === null
-          ? '<img src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70" ' +
+          ? '<img src="../assets/img/logotipo-96.webp" alt="ATWI" width="210" height="70" ' +
             'style="margin:0 auto;height:58px;width:auto">'
           : esHTML
             ? '<div style="line-height:1">' + pieza + '</div>'
@@ -748,7 +748,7 @@ window.ATWI = window.ATWI || {};
            tiene que leerse debajo es quién invita y a qué, no la marca otra
            vez. */
         '<div class="portal portal--corto">' +
-          '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
+          '<img class="portal__logo" src="../assets/img/logotipo-96.webp" alt="ATWI" width="210" height="70">' +
         '</div>' +
         /* ⚠️ SIN TARJETA Y SIN GLOBO (titular, 2026-09-21: «quita el contenedor
            cuadrado y el que contiene el tema, deja los elementos solos»), que
@@ -772,7 +772,7 @@ window.ATWI = window.ATWI || {};
              que cualquier rótulo. */
           (inv.enunciado
             ? '<div class="invita-tema">' +
-                '<img class="invita-tema__escena" src="../assets/img/iconos/escena-' + esc(modoInv) + '.png" ' +
+                '<img class="invita-tema__escena" src="../assets/img/iconos/escena-' + esc(modoInv) + '.webp" ' +
                   'alt="" width="88" height="88">' +
                 '<p class="invita-tema__texto">«' + esc(inv.enunciado) + '»</p>' +
               '</div>'
@@ -814,7 +814,7 @@ window.ATWI = window.ATWI || {};
             '</p>'
           : '') +
         '<div class="portal">' +
-          '<img class="portal__logo" src="../assets/img/logotipo-96.png" alt="ATWI" width="210" height="70">' +
+          '<img class="portal__logo" src="../assets/img/logotipo-96.webp" alt="ATWI" width="210" height="70">' +
           /* Sin las tres rayas a cada lado (titular, 2026-09-22: «quita estas
              rayitas amarillas de decoración de los textos»). */
           '<p class="portal__eslogan"><span>¡Resuélvelo Jugando!</span></p>' +

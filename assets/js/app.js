@@ -44,7 +44,7 @@
      donde el nombre es el titular —la carta del home y su explicación—; en
      sitios pequeños sigue mandando el texto, que a ese tamaño se lee mejor. */
   function rotuloModo(clave, clase) {
-    return '<img class="' + clase + '" src="../assets/img/rotulos/' + clave + '.png" ' +
+    return '<img class="' + clase + '" src="../assets/img/rotulos/' + clave + '.webp" ' +
            'alt="' + esc(modoLlano(clave)) + '" decoding="async">';
   }
   /* La sala también lo pinta, y no tiene por qué saber dónde viven los PNG. */
@@ -1495,7 +1495,7 @@
           /* El zócalo dibujado del pie: globos de diálogo en Juicio, brotes en
              Pacto, estrellas en QuiénGane. Va fuera del flujo y por detrás; el
              hueco se lo hace el `padding-bottom` de la carta. */
-          '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.png" ' +
+          '<img class="carta-modo__base" src="../assets/img/iconos/base-' + clave + '.webp" ' +
             'alt="" aria-hidden="true" loading="lazy" decoding="async">' +
         '</button>' +
         /* EL SIGNO SE QUEDA, y sin palabra: una interrogación no hay que
@@ -2695,7 +2695,7 @@
              juego. Va al final del HTML y detrás de todo por `z-index`: no
              ocupa sitio, el hueco se lo hace el relleno de la tarjeta. */
           '<img class="partida__base" src="../assets/img/iconos/base-' +
-            esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'debate') + '.png" alt="" aria-hidden="true">' +
+            esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'debate') + '.webp" alt="" aria-hidden="true">' +
         '</div>';
       }).join('') +
 
@@ -3547,7 +3547,7 @@
               '<span class="acta-fila__texto">' + esc(a.texto) + '</span>' +
             '</button>' +
             '<img class="partida__base" src="../assets/img/iconos/base-' +
-              esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'negociacion') + '.png" ' +
+              esc(MODOS_CON_PEANA[d.modo] ? d.modo : 'negociacion') + '.webp" ' +
               'alt="" aria-hidden="true">' +
           '</div>';
       }).join('') + '</div>';
@@ -3660,7 +3660,7 @@
               ? '<button class="premio-cobrar" data-premio-recibido="' + esc(p.debate) + '">' +
                   (deInvitado ? 'Reclamado' : 'Recibido') + '</button>'
               : '') +
-            '<img class="partida__base" src="../assets/img/iconos/base-competencia.png" ' +
+            '<img class="partida__base" src="../assets/img/iconos/base-competencia.webp" ' +
               'alt="" aria-hidden="true">' +
           '</div>';
       }).join('') + '</div>';
@@ -6610,7 +6610,7 @@
            izquierdo. Un envoltorio propio recorta la onda con el mismo radio y
            deja la caja visible. */
         '<span class="globo__recorte" aria-hidden="true">' +
-          '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.png" alt="">' +
+          '<img class="globo__base" src="../assets/img/iconos/' + t.peana + '.webp" alt="">' +
         '</span>' +
         /* ⚠️ EL TAMAÑO DE ESTE SIGNO LO PONE EL CSS —96 px— Y NO ESTE NÚMERO:
            la regla `.globo__signo` pisa el `width` que escribe `icono()`. El 82

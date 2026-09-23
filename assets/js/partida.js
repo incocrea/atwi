@@ -1879,7 +1879,7 @@ window.ATWI = window.ATWI || {};
 
   function piezaDelEncuentro(modo, publico) {
     return '../assets/img/iconos/' + (modo === 'negociacion' ? 'choque' : 'vs') +
-           '-' + (TINTE_DE_MESA[publico] || 'sol') + '.png';
+           '-' + (TINTE_DE_MESA[publico] || 'sol') + '.webp';
   }
 
   var MS_ANTES_DEL_ENCUENTRO = 1000;   // desde que para la ficha del sorteo

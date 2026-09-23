@@ -56,7 +56,7 @@
      home»). Es la misma pieza, con la misma regla de `app.css` que la carta de
      modo, así que se ven hermanas: el juego sale de esa carta y su ficha lleva
      su suelo. Va primera y fuera del flujo, detrás del texto. */
-  var PEANA_DE_FICHA = '<img class="jg-ficha-ronda__base" src="../assets/img/iconos/base-competencia.png" ' +
+  var PEANA_DE_FICHA = '<img class="jg-ficha-ronda__base" src="../assets/img/iconos/base-competencia.webp" ' +
     'alt="" aria-hidden="true" decoding="async">';
 
   var C = null;   // la carcasa viva, o nulo
@@ -1068,7 +1068,7 @@
          change que ya tenemos ilustrado, con el número dentro»): dos flechas
          en círculo con el centro libre, que es donde va lo que queda. Sin
          `loading="lazy"`: es lo que se ve en el instante en que sale el pie. */
-      '<img class="jg-reintento__dibujo" src="../assets/img/iconos/cambiar.png" width="64" height="64" ' +
+      '<img class="jg-reintento__dibujo" src="../assets/img/iconos/cambiar.webp" width="64" height="64" ' +
         'alt="" aria-hidden="true" decoding="async" draggable="false">' +
       '<span class="jg-reintento__n" aria-hidden="true">' + quedan + '</span>' +
     '</button>';

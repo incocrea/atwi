@@ -127,7 +127,7 @@ window.ATWI = window.ATWI || {};
                        que seguía siendo un trazo, así que además de las vidas
                        arregla eso. */
                     'corazon', 'buzon',
-                    /* Sin 'adelante': su PNG no lo pintaba nadie y se borró en la
+                    /* Sin la flecha de adelante: su PNG no lo pintaba nadie y se borró en la
                        auditoría gráfica (2026-09-23). Si vuelve a hacer falta,
                        queda su trazo. */
                     'papelera', 'atras', 'cambiar', 'lapiz',
@@ -174,7 +174,7 @@ window.ATWI = window.ATWI || {};
   window.ATWI.icono = function (nombre, tam) {
     if (ILUSTRADOS.indexOf(nombre) !== -1) {
       var t = tam || 24;
-      return '<img class="ico" src="../assets/img/iconos/' + nombre + '.png" alt="" ' +
+      return '<img class="ico" src="../assets/img/iconos/' + nombre + '.webp" alt="" ' +
              'width="' + t + '" height="' + t + '" loading="lazy" decoding="async">';
     }
     return window.ATWI.iconoSVG(nombre, tam);

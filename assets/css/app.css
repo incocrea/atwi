@@ -2274,7 +2274,7 @@ body.app {
      y con dos números sueltos el listón daría un salto al terminar de entrar. */
   --liston-y: calc(-40.1% + 5px);
   transform: translateY(var(--liston-y));
-  background: url(../img/atwi/liston.png) center / contain no-repeat;
+  background: url(../img/atwi/liston.webp) center / contain no-repeat;
   filter: drop-shadow(0 4px 12px var(--veredicto-sombra));
   opacity: 0; pointer-events: none;
 }

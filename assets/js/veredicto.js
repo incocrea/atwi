@@ -60,7 +60,7 @@ window.ATWI = window.ATWI || {};
     if (typeof partes === 'string') return esc(partes);   // por si vuelve a ser texto plano
     return partes.map(function (par) {
       return '<span class="fm__palabra">' +
-          '<img class="fm__tramo" src="../assets/img/atwi/' + par[0] + '.png" alt="' + esc(par[1]) + '">' +
+          '<img class="fm__tramo" src="../assets/img/atwi/' + par[0] + '.webp" alt="' + esc(par[1]) + '">' +
         '</span>';
     }).join('');
   }

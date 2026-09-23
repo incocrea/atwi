@@ -44,7 +44,7 @@
   /* El reloj de arena: el mismo de la pestaña Historial, que ya está publicado
      y en la ola `nucleo` --no hay pieza nueva que bajar--. */
   function relojHTML() {
-    return '<img class="jg-el__dibujo" src="../assets/img/iconos/historial.png" ' +
+    return '<img class="jg-el__dibujo" src="../assets/img/iconos/historial.webp" ' +
       'alt="" decoding="async">';
   }
   function segundos(ms) { return (Math.round((ms || 0) / 100) / 10) + ' s'; }
