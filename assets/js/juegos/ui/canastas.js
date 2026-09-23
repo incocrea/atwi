@@ -74,6 +74,17 @@
     return n;
   }
   function completa(t, cabe) { return t.length === cabe && rachaAbajo(t) === cabe; }
+  function rachaArriba(t) {
+    if (!t.length) return 0;
+    var n = 1;
+    while (n < t.length && t[t.length - 1 - n] === t[t.length - 1]) n++;
+    return n;
+  }
+  /* Cuántas se lleva un movimiento (la misma cuenta que la lógica): todas las
+     iguales de arriba de `d`, o las que quepan en `h`. */
+  function cuantasVan(tt, cabe, d, h) {
+    return Math.min(rachaArriba(tt[d]), cabe - tt[h].length);
+  }
   function puede(tt, cabe, d, h) {
     if (d === h) return false;
     var a = tt[d], b = tt[h];
@@ -183,7 +194,8 @@
     }
     return '<div class="jg-cn-como" style="--w:' + w + 'px;--h:' + h + 'px;--paso:' + PASO +
         ';--st:' + Math.round(h * ST_LADO) + 'px;--st-y:' + Math.round(h * ST_Y) + 'px">' +
-        '<p class="jg-como__txt">Arrastra la <b>caja de arriba</b> de una torre y suéltala en otra. Solo cae en dos sitios:</p>' +
+        '<p class="jg-como__txt">Arrastra la <b>caja de arriba</b> de una torre y suéltala en otra; ' +
+          'si encima hay <b>varias iguales, van juntas</b>. Solo caen en dos sitios:</p>' +
         '<ul class="jg-como__ejs" style="--cols:3">' +
           ejemplo([b, a], true, 'Encima de una igual') +
           ejemplo([-1], true, 'En una torre vacía') +
@@ -217,20 +229,35 @@
       var tablero = caja.querySelector('.jg-cn');
 
       function torreEl(i) { return caja.querySelector('[data-torre="' + i + '"]'); }
-      function cimaEl(i) {
+      /* Las `n` cajas de arriba de la torre `i`, de abajo arriba. */
+      function cimasEl(i, n) {
         var el = torreEl(i);
-        var l = el ? el.querySelectorAll('.jg-cn__caja') : [];
-        return l.length ? l[l.length - 1] : null;
+        var l = el ? [].slice.call(el.querySelectorAll('.jg-cn__caja')) : [];
+        return n > 0 ? l.slice(Math.max(0, l.length - n)) : [];
       }
 
-      /* Qué torres admiten lo que se lleva `d`, y cuál está bajo el dedo. */
+      /* Qué torres admiten lo que se lleva `d`, cuál está bajo el dedo y, en
+         ésa, CUÁNTOS huecos se van a llenar: si caben todas se encienden
+         todas, y si no, solo las que caben --así se ve antes de soltar que
+         alguna va a volver--. */
       function marcar(d, diana) {
+        var tramo = d >= 0 ? rachaArriba(estado.torres[d]) : 0;
         [].forEach.call(caja.querySelectorAll('.jg-cn__torre'), function (el) {
           var i = Number(el.dataset.torre);
           var ok = d >= 0 && puede(estado.torres, t.cabe, d, i);
           el.classList.toggle('jg-cn__torre--puede', ok);
           el.classList.toggle('jg-cn__torre--diana', ok && i === diana);
-          el.classList.toggle('jg-cn__torre--origen', i === d);
+          var van = ok && i === diana ? cuantasVan(estado.torres, t.cabe, d, i) : 0;
+          var len = estado.torres[i].length;
+          [].forEach.call(el.querySelectorAll('.jg-cn__hueco'), function (hu) {
+            var k = Number(hu.style.getPropertyValue('--k'));
+            hu.classList.toggle('jg-cn__hueco--llega', k >= len && k < len + van);
+          });
+          /* En la de origen se atenúa el TRAMO que viaja, no solo la de arriba. */
+          var cajas = el.querySelectorAll('.jg-cn__caja');
+          [].forEach.call(cajas, function (c, k) {
+            c.classList.toggle('jg-cn__caja--sale', i === d && k >= cajas.length - tramo);
+          });
         });
       }
 
@@ -262,37 +289,48 @@
         }
       }
 
-      /* La caja nueva nace donde se soltó (o donde estaba, si fue con teclado)
-         y se asienta en su sitio: FLIP, con la pieza de verdad y no una copia.
-         Con reloj de CSS: si la pestaña no pinta, el tablero ya está bien. */
-      var vueloDesde = null;
-      function asentar(el, desde) {
-        if (!el || !desde) return;
-        var r1 = el.getBoundingClientRect();
-        el.style.setProperty('--dx', Math.round(desde.left - r1.left) + 'px');
-        el.style.setProperty('--dy', Math.round(desde.top - r1.top) + 'px');
-        /* Quitar y volver a poner: una caja que vuelve dos veces seguidas a su
-           torre ya tiene la clase, y sin esto la segunda no se animaría. */
-        el.classList.remove('jg-cn__caja--cae');
-        void el.offsetWidth;
-        el.classList.add('jg-cn__caja--cae');
+      /* Cada caja nueva nace donde se soltó (o donde estaba, si fue con
+         teclado) y se asienta en su sitio: FLIP, con la pieza de verdad y no una
+         copia. Con reloj de CSS: si la pestaña no pinta, el tablero ya está bien. */
+      var vueloDesde = null;           // los rects del fantasma, de abajo arriba
+      function asentar(els, desde) {
+        if (!desde) return;
+        els.forEach(function (el, k) {
+          var r0 = desde[k];
+          if (!el || !r0) return;
+          var r1 = el.getBoundingClientRect();
+          el.style.setProperty('--dx', Math.round(r0.left - r1.left) + 'px');
+          el.style.setProperty('--dy', Math.round(r0.top - r1.top) + 'px');
+          /* Quitar y volver a poner: una caja que vuelve dos veces seguidas a
+             su torre ya tiene la clase, y sin esto la segunda no se animaría. */
+          el.classList.remove('jg-cn__caja--cae');
+          void el.offsetWidth;
+          el.classList.add('jg-cn__caja--cae');
+        });
       }
+      function rectsDe(els) { return els.map(function (el) { return el.getBoundingClientRect(); }); }
 
       /* --- ARRASTRAR ------------------------------------------------------ */
       var UMBRAL = 6;
-      var ar = null;            // {d, x0, y0, fantasma}
+      var ar = null;            // {d, tramo, x0, y0, fantasma, id}
 
-      function fantasmaEn(d, x, y) {
+      /* El fantasma lleva el TRAMO entero apilado: se arrastra lo que se va a
+         mover, no una caja que miente. */
+      function fantasmaEn(d, tramo, x, y) {
         var g = document.createElement('div');
         g.className = 'jg-arrastre jg-cn-fantasma';
         g.setAttribute('style', estiloDe(m, t.cabe));
-        var torre = estado.torres[d];
-        g.innerHTML = '<span class="jg-cn__caja">' + cajaHTML(t, torre[torre.length - 1]) + '</span>';
+        var torre = estado.torres[d], s = '';
+        for (var k = 0; k < tramo; k++) {
+          s += '<span class="jg-cn__caja" style="--k:' + k + ';z-index:' + (k + 1) + '">' +
+            cajaHTML(t, torre[torre.length - 1]) + '</span>';
+        }
+        g.innerHTML = '<span class="jg-cn-mini" style="--n:' + tramo + '">' + s + '</span>';
         document.body.appendChild(g);
-        mover(g, x, y);
+        moverFantasma(g, x, y);
         return g;
       }
-      function mover(g, x, y) { g.style.left = x + 'px'; g.style.top = y + 'px'; }
+      function moverFantasma(g, x, y) { g.style.left = x + 'px'; g.style.top = y + 'px'; }
       function torreBajo(x, y) {
         var n = document.elementFromPoint(x, y);
         n = n && n.closest ? n.closest('[data-torre]') : null;
@@ -302,22 +340,40 @@
       /* La red contra el arrastre nativo, para lo que venga después. */
       caja.addEventListener('dragstart', function (e) { e.preventDefault(); });
 
+      /* ⚠️ EN EL MÓVIL EL ARRASTRE SE SOLTABA SOLO al cruzar otras torres camino
+         del destino (titular, 2026-09-22). Lo que corta un arrastre de dedo a
+         mitad es que el navegador decida que el gesto es SUYO --desplazar la
+         pantalla-- y mande `pointercancel`: basta con que el contenido desborde
+         unos píxeles. `touch-action: none` en el CSS debería impedirlo, pero no
+         todos los navegadores de teléfono lo cumplen igual; esto lo cierra por
+         las tres vías a la vez:
+           · el gesto queda AMARRADO a la caja que se cogió (`setPointerCapture`),
+             así nada de lo que haya debajo del dedo se lo puede quedar;
+           · mientras hay arrastre, `touchmove` no hace nada suyo
+             (`preventDefault`, con `passive: false` o el navegador lo ignora);
+           · y el «el dedo ya no está apoyado» (`buttons === 0`) se mira SOLO con
+             ratón: es una red para un `pointerup` perdido, y en un toque esa
+             cuenta no es fiable en todos los teléfonos. */
       tablero.addEventListener('pointerdown', function (e) {
         if (e.button) return;
         var c = e.target.closest('.jg-cn__caja--arriba');
         if (!c) return;
-        var torre = c.closest('[data-torre]');
-        ar = { d: Number(torre.dataset.torre), x0: e.clientX, y0: e.clientY, fantasma: null };
+        var d = Number(c.closest('[data-torre]').dataset.torre);
+        ar = { d: d, tramo: rachaArriba(estado.torres[d]), x0: e.clientX, y0: e.clientY, fantasma: null, id: e.pointerId };
+        try { c.setPointerCapture(e.pointerId); } catch (_) { /* sin captura, va por window */ }
       });
+      function sinDesplazar(e) { if (ar) e.preventDefault(); }
+      document.addEventListener('touchmove', sinDesplazar, { passive: false });
 
-      /* Los oyentes viven en `window` --el dedo se sale del tablero a mitad del
-         gesto-- y se quitan SOLOS cuando la pantalla ya no está: así la ronda
-         siguiente no hereda los de la anterior. */
+      /* Los oyentes viven en `window` y `document` --el dedo se sale del tablero
+         a mitad del gesto-- y se quitan SOLOS cuando la pantalla ya no está: así
+         la ronda siguiente no hereda los de la anterior. */
       function seFue() {
         if (caja.isConnected) return false;
         window.removeEventListener('pointermove', alMover);
         window.removeEventListener('pointerup', alSoltar);
         window.removeEventListener('pointercancel', alSoltar);
+        document.removeEventListener('touchmove', sinDesplazar);
         if (ar && ar.fantasma) ar.fantasma.remove();
         ar = null;
         return true;
@@ -330,37 +386,35 @@
 
       window.addEventListener('pointermove', alMover);
       function alMover(e) {
-        if (seFue() || !ar) return;
-        /* Si el dedo ya no está apoyado no hay gesto: un `pointerup` se puede
-           perder y sin esto quedaría una caja arrastrándose sola. */
-        if (!e.buttons) { cancelar(); return; }
+        if (seFue() || !ar || e.pointerId !== ar.id) return;
+        if (e.pointerType === 'mouse' && !e.buttons) { cancelar(); return; }
         if (!ar.fantasma) {
           if (Math.abs(e.clientX - ar.x0) < UMBRAL && Math.abs(e.clientY - ar.y0) < UMBRAL) return;
-          ar.fantasma = fantasmaEn(ar.d, e.clientX, e.clientY);
+          ar.fantasma = fantasmaEn(ar.d, ar.tramo, e.clientX, e.clientY);
         }
-        mover(ar.fantasma, e.clientX, e.clientY);
+        moverFantasma(ar.fantasma, e.clientX, e.clientY);
         marcar(ar.d, torreBajo(e.clientX, e.clientY));
       }
 
       window.addEventListener('pointerup', alSoltar);
       window.addEventListener('pointercancel', alSoltar);
       function alSoltar(e) {
-        if (seFue() || !ar) return;
+        if (seFue() || !ar || e.pointerId !== ar.id) return;
         var esto = ar;
         ar = null;
         marcar(-1, -1);
         if (!esto.fantasma) return;               // fue un toque: no hace nada
-        var desde = esto.fantasma.getBoundingClientRect();
+        var desde = rectsDe([].slice.call(esto.fantasma.querySelectorAll('.jg-cn__caja')));
         esto.fantasma.remove();
         var h = e.type === 'pointercancel' ? -1 : torreBajo(e.clientX, e.clientY);
         if (h >= 0 && puede(estado.torres, t.cabe, esto.d, h)) {
           vueloDesde = desde;
-          ctx.jugar(esto.d * F + h);              // `actualizar` la asienta
+          ctx.jugar(esto.d * F + h);              // `actualizar` las asienta
           return;
         }
-        /* No cabe ahí --o se soltó fuera--: la caja vuelve a su torre desde
+        /* No cabe ahí --o se soltó fuera--: el tramo vuelve a su torre desde
            donde se soltó, y si había una torre debajo, ésa tiembla. */
-        asentar(cimaEl(esto.d), desde);
+        asentar(cimasEl(esto.d, esto.tramo), desde);
         if (h >= 0 && h !== esto.d) temblar(h);
       }
 
@@ -389,16 +443,22 @@
       return function actualizar(est, jugada) {
         var s = window.ATWI.sonido;
         var d = Math.floor(jugada / F), h = jugada % F;
-        /* Con teclado no hubo fantasma: la caja sale de donde estaba. */
+        /* Cuántas llegaron: lo que creció la torre de destino --el DOM todavía
+           enseña cómo estaba antes de la jugada--. */
+        var torreH = torreEl(h);
+        var antesH = torreH ? torreH.querySelectorAll('.jg-cn__caja').length : 0;
+        var llegan = est.torres[h].length - antesH;
         var desde = vueloDesde;
         vueloDesde = null;
-        if (!desde) {
-          var antes = cimaEl(d);
-          desde = antes ? antes.getBoundingClientRect() : null;
-        }
+        /* Con teclado no hubo fantasma: salen de donde estaban. */
+        if (!desde) desde = rectsDe(cimasEl(d, llegan));
+        var vuelven = Math.max(0, desde.length - llegan);
         repintarTorre(d);
         repintarTorre(h);
-        asentar(cimaEl(h), desde);
+        /* Las de arriba del fantasma son las que caben; las de abajo, si
+           sobran, vuelven a su torre. */
+        asentar(cimasEl(h, llegan), desde.slice(desde.length - llegan));
+        if (vuelven) asentar(cimasEl(d, vuelven), desde.slice(0, vuelven));
         if (s && s.hay()) s.clac(completa(est.torres[h], t.cabe) ? 0.9 : 0.5);
       };
     },

@@ -1100,9 +1100,15 @@
 /* Solo la de arriba se coge. */
 .jg-cn__caja--arriba { cursor: grab; }
 .jg-cn__caja--arriba:active { cursor: grabbing; }
-/* Mientras viaja, la que se va se queda en su torre desvaída: se ve de dónde
-   sale y adónde vuelve si se suelta fuera. */
-.jg-cn__torre--origen .jg-cn__caja--arriba { opacity: .28; }
+/* Mientras viaja, el TRAMO que se va --todas las iguales de arriba-- se queda
+   en su torre desvaído: se ve qué se mueve, de dónde sale y adónde vuelve si
+   se suelta fuera. */
+.jg-cn__caja--sale { opacity: .28; }
+/* ⚠️ También en torres y cajas, no solo en el contenedor: la norma dice que
+   `touch-action` se toma de los antepasados, y hay navegadores de teléfono que
+   no la cumplen igual. Un arrastre que el navegador se queda para desplazar la
+   pantalla es un arrastre que se suelta solo. */
+.jg-cn__torre, .jg-cn__caja { touch-action: none; }
 
 /* LOS HUECOS, CAJAS FANTASMA (titular, con un ejemplo): la caja crema en gris
    y medio transparente. Una torre vacía se ve como cuatro huecos y no como nada,
@@ -1116,7 +1122,10 @@
    cabe aquí se insinúa; bajo el dedo, se enciende en el color del modo. Dice
    qué es legal, no qué conviene. */
 .jg-cn__torre--puede .jg-cn__hueco--siguiente { opacity: .7; filter: grayscale(.4) brightness(1.1); }
-.jg-cn__torre--diana .jg-cn__hueco--siguiente {
+/* Bajo el dedo se encienden TODOS los huecos que se van a llenar: tantos como
+   cajas quepan del tramo. Si son menos que las que se llevan, se ve antes de
+   soltar que alguna va a volver. */
+.jg-cn__hueco--llega {
   opacity: 1; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--jg-color)) brightness(1.08);
   transform: scale(1.05);
 }
@@ -1151,7 +1160,8 @@
    el `position: absolute` lo vuelve bloque. Aquí va `relative`, y un `<span>` en
    línea IGNORA `width` y `height`: medido, el fantasma salía a 256×219 --el tamaño
    natural de la imagen-- con 93×80 declarados. */
-.jg-cn-fantasma .jg-cn__caja { position: relative; display: block; bottom: auto; transform: scale(1.08); }
+/* Lleva el tramo entero apilado, con el mismo marcado que las torres. */
+.jg-cn-fantasma .jg-cn-mini { display: block; transform: scale(1.08); }
 
 /* EL GLOBO DE «¿CÓMO SE JUEGA?»: torres de verdad en miniatura, con las cajas de
    la ronda. Mismo marcado que el tablero --`.jg-cn__caja` y `.jg-cn__hueco`--,

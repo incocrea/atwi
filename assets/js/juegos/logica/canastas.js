@@ -18,9 +18,13 @@
    de los 24 stickers (`fichas`), emparejados por su índice. Que se distingan por
    dos vías --color y dibujo-- es lo que deja jugar rápido sin confundirse.
 
-   UNA CAJA POR MOVIMIENTO, no «todo lo igual de golpe» como vierte el agua del
-   original: con cajas, mover una pila entera no se entiende, y un gesto tiene
-   que mover lo que el dedo arrastró.
+   ⚠️ UN MOVIMIENTO SE LLEVA TODAS LAS IGUALES DE ARRIBA (titular, 2026-09-22:
+   «si son del mismo tipo debería poder arrastrar varias cajas stackeadas a la
+   vez y, si el destino permite el movimiento, moverlas todas juntas»). Aquí
+   decía lo contrario --una caja por movimiento--. Si en el destino no caben
+   todas, pasan LAS QUE QUEPAN, como el agua del original: «todas o ninguna»
+   prohibiría la jugada más común de todas, la que termina una torre a la que
+   le falta una. Y cuenta como UN movimiento, que es lo que lo hace valer.
 
    DIFICULTAD ÚNICA (pivote del 2026-09-22): 4 tipos en 6 torres. El plan traía
    tres (3 en 5 · 4 en 6 · 5 en 7) y se queda el de en medio, como Calco.
@@ -112,6 +116,18 @@
     return true;
   }
 
+  /* Cuántas cajas se lleva un movimiento de `d` a `h`: todas las iguales de
+     arriba de `d`, o las que quepan en `h`. */
+  function cuantasVan(torres, cabe, d, h) {
+    return Math.min(rachaArriba(torres[d]), cabe - torres[h].length);
+  }
+
+  function mover(torres, cabe, d, h) {
+    var n = cuantasVan(torres, cabe, d, h);
+    for (var i = 0; i < n; i++) torres[h].push(torres[d].pop());
+    return n;
+  }
+
   function puede(torres, cabe, d, h) {
     if (d === h || d < 0 || h < 0 || d >= torres.length || h >= torres.length) return false;
     var a = torres[d], b = torres[h];
@@ -119,10 +135,10 @@
     return !b.length || cima(b) === cima(a);
   }
 
-  /* LO MENOS QUE HAY QUE MOVER: toda caja que tiene debajo una distinta tiene
-     que salir de ahí al menos una vez --por debajo de ella no se puede tocar
-     nada sin sacarla antes--. Es un piso de verdad, nunca más que lo
-     necesario, y por eso sirve para el piso humano de tiempo. */
+  /* CUÁNTAS CAJAS ESTÁN FUERA DE SITIO: toda caja que tiene debajo una distinta
+     tiene que salir de ahí al menos una vez --por debajo de ella no se puede
+     tocar nada sin sacarla antes--. Mide lo revuelto que está un reparto, y es
+     lo que descarta los que salen demasiado ordenados. */
   function trabajoMinimo(torres) {
     var n = 0;
     for (var i = 0; i < torres.length; i++) n += torres[i].length - rachaAbajo(torres[i]);
@@ -132,6 +148,21 @@
   /* Dos repartos que solo se diferencian en el ORDEN de las torres son el
      mismo problema: la clave los junta, y eso es lo que deja al buscador en
      decenas de nodos y no en miles. */
+  /* LO MENOS QUE HAY QUE MOVER, EN MOVIMIENTOS: desde que un movimiento se lleva
+     todas las iguales de arriba, cada TRAMO de iguales que está encima de una
+     distinta necesita al menos uno --un movimiento solo coge un tramo, el de
+     arriba de una torre--. Es un piso de verdad y sirve para el piso humano. */
+  function tramosFuera(torres) {
+    var n = 0;
+    for (var i = 0; i < torres.length; i++) {
+      var t = torres[i];
+      for (var k = rachaAbajo(t); k < t.length; k++) {
+        if (k === rachaAbajo(t) || t[k] !== t[k - 1]) n++;
+      }
+    }
+    return n;
+  }
+
   function clave(torres) {
     var partes = [];
     for (var i = 0; i < torres.length; i++) partes.push(torres[i].join(''));
@@ -187,11 +218,14 @@
       var lista = candidatos(tt, cabe);
       for (var i = 0; i < lista.length; i++) {
         var d = Math.floor(lista[i] / F), h = lista[i] % F;
-        tt[h].push(tt[d].pop());
+        /* Con la regla del juego: se lleva todas las iguales de arriba, o las
+           que quepan. Si el buscador moviera de una en una, su solución no se
+           podría repetir con la regla de verdad. */
+        var n = mover(tt, cabe, d, h);
         camino.push(lista[i]);
         if (paso()) return true;
         camino.pop();
-        tt[d].push(tt[h].pop());
+        for (var u = 0; u < n; u++) tt[d].push(tt[h].pop());
       }
       return false;
     }
@@ -252,7 +286,7 @@
     if (resuelto(estado.torres, t.cabe)) return null;
     var d = Math.floor(jugada / F), h = jugada % F;
     if (!puede(estado.torres, t.cabe, d, h)) return null;
-    estado.torres[h].push(estado.torres[d].pop());
+    mover(estado.torres, t.cabe, d, h);
     estado.movimientos++;
     return estado;
   }
@@ -330,10 +364,10 @@
     return tablero.sol.slice();
   }
 
-  /* Arrastrar una caja de una torre a otra, con el dedo, no baja de un cuarto
-     de segundo; y como mínimo hay que mover lo que dice `trabajoMinimo`. */
+  /* Arrastrar de una torre a otra, con el dedo, no baja de un cuarto de
+     segundo; y como mínimo hay tantos movimientos como `tramosFuera`. */
   function pisoMs(tablero) {
-    return trabajoMinimo(tablero.torres) * 250;
+    return tramosFuera(tablero.torres) * 250;
   }
 
   J.registrar({
@@ -342,7 +376,8 @@
     /* Tiene su rótulo dibujado (titular, 2026-09-22): manda sobre el nombre en
        texto, como el logo del modo en el versus. */
     rotulo: true,
-    como: 'Arrastra la caja de arriba de una torre a otra hasta que cada torre tenga cajas iguales. ' +
+    como: 'Arrastra la caja de arriba de una torre a otra --si hay varias iguales encima, van juntas-- ' +
+          'hasta que cada torre tenga cajas iguales. ' +
           'Gana quien lo logra en menos movimientos.',
     compara: 'rondas',
     reintentos: 2,

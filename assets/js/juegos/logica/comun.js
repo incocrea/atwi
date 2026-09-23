@@ -46,7 +46,11 @@
      Calco deja de llevar `muestraMs`, pero SI el tiempo oficial: un telefono con
      el JS de antes contaria 3 s de muestra donde el servidor descuenta 5, y
      jugaria 30 s en una ronda que el servidor corta a 15. */
-  J.VERSION_REGLAS = '0.7';
+  /* 0.8: en Canastas un movimiento se lleva TODAS las cajas iguales de arriba
+     (o las que quepan), no una. Cambia la regla y, con ella, la solución que
+     guarda cada tablero; un teléfono con el JS de antes repetiría las jugadas
+     moviendo de una en una y llegaría a otro tablero que el servidor. */
+  J.VERSION_REGLAS = '0.8';
 
   var MAX_JUGADAS = 600;
   var SAL_DEL_GEMELO = 0x67656D65;      // «geme»: la semilla hija del gemelo
