@@ -1640,6 +1640,9 @@ body.app {
   font-weight: 800;
   font-size: clamp(2rem, 12vw, 3.25rem);
   line-height: 1.05;
+  /* Va sobre el fondo de la sala, sin tarjeta: borde blanco como todo texto
+     que flota (titular, 2026-09-22). La variante `--etiqueta` lo engorda. */
+  -webkit-text-stroke: 8px var(--blanco); paint-order: stroke fill;
   animation: ganador var(--dur-larga) var(--rebote);
   /* POR ENCIMA DE LOS QUE ENTRAN. En Negociación con acuerdo entran los dos y
      el titular cae entre ellos: sin esto quedaba detrás, porque una caja
@@ -3106,15 +3109,29 @@ body.app {
    despega del dibujo. Solo las que van DIRECTAS sobre el fondo; las de ese color
    que viven dentro de una tarjeta o una píldora blanca ya tienen contraste. */
 .pie-nota, .sala__nota, .sala__recordatorio, .dicho__titulo, .sorteo__que,
-.juez__dice, .leyenda {
+.juez__dice, .leyenda,
+.perfil-duo__como, .perfil-duo__cambiar, .juez-mesa__que, .ronda-op__que,
+.turnos-linea > p, .revelacion__pie, .vacio > p, .ficha > .chico,
+.vista > p {
   -webkit-text-stroke: 4px var(--blanco); paint-order: stroke fill;
   filter: drop-shadow(0 1px 1px rgba(46, 42, 63, .2));
 }
+/* ⚠️ Y ES LA REGLA PARA TODO TEXTO QUE FLOTA (titular, el mismo día: «te faltaron
+   algunos textos… todo texto que esté flotando sin card de fondo debe tenerlo»).
+   La lista salió de recorrer las pantallas con un auditor en el navegador —cada
+   texto visible cuyo camino hasta la pantalla no cruza ningún fondo—, no de
+   memoria. Los que llevaban un halo suave (`text-shadow` blanco) entran igual:
+   el halo se deshacía sobre el dibujo claro y el trazo no. ⚠️ Va sobre la HOJA
+   del texto y no sobre su caja: `-webkit-text-stroke` se hereda, y puesto en un
+   contenedor se le pegaría también a la letra blanca de un botón de color.
+   Cuando entre una pantalla nueva con texto suelto, se añade aquí. */
 /* Y LOS NOMBRES Y LOS TÍTULOS TAMBIÉN (titular, el mismo día: «aplica borde
    blanco a los textos de títulos y demás que no estén generando mucho contraste,
    y al del eslogan del juego en el logo»). Los nombres grandes van con más
    trazo, que a 27 px dos píxeles de borde no se ven. */
-.turno__quien, .sorteo__quien {
+.turno__quien, .sorteo__quien,
+.perfil-duo__quien, .juez-mesa__quien, .turnos-linea > h3, .ficha__nombre,
+.vacio > h2, .vista > h2, .vista > h3 {
   -webkit-text-stroke: 6px var(--blanco); paint-order: stroke fill;
   filter: drop-shadow(0 1px 1px rgba(46, 42, 63, .2));
 }

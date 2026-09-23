@@ -64,6 +64,18 @@
 }
 .jg-quien--chica .avatar--duelo { width: 64px; height: 64px; }
 
+/* TODO TEXTO QUE FLOTA LLEVA BORDE BLANCO (titular, 2026-09-22: «todo texto que
+   esté flotando sin card de fondo debe tenerlo»). Es la misma regla de
+   `app.css` (`.pie-nota` y compañía) para los textos del juego. Estos llevaban
+   un halo suave —se queda debajo— que sobre las láminas claras se deshacía;
+   el trazo no. Va en la hoja del texto: `-webkit-text-stroke` se hereda. */
+.jg-quien__que, .jg-aviso, .jg-pista {
+  -webkit-text-stroke: 4px var(--blanco); paint-order: stroke fill;
+}
+.jg-quien__nombre, .jg-relevo__t, .jg-choque__lema {
+  -webkit-text-stroke: 6px var(--blanco); paint-order: stroke fill;
+}
+
 /* La ficha de la ronda: una tarjeta blanca, como todo lo que lleva texto
    encima de un fondo dibujado. */
 .jg-ficha-ronda {
