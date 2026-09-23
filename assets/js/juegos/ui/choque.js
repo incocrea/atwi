@@ -108,10 +108,13 @@
              según el estado era letra chica que nadie leía, y lo que dice el
              estado ya lo dice el círculo. */
           '<p class="jg-choque__lema">¡Arrastra tu elemento a jugar!</p>' +
+          /* «¿CÓMO SE JUEGA?» Y NO «¿QUIÉN VENCE A QUIÉN?» (titular, 2026-09-22):
+             el mismo enlace en todos los juegos, que explica la mecánica entera
+             --no solo el círculo-- y se encuentra en el mismo sitio. */
           '<p class="jg-choque__ayuda">' +
-            '<button type="button" class="jg-choque__comovence" data-el-ayuda>' +
+            '<button type="button" class="jg-choque__comovence jg-comojuega" data-el-ayuda>' +
               (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
-              '<span>¿Quién vence a quién?</span>' +
+              '<span>¿Cómo se juega?</span>' +
             '</button>' +
           '</p>' +
           (ctx.pie ? '' : '<div class="jg-choque__pie">' + botonHTML() + '</div>') +
@@ -259,7 +262,9 @@
                 gana.map(function (k) { return esc(nombre(k)); }).join(' y ') + '</span>' +
             '</li>';
         }).join('');
-        return '<ul class="jg-vence">' + filas + '</ul>' +
+        return '<p class="jg-como__txt">Arrastra un elemento a cada círculo: es lo que juegas en esa ronda. ' +
+            'La ganas si tu elemento <b>vence</b> al del otro.</p>' +
+          '<ul class="jg-vence">' + filas + '</ul>' +
           '<p class="chico tenue centrado">Cada uno vence a dos y pierde con los otros dos. ' +
             'Si los dos eligen el mismo, la ronda queda en tablas.</p>';
       }
@@ -270,8 +275,8 @@
         var ay = e.target.closest('[data-el-ayuda]');
         if (ay) {
           if (window.ATWI.globo) {
-            window.ATWI.globo.abrir(ay, { titulo: '¿Quién vence a quién?' },
-              { tinte: 'competencia', etiqueta: 'Quién vence a quién', cuerpo: comoVence() });
+            window.ATWI.globo.abrir(ay, { titulo: '¿Cómo se juega?' },
+              { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: comoVence() });
           }
           return;
         }

@@ -151,17 +151,79 @@
         ' aria-label="' + nombreTorre(t, torre, i) + '">' + s + '</div>';
   }
 
+  /* «¿CÓMO SE JUEGA?» (titular, 2026-09-22: «en el globo explicas la mecánica
+     con texto y ejemplo gráfico»). EL EJEMPLO SE DIBUJA CON LAS CAJAS DE ESTA
+     RONDA --las dos primeras de su reparto--, no con un dibujo genérico: quien
+     lo abre ve exactamente las piezas que tiene delante. Tres casos --encima de
+     una igual, en una torre vacía, encima de otra distinta-- y la meta, una
+     torre de cuatro iguales. Son torres de verdad en miniatura: mismo marcado,
+     mismo CSS, otro tamaño. */
+  function comoSeJuega(t) {
+    var w = 38, h = Math.round(w / ASPECTO);
+    var a = 0, b = t.tipos > 1 ? 1 : 0;
+    function mini(tipos) {
+      var s = '';
+      for (var k = 0; k < tipos.length; k++) {
+        s += tipos[k] < 0
+          ? '<span class="jg-cn__hueco jg-cn__hueco--siguiente" style="--k:' + k + '">' +
+              '<img class="jg-cn__img" src="../assets/img/juegos/canasta-crema.webp" width="256" height="219" alt="" draggable="false"></span>'
+          : '<span class="jg-cn__caja" style="--k:' + k + ';z-index:' + (k + 1) + '">' + cajaHTML(t, tipos[k]) + '</span>';
+      }
+      return '<span class="jg-cn-mini" style="--n:' + tipos.length + '">' + s + '</span>';
+    }
+    function ejemplo(destino, vale, texto) {
+      return '<li class="jg-cn-como__ej">' + mini([a]) +
+          '<span class="jg-cn-como__flecha" aria-hidden="true">↓</span>' + mini(destino) +
+          '<span class="jg-cn-como__dice jg-cn-como__dice--' + (vale ? 'si' : 'no') + '">' +
+            (vale ? '✓ ' : '✗ ') + texto + '</span>' +
+        '</li>';
+    }
+    return '<div class="jg-cn-como" style="--w:' + w + 'px;--h:' + h + 'px;--paso:' + PASO +
+        ';--st:' + Math.round(h * ST_LADO) + 'px;--st-y:' + Math.round(h * ST_Y) + 'px">' +
+        '<p class="jg-como__txt">Arrastra la <b>caja de arriba</b> de una torre y suéltala en otra. Solo cae en dos sitios:</p>' +
+        '<ul class="jg-cn-como__ejs">' +
+          ejemplo([b, a], true, 'Encima de una igual') +
+          ejemplo([-1], true, 'En una torre vacía') +
+          ejemplo([a, b], false, 'Encima de otra, no') +
+        '</ul>' +
+        '<div class="jg-cn-como__meta">' + mini([a, a, a, a]) +
+          '<p class="jg-como__txt">Gana quien deja <b>cada torre con cuatro cajas iguales</b> en menos movimientos.</p>' +
+        '</div>' +
+      '</div>';
+  }
+
   J.ui.canastas = {
     msSalida: MS_SALIDA,
 
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
-      /* Todo el hueco es de las torres: debajo ya no va nada. */
-      var m = medidas(t, ctx.ancho, ctx.alto);
+      /* Debajo de las torres va solo el enlace «¿Cómo se juega?», como en Choque. */
+      var RESERVA = 50;
+      var m = medidas(t, ctx.ancho, ctx.alto - RESERVA);
       var html = '';
       for (var i = 0; i < estado.torres.length; i++) html += torreHTML(t, estado.torres[i], i, ctx.bloqueado);
       caja.innerHTML =
-        '<div class="jg-cn" style="' + estiloDe(m, t.cabe) + '">' + html + '</div>';
+        '<div class="jg-cn" style="' + estiloDe(m, t.cabe) + '">' + html + '</div>' +
+        '<p class="jg-comojuega-fila">' +
+          '<button type="button" class="jg-comojuega" data-cn-ayuda>' +
+            (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
+            '<span>¿Cómo se juega?</span>' +
+          '</button>' +
+        '</p>';
+
+      /* ⚠️ EL OYENTE VA EN EL BOTÓN Y NO EN `caja`: `caja` es el mismo elemento
+         en cada pintada (la del 3-2-1 y la de jugar), así que un oyente en ella
+         se sumaría uno por pintada y el segundo cerraría el globo que abrió el
+         primero --el globo trata el mismo disparador como un interruptor--. */
+      var ayuda = caja.querySelector('[data-cn-ayuda]');
+      if (ayuda) {
+        ayuda.addEventListener('click', function () {
+          if (window.ATWI.globo) {
+            window.ATWI.globo.abrir(ayuda, { titulo: '¿Cómo se juega?' },
+              { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: comoSeJuega(t) });
+          }
+        });
+      }
 
       if (ctx.bloqueado) return null;
 

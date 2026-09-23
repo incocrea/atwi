@@ -398,7 +398,11 @@
    reduce 50 % cada una de las opciones»): lo que se mira es el círculo, y la
    paleta es solo de dónde se saca. El fantasma del arrastre sigue a 96, así que
    la figura crece al levantarla y aterriza del tamaño del círculo. */
-.jg-el .jg-el__dibujo { width: 52px; height: auto; }
+.jg-el .jg-el__dibujo { width: 68px; height: auto; }
+/* UN 30 % MÁS GRANDES (titular, 2026-09-22): el dibujo de 52 a 68 px y la placa
+   del nombre en la misma proporción, para que la opción crezca entera y no solo
+   el icono. Acotado a `.jg-el`: la placa la usan también el duelo y el globo. */
+.jg-el .jg-el__nombre { font-size: calc(var(--t-mini) * 1.3); padding: 3px 13px; }
 /* ⚠️ Y NINGUNA PIEZA SE ARRASTRA A LO NATIVO. El `draggable="false"` del HTML es
    lo que arregla el cursor de prohibido; esto es la red en CSS para Safari, que
    necesita `-webkit-user-drag`, y para que el nombre no se seleccione a mitad
@@ -562,15 +566,19 @@
    con varias rondas asignadas no se sabía de cuál— y el círculo entero pasó a
    un globo que se abre cuando se quiere. El botón es un enlace con su bombilla,
    no un botón de acción: no hace nada en el tablero, solo explica. */
-.jg-choque__ayuda { margin: 0; text-align: center; }
+.jg-choque__ayuda, .jg-comojuega-fila { margin: 0; text-align: center; }
 /* SIN SUBRAYADO (titular, 2026-09-21): con la bombilla al lado ya se lee como
    algo que se toca, y el subrayado lo hacía parecer un enlace de otra época. */
-.jg-choque__comovence {
+/* «¿Cómo se juega?»: el mismo enlace en todos los juegos (`.jg-comojuega`), con
+   la clase vieja de Choque de alias para no tocar lo que ya la usa. */
+.jg-choque__comovence, .jg-comojuega {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 6px 10px; border: 0; background: none; cursor: pointer;
   color: var(--competencia); font-weight: 800; font-size: var(--t-chico);
 }
-.jg-choque__comovence:active { transform: translateY(1px); }
+.jg-choque__comovence:active, .jg-comojuega:active { transform: translateY(1px); }
+/* El texto de los globos de «¿Cómo se juega?». */
+.jg-como__txt { margin: 0 0 8px; font-size: var(--t-chico); line-height: 1.4; }
 
 /* La lista del globo: cada elemento con su dibujo y a quién vence. */
 .jg-vence { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -1083,6 +1091,34 @@
    línea IGNORA `width` y `height`: medido, el fantasma salía a 256×219 --el tamaño
    natural de la imagen-- con 93×80 declarados. */
 .jg-cn-fantasma .jg-cn__caja { position: relative; display: block; bottom: auto; transform: scale(1.08); }
+
+/* EL GLOBO DE «¿CÓMO SE JUEGA?»: torres de verdad en miniatura, con las cajas de
+   la ronda. Mismo marcado que el tablero --`.jg-cn__caja` y `.jg-cn__hueco`--,
+   así que se apilan igual; lo que cambia es el tamaño, que ponen las variables
+   del contenedor. */
+.jg-cn-como { display: grid; gap: 6px; }
+/* ⚠️ `flex: none`: en la fila de la meta la miniatura es un elemento flexible, y
+   se encogía a 17 px para dejarle sitio al texto mientras sus cajas --que van
+   en absoluto-- seguían midiendo 38 y se le montaban encima. */
+.jg-cn-mini {
+  position: relative; display: inline-block; flex: none; width: var(--w);
+  height: calc(var(--h) * (1 + (var(--n) - 1) * var(--paso)));
+}
+.jg-cn-como__ejs {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: end;
+}
+.jg-cn-como__ej { display: grid; justify-items: center; align-content: end; gap: 2px; }
+.jg-cn-como__flecha { font-weight: 900; font-size: 1.1rem; line-height: 1; color: var(--competencia-oscuro); }
+/* El hueco de la torre vacía, encendido como cuando se arrastra: es donde cae. */
+.jg-cn-como .jg-cn__hueco { opacity: .8; filter: grayscale(.3) brightness(1.1); }
+.jg-cn-como__dice { margin-top: 4px; font-size: var(--t-mini); font-weight: 800; line-height: 1.2; text-align: center; }
+.jg-cn-como__dice--si { color: #2E8B45; }
+.jg-cn-como__dice--no { color: var(--peligro); }
+/* La meta: una torre hecha, con el halo verde de las torres completas. */
+.jg-cn-como__meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; text-align: left; }
+.jg-cn-como__meta .jg-como__txt { margin: 0; }
+.jg-cn-como__meta .jg-cn__caja { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px rgba(58, 166, 85, .75)); }
 
 @media (prefers-reduced-motion: reduce) {
   .jg-cn__caja--cae, .jg-cn__torre--hecha .jg-cn__caja, .jg-cn__torre--no { animation: none; }
