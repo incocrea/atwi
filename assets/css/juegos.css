@@ -38,6 +38,13 @@
   background: url(../img/fondos/game-calco.webp) center top / cover no-repeat,
               var(--competencia-tinte);
 }
+/* Y el de Canastas (titular, 2026-09-22): una habitación con estanterías y
+   cajas de colores. */
+#m-partida[data-juego="canastas"],
+#m-partida[data-juego="canastas"] .revelacion--competencia {
+  background: url(../img/fondos/game-canastas.webp) center top / cover no-repeat,
+              var(--competencia-tinte);
+}
 
 /* --- El armazón --------------------------------------------------------- */
 .jg { --jg-color: var(--ctx-acento, var(--competencia-oscuro)); }
@@ -982,118 +989,102 @@
 }
 
 /* ==========================================================================
-   FRASCOS · el tablero de «Frascos» (docs/10 §8.3). Todo sale de un número,
-   `--s` (el lado del sticker), que mide el juego contra el hueco real: el
-   frasco es el sticker más su cristal, y su alto es `cabe` stickers más la boca.
-   Los frascos se dibujan aquí y no en una lámina (docs/10 §9): así toman el
-   color que toque y no pesan.
+   CANASTAS · el tablero de «Canastas» (docs/10 §8.3; se llamó Frascos hasta el
+   2026-09-22). Seis torres de cajas apiladas, y nada más en la pantalla (titular:
+   fuera «Reiniciar», el contador y la pista). Todo sale de dos números que mide
+   el juego contra el hueco real: el ancho de la caja (`--w`) y su alto (`--h`).
+   Una caja es UNA pieza: la caja de color y su sticker.
    ========================================================================== */
-.jg-fr {
+.jg-cn {
   display: grid;
-  grid-template-columns: repeat(var(--cols), auto);
+  grid-template-columns: repeat(var(--cols), var(--w));
   gap: var(--gy) var(--gx);
   justify-content: center; align-content: center;
+  /* ⚠️ Lo que deja arrastrar con el dedo sin que la pantalla scrollee (la
+     lección de Calco). En el CSS y no en un `preventDefault`. */
+  touch-action: none;
 }
-/* EL BOTÓN ES MÁS ALTO QUE EL FRASCO A PROPÓSITO: por encima queda el hueco
-   donde se levanta el sticker de arriba (`--alza`), y ese hueco tiene que ser
-   parte de lo que se toca --si no, tocar el sticker levantado caería fuera--.
-   `manipulation` quita la espera del doble toque: en un juego de ritmo, cada
-   toque tiene que contar en el acto. */
-.jg-frasco {
-  border: 0; background: none; padding: var(--alza) 0 0; margin: 0;
-  display: block; cursor: pointer; touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
+/* La torre entera es la diana: mide lo que una torre llena, así que soltar por
+   encima de las cajas que ya tiene también cuenta. */
+.jg-cn__torre {
+  position: relative; width: var(--w);
+  height: calc(var(--h) * (1 + (var(--cabe) - 1) * var(--paso)));
+  outline: none; -webkit-tap-highlight-color: transparent;
 }
-/* EL CRISTAL: blanco translúcido con un filo del color del modo y la boca
-   abierta arriba. Sin degradado de fondo --la regla del juego-- y el brillo de
-   vidrio es una franja, no un reflejo pintado. El culo va redondo porque es lo
-   que hace que se lea como un frasco y no como una caja. */
-.jg-frasco__cuerpo {
-  position: relative; box-sizing: border-box;
-  display: flex; flex-direction: column-reverse; align-items: center;
-  gap: var(--g);
-  width: calc(var(--s) + 2 * var(--pad));
-  height: calc(4 * var(--s) + 3 * var(--g) + 2 * var(--pad) + var(--s) * .18);
-  padding: var(--pad);
-  background: rgba(255, 255, 255, .5);
-  border: 2px solid rgba(255, 255, 255, .95); border-top: 0;
-  border-radius: 6px 6px calc(var(--s) * .55) calc(var(--s) * .55);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--jg-color) 40%, transparent),
-              0 5px 12px rgba(0, 0, 0, .12);
-  transition: box-shadow .15s, transform .15s;
+/* Cada caja se apoya en el reborde de la de abajo y lo tapa: sube `--paso`
+   altos de caja por cada una, y la de más arriba va delante. */
+.jg-cn__caja, .jg-cn__hueco {
+  position: absolute; left: 0; width: var(--w); height: var(--h);
+  bottom: calc(var(--k) * var(--h) * var(--paso));
 }
-/* El brillo del vidrio: una franja vertical, que es lo que el ojo lee como
-   cristal aunque no haya nada detrás. */
-.jg-frasco__cuerpo::before {
-  content: ''; position: absolute; left: 14%; top: 8%; bottom: 14%; width: 9%;
-  border-radius: 99px; background: rgba(255, 255, 255, .7); pointer-events: none;
-}
-/* La boca: un reborde algo más ancho que el cuerpo. */
-.jg-frasco__cuerpo::after {
-  content: ''; position: absolute; left: -5px; right: -5px; top: -3px; height: 6px;
-  border-radius: 99px; background: rgba(255, 255, 255, .95);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--jg-color) 40%, transparent);
-  pointer-events: none;
-}
-.jg-fr__st {
-  display: block; position: relative; z-index: 1;
-  width: var(--s); height: var(--s); flex: none;
+.jg-cn__img {
+  display: block; width: 100%; height: 100%;
   pointer-events: none; -webkit-user-drag: none; user-select: none;
-  transition: transform .16s cubic-bezier(.3, .8, .4, 1);
 }
-/* EL DE ARRIBA SE LEVANTA al elegir su frasco, fuera del cristal: es lo que
-   dice «éste va a moverse» sin una palabra. */
-.jg-fr__st--alzado { transform: translateY(calc(-1 * var(--alza) - var(--pad))); }
-.jg-frasco--elegido .jg-frasco__cuerpo {
-  box-shadow: 0 0 0 3px var(--jg-color), 0 6px 14px rgba(0, 0, 0, .16);
+/* El sticker en el frente de la caja, por debajo del reborde: es la parte que
+   sigue a la vista cuando otra caja se apoya encima. */
+.jg-cn__st {
+  position: absolute; left: 50%; top: var(--st-y);
+  width: var(--st); height: var(--st); transform: translate(-50%, -50%);
+  pointer-events: none; -webkit-user-drag: none; user-select: none;
 }
-/* Donde PUEDE caer, insinuado: un filo blanco y el color, más suave que el del
-   elegido. Dice qué es legal, no qué conviene. */
-/* ⚠️ Y SE TIÑE EL CRISTAL, no solo el filo: con el halo solo, medido en
-   pantalla, los dos vacíos se veían igual que los demás --un contorno más sobre
-   un frasco que ya tiene contorno no se nota--. */
-.jg-frasco--puede .jg-frasco__cuerpo {
-  background: color-mix(in srgb, var(--jg-color) 16%, rgba(255, 255, 255, .6));
-  box-shadow: 0 0 0 2px #fff, 0 0 0 5px color-mix(in srgb, var(--jg-color) 60%, transparent),
-              0 5px 12px rgba(0, 0, 0, .12);
+/* Solo la de arriba se coge. */
+.jg-cn__caja--arriba { cursor: grab; }
+.jg-cn__caja--arriba:active { cursor: grabbing; }
+/* Mientras viaja, la que se va se queda en su torre desvaída: se ve de dónde
+   sale y adónde vuelve si se suelta fuera. */
+.jg-cn__torre--origen .jg-cn__caja--arriba { opacity: .28; }
+
+/* LOS HUECOS, CAJAS FANTASMA (titular, con un ejemplo): la caja crema en gris
+   y medio transparente. Una torre vacía se ve como cuatro huecos y no como nada,
+   y cada torre dice cuánto le cabe todavía. */
+.jg-cn__hueco {
+  pointer-events: none; opacity: .38;
+  filter: grayscale(1) brightness(1.18);
+  transition: opacity .12s, filter .12s, transform .12s;
 }
-.jg-frasco:focus-visible { outline: none; }
-.jg-frasco:focus-visible .jg-frasco__cuerpo {
-  box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--jg-color);
+/* El de más abajo es donde caería la próxima. Mientras se arrastra algo que
+   cabe aquí se insinúa; bajo el dedo, se enciende en el color del modo. Dice
+   qué es legal, no qué conviene. */
+.jg-cn__torre--puede .jg-cn__hueco--siguiente { opacity: .7; filter: grayscale(.4) brightness(1.1); }
+.jg-cn__torre--diana .jg-cn__hueco--siguiente {
+  opacity: 1; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--jg-color)) brightness(1.08);
+  transform: scale(1.05);
 }
-/* UN FRASCO HECHO se queda con el verde de la paleta (el `#3AA655` de Planta,
-   el mismo que ya dice «ganó» en la escena de Choque) y hace un pop al
-   completarse: es el progreso que se ve de lejos. */
-.jg-frasco--lleno .jg-frasco__cuerpo {
-  background: color-mix(in srgb, #3AA655 16%, rgba(255, 255, 255, .6));
-  box-shadow: 0 0 0 3px #3AA655, 0 5px 12px rgba(0, 0, 0, .12);
+.jg-cn__torre:focus-visible .jg-cn__hueco,
+.jg-cn__torre:focus-visible .jg-cn__caja--arriba {
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px var(--jg-color));
 }
-.jg-frasco--hecho .jg-frasco__cuerpo { animation: jg-fr-hecho .42s ease-out; }
-@keyframes jg-fr-hecho { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
-/* EL VUELO: el sticker nace en su frasco nuevo desplazado a donde estaba
-   (`--dx`, `--dy`, medidos en el JS) y vuelve a su sitio por un arco. Mide lo
-   mismo que `MS_VUELO` de ui/frascos.js. */
-.jg-fr__st--vuela { z-index: 3; animation: jg-fr-vuela 280ms cubic-bezier(.3, .7, .4, 1) both; }
-@keyframes jg-fr-vuela {
-  0%   { transform: translate(var(--dx, 0), var(--dy, 0)); }
-  45%  { transform: translate(calc(var(--dx, 0px) * .45), calc(var(--dy, 0px) * .45 - var(--s) * .45)); }
-  100% { transform: none; }
+/* No cabe ahí: la torre tiembla. */
+.jg-cn__torre--no { animation: jg-mal .3s ease-out; }
+
+/* UNA TORRE HECHA: las cajas dan un salto y se quedan con un halo verde --el
+   `#3AA655` de la paleta, el mismo que dice «ganó» en la escena de Choque--.
+   Es el progreso que se ve de lejos. */
+.jg-cn__torre--completa .jg-cn__caja {
+  filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px rgba(58, 166, 85, .75));
+}
+.jg-cn__torre--hecha .jg-cn__caja { animation: jg-cn-hecha .42s ease-out; }
+@keyframes jg-cn-hecha { 0%, 100% { translate: 0 0; } 40% { translate: 0 -10%; } }
+
+/* LA CAJA SE ASIENTA desde donde se soltó (`--dx`, `--dy`, medidos en el JS):
+   dura lo mismo que `MS_CAE` de ui/canastas.js. */
+.jg-cn__caja--cae { animation: jg-cn-cae 200ms cubic-bezier(.2, .8, .35, 1) both; z-index: 9 !important; }
+@keyframes jg-cn-cae {
+  from { transform: translate(var(--dx, 0), var(--dy, 0)); }
+  to   { transform: none; }
 }
 
-/* Debajo: cuántos movimientos van y «Reiniciar». El contador se lee siempre
-   porque es lo que se está compitiendo. */
-.jg-fr-barra {
-  display: flex; align-items: center; justify-content: center; gap: var(--e-4);
-  margin-top: var(--e-3); min-height: 44px;
-}
-.jg-fr-mov {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: var(--t-chico); color: var(--tinta-suave); text-shadow: 0 0 5px #fff;
-}
-.jg-fr-mov b { font-family: var(--display); font-weight: 900; font-size: 1.15rem; color: var(--tinta); }
-.jg-fr-reinicia { min-height: 40px; padding: 6px 16px; font-size: var(--t-chico); }
+/* El fantasma que sigue al dedo (reutiliza `.jg-arrastre`: fijo, girado y con
+   sombra). Lleva el mismo tamaño que la caja del tablero, un pelo más grande
+   porque va «levantada».
+   ⚠️ `display: block` NO ES DECORATIVO: la caja es un `<span>`, y en el tablero
+   el `position: absolute` lo vuelve bloque. Aquí va `relative`, y un `<span>` en
+   línea IGNORA `width` y `height`: medido, el fantasma salía a 256×219 --el tamaño
+   natural de la imagen-- con 93×80 declarados. */
+.jg-cn-fantasma .jg-cn__caja { position: relative; display: block; bottom: auto; transform: scale(1.08); }
 
 @media (prefers-reduced-motion: reduce) {
-  .jg-fr__st--vuela, .jg-frasco--hecho .jg-frasco__cuerpo { animation: none; }
-  .jg-fr__st { transition: none; }
+  .jg-cn__caja--cae, .jg-cn__torre--hecha .jg-cn__caja, .jg-cn__torre--no { animation: none; }
+  .jg-cn__hueco { transition: none; }
 }

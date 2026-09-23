@@ -107,7 +107,7 @@
   box-shadow: none;
 }
 /* ⚠️ Y EL SUAVE APAGADO SE QUEDABA SIN LETRA, otra vez (2026-09-22, al estrenar
-   «Reiniciar» en Frascos). Es la trampa de `base.css` —el blanco de un botón que
+   «Reiniciar» en Canastas, que entonces se llamaba Frascos). Es la trampa de `base.css` —el blanco de un botón que
    se pinta el fondo a mano— por un tercer sitio: aquí arriba `.boton--suave` se
    pinta BLANCO y la regla de encima le pone la letra BLANCA al 82 %, y las dos
    pesan más que el arreglo de `base.css`. Resultado: un botón en blanco, sin

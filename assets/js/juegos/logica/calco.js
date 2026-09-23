@@ -15,7 +15,7 @@
    dibujarles una forma encima para no depender del tono; un sticker ya ES una
    cosa reconocible —un gato, una pizza, una luna— y se recuerda por lo que es,
    no por su color. Es además el primer uso de la hoja de stickers, que después
-   heredan Frascos, Despensa, Dúos y Revoltijo.
+   heredan Canastas, Despensa, Dúos y Revoltijo.
 
    ⚠️ QUÉ CUATRO SALEN ES DEL TABLERO (`fichas`), no de la interfaz: si los
    eligiera la pantalla, el teléfono y el servidor verían rondas distintas. La

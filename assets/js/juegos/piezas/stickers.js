@@ -1,6 +1,6 @@
 /* ATWI · minijuegos · LA HOJA DE STICKERS, una sola para todos
    ==========================================================================
-   Los 24 `st-*.webp` que usan Calco y Frascos --y después Despensa, Dúos y
+   Los 24 `st-*.webp` que usan Calco y Canastas --y después Despensa, Dúos y
    Revoltijo--. Vivía escrita a mano dentro de `ui/calco.js`; al llegar el
    segundo juego que la necesita se muda aquí, que es lo que el plan pide de
    cada pieza técnica que un juego estrena (docs/10 §7: «cada juego deja su

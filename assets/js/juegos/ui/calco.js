@@ -32,7 +32,7 @@
   var PASOS = 5;          // el mismo de logica/calco.js
   var VACIA = -1;
 
-  /* Los 24 de la hoja viven en `piezas/stickers.js` desde que Frascos también
+  /* Los 24 de la hoja viven en `piezas/stickers.js` desde que Canastas también
      los usa (2026-09-22): una lista de 24 nombres escrita en dos archivos es
      una lista que un día dice dos cosas. Su índice ES el número que viaja en
      el tablero (`fichas`), y allí está el aviso de por qué no se reordena. */

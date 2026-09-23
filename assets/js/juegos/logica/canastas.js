@@ -1,25 +1,36 @@
-/* ATWI · minijuegos · «Frascos»
+/* ATWI · minijuegos · «Canastas»
    ==========================================================================
-   El «Water Sort» del guion, con stickers en vez de agua (docs/10 §8.3). Hay
-   seis frascos donde caben cuatro stickers cada uno: cuatro llenos y
-   revueltos, y dos vacíos. Se pasa el sticker de ARRIBA de un frasco a otro
-   --solo sobre uno vacío o sobre su mismo sticker-- hasta que cada frasco tenga
-   uno solo. Gana quien lo logra en menos movimientos.
+   El «Water Sort» del guion, con cajas apiladas en vez de agua (docs/10 §8.3).
+   Hay seis torres donde caben cuatro cajas cada una: cuatro llenas y
+   revueltas, y dos vacías. Se arrastra la caja de ARRIBA de una torre a otra
+   --solo a una vacía o encima de una caja igual-- hasta que cada torre tenga
+   cajas iguales. Gana quien lo logra en menos movimientos.
 
-   UN STICKER POR MOVIMIENTO, no «todo lo igual de golpe» como vierte el agua
-   del original: con stickers, verter una pila entera no se entiende --se ven
-   cuatro cosas separadas, no un líquido--, y un gesto tiene que mover lo que
-   el dedo tocó.
+   SE LLAMÓ «FRASCOS» HASTA EL 2026-09-22 (titular: «ya no se llamará frascos,
+   se llamará canastas; ya no usaremos los tubos de cristal sino cajas
+   stackeadas»). El id cambió con el nombre --el id ES el nombre en los diez,
+   para que no nazca otra pareja como `debate` ↔ «Controversia»--, y la base lo
+   sigue en la migración 0087. La regla del juego no cambió: solo el dibujo y el
+   gesto, que ahora es arrastrar.
 
-   DIFICULTAD ÚNICA (pivote del 2026-09-22): 4 tipos en 6 frascos. El plan traía
+   UN TIPO ES UNA CAJA DE COLOR CON UN STICKER DENTRO, y los dos salen al azar
+   según la partida: cuatro de las seis cajas de la plancha (`cajas`) y cuatro
+   de los 24 stickers (`fichas`), emparejados por su índice. Que se distingan por
+   dos vías --color y dibujo-- es lo que deja jugar rápido sin confundirse.
+
+   UNA CAJA POR MOVIMIENTO, no «todo lo igual de golpe» como vierte el agua del
+   original: con cajas, mover una pila entera no se entiende, y un gesto tiene
+   que mover lo que el dedo arrastró.
+
+   DIFICULTAD ÚNICA (pivote del 2026-09-22): 4 tipos en 6 torres. El plan traía
    tres (3 en 5 · 4 en 6 · 5 en 7) y se queda el de en medio, como Calco.
-   ⚠️ SIEMPRE DOS VACÍOS, Y ESTÁ MEDIDO: con uno solo --como pinta la infografía--
-   se pueden completar 1.452 repartos de 3.000; con dos, los 3.000.
+   ⚠️ SIEMPRE DOS VACÍAS, Y ESTÁ MEDIDO: con una sola --como pinta la
+   infografía-- se pueden completar 1.452 repartos de 3.000; con dos, los 3.000.
 
    EL TABLERO LLEVA SU SOLUCIÓN (`sol`), y no por comodidad: el banco exige que
    el tablero y su gemelo se completen en LOS MISMOS movimientos, y un buscador
-   que recorre los frascos por orden encuentra caminos de largo distinto cuando
-   los frascos cambian de sitio. Guardando la solución del tablero base y
+   que recorre las torres por orden encuentra caminos de largo distinto cuando
+   las torres cambian de sitio. Guardando la solución del tablero base y
    pasándola por la misma permutación que el gemelo, la igualdad sale por
    construcción. No regala nada que no estuviera ya: `resolver()` es parte del
    contrato de todos los juegos y está en este mismo archivo (docs/10 §6 acepta
@@ -33,25 +44,28 @@
   var J = raiz.ATWI.juegos = raiz.ATWI.juegos || Object.create(null);
 
   var NIVELES = [
-    { tipos: 4, frascos: 6, cabe: 4 }
+    { tipos: 4, torres: 6, cabe: 4 }
   ];
 
-  /* Cuántos stickers hay en la hoja (`piezas/stickers.js` tiene los nombres).
-     Aquí solo hace falta saber de cuántos se elige, porque eso SÍ cambia el
-     tablero y tiene que ser igual en el teléfono y en el servidor. */
+  /* Cuántos stickers hay en la hoja (`piezas/stickers.js` tiene los nombres) y
+     cuántas cajas de color en la plancha (`ui/canastas.js`). Aquí solo hace
+     falta saber de cuántos se elige, porque eso SÍ cambia el tablero y tiene
+     que ser igual en el teléfono y en el servidor. */
   var STICKERS = 24;
+  var CAJAS = 6;
 
   /* Una jugada es `desde * F + hasta`. Entera y no un par, por lo mismo que en
      Calco: viaja al servidor y se repite allí, y cuanto menos forma tenga menos
      puede discrepar un JSON de otro. */
   var F = 8;
 
-  /* «Reiniciar» devuelve el tablero como empezó SIN poner a cero los
-     movimientos (docs/10 §8.3): es la salida de un callejón --en este juego se
-     puede llegar a uno, porque un sticker que se movió no siempre puede volver--
-     y no un borrón. Va como una jugada más para que el servidor la repita igual
-     que las otras; es un número que ningún movimiento puede dar. */
-  var REINICIAR = F * F;
+  /* ⚠️ NO HAY «REINICIAR» (titular, 2026-09-22: «quítale también el botón de
+     reiniciar»). El plan lo traía --volver al tablero de salida sin poner a
+     cero los movimientos-- y estuvo unas horas como la jugada 64. Se quita
+     también de aquí y no solo el botón: una jugada que la pantalla ya no puede
+     producir no la tiene que aceptar el servidor. El precio, a sabiendas: en
+     este juego se puede llegar a un callejón --una caja que se movió no siempre
+     puede volver-- y sin «Reiniciar» se paga con el reloj. */
 
   /* El buscador casi nunca pasa de cien nodos (medido: mediana 19, máximo 89
      en 3.000 repartos). El tope es la red para que un reparto raro no cuelgue
@@ -59,68 +73,68 @@
   var TOPE_NODOS = 20000;
   var SUBSEMILLAS = 64;
 
-  /* Por debajo de esto el reparto sale demasiado ordenado: pocos stickers
+  /* Por debajo de esto el reparto sale demasiado ordenado: pocas cajas
      tendrían que moverse. Medido, el 5 % de los repartos queda por debajo de 9. */
   var MINIMO_DE_TRABAJO = 9;
 
-  function copia(frascos) {
+  function copia(torres) {
     var c = [];
-    for (var i = 0; i < frascos.length; i++) c.push(frascos[i].slice());
+    for (var i = 0; i < torres.length; i++) c.push(torres[i].slice());
     return c;
   }
 
-  function cima(f) { return f.length ? f[f.length - 1] : -1; }
+  function cima(t) { return t.length ? t[t.length - 1] : -1; }
 
-  /* Cuántos iguales hay arriba del todo. */
-  function rachaArriba(f) {
-    if (!f.length) return 0;
+  /* Cuántas iguales hay arriba del todo. */
+  function rachaArriba(t) {
+    if (!t.length) return 0;
     var n = 1;
-    while (n < f.length && f[f.length - 1 - n] === f[f.length - 1]) n++;
+    while (n < t.length && t[t.length - 1 - n] === t[t.length - 1]) n++;
     return n;
   }
 
-  /* Cuántos iguales hay abajo del todo. */
-  function rachaAbajo(f) {
-    if (!f.length) return 0;
+  /* Cuántas iguales hay abajo del todo. */
+  function rachaAbajo(t) {
+    if (!t.length) return 0;
     var n = 1;
-    while (n < f.length && f[n] === f[0]) n++;
+    while (n < t.length && t[n] === t[0]) n++;
     return n;
   }
 
-  function lleno(f, cabe) {
-    return f.length === cabe && rachaAbajo(f) === cabe;
+  function completa(t, cabe) {
+    return t.length === cabe && rachaAbajo(t) === cabe;
   }
 
-  function resuelto(frascos, cabe) {
-    for (var i = 0; i < frascos.length; i++) {
-      if (frascos[i].length && !lleno(frascos[i], cabe)) return false;
+  function resuelto(torres, cabe) {
+    for (var i = 0; i < torres.length; i++) {
+      if (torres[i].length && !completa(torres[i], cabe)) return false;
     }
     return true;
   }
 
-  function puede(frascos, cabe, d, h) {
-    if (d === h || d < 0 || h < 0 || d >= frascos.length || h >= frascos.length) return false;
-    var a = frascos[d], b = frascos[h];
+  function puede(torres, cabe, d, h) {
+    if (d === h || d < 0 || h < 0 || d >= torres.length || h >= torres.length) return false;
+    var a = torres[d], b = torres[h];
     if (!a.length || b.length >= cabe) return false;
     return !b.length || cima(b) === cima(a);
   }
 
-  /* LO MENOS QUE HAY QUE MOVER: todo sticker que tiene debajo uno distinto
-     tiene que salir de ahí al menos una vez --por debajo de él no se puede
-     tocar nada sin sacarlo antes--. Es un piso de verdad, nunca más que lo
+  /* LO MENOS QUE HAY QUE MOVER: toda caja que tiene debajo una distinta tiene
+     que salir de ahí al menos una vez --por debajo de ella no se puede tocar
+     nada sin sacarla antes--. Es un piso de verdad, nunca más que lo
      necesario, y por eso sirve para el piso humano de tiempo. */
-  function trabajoMinimo(frascos) {
+  function trabajoMinimo(torres) {
     var n = 0;
-    for (var i = 0; i < frascos.length; i++) n += frascos[i].length - rachaAbajo(frascos[i]);
+    for (var i = 0; i < torres.length; i++) n += torres[i].length - rachaAbajo(torres[i]);
     return n;
   }
 
-  /* Dos repartos que solo se diferencian en el ORDEN de los frascos son el
+  /* Dos repartos que solo se diferencian en el ORDEN de las torres son el
      mismo problema: la clave los junta, y eso es lo que deja al buscador en
      decenas de nodos y no en miles. */
-  function clave(frascos) {
+  function clave(torres) {
     var partes = [];
-    for (var i = 0; i < frascos.length; i++) partes.push(frascos[i].join(''));
+    for (var i = 0; i < torres.length; i++) partes.push(torres[i].join(''));
     partes.sort();
     return partes.join('|');
   }
@@ -129,55 +143,55 @@
      Van en TRES CUBOS y no con un `sort` con comparador: el orden de los empates
      de un comparador es de cada motor, y el teléfono y el servidor tienen que
      encontrar la misma solución. */
-  function candidatos(frascos, cabe) {
-    var sobrePuro = [], sobreIgual = [], aVacio = [];
-    for (var d = 0; d < frascos.length; d++) {
-      var a = frascos[d];
+  function candidatos(torres, cabe) {
+    var sobrePura = [], sobreIgual = [], aVacia = [];
+    for (var d = 0; d < torres.length; d++) {
+      var a = torres[d];
       if (!a.length) continue;
-      var puro = rachaArriba(a) === a.length;
-      var yaVacio = false;
-      for (var h = 0; h < frascos.length; h++) {
-        if (!puede(frascos, cabe, d, h)) continue;
-        var b = frascos[h];
+      var pura = rachaArriba(a) === a.length;
+      var yaVacia = false;
+      for (var h = 0; h < torres.length; h++) {
+        if (!puede(torres, cabe, d, h)) continue;
+        var b = torres[h];
         if (!b.length) {
-          /* Pasar a un vacío algo que ya está solo en su frasco no ordena nada;
-             y los vacíos son todos iguales, así que basta con probar uno. */
-          if (puro || yaVacio) continue;
-          yaVacio = true;
-          aVacio.push(d * F + h);
+          /* Pasar a una vacía algo que ya está solo en su torre no ordena nada;
+             y las vacías son todas iguales, así que basta con probar una. */
+          if (pura || yaVacia) continue;
+          yaVacia = true;
+          aVacia.push(d * F + h);
         } else if (rachaArriba(b) === b.length) {
-          sobrePuro.push(d * F + h);
+          sobrePura.push(d * F + h);
         } else {
           sobreIgual.push(d * F + h);
         }
       }
     }
-    return sobrePuro.concat(sobreIgual, aVacio);
+    return sobrePura.concat(sobreIgual, aVacia);
   }
 
   /* Búsqueda en profundidad con memoria de lo visto y tope de nodos. No busca
      la solución MÁS CORTA --no hace falta: nadie la ve, y la marca compara lo
      que hizo cada jugador contra lo que hizo el otro--; busca una. */
   function buscar(inicio, cabe) {
-    var fr = copia(inicio);
+    var tt = copia(inicio);
     var visto = Object.create(null);
     var camino = [];
     var nodos = 0;
     function paso() {
-      if (resuelto(fr, cabe)) return true;
+      if (resuelto(tt, cabe)) return true;
       nodos++;
       if (nodos > TOPE_NODOS) return false;
-      var k = clave(fr);
+      var k = clave(tt);
       if (visto[k]) return false;
       visto[k] = 1;
-      var lista = candidatos(fr, cabe);
+      var lista = candidatos(tt, cabe);
       for (var i = 0; i < lista.length; i++) {
         var d = Math.floor(lista[i] / F), h = lista[i] % F;
-        fr[h].push(fr[d].pop());
+        tt[h].push(tt[d].pop());
         camino.push(lista[i]);
         if (paso()) return true;
         camino.pop();
-        fr[d].push(fr[h].pop());
+        tt[d].push(tt[h].pop());
       }
       return false;
     }
@@ -189,9 +203,15 @@
     var az = J.azar.crear(semilla);
     var hoja = [];
     for (var s = 0; s < STICKERS; s++) hoja.push(s);
-    /* QUÉ CUATRO STICKERS SALEN, de los 24: cada ronda trae otros, así que dos
-       rondas seguidas de Frascos no se parecen. */
+    /* QUÉ CUATRO STICKERS SALEN, de los 24, y en QUÉ CUATRO CAJAS, de las seis:
+       cada ronda trae otras, así que dos rondas seguidas de Canastas no se
+       parecen. Las cajas se sortean DESPUÉS de los stickers con el mismo
+       generador, así que los stickers de una semilla son los mismos que tenía
+       cuando esto se llamaba Frascos. */
     var fichas = az.barajar(hoja).slice(0, n.tipos);
+    var colores = [];
+    for (var c = 0; c < CAJAS; c++) colores.push(c);
+    var cajas = az.barajar(colores).slice(0, n.tipos);
     var bolsa = [];
     for (var t = 0; t < n.tipos; t++) {
       for (var k = 0; k < n.cabe; k++) bolsa.push(t);
@@ -203,34 +223,25 @@
        teléfono y el servidor llegan al mismo tablero por el mismo camino. */
     for (var intento = 0; intento < SUBSEMILLAS; intento++) {
       var mezcla = J.azar.crear(J.azar.mezclar(semilla, intento + 1)).barajar(bolsa);
-      var frascos = [];
-      for (var f = 0; f < n.frascos; f++) {
-        frascos.push(f < n.tipos ? mezcla.slice(f * n.cabe, (f + 1) * n.cabe) : []);
+      var torres = [];
+      for (var f = 0; f < n.torres; f++) {
+        torres.push(f < n.tipos ? mezcla.slice(f * n.cabe, (f + 1) * n.cabe) : []);
       }
-      var yaLleno = false;
-      for (var q = 0; q < frascos.length; q++) if (lleno(frascos[q], n.cabe)) yaLleno = true;
-      if (yaLleno || trabajoMinimo(frascos) < MINIMO_DE_TRABAJO) continue;
-      var sol = buscar(frascos, n.cabe);
-      ultimo = { fichas: fichas, tipos: n.tipos, cabe: n.cabe, frascos: frascos, sol: sol || [] };
+      var yaCompleta = false;
+      for (var q = 0; q < torres.length; q++) if (completa(torres[q], n.cabe)) yaCompleta = true;
+      if (yaCompleta || trabajoMinimo(torres) < MINIMO_DE_TRABAJO) continue;
+      var sol = buscar(torres, n.cabe);
+      ultimo = { fichas: fichas, cajas: cajas, tipos: n.tipos, cabe: n.cabe, torres: torres, sol: sol || [] };
       if (sol) return ultimo;
     }
     /* No pasa --3.000 de 3.000 salen a la primera subsemilla--, pero si pasara
        no se puede devolver un tablero sin solución: se devuelve el último y el
        banco lo cazaría como «el resolvedor no lo completa». */
-    return ultimo || { fichas: fichas, tipos: n.tipos, cabe: n.cabe, frascos: [], sol: [] };
+    return ultimo || { fichas: fichas, cajas: cajas, tipos: n.tipos, cabe: n.cabe, torres: [], sol: [] };
   }
 
   function inicial(tablero) {
-    return { tablero: tablero, frascos: copia(tablero.frascos), movimientos: 0 };
-  }
-
-  function iguales(a, b) {
-    if (a.length !== b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i].length !== b[i].length) return false;
-      for (var k = 0; k < a[i].length; k++) if (a[i][k] !== b[i][k]) return false;
-    }
-    return true;
+    return { tablero: tablero, torres: copia(tablero.torres), movimientos: 0 };
   }
 
   function aplicar(estado, jugada) {
@@ -238,100 +249,100 @@
     var t = estado.tablero;
     /* Jugar después de haber ordenado el tablero no es una jugada de la app: la
        ronda ya terminó sola. */
-    if (resuelto(estado.frascos, t.cabe)) return null;
-    if (jugada === REINICIAR) {
-      /* Reiniciar un tablero que está como empezó no lo produce la interfaz
-         (el botón va apagado): una lista que lo traiga no salió de la app. */
-      if (iguales(estado.frascos, t.frascos)) return null;
-      estado.frascos = copia(t.frascos);
-      return estado;
-    }
+    if (resuelto(estado.torres, t.cabe)) return null;
     var d = Math.floor(jugada / F), h = jugada % F;
-    if (!puede(estado.frascos, t.cabe, d, h)) return null;
-    estado.frascos[h].push(estado.frascos[d].pop());
+    if (!puede(estado.torres, t.cabe, d, h)) return null;
+    estado.torres[h].push(estado.torres[d].pop());
     estado.movimientos++;
     return estado;
   }
 
   function fin(estado) {
-    return resuelto(estado.frascos, estado.tablero.cabe) ? { completo: 1 } : null;
+    return resuelto(estado.torres, estado.tablero.cabe) ? { completo: 1 } : null;
   }
 
-  function llenosDe(frascos, cabe) {
+  function completasDe(torres, cabe) {
     var n = 0;
-    for (var i = 0; i < frascos.length; i++) if (lleno(frascos[i], cabe)) n++;
+    for (var i = 0; i < torres.length; i++) if (completa(torres[i], cabe)) n++;
     return n;
   }
 
-  /* `tipos` va en el resumen para que la pantalla diga «2 de 4 frascos» sin
+  /* `tipos` va en el resumen para que la pantalla diga «2 de 4 torres» sin
      escribir el 4 a mano: un número copiado de la lógica a la interfaz es el
      que se queda viejo el día que cambia el tablero. */
   function resumen(estado, ms) {
     var t = estado.tablero;
-    var completo = resuelto(estado.frascos, t.cabe) ? 1 : 0;
     return {
-      completo: completo,
-      llenos: llenosDe(estado.frascos, t.cabe),
+      completo: resuelto(estado.torres, t.cabe) ? 1 : 0,
+      completas: completasDe(estado.torres, t.cabe),
       tipos: t.tipos,
       movimientos: estado.movimientos,
       ms: ms
     };
   }
 
-  /* ⚠️ LOS FRASCOS LLENOS VAN ANTES QUE LOS MOVIMIENTOS, y es un añadido al plan
-     (que decía `[completo, −movimientos, −ms]`): sin ese término, entre dos que
-     no terminan ganaría quien MENOS se movió --el que no tocó nada le ganaría al
-     que dejó tres frascos hechos--. Cuando los dos terminan valen lo mismo
-     (todos llenos) y decide lo del plan: menos movimientos, y después el reloj. */
+  /* ⚠️ LAS TORRES COMPLETAS VAN ANTES QUE LOS MOVIMIENTOS, y es un añadido al
+     plan (que decía `[completo, −movimientos, −ms]`): sin ese término, entre dos
+     que no terminan ganaría quien MENOS se movió --el que no tocó nada le
+     ganaría al que dejó tres torres hechas--. Cuando los dos terminan valen lo
+     mismo (todas completas) y decide lo del plan: menos movimientos, y después
+     el reloj. */
   function marca(r) {
-    return [r.completo, r.llenos, -r.movimientos, -r.ms];
+    return [r.completo, r.completas, -r.movimientos, -r.ms];
   }
 
-  /* El mismo reparto con los stickers permutados y los frascos llenos en otro
+  /* El mismo reparto con los tipos permutados y las torres llenas en otro
      orden: misma dificultad --los mismos movimientos, uno a uno-- y distinto
-     dibujo. Los vacíos se quedan al final en los dos, que es donde se buscan.
-     `fichas` NO se toca: los dos ven los mismos cuatro stickers. */
+     dibujo. Las vacías se quedan al final en los dos, que es donde se buscan.
+     `fichas` y `cajas` NO se tocan: los dos ven las mismas cuatro cajas con los
+     mismos cuatro stickers, en otros sitios. */
   function gemelo(tablero, semilla) {
     var az = J.azar.crear(semilla);
     var tipos = [];
     for (var i = 0; i < tablero.tipos; i++) tipos.push(i);
     var permuta = az.barajar(tipos);
-    var llenosIdx = [], vaciosIdx = [];
-    for (var k = 0; k < tablero.frascos.length; k++) {
-      if (tablero.frascos[k].length) llenosIdx.push(k); else vaciosIdx.push(k);
+    var llenas = [], vacias = [];
+    for (var k = 0; k < tablero.torres.length; k++) {
+      if (tablero.torres[k].length) llenas.push(k); else vacias.push(k);
     }
-    var destinos = az.barajar(llenosIdx.slice()).concat(vaciosIdx);
-    /* `pos[viejo]` = dónde queda en el gemelo el frasco que en el base estaba
-       en `viejo`. */
-    var orden = llenosIdx.concat(vaciosIdx);
+    var destinos = az.barajar(llenas.slice()).concat(vacias);
+    /* `pos[vieja]` = dónde queda en el gemelo la torre que en el base estaba
+       en `vieja`. */
+    var orden = llenas.concat(vacias);
     var pos = [];
-    for (var p = 0; p < tablero.frascos.length; p++) pos.push(p);
+    for (var p = 0; p < tablero.torres.length; p++) pos.push(p);
     for (var o = 0; o < orden.length; o++) pos[orden[o]] = destinos[o];
-    var frascos = [];
-    for (var f = 0; f < tablero.frascos.length; f++) frascos.push([]);
-    for (var v = 0; v < tablero.frascos.length; v++) {
-      frascos[pos[v]] = tablero.frascos[v].map(function (x) { return permuta[x]; });
+    var torres = [];
+    for (var f = 0; f < tablero.torres.length; f++) torres.push([]);
+    for (var v = 0; v < tablero.torres.length; v++) {
+      torres[pos[v]] = tablero.torres[v].map(function (x) { return permuta[x]; });
     }
     var sol = tablero.sol.map(function (j) {
       return pos[Math.floor(j / F)] * F + pos[j % F];
     });
-    return { fichas: tablero.fichas.slice(), tipos: tablero.tipos, cabe: tablero.cabe, frascos: frascos, sol: sol };
+    return {
+      fichas: tablero.fichas.slice(), cajas: tablero.cajas.slice(),
+      tipos: tablero.tipos, cabe: tablero.cabe, torres: torres, sol: sol
+    };
   }
 
   function resolver(tablero) {
     return tablero.sol.slice();
   }
 
-  /* Dos toques por movimiento, con el dedo, no bajan de un cuarto de segundo:
-     y como mínimo hay que mover lo que dice `trabajoMinimo`. */
+  /* Arrastrar una caja de una torre a otra, con el dedo, no baja de un cuarto
+     de segundo; y como mínimo hay que mover lo que dice `trabajoMinimo`. */
   function pisoMs(tablero) {
-    return trabajoMinimo(tablero.frascos) * 250;
+    return trabajoMinimo(tablero.torres) * 250;
   }
 
   J.registrar({
-    id: 'frascos',
-    nombre: 'Frascos',
-    como: 'Pasa el sticker de arriba de un frasco a otro hasta que cada frasco tenga uno solo. ' +
+    id: 'canastas',
+    nombre: 'Canastas',
+    /* Tiene su rótulo dibujado (titular, 2026-09-22): manda sobre el nombre en
+       texto, como el logo del modo en el versus. */
+    rotulo: true,
+    como: 'Arrastra la caja de arriba de una torre a otra hasta que cada torre tenga cajas iguales. ' +
           'Gana quien lo logra en menos movimientos.',
     compara: 'rondas',
     reintentos: 2,
