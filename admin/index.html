@@ -20,9 +20,9 @@
      estilo gráfico general del juego»). Las mismas tres hojas que la app —las
      fuentes, los colores y la base con sus botones y campos— y encima lo propio
      del tablero, que ya solo decide la distribución. -->
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=b1cf4f5">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=b1cf4f5">
-<link rel="stylesheet" href="../assets/css/base.css?v=b1cf4f5">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=82d555a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=82d555a">
+<link rel="stylesheet" href="../assets/css/base.css?v=82d555a">
 <!--
   EL TABLERO NO ES EL JUEGO. Vive en su propia carpeta, no carga ni un archivo
   del juego y no comparte sesión con él: entrar aquí con la cuenta de jugar no
@@ -185,6 +185,15 @@
   .movil iframe { width: 430px; height: min(860px, calc(100vh - var(--alto-cab) - 90px)); border: 10px solid #2E2A3F;
                   border-radius: 38px; box-shadow: var(--sombra-3); background: var(--crema); }
   .solo-aqui { max-width: 620px; margin: 40px auto; }
+  /* --- «Gente»: el filtro de sin confirmar (2026-09-23) --- */
+  .filtro-gente { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+  .filtro-gente .chip-f { font: inherit; font-family: var(--display); font-weight: 800; font-size: 13px;
+    border: 0; border-radius: 999px; padding: 5px 14px; cursor: pointer;
+    background: var(--papel); color: var(--suave); box-shadow: var(--sombra-1); }
+  .filtro-gente .chip-f[aria-pressed="true"] { background: var(--lavanda); color: #fff; }
+  .filtro-gente .boton { margin: 0 0 0 auto; }
+  .pastilla--ojo { background: var(--sol-tinte); color: #8A6A0B; }
+  td input[type="checkbox"], th input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--lavanda); cursor: pointer; }
   /* --- LOS FONDOS: pantallas, láminas y la app en un teléfono (2026-09-23) --- */
   .f-armazon { display: grid; grid-template-columns: 250px minmax(0, 1fr) 460px;
                height: calc(100vh - var(--alto-cab)); }
@@ -290,8 +299,8 @@
   </div>
 </div>
 
-<script src="../assets/js/config.js?v=b1cf4f5"></script>
-<script src="../assets/js/fondos.js?v=b1cf4f5"></script>
-<script src="tablero.js?v=b1cf4f5"></script>
+<script src="../assets/js/config.js?v=82d555a"></script>
+<script src="../assets/js/fondos.js?v=82d555a"></script>
+<script src="tablero.js?v=82d555a"></script>
 </body>
 </html>

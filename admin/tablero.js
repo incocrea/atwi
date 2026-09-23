@@ -902,16 +902,22 @@
       pedir('perfiles?select=*&order=creado.desc'),
       pedir('debates?select=id,propone,creado,modo,estado'),
       pedir('costos?select=perfil,usd'),
-      pedir('admins?select=id')
+      pedir('admins?select=id'),
+      /* Las que pidieron el enlace de alta y nunca lo abrieron (0087). */
+      pedir('rpc/cuentas_sin_confirmar').catch(function () { return []; })
     ]).then(function (r) {
       var gente = r[0], debates = r[1], costos = r[2];
+      var sinConfirmar = {};
+      (r[4] || []).forEach(function (c) { sinConfirmar[c.id] = true; });
+      var nSin = Object.keys(sinConfirmar).length;
       /* TODA CUENTA DE ADMIN ES TAMBIEN UNA DE JUGADOR: el disparador del alta
          crea un perfil para cada usuario nuevo y no puede saber para qué se hizo
          la cuenta. Contarlas como jugadores infla la cifra, así que se separan.
          No se les quita el perfil: la misma persona puede querer jugar. */
       var admins = {};
       (r[3] || []).forEach(function (a) { admins[a.id] = true; });
-      var jugadores = gente.filter(function (p) { return !admins[p.id]; });
+      /* Una cuenta sin confirmar no es un jugador todavía: no suma. */
+      var jugadores = gente.filter(function (p) { return !admins[p.id] && !sinConfirmar[p.id]; });
       var porPersona = {};
       debates.forEach(function (d) {
         porPersona[d.propone] = porPersona[d.propone] || { partidas: 0, usd: 0 };
@@ -926,15 +932,26 @@
       $('#lienzo').innerHTML =
         '<div class="tarjetas">' +
           tarjeta('Jugadores', String(jugadores.length),
-                  Object.keys(admins).length + ' de administración aparte') +
+                  Object.keys(admins).length + ' de administración aparte' +
+                  (nSin ? ' · ' + nSin + ' sin confirmar' : '')) +
           tarjeta('Partidas', String(debates.length), '') +
         '</div>' +
         '<h2>Cuentas</h2>' +
-        tabla(['Nombre', 'Personaje', 'Nivel', 'Partidas', 'Gastado', 'Alta', 'Id', ''],
-          gente.map(function (p) {
+        filtroDeGente(gente.length, gente.length - nSin, nSin) +
+        tabla((filtroGente === 'sin'
+                ? [{ html: '<input type="checkbox" data-sc-todas aria-label="Seleccionar todas">' }] : [])
+                .concat(['Nombre', 'Personaje', 'Nivel', 'Partidas', 'Gastado', 'Alta', 'Id', '']),
+          gente.filter(function (p) {
+            if (filtroGente === 'sin') return sinConfirmar[p.id];
+            if (filtroGente === 'confirmadas') return !sinConfirmar[p.id];
+            return true;
+          }).map(function (p) {
             var d = porPersona[p.id] || { partidas: 0, usd: 0 };
-            return [esc(p.nombre || '—') +
-                      (admins[p.id] ? ' <span class="pastilla">admin</span>' : ''),
+            return (filtroGente === 'sin'
+                ? ['<input type="checkbox" data-sc-id="' + esc(p.id) + '" aria-label="Seleccionar">'] : []).concat([
+                    esc(p.nombre || '—') +
+                      (admins[p.id] ? ' <span class="pastilla">admin</span>' : '') +
+                      (sinConfirmar[p.id] ? ' <span class="pastilla pastilla--ojo">sin confirmar</span>' : ''),
                     esc(p.avatar || '—'),
                     p.nivel,
                     d.partidas,
@@ -948,8 +965,13 @@
                     (esSuperAdmin() && p.id !== (sesion.user && sesion.user.id)
                       ? '<button class="peligro" data-borrar-cuenta="' + esc(p.id) +
                         '" data-apodo="' + esc(p.nombre || '') + '">Borrar</button>'
-                      : '')];
-          }), [false, false, true, true, true, false, false, false]) +
+                      : '')]);
+          }), (filtroGente === 'sin' ? [false] : []).concat([false, false, true, true, true, false, false, false])) +
+        (filtroGente === 'sin'
+          ? '<p class="chico" style="margin-top:10px"><b>Sin confirmar</b> son las que pidieron el enlace ' +
+            'de alta y nunca lo abrieron: no entraron, no tienen contraseña ni partidas. Se borran solas ' +
+            'a los 7 días. Si esa persona vuelve a pedir el enlace, sigue el alta de siempre.</p>'
+          : '') +
         '<p class="chico" style="margin-top:10px"><b>Borrar</b> se lleva la cuenta entera: ' +
         'sus partidas —también del historial de quien jugó con ella—, los audios de esas ' +
         'partidas, sus temas, sus vidas y la cuenta de acceso. No se deshace. Los consumos ' +
@@ -969,6 +991,72 @@
   /* Se confirma escribiendo el apodo: un «¿seguro?» se acepta sin leer, y esto
      no se deshace. `prompt` nativo, que aqui no hay globos y es una pantalla
      del titular. */
+  /* --- LAS CUENTAS SIN CONFIRMAR (titular, 2026-09-23: «que aparezcan en la
+     lista, solo ponemos un filtro por sin confirmar encima de la tabla, opción
+     de seleccionar y eliminar seleccionadas por si quiero hacer limpieza
+     manual»). La base solo borra las que SIGUEN sin confirmar
+     (`borrar_sin_confirmar`, 0087): un id equivocado no se lleva una cuenta de
+     verdad. Las demás se limpian solas a los 7 días. */
+  var filtroGente = 'todas';
+
+  function filtroDeGente(nTodas, nConfirmadas, nSin) {
+    function chip(clave, texto) {
+      return '<button class="chip-f" data-filtro-gente="' + clave + '" aria-pressed="' +
+        (filtroGente === clave) + '">' + texto + '</button>';
+    }
+    return '<div class="filtro-gente">' +
+      chip('todas', 'Todas · ' + nTodas) +
+      chip('confirmadas', 'Confirmadas · ' + nConfirmadas) +
+      chip('sin', 'Sin confirmar · ' + nSin) +
+      (filtroGente === 'sin'
+        ? '<button class="boton boton--chico" data-sc-borrar disabled>Eliminar seleccionadas</button>'
+        : '') +
+    '</div>';
+  }
+
+  function seleccionadas() {
+    return [].map.call(document.querySelectorAll('[data-sc-id]:checked'), function (c) { return c.dataset.scId; });
+  }
+  function contarSeleccion() {
+    var n = seleccionadas().length;
+    var b = document.querySelector('[data-sc-borrar]');
+    if (b) { b.disabled = n === 0; b.textContent = n ? 'Eliminar seleccionadas (' + n + ')' : 'Eliminar seleccionadas'; }
+    var todas = document.querySelector('[data-sc-todas]');
+    var total = document.querySelectorAll('[data-sc-id]').length;
+    if (todas) { todas.checked = total > 0 && n === total; todas.indeterminate = n > 0 && n < total; }
+  }
+  document.addEventListener('change', function (e) {
+    if (e.target.matches('[data-sc-todas]')) {
+      [].forEach.call(document.querySelectorAll('[data-sc-id]'), function (c) { c.checked = e.target.checked; });
+    }
+    if (e.target.matches('[data-sc-todas], [data-sc-id]')) contarSeleccion();
+  });
+
+  function borrarSinConfirmar() {
+    var ids = seleccionadas();
+    if (!ids.length) return;
+    if (!window.confirm('Vas a borrar ' + ids.length + ' cuenta' + (ids.length === 1 ? '' : 's') +
+      ' sin confirmar. Nunca entraron, así que no tienen partidas ni nada más que el perfil provisional. ' +
+      'Si alguna vuelve a pedir el enlace, empieza el alta de cero.\n\n¿Seguro?')) return;
+    var b = document.querySelector('[data-sc-borrar]');
+    if (b) { b.disabled = true; b.textContent = 'Borrando…'; }
+    fetch(cfg.supabaseUrl + '/rest/v1/rpc/borrar_sin_confirmar', {
+      method: 'POST',
+      headers: { apikey: cfg.supabaseAnon, Authorization: 'Bearer ' + sesion.access_token,
+                 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_ids: ids })
+    }).then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); });
+      return r.json();
+    }).then(function (n) {
+      window.alert('Borradas: ' + n + (n < ids.length ? ' (las demás ya no estaban sin confirmar)' : '') + '.');
+      pintar();
+    }).catch(function (err) {
+      window.alert('No se borró: ' + err.message);
+      contarSeleccion();
+    });
+  }
+
   function borrarCuenta(id, apodo) {
     var escrito = window.prompt('Vas a borrar la cuenta «' + apodo + '» con TODO lo suyo, ' +
       'también las partidas que otros jugaron con ella. No se deshace.\n\n' +
@@ -1445,7 +1533,10 @@
     if (!filas.length) return '<p class="chico">Nada todavía.</p>';
     return '<table><thead><tr>' +
       cabeceras.map(function (c, i) {
-        return '<th' + (numerica && numerica[i] ? ' class="num"' : '') + '>' + esc(c) + '</th>';
+        /* `{html}` para lo que no es texto (la casilla de seleccionar todas):
+           se pide a propósito, así que lo demás sigue escapado. */
+        return '<th' + (numerica && numerica[i] ? ' class="num"' : '') + '>' +
+          (c && typeof c === 'object' ? c.html : esc(c)) + '</th>';
       }).join('') +
       '</tr></thead><tbody>' +
       filas.map(function (f) {
@@ -1490,6 +1581,9 @@
     }
     var vr = e.target.closest('[data-visto-reporte]');
     if (vr) return marcarReporteVisto(vr.dataset.vistoReporte);
+    var fg = e.target.closest('[data-filtro-gente]');
+    if (fg) { filtroGente = fg.dataset.filtroGente; return pintar(); }
+    if (e.target.closest('[data-sc-borrar]')) return borrarSinConfirmar();
     var bc = e.target.closest('[data-borrar-cuenta]');
     if (bc) return borrarCuenta(bc.dataset.borrarCuenta, bc.dataset.apodo);
     var d = e.target.closest('[data-detalle]');
