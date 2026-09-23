@@ -1,5 +1,10 @@
 /* ATWI · minijuegos · el tablero de «Choque» (docs/10 §8.1)
    ==========================================================================
+   ⚠️ LO QUE SIGUE SOBRE TOCAR ES HISTORIA. Desde el 2026-09-22 un elemento se
+   pone SOLO ARRASTRÁNDOLO a su círculo (titular: «no debe ser seleccionable con
+   clic, solo por arrastre al área correcta»); tocarlo no hace nada. Lo que sí
+   sigue: tocar un círculo lo vacía, y el teclado asigna con Enter.
+
    LA SELECCIÓN ES UNA SOLA PANTALLA CON NÚMEROS (titular, 2026-09-21: «en vez
    de seleccionar un elemento, aceptar y luego seleccionar otro, vamos a
    acumularle puntos como turnos asignados: si le doy a un elemento lo marco
@@ -254,7 +259,7 @@
       function alSoltar(e) {
         if (seFue() || !ar) return;
         var esto = ar; ar = null;
-        if (!esto.fantasma) return;                 // fue un toque, lo atiende `click`
+        if (!esto.fantasma) return;                 // fue un toque: no asigna nada
         esto.fantasma.remove();
         marcarDiana(null);
         comerClic = true;
@@ -268,22 +273,31 @@
       caja.addEventListener('click', function (e) {
         /* El clic que cierra un arrastre no es un toque: se come. */
         if (comerClic) { comerClic = false; return; }
-        /* TOCAR SIGUE VALIENDO, y no es un atajo de más: es el único camino con
-           teclado o lector de pantalla, que no saben arrastrar. Un elemento se
-           va al primer turno vacío; un círculo con algo dentro se vacía. */
+        /* Tocar un círculo con algo dentro lo vacía. */
         var t = e.target.closest('[data-turno]');
         if (t) {
           puesto[Number(t.dataset.turno)] = -1;
           repinta();
           return;
         }
+        /* ⚠️ TOCAR UN ELEMENTO NO HACE NADA (titular, 2026-09-22: «el elemento no
+           debe ser seleccionable con clic, solo por arrastre al área correcta»).
+           Hasta hoy un toque lo mandaba al primer círculo libre, y así se podía
+           jugar sin arrastrar nunca: el gesto del juego es llevarlo a su ronda. */
+      });
+
+      /* EL TECLADO SIGUE VIVO, y por `keydown` y no por `click`: un lector de
+         pantalla no sabe arrastrar, y sin esto el juego dejaría de poder
+         jugarse. Enter o Espacio en un elemento lo manda al primer círculo
+         libre. Con `preventDefault` el botón no fabrica además su clic. */
+      caja.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
         var c = e.target.closest('[data-el]');
-        if (c) {
-          var q = libres();
-          if (q.length) puesto[q[0]] = Number(c.dataset.el);
-          repinta();
-          return;
-        }
+        if (!c) return;
+        e.preventDefault();
+        var q = libres();
+        if (q.length) puesto[q[0]] = Number(c.dataset.el);
+        repinta();
       });
 
       function confirmar() {
