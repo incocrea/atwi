@@ -127,7 +127,10 @@ window.ATWI = window.ATWI || {};
                        que seguía siendo un trazo, así que además de las vidas
                        arregla eso. */
                     'corazon', 'buzon',
-                    'papelera', 'atras', 'adelante', 'cambiar', 'lapiz',
+                    /* Sin 'adelante': su PNG no lo pintaba nadie y se borró en la
+                       auditoría gráfica (2026-09-23). Si vuelve a hacer falta,
+                       queda su trazo. */
+                    'papelera', 'atras', 'cambiar', 'lapiz',
                     /* EL MORADO SE PUBLICA DESDE EL 2026-09-17, y aquí decía
                        que no podía: «es de un modo que aún no se ha anunciado».
                        Eso se cayó solo cuando QuiénGane resultó ser AZUL —lo
