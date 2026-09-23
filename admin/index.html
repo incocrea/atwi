@@ -14,15 +14,15 @@
      eso la app se ve en blanco y negro.
      ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
      los `<script src>` relativos a su servidor. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 <!-- EL ESTILO DEL JUEGO (titular, 2026-09-23: «agrega a todo el tablero el
      estilo gráfico general del juego»). Las mismas tres hojas que la app —las
      fuentes, los colores y la base con sus botones y campos— y encima lo propio
      del tablero, que ya solo decide la distribución. -->
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=ee79a02">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=ee79a02">
-<link rel="stylesheet" href="../assets/css/base.css?v=ee79a02">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=89a17ec">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=89a17ec">
+<link rel="stylesheet" href="../assets/css/base.css?v=89a17ec">
 <!--
   EL TABLERO NO ES EL JUEGO. Vive en su propia carpeta, no carga ni un archivo
   del juego y no comparte sesión con él: entrar aquí con la cuenta de jugar no
@@ -207,15 +207,35 @@
   .f-esp img { width: 34px; height: 48px; object-fit: cover; border-radius: 6px; box-shadow: var(--sombra-1); flex: none; }
   .f-esp span { font-family: var(--display); font-weight: 700; font-size: 14px; line-height: 1.2; }
   .f-esp small { display: block; font-family: var(--texto); font-weight: 600; font-size: 11px; color: var(--tenue); }
-  .f-centro { overflow-y: auto; padding: 22px 24px; }
-  .f-laminas { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; margin: 14px 0 18px; }
-  .f-lam { font: inherit; background: var(--papel); border: 3px solid transparent; border-radius: var(--radio-tarjeta);
+  /* LA COLUMNA DEL CENTRO NO SCROLLEA ENTERA (titular, 2026-09-23): arriba el
+     título y el botón de subir, en medio las láminas --lo único que se desliza--
+     y abajo, siempre a la vista, «Guardar» y «Volver al de fábrica». */
+  .f-centro { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-height: 0; overflow: hidden; }
+  .f-cab { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 18px 24px 10px; }
+  .f-cab h2 { margin: 0; }
+  .f-subir { margin-left: auto; display: flex; align-items: center; gap: 14px; }
+  .f-subir label.chico { display: flex; align-items: center; gap: 6px; }
+  .f-subir input[type="range"] { accent-color: var(--lavanda); width: 110px; }
+  .f-subir__boton { margin-bottom: 3px; cursor: pointer; }
+  .f-laminas { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 12px;
+               align-content: start; overflow-y: auto; padding: 6px 24px 18px; }
+  .f-sep { grid-column: 1 / -1; margin: 6px 0 -4px; }
+  .f-lam-caja { position: relative; }
+  .f-borrar { position: absolute; top: -6px; right: -6px; width: 24px; height: 24px; border-radius: 50%;
+              border: 2px solid #fff; background: var(--peligro); color: #fff; font: 800 15px/1 var(--texto);
+              cursor: pointer; box-shadow: var(--sombra-1); }
+  .f-repo { position: absolute; top: 8px; left: 8px; font-size: 9px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .05em; background: rgba(255,255,255,.85); color: var(--tinta-suave);
+            border-radius: 999px; padding: 1px 6px; pointer-events: none; }
+  .f-lam { width: 100%; font: inherit; background: var(--papel); border: 3px solid transparent; border-radius: var(--radio-chip);
            padding: 6px; cursor: pointer; box-shadow: var(--sombra-1); display: grid; gap: 6px; }
-  .f-lam img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: center top; border-radius: 14px; }
+  .f-lam img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: center top; border-radius: 9px; }
   .f-lam span { font-size: 11px; font-weight: 700; color: var(--suave); text-align: center; word-break: break-word; }
   .f-lam--puesto { border-color: var(--linea-fuerte); }
   .f-lam--candidato { border-color: var(--lavanda); box-shadow: 0 0 0 4px var(--lavanda-tinte), var(--sombra-2); }
-  .f-acciones { display: flex; gap: 12px; flex-wrap: wrap; }
+  .f-acciones { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 24px 8px;
+                border-top: 1px solid var(--linea); background: var(--crema); }
+  .f-acciones .chico { flex: 1 1 100%; margin: 0; min-height: 18px; }
   .f-previa { display: grid; justify-items: center; align-content: start; gap: 10px; padding: 18px;
               border-left: 1px solid var(--linea); background: var(--crema-hondo); overflow-y: auto; }
   .f-telefono { width: 400px; height: min(820px, calc(100vh - var(--alto-cab) - 80px)); border: 10px solid #2E2A3F;
@@ -276,8 +296,6 @@
       </div>
       <div class="grupo"><p class="grupo__t">Playground</p>
         <button data-pest="simulador">Simulador</button>
-        <button data-pest="marcar">Marcar bocas <span class="solo-local">local</span></button>
-        <button data-pest="microfono">Micrófono <span class="solo-local">local</span></button>
       </div>
     </nav>
     <main id="lienzo"></main>
@@ -299,8 +317,8 @@
   </div>
 </div>
 
-<script src="../assets/js/config.js?v=ee79a02"></script>
-<script src="../assets/js/fondos.js?v=ee79a02"></script>
-<script src="tablero.js?v=ee79a02"></script>
+<script src="../assets/js/config.js?v=89a17ec"></script>
+<script src="../assets/js/fondos.js?v=89a17ec"></script>
+<script src="tablero.js?v=89a17ec"></script>
 </body>
 </html>

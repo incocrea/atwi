@@ -337,25 +337,55 @@
      ahí mismo, sin tener que navegarlo en la app»).
 
      A la izquierda las pantallas (la lista vive en `fondos.js`, la misma que usa
-     la app); en medio las láminas que hay, sacadas del manifiesto de dibujos
-     —una lámina nueva que pase por `tools/fondos.py` y el manifiesto aparece
-     sola—; a la derecha LA APP DE VERDAD en un teléfono, abierta en esa
-     pantalla con el fondo candidato. Tocar una lámina lo cambia en el acto, sin
-     guardar; «Guardar» lo escribe en `fondos` (0086) y lo ven todos al abrir la
-     app. «Volver al de fábrica» borra la fila y deja el dibujo del CSS. */
-  var fondos = { guardados: {}, laminas: [], espacio: 'inicio', candidato: null };
+     la app); en medio las láminas; a la derecha LA APP DE VERDAD en un
+     teléfono, abierta en esa pantalla con el fondo candidato. Tocar una lámina
+     lo cambia en el acto, sin guardar; «Guardar» lo escribe en `fondos` (0086)
+     y lo ven todos al abrir la app. «Volver al de fábrica» borra la fila.
+
+     DOS CLASES DE LÁMINA (titular, el mismo día: «agrega la opción de cargar o
+     eliminar fondos desde aquí»):
+       · las DEL REPOSITORIO (`site/assets/img/fondos/`, de `arte/bgs/` por
+         `tools/fondos.py`), sacadas del manifiesto de dibujos. Son parte de la
+         app publicada y desde aquí no se borran;
+       · las SUBIDAS AQUÍ, que van al cubo público `fondos` del almacén (0088)
+         como `nube-<nombre>.webp`. Se ven al momento en producción, sin
+         publicar, y se pueden borrar.
+     AL SUBIR SE OPTIMIZAN EN EL NAVEGADOR, como hace `tools/fondos.py`: recorte
+     a 860×1528 (el tamaño de los demás), desenfoque ajustable QUEMADO en la
+     imagen y WebP. Una foto de varios MB queda en decenas de KB. */
+  var ANCHO_FONDO = 860, ALTO_FONDO = 1528;
+  var fondos = { guardados: {}, laminas: [], nube: [], espacio: 'inicio', candidato: null, desenfoque: 6 };
+
+  function urlLamina(archivo) { return window.ATWI.fondos.urlDe(archivo); }
+
+  function cabecerasAdmin(extra) {
+    var h = { apikey: cfg.supabaseAnon, Authorization: 'Bearer ' + sesion.access_token };
+    Object.keys(extra || {}).forEach(function (k) { h[k] = extra[k]; });
+    return h;
+  }
 
   function escribirFondo(espacio, archivo) {
     var base = cfg.supabaseUrl + '/rest/v1/fondos';
-    var cab = { apikey: cfg.supabaseAnon, Authorization: 'Bearer ' + sesion.access_token,
-                'Content-Type': 'application/json' };
     var peticion = archivo
-      ? fetch(base, { method: 'POST', headers: Object.assign({ Prefer: 'resolution=merge-duplicates' }, cab),
+      ? fetch(base, { method: 'POST',
+                      headers: cabecerasAdmin({ 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates' }),
                       body: JSON.stringify({ espacio: espacio, archivo: archivo, cambiado: new Date().toISOString() }) })
-      : fetch(base + '?espacio=eq.' + encodeURIComponent(espacio), { method: 'DELETE', headers: cab });
+      : fetch(base + '?espacio=eq.' + encodeURIComponent(espacio), { method: 'DELETE', headers: cabecerasAdmin() });
     return peticion.then(function (r) {
       if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); });
     });
+  }
+
+  /** Los fondos subidos al cubo (`nube-*.webp`). */
+  function listarNube() {
+    return fetch(cfg.supabaseUrl + '/storage/v1/object/list/fondos', {
+      method: 'POST', headers: cabecerasAdmin({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ prefix: '', limit: 1000, sortBy: { column: 'name', order: 'asc' } })
+    }).then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (l) {
+        return (l || []).map(function (o) { return o.name; })
+          .filter(function (n) { return /^nube-[a-z0-9-]+\.webp$/.test(n); });
+      }).catch(function () { return []; });
   }
 
   function verFondos() {
@@ -363,7 +393,8 @@
     if (!F) { $('#lienzo').innerHTML = '<p class="mal">No cargó fondos.js.</p>'; return; }
     Promise.all([
       pedir('fondos?select=espacio,archivo,cambiado'),
-      fetch('../assets/datos/piezas.json', { cache: 'no-store' }).then(function (r) { return r.json(); })
+      fetch('../assets/datos/piezas.json', { cache: 'no-store' }).then(function (r) { return r.json(); }),
+      listarNube()
     ]).then(function (res) {
       fondos.guardados = {};
       res[0].forEach(function (f) { fondos.guardados[f.espacio] = f.archivo; });
@@ -375,6 +406,7 @@
         });
       });
       fondos.laminas = Object.keys(vistas).sort();
+      fondos.nube = res[2];
       pintarFondos(true);
     }).catch(function (e) {
       $('#lienzo').innerHTML = '<p class="mal">No se pudieron leer los fondos: ' + esc(e.message) + '</p>';
@@ -387,6 +419,20 @@
   function puestoEn(clave) {
     var e = espacioDe(clave);
     return fondos.guardados[clave] || (e && e.defecto);
+  }
+
+  function laminaHTML(l, candidato, puesto, esp) {
+    var subida = /^nube-/.test(l);
+    return '<div class="f-lam-caja">' +
+      '<button class="f-lam' + (l === candidato ? ' f-lam--candidato' : '') +
+        (l === puesto ? ' f-lam--puesto' : '') + '" data-f-lam="' + esc(l) + '" title="' + esc(l) + '">' +
+        '<img src="' + esc(urlLamina(l)) + '" alt="" loading="lazy">' +
+        '<span>' + esc(l.replace(/^nube-/, '').replace('.webp', '')) +
+          (l === puesto ? ' · puesto' : '') + (l === esp.defecto ? ' · fábrica' : '') + '</span>' +
+      '</button>' +
+      (subida ? '<button class="f-borrar" data-f-borrar="' + esc(l) + '" title="Eliminar este fondo" aria-label="Eliminar ' + esc(l) + '">×</button>'
+              : '<span class="f-repo" title="Del repositorio: se cambia en arte/bgs y tools/fondos.py">repo</span>') +
+    '</div>';
   }
 
   function pintarFondos(recargarPrevia) {
@@ -402,71 +448,181 @@
           var cambiado = Boolean(fondos.guardados[e.clave]);
           return '<button class="f-esp' + (e.clave === fondos.espacio ? ' f-esp--puesto' : '') +
             '" data-f-esp="' + esc(e.clave) + '">' +
-            '<img src="../assets/img/fondos/' + esc(puestoEn(e.clave)) + '" alt="">' +
+            '<img src="' + esc(urlLamina(puestoEn(e.clave))) + '" alt="">' +
             '<span>' + esc(e.nombre) + '<small>' + (cambiado ? 'elegido' : 'de fábrica') + '</small></span>' +
           '</button>';
         }).join('');
     }).join('');
-    var laminas = fondos.laminas.map(function (l) {
-      return '<button class="f-lam' + (l === candidato ? ' f-lam--candidato' : '') +
-        (l === puesto ? ' f-lam--puesto' : '') + '" data-f-lam="' + esc(l) + '">' +
-        '<img src="../assets/img/fondos/' + esc(l) + '" alt="">' +
-        '<span>' + esc(l.replace('.webp', '')) + (l === puesto ? ' · puesto' : '') +
-          (l === esp.defecto ? ' · fábrica' : '') + '</span></button>';
-    }).join('');
+    var subidas = fondos.nube.map(function (l) { return laminaHTML(l, candidato, puesto, esp); }).join('');
+    var repo = fondos.laminas.map(function (l) { return laminaHTML(l, candidato, puesto, esp); }).join('');
     var hayCambio = candidato !== puesto;
     var html =
       '<div class="f-armazon">' +
         '<div class="f-lista">' + lista + '</div>' +
         '<div class="f-centro">' +
-          '<h2>' + esc(esp.grupo) + ' · ' + esc(esp.nombre) + '</h2>' +
-          '<p class="chico">Toca una lámina para verla en el teléfono. No se guarda hasta que pulses «Guardar este fondo».</p>' +
-          '<div class="f-laminas">' + laminas + '</div>' +
+          '<div class="f-cab">' +
+            '<h2>' + esc(esp.grupo) + ' · ' + esc(esp.nombre) + '</h2>' +
+            '<div class="f-subir">' +
+              '<label class="chico">Desenfoque <input type="range" min="0" max="20" step="1" value="' +
+                fondos.desenfoque + '" data-f-desenfoque> <b id="f-desenfoque-n">' + fondos.desenfoque + '</b></label>' +
+              '<label class="boton boton--chico f-subir__boton">Subir fondo…' +
+                '<input type="file" accept="image/*" data-f-archivo hidden></label>' +
+            '</div>' +
+          '</div>' +
+          '<div class="f-laminas">' +
+            (subidas ? '<p class="grupo__t f-sep">Subidos aquí</p>' + subidas : '') +
+            '<p class="grupo__t f-sep">Del repositorio</p>' + repo +
+          '</div>' +
           '<div class="f-acciones">' +
             '<button class="boton" data-f-guardar' + (hayCambio ? '' : ' disabled') + '>Guardar este fondo</button>' +
             '<button class="boton boton--suave boton--punteado" data-f-fabrica' +
               (fondos.guardados[fondos.espacio] ? '' : ' disabled') + '>Volver al de fábrica</button>' +
+            '<p class="chico" id="f-estado"></p>' +
           '</div>' +
-          '<p class="chico" id="f-estado"></p>' +
         '</div>' +
         '<div class="f-previa">' + previaHTML(candidato) + '</div>' +
       '</div>';
     /* ⚠️ LA LISTA NO VUELVE ARRIBA AL ELEGIR (titular, 2026-09-23). Repintar
-       el lienzo entero crea columnas nuevas, con el scroll en cero: elegir una
-       pantalla de abajo --los minijuegos-- devolvía la lista al principio. Se
-       guarda dónde estaba cada columna y se devuelve después. */
+       crea columnas nuevas con el scroll en cero; se guarda dónde estaba cada
+       una y se devuelve después. */
     var scroll = {};
-    ['.f-lista', '.f-centro'].forEach(function (sel) { if ($(sel)) scroll[sel] = $(sel).scrollTop; });
+    ['.f-lista', '.f-laminas'].forEach(function (sel) { if ($(sel)) scroll[sel] = $(sel).scrollTop; });
     if (recargarPrevia || !$('.f-armazon')) {
       $('#lienzo').className = 'lleno';
       $('#lienzo').innerHTML = html;
     } else {
-      /* Sin recargar el teléfono: solo la lista, las láminas y los botones. */
+      /* Sin recargar el teléfono: solo la lista y la columna del centro. */
       var tmp = document.createElement('div');
       tmp.innerHTML = html;
       ['.f-lista', '.f-centro'].forEach(function (sel) { $(sel).innerHTML = tmp.querySelector(sel).innerHTML; });
     }
-    /* La lista siempre conserva su sitio; las láminas solo si se sigue en la
-       misma pantalla (al cambiar de pantalla, arriba es donde se empieza). */
     if (scroll['.f-lista'] && $('.f-lista')) $('.f-lista').scrollTop = scroll['.f-lista'];
-    if (!recargarPrevia && scroll['.f-centro'] && $('.f-centro')) $('.f-centro').scrollTop = scroll['.f-centro'];
+    if (!recargarPrevia && scroll['.f-laminas'] && $('.f-laminas')) $('.f-laminas').scrollTop = scroll['.f-laminas'];
   }
 
-  /* LA PUERTA NO SE PUEDE ENSEÑAR EN VIVO: la app con sesión no la pinta. Se
-     enseña el dibujo en un teléfono, con el mismo encuadre que usa la app. */
+  /* LA PUERTA NO SE PUEDE ENSEÑAR EN VIVO con sesión: se enseña el dibujo en un
+     teléfono, con el mismo encuadre que usa la app. */
   function previaHTML(archivo) {
-    var src = '../assets/img/fondos/' + encodeURIComponent(archivo);
     if (fondos.espacio === 'puerta') {
-      return '<div class="f-telefono f-telefono--imagen" style="background-image:url(' + src + ')"></div>' +
+      return '<div class="f-telefono f-telefono--imagen" style="background-image:url(' + esc(urlLamina(archivo)) + ')"></div>' +
         '<p class="chico">La puerta solo se ve sin sesión: aquí va el dibujo, con el encuadre de la app.</p>';
     }
     return '<iframe class="f-telefono" title="Vista previa" src="../app/?previa=' +
-      encodeURIComponent(fondos.espacio) + '&fondo=' + encodeURIComponent(archivo) + '"></iframe>' +
-      '<p class="chico">La app de verdad, con la sesión del juego de este navegador.</p>';
+      encodeURIComponent(fondos.espacio) + '&fondo=' + encodeURIComponent(archivo) + '"></iframe>';
   }
+
+  /* --- SUBIR: recortar, desenfocar y comprimir en el navegador ------------- */
+  function nombreDeArchivo(original) {
+    var base = String(original || 'fondo').toLowerCase().replace(/\.[a-z0-9]+$/, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'fondo';
+    var nombre = 'nube-' + base + '.webp', n = 2;
+    while (fondos.nube.indexOf(nombre) !== -1 || fondos.laminas.indexOf(nombre) !== -1) {
+      nombre = 'nube-' + base + '-' + (n++) + '.webp';
+    }
+    return nombre;
+  }
+
+  function optimizar(archivo, desenfoque) {
+    return new Promise(function (listo, no) {
+      var url = URL.createObjectURL(archivo);
+      var im = new Image();
+      im.onload = function () {
+        URL.revokeObjectURL(url);
+        var c = document.createElement('canvas');
+        c.width = ANCHO_FONDO; c.height = ALTO_FONDO;
+        var x = c.getContext('2d');
+        /* COVER, y un poco más grande si hay desenfoque: el blur difumina hacia
+           fuera y dejaría una orla clara en los bordes (lo que `fondos.py` evita
+           quemándolo en la imagen). Se dibuja con margen y el borde se va fuera. */
+        var margen = desenfoque * 3;
+        var escala = Math.max((ANCHO_FONDO + margen * 2) / im.width, (ALTO_FONDO + margen * 2) / im.height);
+        var w = im.width * escala, h = im.height * escala;
+        if (desenfoque) x.filter = 'blur(' + desenfoque + 'px)';
+        x.drawImage(im, (ANCHO_FONDO - w) / 2, (ALTO_FONDO - h) / 2, w, h);
+        c.toBlob(function (b) { b ? listo(b) : no(new Error('el navegador no sabe hacer WebP')); }, 'image/webp', 0.8);
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); no(new Error('no es una imagen que el navegador pueda leer')); };
+      im.src = url;
+    });
+  }
+
+  function subirFondo(archivo) {
+    var estado = $('#f-estado');
+    var nombre = nombreDeArchivo(archivo.name);
+    if (estado) estado.textContent = 'Optimizando ' + archivo.name + '…';
+    optimizar(archivo, fondos.desenfoque).then(function (blob) {
+      if (blob.size > 1048576) throw new Error('quedó en ' + Math.round(blob.size / 1024) + ' KB (el tope es 1 MB)');
+      if (estado) estado.textContent = 'Subiendo ' + nombre + ' (' + Math.round(blob.size / 1024) + ' KB)…';
+      return fetch(cfg.supabaseUrl + '/storage/v1/object/fondos/' + encodeURIComponent(nombre), {
+        method: 'POST', headers: cabecerasAdmin({ 'Content-Type': 'image/webp', 'x-upsert': 'false' }), body: blob
+      }).then(function (r) {
+        if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); });
+        return blob.size;
+      });
+    }).then(function (peso) {
+      fondos.nube.push(nombre);
+      fondos.nube.sort();
+      fondos.candidato = nombre;
+      pintarFondos(false);
+      ponerEnElTelefono(nombre);
+      $('#f-estado').textContent = 'Subido: ' + nombre + ' (' + Math.round(peso / 1024) + ' KB). Míralo en el teléfono y guárdalo si te convence.';
+    }).catch(function (e) {
+      if ($('#f-estado')) $('#f-estado').textContent = 'No se subió: ' + e.message;
+    });
+  }
+
+  /** Borra un fondo subido. Las pantallas que lo tenían vuelven al de fábrica. */
+  function borrarFondo(nombre) {
+    var usan = Object.keys(fondos.guardados).filter(function (e) { return fondos.guardados[e] === nombre; });
+    var aviso = 'Vas a eliminar ' + nombre + ' del almacén.' +
+      (usan.length ? '\n\nLo usan ' + usan.length + ' pantalla(s), que volverán a su fondo de fábrica: ' +
+        usan.map(function (e) { var x = espacioDe(e); return x ? x.grupo + ' · ' + x.nombre : e; }).join(', ') : '') +
+      '\n\n¿Seguro?';
+    if (!window.confirm(aviso)) return;
+    $('#f-estado').textContent = 'Eliminando…';
+    fetch(cfg.supabaseUrl + '/rest/v1/fondos?archivo=eq.' + encodeURIComponent(nombre), { method: 'DELETE', headers: cabecerasAdmin() })
+      .then(function (r) { if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); }); })
+      .then(function () {
+        return fetch(cfg.supabaseUrl + '/storage/v1/object/fondos', {
+          method: 'DELETE', headers: cabecerasAdmin({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ prefixes: [nombre] })
+        });
+      }).then(function (r) {
+        if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); });
+        usan.forEach(function (e) { delete fondos.guardados[e]; });
+        fondos.nube = fondos.nube.filter(function (n) { return n !== nombre; });
+        if (fondos.candidato === nombre) fondos.candidato = null;
+        pintarFondos(true);
+        $('#f-estado').textContent = 'Eliminado: ' + nombre + '.';
+      }).catch(function (e) { $('#f-estado').textContent = 'No se eliminó: ' + e.message; });
+  }
+
+  function ponerEnElTelefono(archivo) {
+    var f = $('.f-previa iframe');
+    var app = null;
+    try { app = f && f.contentWindow && f.contentWindow.ATWI && f.contentWindow.ATWI.fondos; } catch (err) { app = null; }
+    if (app) app.poner(fondos.espacio, archivo);
+    else $('.f-previa').innerHTML = previaHTML(archivo);
+  }
+
+  document.addEventListener('input', function (e) {
+    if (pestana !== 'fondos' || !e.target.matches('[data-f-desenfoque]')) return;
+    fondos.desenfoque = Number(e.target.value) || 0;
+    var n = $('#f-desenfoque-n');
+    if (n) n.textContent = fondos.desenfoque;
+  });
+  document.addEventListener('change', function (e) {
+    if (pestana !== 'fondos' || !e.target.matches('[data-f-archivo]')) return;
+    var a = e.target.files && e.target.files[0];
+    if (a) subirFondo(a);
+    e.target.value = '';
+  });
 
   document.addEventListener('click', function (e) {
     if (pestana !== 'fondos') return;
+    var bo = e.target.closest('[data-f-borrar]');
+    if (bo) return borrarFondo(bo.dataset.fBorrar);
     var es = e.target.closest('[data-f-esp]');
     if (es) {
       fondos.espacio = es.dataset.fEsp;
@@ -479,11 +635,7 @@
       pintarFondos(false);
       /* El teléfono cambia EN EL ACTO: mismo origen, así que se le pone la
          variable directamente, sin recargar la pantalla que está enseñando. */
-      var f = $('.f-previa iframe');
-      var app = null;
-      try { app = f && f.contentWindow && f.contentWindow.ATWI && f.contentWindow.ATWI.fondos; } catch (err) { app = null; }
-      if (app) app.poner(fondos.espacio, fondos.candidato);
-      else $('.f-previa').innerHTML = previaHTML(fondos.candidato);
+      ponerEnElTelefono(fondos.candidato);
       return;
     }
     var g = e.target.closest('[data-f-guardar]');

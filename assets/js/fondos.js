@@ -57,7 +57,12 @@
   function vale(espacio, archivo) {
     return CONOCIDOS[espacio] && /^[a-z0-9-]{1,60}\.webp$/.test(String(archivo || ''));
   }
+  /* LOS SUBIDOS DESDE EL TABLERO viven en el cubo público `fondos` del almacén
+     (0088) y se llaman `nube-…webp`; los demás, en la carpeta del sitio. */
   function urlDe(archivo) {
+    if (/^nube-/.test(archivo) && cfg.supabaseUrl) {
+      return cfg.supabaseUrl + '/storage/v1/object/public/fondos/' + archivo;
+    }
     return new URL('../assets/img/fondos/' + archivo, location.href).href;
   }
 
@@ -115,7 +120,7 @@
 
   window.ATWI.fondos = {
     ESPACIOS: ESPACIOS,
-    poner: poner, quitar: quitar, aplicar: aplicar, vale: vale, leer: leer,
+    poner: poner, quitar: quitar, aplicar: aplicar, vale: vale, leer: leer, urlDe: urlDe,
     listos: listos,
     /** El espacio que el tablero pidió enseñar, o nada. */
     previa: previa && CONOCIDOS[previa] ? previa : null
