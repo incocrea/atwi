@@ -138,6 +138,12 @@ body.app {
      renglones, que en una cabecera se paga en todas las pantallas. */
   font-size: var(--t-mini); color: var(--tinta-suave); margin-top: 2px;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  /* BORDE BLANCO (titular, 2026-09-22): con los fondos nuevos la cabecera va
+     transparente sobre el dibujo y el eslogan gris se perdía. Trazo fino —la
+     letra es de 12 px— y 2 px de relleno a los lados: con `overflow: hidden`
+     el borde de la primera y la última letra se recortaría. */
+  -webkit-text-stroke: 3px var(--blanco); paint-order: stroke fill;
+  padding-inline: 2px;
 }
 .cabecera__sub b { color: var(--lavanda-oscuro); font-weight: 800; }
 
@@ -3089,6 +3095,41 @@ body.app {
 }
 
 .pie-nota { color: var(--ctx-tenue-2); margin-top: var(--e-2); }
+
+/* LAS NOTAS QUE VAN SOBRE EL FONDO DIBUJADO LLEVAN BORDE BLANCO (titular,
+   2026-09-22: «aplica decoración y borde blanco a los textos explicativos de
+   este color para que no se pierdan con el fondo»). Con las láminas nuevas —más
+   detalle y más color— el gris tenue de estas notas se perdía sobre las hojas y
+   el agua. Es el mismo tratamiento que la cuenta atrás y el nombre del ganador,
+   a escala de letra chica: trazo blanco con `paint-order: stroke` —el borde
+   crece hacia FUERA y no se come la letra— y una sombra corta debajo que lo
+   despega del dibujo. Solo las que van DIRECTAS sobre el fondo; las de ese color
+   que viven dentro de una tarjeta o una píldora blanca ya tienen contraste. */
+.pie-nota, .sala__nota, .sala__recordatorio, .dicho__titulo, .sorteo__que,
+.juez__dice, .leyenda {
+  -webkit-text-stroke: 4px var(--blanco); paint-order: stroke fill;
+  filter: drop-shadow(0 1px 1px rgba(46, 42, 63, .2));
+}
+/* Y LOS NOMBRES Y LOS TÍTULOS TAMBIÉN (titular, el mismo día: «aplica borde
+   blanco a los textos de títulos y demás que no estén generando mucho contraste,
+   y al del eslogan del juego en el logo»). Los nombres grandes van con más
+   trazo, que a 27 px dos píxeles de borde no se ven. */
+.turno__quien, .sorteo__quien {
+  -webkit-text-stroke: 6px var(--blanco); paint-order: stroke fill;
+  filter: drop-shadow(0 1px 1px rgba(46, 42, 63, .2));
+}
+/* ⚠️ LOS TÍTULOS DE PANTALLA NO PUEDEN LLEVAR `text-stroke`: son un degradado
+   recortado al texto (`background-clip: text` con la letra transparente), y el
+   fondo se pinta ANTES que el trazo, así que la mitad de dentro del borde blanco
+   se come el degradado y la letra adelgaza. El contorno se hace con cuatro
+   `drop-shadow` sin desenfoque, que se leen de la silueta ya pintada —degradado
+   y destellos incluidos— y se van sumando: cada uno sombrea también a los de
+   antes, así que las esquinas quedan cubiertas. */
+.vista__titulo, .modal__titulo {
+  filter: drop-shadow(1.5px 0 0 var(--blanco)) drop-shadow(-1.5px 0 0 var(--blanco))
+          drop-shadow(0 1.5px 0 var(--blanco)) drop-shadow(0 -1.5px 0 var(--blanco))
+          drop-shadow(0 1px 1px rgba(46, 42, 63, .2));
+}
 
 /* ESPERANDO AL OTRO: LA FORMA DE UN BOTÓN SIN SERLO (titular, 2026-09-19).
    Ocupa el sitio que ocupaba «Volver al inicio» —mismo alto y mismo radio, para
