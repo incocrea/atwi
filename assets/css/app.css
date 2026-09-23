@@ -245,7 +245,7 @@ body.app {
    declaracion sigue siendo valida y no pinta nada, asi que las pantallas sin
    fondo propio no necesitan apagar nada. */
 .marco { --fondo: none; }
-.marco:has(#v-jugar[data-activa]) { --fondo: url(../img/fondos/home.webp); }
+.marco:has(#v-jugar[data-activa]) { --fondo: var(--f-inicio, url(../img/fondos/home.webp)); }
 
 /* EL FONDO LO DEFINE EL MODO, Y NO CAMBIA HASTA QUE EMPIEZA LA PARTIDA
    (decision del titular, 2026-09-14). Cada paso de armar la partida tenia el
@@ -258,13 +258,13 @@ body.app {
    Sin `data-paso`, porque ya no importa el paso. Y `data-modo` lo lleva el
    catalogo en TODOS sus pasos, asi que una regla cubre los tres. */
 .marco:has(#v-catalogo[data-activa][data-modo="debate"]) {
-  --fondo: url(../img/fondos/debate.webp);
+  --fondo: var(--f-catalogo-debate, url(../img/fondos/debate.webp));
 }
 .marco:has(#v-catalogo[data-activa][data-modo="negociacion"]) {
-  --fondo: url(../img/fondos/negociacion.webp);
+  --fondo: var(--f-catalogo-negociacion, url(../img/fondos/negociacion.webp));
 }
 .marco:has(#v-catalogo[data-activa][data-modo="competencia"]) {
-  --fondo: url(../img/fondos/competencia.webp);
+  --fondo: var(--f-catalogo-competencia, url(../img/fondos/competencia.webp));
 }
 /* El catalogo tambien se abre desde la barra de abajo, sin haber elegido modo
    todavia: ahi no hay modo del que sacar el fondo, y sin esto la pantalla se
@@ -274,7 +274,7 @@ body.app {
 /* EL HISTORIAL TIENE EL SUYO (lámina del titular, 2026-09-18). Hasta hoy se
    quedaba sin fondo —`--fondo: none`— y era la única de las cuatro pantallas de
    la barra que se veía sobre el crema pelado. */
-.marco:has(#v-historial[data-activa]) { --fondo: url(../img/fondos/historial.webp); }
+.marco:has(#v-historial[data-activa]) { --fondo: var(--f-historial, url(../img/fondos/historial.webp)); }
 
 /* EL DIBUJO TERMINA DONDE EMPIEZA LA BARRA (titular, 2026-09-16). Iba a `inset:
    0`, o sea que se extendía por debajo de la barra inferior y ésta —que es
@@ -329,11 +329,11 @@ body.app {
    La sala lleva ademas el tinte del modo debajo: si el fondo tarda o falla, la
    pantalla sigue siendo coral o menta y no un hueco blanco. */
 #m-partida[data-ctx="sala-debate"] {
-  background: url(../img/fondos/sala-debate.webp) center top / cover no-repeat,
+  background: var(--f-sala-debate, url(../img/fondos/sala-debate.webp)) center top / cover no-repeat,
               var(--debate-tinte);
 }
 #m-partida[data-ctx="sala-negociacion"] {
-  background: url(../img/fondos/sala-negociacion.webp) center top / cover no-repeat,
+  background: var(--f-sala-negociacion, url(../img/fondos/sala-negociacion.webp)) center top / cover no-repeat,
               var(--negociacion-tinte);
 }
 #m-partida .modal__pie { background: none; border-top: 0; }
@@ -364,13 +364,13 @@ body.app {
 #m-tema.modal--debate,
 #m-explicar.modal--debate,
 #m-preparar.modal--debate {
-  background: url(../img/fondos/debate.webp) center top / cover no-repeat,
+  background: var(--f-preparar-debate, url(../img/fondos/debate.webp)) center top / cover no-repeat,
               var(--debate-tinte);
 }
 #m-tema.modal--negociacion,
 #m-explicar.modal--negociacion,
 #m-preparar.modal--negociacion {
-  background: url(../img/fondos/negociacion.webp) center top / cover no-repeat,
+  background: var(--f-preparar-negociacion, url(../img/fondos/negociacion.webp)) center top / cover no-repeat,
               var(--negociacion-tinte);
 }
 /* QuiénGane llega hasta elegir premio, así que hoy solo pasa por dos de estos
@@ -379,7 +379,7 @@ body.app {
 #m-tema.modal--competencia,
 #m-explicar.modal--competencia,
 #m-preparar.modal--competencia {
-  background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
+  background: var(--f-preparar-competencia, url(../img/fondos/competencia.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 /* EL COLOR DE RESALTE DE CADA PANTALLA, que es lo que los campos leen para su
@@ -454,7 +454,7 @@ body.app {
    Va en el modal y no en su cuerpo, por lo mismo que los de arriba: en el cuerpo
    corta en seco donde empieza el pie. */
 #m-buzon {
-  background: url(../img/fondos/notificaciones.webp) center top / cover no-repeat,
+  background: var(--f-buzon, url(../img/fondos/notificaciones.webp)) center top / cover no-repeat,
               var(--crema);
 }
 
@@ -1592,11 +1592,11 @@ body.app {
    falla, esto sigue siendo coral o menta y no un hueco blanco encima del cual
    no se leería nada. */
 .revelacion--debate {
-  background: url(../img/fondos/sala-debate.webp) center top / cover no-repeat,
+  background: var(--f-revelacion-debate, url(../img/fondos/sala-debate.webp)) center top / cover no-repeat,
               var(--debate-tinte);
 }
 .revelacion--negociacion {
-  background: url(../img/fondos/sala-negociacion.webp) center top / cover no-repeat,
+  background: var(--f-revelacion-negociacion, url(../img/fondos/sala-negociacion.webp)) center top / cover no-repeat,
               var(--negociacion-tinte);
 }
 
@@ -5251,7 +5251,7 @@ body.app {
    y lo que tapaba la app era justamente el color del modal. Pintándolo aquí, la
    puerta sigue cubriendo y además enseña el dibujo. */
 #puerta {
-  background: var(--crema) url(../img/fondos/home.webp) center / cover no-repeat;
+  background: var(--crema) var(--f-puerta, url(../img/fondos/home.webp)) center / cover no-repeat;
 }
 
 /* --- «Invitación enviada» con su fondo (lámina del titular, 2026-09-21) -----
@@ -5262,7 +5262,7 @@ body.app {
    MODAL y no una vista, así que no hay `[data-activa]` del que colgar la
    regla; se elige por modal abierto. */
 #m-invitar {
-  background: var(--crema) url(../img/fondos/invitacion.webp) center / cover no-repeat;
+  background: var(--crema) var(--f-invitacion, url(../img/fondos/invitacion.webp)) center / cover no-repeat;
 }
 /* Y el pie sin raya ni color, que aquí no separa dos zonas: partiría el dibujo
    en dos justo donde el mockup no tiene nada. */

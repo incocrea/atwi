@@ -259,7 +259,7 @@
     ({ costos: verCostos, gente: verGente, partidas: verPartidas,
        material: verMaterial, bitacora: verBitacora, navegadores: verNavegadores,
        llamadas: verLlamadas, modelos: verModelos, limites: verLimites,
-       reportes: verReportes, simulador: verSimulador,
+       reportes: verReportes, simulador: verSimulador, fondos: verFondos,
        voces: function () { verLaboratorio('probar-bocas.html#voces', 'Voces'); },
        bocas: function () { verLaboratorio('probar-bocas.html#bocas', 'Bocas'); },
        marcar: function () { verLaboratorio('marcar-bocas.html', 'Marcar bocas'); },
@@ -293,6 +293,170 @@
         '<iframe src="../app/?probador=1" title="Simulador" allow="microphone; autoplay"></iframe>' +
       '</div>';
   }
+
+  /* --- LOS FONDOS DE CADA PANTALLA (titular, 2026-09-23: «quiero poder
+     seleccionar el background de cada interfaz y modal y tener el preview desde
+     ahí mismo, sin tener que navegarlo en la app»).
+
+     A la izquierda las pantallas (la lista vive en `fondos.js`, la misma que usa
+     la app); en medio las láminas que hay, sacadas del manifiesto de dibujos
+     —una lámina nueva que pase por `tools/fondos.py` y el manifiesto aparece
+     sola—; a la derecha LA APP DE VERDAD en un teléfono, abierta en esa
+     pantalla con el fondo candidato. Tocar una lámina lo cambia en el acto, sin
+     guardar; «Guardar» lo escribe en `fondos` (0086) y lo ven todos al abrir la
+     app. «Volver al de fábrica» borra la fila y deja el dibujo del CSS. */
+  var fondos = { guardados: {}, laminas: [], espacio: 'inicio', candidato: null };
+
+  function escribirFondo(espacio, archivo) {
+    var base = cfg.supabaseUrl + '/rest/v1/fondos';
+    var cab = { apikey: cfg.supabaseAnon, Authorization: 'Bearer ' + sesion.access_token,
+                'Content-Type': 'application/json' };
+    var peticion = archivo
+      ? fetch(base, { method: 'POST', headers: Object.assign({ Prefer: 'resolution=merge-duplicates' }, cab),
+                      body: JSON.stringify({ espacio: espacio, archivo: archivo, cambiado: new Date().toISOString() }) })
+      : fetch(base + '?espacio=eq.' + encodeURIComponent(espacio), { method: 'DELETE', headers: cab });
+    return peticion.then(function (r) {
+      if (!r.ok) return r.text().then(function (t) { throw new Error(t.slice(0, 200)); });
+    });
+  }
+
+  function verFondos() {
+    var F = window.ATWI.fondos;
+    if (!F) { $('#lienzo').innerHTML = '<p class="mal">No cargó fondos.js.</p>'; return; }
+    Promise.all([
+      pedir('fondos?select=espacio,archivo,cambiado'),
+      fetch('../assets/datos/piezas.json', { cache: 'no-store' }).then(function (r) { return r.json(); })
+    ]).then(function (res) {
+      fondos.guardados = {};
+      res[0].forEach(function (f) { fondos.guardados[f.espacio] = f.archivo; });
+      var vistas = {};
+      Object.keys(res[1].olas || {}).forEach(function (ola) {
+        Object.keys(res[1].olas[ola]).forEach(function (ruta) {
+          var m = /assets\/img\/fondos\/([a-z0-9-]+\.webp)$/.exec(ruta);
+          if (m) vistas[m[1]] = true;
+        });
+      });
+      fondos.laminas = Object.keys(vistas).sort();
+      pintarFondos(true);
+    }).catch(function (e) {
+      $('#lienzo').innerHTML = '<p class="mal">No se pudieron leer los fondos: ' + esc(e.message) + '</p>';
+    });
+  }
+
+  function espacioDe(clave) {
+    return window.ATWI.fondos.ESPACIOS.filter(function (e) { return e.clave === clave; })[0];
+  }
+  function puestoEn(clave) {
+    var e = espacioDe(clave);
+    return fondos.guardados[clave] || (e && e.defecto);
+  }
+
+  function pintarFondos(recargarPrevia) {
+    var F = window.ATWI.fondos;
+    var esp = espacioDe(fondos.espacio);
+    var puesto = puestoEn(fondos.espacio);
+    var candidato = fondos.candidato || puesto;
+    var grupos = [];
+    F.ESPACIOS.forEach(function (e) { if (grupos.indexOf(e.grupo) === -1) grupos.push(e.grupo); });
+    var lista = grupos.map(function (g) {
+      return '<p class="grupo__t">' + esc(g) + '</p>' +
+        F.ESPACIOS.filter(function (e) { return e.grupo === g; }).map(function (e) {
+          var cambiado = Boolean(fondos.guardados[e.clave]);
+          return '<button class="f-esp' + (e.clave === fondos.espacio ? ' f-esp--puesto' : '') +
+            '" data-f-esp="' + esc(e.clave) + '">' +
+            '<img src="../assets/img/fondos/' + esc(puestoEn(e.clave)) + '" alt="">' +
+            '<span>' + esc(e.nombre) + '<small>' + (cambiado ? 'elegido' : 'de fábrica') + '</small></span>' +
+          '</button>';
+        }).join('');
+    }).join('');
+    var laminas = fondos.laminas.map(function (l) {
+      return '<button class="f-lam' + (l === candidato ? ' f-lam--candidato' : '') +
+        (l === puesto ? ' f-lam--puesto' : '') + '" data-f-lam="' + esc(l) + '">' +
+        '<img src="../assets/img/fondos/' + esc(l) + '" alt="">' +
+        '<span>' + esc(l.replace('.webp', '')) + (l === puesto ? ' · puesto' : '') +
+          (l === esp.defecto ? ' · fábrica' : '') + '</span></button>';
+    }).join('');
+    var hayCambio = candidato !== puesto;
+    var html =
+      '<div class="f-armazon">' +
+        '<div class="f-lista">' + lista + '</div>' +
+        '<div class="f-centro">' +
+          '<h2>' + esc(esp.grupo) + ' · ' + esc(esp.nombre) + '</h2>' +
+          '<p class="chico">Toca una lámina para verla en el teléfono. No se guarda hasta que pulses «Guardar este fondo».</p>' +
+          '<div class="f-laminas">' + laminas + '</div>' +
+          '<div class="f-acciones">' +
+            '<button class="boton" data-f-guardar' + (hayCambio ? '' : ' disabled') + '>Guardar este fondo</button>' +
+            '<button class="boton boton--suave boton--punteado" data-f-fabrica' +
+              (fondos.guardados[fondos.espacio] ? '' : ' disabled') + '>Volver al de fábrica</button>' +
+          '</div>' +
+          '<p class="chico" id="f-estado"></p>' +
+        '</div>' +
+        '<div class="f-previa">' + previaHTML(candidato) + '</div>' +
+      '</div>';
+    if (recargarPrevia || !$('.f-armazon')) {
+      $('#lienzo').className = 'lleno';
+      $('#lienzo').innerHTML = html;
+    } else {
+      /* Sin recargar el teléfono: solo la lista, las láminas y los botones. */
+      var tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      ['.f-lista', '.f-centro'].forEach(function (sel) { $(sel).innerHTML = tmp.querySelector(sel).innerHTML; });
+    }
+  }
+
+  /* LA PUERTA NO SE PUEDE ENSEÑAR EN VIVO: la app con sesión no la pinta. Se
+     enseña el dibujo en un teléfono, con el mismo encuadre que usa la app. */
+  function previaHTML(archivo) {
+    var src = '../assets/img/fondos/' + encodeURIComponent(archivo);
+    if (fondos.espacio === 'puerta') {
+      return '<div class="f-telefono f-telefono--imagen" style="background-image:url(' + src + ')"></div>' +
+        '<p class="chico">La puerta solo se ve sin sesión: aquí va el dibujo, con el encuadre de la app.</p>';
+    }
+    return '<iframe class="f-telefono" title="Vista previa" src="../app/?previa=' +
+      encodeURIComponent(fondos.espacio) + '&fondo=' + encodeURIComponent(archivo) + '"></iframe>' +
+      '<p class="chico">La app de verdad, con la sesión del juego de este navegador.</p>';
+  }
+
+  document.addEventListener('click', function (e) {
+    if (pestana !== 'fondos') return;
+    var es = e.target.closest('[data-f-esp]');
+    if (es) {
+      fondos.espacio = es.dataset.fEsp;
+      fondos.candidato = null;
+      return pintarFondos(true);
+    }
+    var la = e.target.closest('[data-f-lam]');
+    if (la) {
+      fondos.candidato = la.dataset.fLam;
+      pintarFondos(false);
+      /* El teléfono cambia EN EL ACTO: mismo origen, así que se le pone la
+         variable directamente, sin recargar la pantalla que está enseñando. */
+      var f = $('.f-previa iframe');
+      var app = null;
+      try { app = f && f.contentWindow && f.contentWindow.ATWI && f.contentWindow.ATWI.fondos; } catch (err) { app = null; }
+      if (app) app.poner(fondos.espacio, fondos.candidato);
+      else $('.f-previa').innerHTML = previaHTML(fondos.candidato);
+      return;
+    }
+    var g = e.target.closest('[data-f-guardar]');
+    var fa = e.target.closest('[data-f-fabrica]');
+    if (g || fa) {
+      var archivo = g ? (fondos.candidato || puestoEn(fondos.espacio)) : null;
+      var boton = g || fa;
+      boton.disabled = true;
+      $('#f-estado').textContent = 'Guardando…';
+      escribirFondo(fondos.espacio, archivo).then(function () {
+        if (archivo) fondos.guardados[fondos.espacio] = archivo;
+        else delete fondos.guardados[fondos.espacio];
+        fondos.candidato = null;
+        pintarFondos(!archivo);
+        $('#f-estado').textContent = archivo ? 'Guardado: lo ven todos al abrir la app.' : 'De vuelta al dibujo de fábrica.';
+      }).catch(function (err) {
+        boton.disabled = false;
+        $('#f-estado').textContent = 'No se pudo guardar: ' + err.message;
+      });
+    }
+  });
 
   function verLaboratorio(pagina, nombre) {
     var url = '/laboratorio/' + pagina;

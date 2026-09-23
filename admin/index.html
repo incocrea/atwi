@@ -20,9 +20,9 @@
      estilo gráfico general del juego»). Las mismas tres hojas que la app —las
      fuentes, los colores y la base con sus botones y campos— y encima lo propio
      del tablero, que ya solo decide la distribución. -->
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=04eb091">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=04eb091">
-<link rel="stylesheet" href="../assets/css/base.css?v=04eb091">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=4387488">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=4387488">
+<link rel="stylesheet" href="../assets/css/base.css?v=4387488">
 <!--
   EL TABLERO NO ES EL JUEGO. Vive en su propia carpeta, no carga ni un archivo
   del juego y no comparte sesión con él: entrar aquí con la cuenta de jugar no
@@ -185,6 +185,33 @@
   .movil iframe { width: 430px; height: min(860px, calc(100vh - var(--alto-cab) - 90px)); border: 10px solid #2E2A3F;
                   border-radius: 38px; box-shadow: var(--sombra-3); background: var(--crema); }
   .solo-aqui { max-width: 620px; margin: 40px auto; }
+  /* --- LOS FONDOS: pantallas, láminas y la app en un teléfono (2026-09-23) --- */
+  .f-armazon { display: grid; grid-template-columns: 250px minmax(0, 1fr) 460px;
+               height: calc(100vh - var(--alto-cab)); }
+  .f-lista { overflow-y: auto; padding: 16px 10px; border-right: 1px solid var(--linea); background: var(--papel); }
+  .f-lista .grupo__t { margin-top: 12px; }
+  .f-lista .grupo__t:first-child { margin-top: 0; }
+  .f-esp { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font: inherit;
+           background: none; border: 0; border-radius: var(--radio-chip); padding: 6px 8px; cursor: pointer; color: var(--tinta); }
+  .f-esp:hover { background: var(--crema-hondo); }
+  .f-esp--puesto { background: var(--lavanda-tinte); }
+  .f-esp img { width: 34px; height: 48px; object-fit: cover; border-radius: 6px; box-shadow: var(--sombra-1); flex: none; }
+  .f-esp span { font-family: var(--display); font-weight: 700; font-size: 14px; line-height: 1.2; }
+  .f-esp small { display: block; font-family: var(--texto); font-weight: 600; font-size: 11px; color: var(--tenue); }
+  .f-centro { overflow-y: auto; padding: 22px 24px; }
+  .f-laminas { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; margin: 14px 0 18px; }
+  .f-lam { font: inherit; background: var(--papel); border: 3px solid transparent; border-radius: var(--radio-tarjeta);
+           padding: 6px; cursor: pointer; box-shadow: var(--sombra-1); display: grid; gap: 6px; }
+  .f-lam img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: center top; border-radius: 14px; }
+  .f-lam span { font-size: 11px; font-weight: 700; color: var(--suave); text-align: center; word-break: break-word; }
+  .f-lam--puesto { border-color: var(--linea-fuerte); }
+  .f-lam--candidato { border-color: var(--lavanda); box-shadow: 0 0 0 4px var(--lavanda-tinte), var(--sombra-2); }
+  .f-acciones { display: flex; gap: 12px; flex-wrap: wrap; }
+  .f-previa { display: grid; justify-items: center; align-content: start; gap: 10px; padding: 18px;
+              border-left: 1px solid var(--linea); background: var(--crema-hondo); overflow-y: auto; }
+  .f-telefono { width: 400px; height: min(820px, calc(100vh - var(--alto-cab) - 80px)); border: 10px solid #2E2A3F;
+                border-radius: 38px; box-shadow: var(--sombra-3); background: var(--crema); }
+  .f-telefono--imagen { background-size: cover; background-position: center; }
 </style>
 </head>
 <body>
@@ -234,6 +261,7 @@
       </div>
       <div class="grupo"><p class="grupo__t">Configuración</p>
         <button data-pest="modelos">Modelos</button>
+        <button data-pest="fondos">Fondos</button>
         <button data-pest="voces">Voces <span class="solo-local">local</span></button>
         <button data-pest="bocas">Bocas <span class="solo-local">local</span></button>
       </div>
@@ -262,7 +290,8 @@
   </div>
 </div>
 
-<script src="../assets/js/config.js?v=04eb091"></script>
-<script src="tablero.js?v=04eb091"></script>
+<script src="../assets/js/config.js?v=4387488"></script>
+<script src="../assets/js/fondos.js?v=4387488"></script>
+<script src="tablero.js?v=4387488"></script>
 </body>
 </html>

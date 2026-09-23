@@ -10,7 +10,7 @@
 /* La sala azul. Su fondo es la lámina del modo, con el tinte debajo por si
    la imagen tarda: igual que Juicio y Pacto. */
 #m-partida[data-ctx="sala-competencia"] {
-  background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
+  background: var(--f-sala-competencia, url(../img/fondos/competencia.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 /* CHOQUE LLEVA SU PROPIO FONDO (titular, 2026-09-22) en sus tres pantallas
@@ -20,7 +20,7 @@
    más peso (id + clase para la revelación) para ganarles. */
 #m-partida[data-juego="choque"],
 #m-partida[data-juego="choque"] .revelacion--competencia {
-  background: url(../img/fondos/game-choque.webp) center top / cover no-repeat,
+  background: var(--f-juego-choque, url(../img/fondos/game-choque.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 /* Y CUENTA EL SUYO (titular, 2026-09-22). Desde el pivote el fondo lo marca la
@@ -29,20 +29,20 @@
    revelación solo lo lleva cuando TODAS las rondas fueron de este juego. */
 #m-partida[data-juego="cuenta"],
 #m-partida[data-juego="cuenta"] .revelacion--competencia {
-  background: url(../img/fondos/game-cuenta.webp) center top / cover no-repeat,
+  background: var(--f-juego-cuenta, url(../img/fondos/game-cuenta.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 /* Y el de Calco (titular, 2026-09-22). */
 #m-partida[data-juego="calco"],
 #m-partida[data-juego="calco"] .revelacion--competencia {
-  background: url(../img/fondos/game-calco.webp) center top / cover no-repeat,
+  background: var(--f-juego-calco, url(../img/fondos/game-calco.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 /* Y el de Canastas (titular, 2026-09-22): una habitación con estanterías y
    cajas de colores. */
 #m-partida[data-juego="canastas"],
 #m-partida[data-juego="canastas"] .revelacion--competencia {
-  background: url(../img/fondos/game-canastas.webp) center top / cover no-repeat,
+  background: var(--f-juego-canastas, url(../img/fondos/game-canastas.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 
@@ -377,7 +377,7 @@
    modos, y la tabla de rondas en la pantalla del juez.
    ========================================================================== */
 .revelacion--competencia {
-  background: url(../img/fondos/competencia.webp) center top / cover no-repeat,
+  background: var(--f-revelacion-competencia, url(../img/fondos/competencia.webp)) center top / cover no-repeat,
               var(--competencia-tinte);
 }
 .tabla-juego {

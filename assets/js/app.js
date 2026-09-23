@@ -1238,8 +1238,11 @@
   /** Uno al azar de una lista. */
   function unoDe(lista) { return lista[Math.floor(Math.random() * lista.length)]; }
 
-  function ensayarElJuego() {
+  function ensayarElJuego(forzado) {
     var e = estadoProbador();
+    /* La vista previa de fondos (tablero) pide un juego concreto, o la sala con
+       su sorteo en vez del tablero directo. */
+    forzado = forzado || {};
     /* ⚠️ AQUÍ NO SE USA `mesaDelProbador()` (titular, 2026-09-22): lo que se
        elige para un minijuego es el juego y las rondas, y «el resto
        randomízalo». Las fichas de arriba tiñen las ESCENAS —el VS, el choque de
@@ -1256,9 +1259,9 @@
     var mesa = {
       modo: 'competencia',
       /* El reparto manda; `juego` es el primero, como en la base. */
-      juego: e.repartoJuego[0],
-      juegos: e.repartoJuego.slice(),
-      rondas: e.rondasJuego,
+      juego: (forzado.juegos || e.repartoJuego)[0],
+      juegos: (forzado.juegos || e.repartoJuego).slice(),
+      rondas: forzado.juegos ? forzado.juegos.length : e.rondasJuego,
       quien: [{ nombre: 'Uno', avatar: unaCara, color: unoDe(colores) },
               { nombre: 'Dos', avatar: otraCara, color: unoDe(colores) }],
       juez: jueces.length ? unoDe(jueces).clave : e.juez,
@@ -1269,7 +1272,7 @@
          sortea». */
       ajustes: e.ajustes || {},
       /* Sin sorteo ni cortinilla: aquí se viene a ver el tablero. */
-      directo: true
+      directo: forzado.directo !== false
     };
     cerrarModales(['m-probador']);
     window.ATWI.partida.ensayarElJuego(mesa);
@@ -7602,6 +7605,64 @@
        incrusta la app con `?probador=1` y entra directo al probador. Sigue
        mandando `puedeProbar()`: con otra cuenta el parámetro no hace nada. */
     if (/[?&]probador=1/.test(location.search) && puedeProbar()) abrirProbador();
+    /* LA VISTA PREVIA DE FONDOS DEL TABLERO (titular, 2026-09-23). */
+    if (window.ATWI.fondos && window.ATWI.fondos.previa) mostrarPrevia(window.ATWI.fondos.previa);
+  }
+
+  /* ABRE LA PANTALLA DE UN ESPACIO DE FONDO para la vista previa del tablero
+     (`?previa=<espacio>&fondo=<archivo>`, ver `fondos.js`). Cada espacio llega
+     por el mismo camino que en el juego --la vista, el modal o el ensayo del
+     probador-- para que lo que se ve sea la pantalla de verdad y no una maqueta.
+     Nada de esto escribe: los ensayos no tocan la base y el estado del probador
+     se cambia solo en memoria. La puerta no se puede enseñar con sesión: el
+     tablero la previsualiza como imagen. */
+  function mostrarPrevia(espacio) {
+    var partes = espacio.split('-');
+    var tipo = partes[0], modo = partes.slice(1).join('-');
+    var modos = ['debate', 'negociacion', 'competencia'];
+    if (espacio === 'inicio') return irA('jugar');
+    if (espacio === 'historial') return irA('historial');
+    if (espacio === 'buzon') return abrirBuzon();
+    if (espacio === 'invitacion') {
+      $('#m-invitar .modal__cuerpo').innerHTML =
+        '<div class="enviada">' +
+          '<div class="enviada__signo">' + icono('buzon', 132) + '</div>' +
+          '<h2 style="margin-bottom:var(--e-2)">Invitación enviada</h2>' +
+          '<p class="suave chico" style="max-width:26rem;margin:0 auto">Le propusiste a ' +
+            '<strong>Luna</strong> jugar <strong>«Los platos»</strong> en modo <strong>Controversia</strong>.</p>' +
+        '</div>';
+      return abrirModal('m-invitar');
+    }
+    if (tipo === 'catalogo' && modos.indexOf(modo) !== -1) {
+      propuesta.modo = modo;
+      reiniciarCatalogo();
+      return irA('catalogo');
+    }
+    if (tipo === 'preparar' && modos.indexOf(modo) !== -1) {
+      return datos.catalogo().then(function () {
+        var t = datos.todos().filter(function (x) {
+          return (modo === 'competencia') === (x.clase === 'premio');
+        })[0];
+        if (!t) return;
+        propuesta.modo = modo;
+        propuesta.temaId = t.id;
+        abrirPreparar();
+      });
+    }
+    if (tipo === 'sala') {
+      /* Con REPARTO MIXTO: si todas las rondas son del mismo juego, la sala
+         lleva el fondo de ese juego (`data-juego`) y no el de la sala. */
+      if (modo === 'competencia') return ensayarElJuego({ juegos: ['choque', 'cuenta'], directo: false });
+      estadoProbador().modo = modo;
+      return window.ATWI.partida.ensayarLaEntrada(mesaDelProbador());
+    }
+    if (tipo === 'revelacion') {
+      estadoProbador().modo = modo === 'competencia' ? 'debate' : modo;
+      var r = veredictoDeMentira();
+      r.modo = modo;
+      return window.ATWI.veredicto.revelar(r);
+    }
+    if (tipo === 'juego') return ensayarElJuego({ juegos: [modo], directo: true });
   }
   /* La sala la llama cuando una partida en línea se cerró debajo de ella. */
   window.ATWI.refrescarHistorial = function () {
