@@ -1014,15 +1014,36 @@
    nada que medir aquí. Vale para la presentación y para el recibo, que son la
    misma pantalla antes y después de jugar. */
 .jg--presenta {
-  min-height: 0; grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0; grid-template-rows: minmax(80px, auto) minmax(auto, 1fr);
   align-content: stretch; gap: var(--e-3); padding-top: 0;
+}
+/* ⚠️ EL LOGO CEDE ANTES QUE NADA (titular, 2026-09-22, con una captura de
+   Chrome en un teléfono de 667 px de alto útil: el logo tapaba «Ronda 1 de 2»).
+   Las filas eran `auto minmax(0, 1fr)`: el logo a su alto SIEMPRE, y la ficha
+   en un hueco que podía quedarse en cero —y entonces se salía por arriba y
+   caía encima del logo sin que nada lo notara: ni scroll, ni aviso—.
+   Ahora las dos filas dicen lo que cada una aguanta:
+     · el LOGO va entre 80 px y su alto natural (`minmax(80px, auto)`): la
+       rejilla lo deja crecer solo con el alto que SOBRE, así que en un teléfono
+       bajo se achica él y en uno alto sale entero;
+     · la FICHA no baja de lo que mide (`minmax(auto, 1fr)`): nunca se aplasta
+       ni se monta, y si ni con el logo al mínimo cabe, el cuerpo se desborda y
+       `reservarFigura` lo nota y achica la figura, que es lo siguiente que cede.
+   El orden de quién cede es la decisión: primero el adorno (el logo, hasta 80:
+   por debajo el rótulo ya no se lee), después la figura, y nunca el texto ni
+   el botón. Es CSS y no una medida en JS, así que
+   vale para cualquier alto —también al girar el teléfono o al esconderse la
+   barra de Chrome— sin volver a calcular nada. */
+.jg--presenta > .jg-rotulo {
+  width: auto; height: 100%; min-height: 0;
+  max-width: min(82%, 290px); object-fit: contain; justify-self: center;
 }
 .jg-presenta__centro {
   align-self: center; width: 100%;
   display: grid; justify-items: center; gap: var(--e-3);
 }
-/* EL LOGO, UN POCO MÁS GRANDE en la portada y en el recibo (titular). */
-.jg--presenta .jg-rotulo { width: min(82%, 290px); }
+/* EL LOGO, UN POCO MÁS GRANDE en la portada y en el recibo (titular): hasta
+   290 px de ancho, que es el `max-width` de arriba —su alto lo manda la fila—. */
 
 /* EL REINTENTO ES UN ICONO CON LO QUE QUEDA DENTRO (titular, 2026-09-22), al
    lado del botón grande y de su mismo alto: la pegatina de «cambiar» —las dos

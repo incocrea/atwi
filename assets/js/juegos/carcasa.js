@@ -109,6 +109,26 @@
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
       if (d.parentNode) reservarFigura(d);
     });
+    escucharElSitio();
+  }
+  /* Y SE VUELVE A MEDIR CUANDO CAMBIA EL SITIO: girar el teléfono, o la barra
+     de Chrome que se esconde y aparece —que en Android cambia el alto visible
+     sin avisar con `resize`, solo con `visualViewport`—. Un solo oyente para
+     toda la vida de la página; si no hay figura puesta, no hace nada. */
+  var escuchando = false;
+  function escucharElSitio() {
+    if (escuchando) return;
+    escuchando = true;
+    var t = null;
+    function otraVez() {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        var d = document.querySelector('#m-partida > .jg-portada-fig');
+        if (d) reservarFigura(d);
+      }, 120);
+    }
+    window.addEventListener('resize', otraVez);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', otraVez);
   }
   /* LO DE ARRIBA NO PUEDE CAER SOBRE LA CABEZA: el cuerpo reserva abajo lo que
      ocupa la figura por encima del botón --medido desde la cabeza--, y el logo y la ficha se centran en lo que queda. Si ni así
@@ -116,6 +136,17 @@
      el cuerpo scrollee: lo que se viene a leer es la ficha.
      Se mide con `offsetTop`: `getBoundingClientRect` trae la escala de la
      entrada del modal y daría un número que cambia mientras anima. */
+  /* Dónde acaba una pieza, en coordenadas del modal y sin la escala de su
+     entrada (por eso `offset*` y no `getBoundingClientRect`). Con
+     `scrollHeight` y no solo `offsetHeight`: la columna de la portada se estira
+     al hueco del cuerpo, así que su CAJA siempre cabe —medía 256 con 277 de
+     contenido dentro— y lo que se sale es lo de dentro. */
+  function abajoEnElModal(el) {
+    var modal = document.getElementById('m-partida');
+    var y = Math.max(el.offsetHeight, el.scrollHeight);
+    for (var e = el; e && e !== modal; e = e.offsetParent) y += e.offsetTop;
+    return y;
+  }
   function reservarFigura(d) {
     var cuerpo = $('#m-partida .modal__cuerpo');
     var jug = d.querySelector('.jg-portada-fig__jug');
@@ -135,7 +166,14 @@
       var cabeza = d.offsetTop + jug.offsetTop + img.offsetTop + img.offsetHeight * 0.08;
       var alto = (cuerpo.offsetTop + cuerpo.offsetHeight) - cabeza;
       cuerpo.style.paddingBottom = Math.max(0, Math.round(alto + 12)) + 'px';
-      if (cuerpo.scrollHeight <= cuerpo.clientHeight + 1 || ancho <= 38) break;
+      /* ⚠️ «NO HAY SCROLL» NO ES «CABE» (titular, 2026-09-22, con el logo encima
+         de la ficha en un teléfono de 667 px). El cuerpo es una rejilla y lo que
+         se le sale se mete en su relleno de abajo —la reserva de la figura—, que
+         `scrollHeight` ya cuenta: medía 501/501 con la ficha 21 px por debajo de
+         la cabeza. Se pregunta lo que importa: dónde acaba lo de arriba. */
+      var contenido = cuerpo.firstElementChild;
+      var fin = contenido ? abajoEnElModal(contenido) : 0;
+      if ((cuerpo.scrollHeight <= cuerpo.clientHeight + 1 && fin <= cabeza) || ancho <= 38) break;
       ancho -= 4;
     }
   }
