@@ -54,7 +54,38 @@
     });
   }
 
+  /* «¿CÓMO SE JUEGA?», EL GLOBO DE LA PORTADA (titular, 2026-09-22: «mueve el
+     link a la portada de cada juego»). Lo abre la carcasa; aquí solo va lo que
+     dice. Y EL CÍRCULO ENTERO, a un toque: los cinco con lo que vencen, en el mismo
+     orden en que están en el tablero. Se dice con las FRASES de la lógica
+     —«el metal corta la planta»— que es lo que hace el círculo memorable en
+     vez de una tabla que hay que estudiar. */
+  function comoSeJuega() {
+    var els = m().ELEMENTOS;
+    var filas = els.map(function (_, i) {
+      var gana = els.map(function (__, k) { return k; })
+        .filter(function (k) { return m().vence(i, k); });
+      /* «Fuego: vence Metal y Planta» (titular, 2026-09-21): dos puntos tras
+         el nombre y SIN la «a» delante de cada uno. Son cinco renglones que
+         se leen en columna y no una frase suelta: el «vence a … y a …»
+         sonaba bien de uno en uno y en lista es una preposición repetida
+         diez veces que hay que saltarse para llegar a los nombres. */
+      return '<li class="jg-vence__f">' +
+          pieza(i, 34) +
+          '<span class="jg-vence__t"><b>' + esc(nombre(i)) + ':</b> vence ' +
+            gana.map(function (k) { return esc(nombre(k)); }).join(' y ') + '</span>' +
+        '</li>';
+    }).join('');
+    return '<p class="jg-como__txt">Arrastra un elemento a cada círculo: es lo que juegas en esa ronda. ' +
+        'La ganas si tu elemento <b>vence</b> al del otro.</p>' +
+      '<ul class="jg-vence">' + filas + '</ul>' +
+      '<p class="chico tenue centrado">Cada uno vence a dos y pierde con los otros dos. ' +
+        'Si los dos eligen el mismo, la ronda queda en tablas.</p>';
+  }
+
   J.ui.choque = {
+    comoSeJuega: comoSeJuega,
+
     /* ------------------------------------------------------------------------
        LA ASIGNACIÓN (`deUnaVez`): `ctx.desde..ctx.hasta` son las rondas que
        faltan —en línea, tras una caída, las ya enviadas no están en esa lista—.
@@ -102,21 +133,13 @@
              juega contra nadie --no hay con qué comparar-- y al asignar varias
              rondas quedan varios indicadores encendidos sin decir de cuál se
              habla. El círculo entero, que es lo que de verdad hay que saber, se
-             consulta cuando se quiere. */
+             consulta cuando se quiere: desde el 2026-09-22 en el globo
+             «¿Cómo se juega?» de la PORTADA de la ronda (`comoSeJuega`), no aquí. */
           /* EL LEMA ES FIJO (titular, 2026-09-22): «¡Arrastra tu elemento a
              jugar!», con selección o sin ella. La instrucción que cambiaba
              según el estado era letra chica que nadie leía, y lo que dice el
              estado ya lo dice el círculo. */
           '<p class="jg-choque__lema">¡Arrastra tu elemento a jugar!</p>' +
-          /* «¿CÓMO SE JUEGA?» Y NO «¿QUIÉN VENCE A QUIÉN?» (titular, 2026-09-22):
-             el mismo enlace en todos los juegos, que explica la mecánica entera
-             --no solo el círculo-- y se encuentra en el mismo sitio. */
-          '<p class="jg-choque__ayuda">' +
-            '<button type="button" class="jg-choque__comovence jg-comojuega" data-el-ayuda>' +
-              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
-              '<span>¿Cómo se juega?</span>' +
-            '</button>' +
-          '</p>' +
           (ctx.pie ? '' : '<div class="jg-choque__pie">' + botonHTML() + '</div>') +
         '</div>';
 
@@ -242,44 +265,9 @@
         repinta();
       }
 
-      /* EL CÍRCULO ENTERO, a un toque: los cinco con lo que vencen, en el mismo
-         orden en que están en el tablero. Se dice con las FRASES de la lógica
-         —«el metal corta la planta»— que es lo que hace el círculo memorable en
-         vez de una tabla que hay que estudiar. */
-      function comoVence() {
-        var els = m().ELEMENTOS;
-        var filas = els.map(function (_, i) {
-          var gana = els.map(function (__, k) { return k; })
-            .filter(function (k) { return m().vence(i, k); });
-          /* «Fuego: vence Metal y Planta» (titular, 2026-09-21): dos puntos tras
-             el nombre y SIN la «a» delante de cada uno. Son cinco renglones que
-             se leen en columna y no una frase suelta: el «vence a … y a …»
-             sonaba bien de uno en uno y en lista es una preposición repetida
-             diez veces que hay que saltarse para llegar a los nombres. */
-          return '<li class="jg-vence__f">' +
-              pieza(i, 34) +
-              '<span class="jg-vence__t"><b>' + esc(nombre(i)) + ':</b> vence ' +
-                gana.map(function (k) { return esc(nombre(k)); }).join(' y ') + '</span>' +
-            '</li>';
-        }).join('');
-        return '<p class="jg-como__txt">Arrastra un elemento a cada círculo: es lo que juegas en esa ronda. ' +
-            'La ganas si tu elemento <b>vence</b> al del otro.</p>' +
-          '<ul class="jg-vence">' + filas + '</ul>' +
-          '<p class="chico tenue centrado">Cada uno vence a dos y pierde con los otros dos. ' +
-            'Si los dos eligen el mismo, la ronda queda en tablas.</p>';
-      }
-
       caja.addEventListener('click', function (e) {
         /* El clic que cierra un arrastre no es un toque: se come. */
         if (comerClic) { comerClic = false; return; }
-        var ay = e.target.closest('[data-el-ayuda]');
-        if (ay) {
-          if (window.ATWI.globo) {
-            window.ATWI.globo.abrir(ay, { titulo: '¿Cómo se juega?' },
-              { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: comoVence() });
-          }
-          return;
-        }
         /* TOCAR SIGUE VALIENDO, y no es un atajo de más: es el único camino con
            teclado o lector de pantalla, que no saben arrastrar. Un elemento se
            va al primer turno vacío; un círculo con algo dentro se vacía. */

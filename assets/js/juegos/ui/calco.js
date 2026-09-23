@@ -112,6 +112,27 @@
   }
 
   J.ui.calco = {
+    /* «¿CÓMO SE JUEGA?», el globo de la portada (titular, 2026-09-22): los tres
+       momentos de la ronda en tres rejillas de cajas de madera en miniatura
+       --míralo, se esconde, cálcalo--. Lo que dice del ganador sale de la marca
+       (`[completo, aciertos − de más, −ms]`). */
+    comoSeJuega: function () {
+      var a = HOJA.indexOf('estrella'), b = HOJA.indexOf('gato');
+      function rejilla(celdas) {
+        return '<span class="jg-cal-mini">' + celdas.map(function (v) {
+          return '<span class="jg-cal-mini__c">' + (v >= 0 ? J.stickers.html(v, 64, 'jg-cal-mini__st') : '') + '</span>';
+        }).join('') + '</span>';
+      }
+      return '<p class="jg-como__txt">Mira el patrón mientras corre la cuenta atrás: <b>después se esconde</b>.</p>' +
+        '<ul class="jg-como__ejs" style="--cols:3">' +
+          '<li class="jg-como__ej">' + rejilla([a, -1, -1, b]) + '<span class="jg-como__dice">1 · Míralo</span></li>' +
+          '<li class="jg-como__ej">' + rejilla([-1, -1, -1, -1]) + '<span class="jg-como__dice">2 · Se esconde</span></li>' +
+          '<li class="jg-como__ej">' + rejilla([a, -1, -1, b]) + '<span class="jg-como__dice jg-como__dice--si">3 · Cálcalo</span></li>' +
+        '</ul>' +
+        '<p class="jg-como__txt"><b>Arrastra cada sticker a su caja</b>; toca uno puesto para quitarlo. ' +
+          'Gana quien lo calca entero; si no, quien acierta más, y poner de más resta.</p>';
+    },
+
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
       /* ⚠️ LA MUESTRA Y EL JUEGO SON LA MISMA MAQUETA (titular, 2026-09-22: «las

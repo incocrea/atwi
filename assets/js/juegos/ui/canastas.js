@@ -152,12 +152,15 @@
   }
 
   /* «¿CÓMO SE JUEGA?» (titular, 2026-09-22: «en el globo explicas la mecánica
-     con texto y ejemplo gráfico»). EL EJEMPLO SE DIBUJA CON LAS CAJAS DE ESTA
-     RONDA --las dos primeras de su reparto--, no con un dibujo genérico: quien
-     lo abre ve exactamente las piezas que tiene delante. Tres casos --encima de
-     una igual, en una torre vacía, encima de otra distinta-- y la meta, una
-     torre de cuatro iguales. Son torres de verdad en miniatura: mismo marcado,
-     mismo CSS, otro tamaño. */
+     con texto y ejemplo gráfico»). Lo abre la carcasa desde la PORTADA de la
+     ronda. Tres casos --encima de una igual, en una torre vacía, encima de otra
+     distinta-- y la meta, una torre de cuatro iguales. Son torres de verdad en
+     miniatura: mismo marcado, mismo CSS, otro tamaño.
+     ⚠️ LAS CAJAS SON DE UN TABLERO DE EJEMPLO, no de la ronda: en la portada el
+     de la ronda todavía no existe --en línea la semilla ni siquiera ha llegado
+     del servidor, y no debe llegar antes de «Comenzar ronda»--. Semilla fija,
+     así el ejemplo es siempre el mismo. */
+  var SEMILLA_EJEMPLO = 20260922;
   function comoSeJuega(t) {
     var w = 38, h = Math.round(w / ASPECTO);
     var a = 0, b = t.tipos > 1 ? 1 : 0;
@@ -172,21 +175,21 @@
       return '<span class="jg-cn-mini" style="--n:' + tipos.length + '">' + s + '</span>';
     }
     function ejemplo(destino, vale, texto) {
-      return '<li class="jg-cn-como__ej">' + mini([a]) +
-          '<span class="jg-cn-como__flecha" aria-hidden="true">↓</span>' + mini(destino) +
-          '<span class="jg-cn-como__dice jg-cn-como__dice--' + (vale ? 'si' : 'no') + '">' +
+      return '<li class="jg-como__ej">' + mini([a]) +
+          '<span class="jg-como__flecha" aria-hidden="true">↓</span>' + mini(destino) +
+          '<span class="jg-como__dice jg-como__dice--' + (vale ? 'si' : 'no') + '">' +
             (vale ? '✓ ' : '✗ ') + texto + '</span>' +
         '</li>';
     }
     return '<div class="jg-cn-como" style="--w:' + w + 'px;--h:' + h + 'px;--paso:' + PASO +
         ';--st:' + Math.round(h * ST_LADO) + 'px;--st-y:' + Math.round(h * ST_Y) + 'px">' +
         '<p class="jg-como__txt">Arrastra la <b>caja de arriba</b> de una torre y suéltala en otra. Solo cae en dos sitios:</p>' +
-        '<ul class="jg-cn-como__ejs">' +
+        '<ul class="jg-como__ejs" style="--cols:3">' +
           ejemplo([b, a], true, 'Encima de una igual') +
           ejemplo([-1], true, 'En una torre vacía') +
           ejemplo([a, b], false, 'Encima de otra, no') +
         '</ul>' +
-        '<div class="jg-cn-como__meta">' + mini([a, a, a, a]) +
+        '<div class="jg-como__meta">' + mini([a, a, a, a]) +
           '<p class="jg-como__txt">Gana quien deja <b>cada torre con cuatro cajas iguales</b> en menos movimientos.</p>' +
         '</div>' +
       '</div>';
@@ -195,35 +198,19 @@
   J.ui.canastas = {
     msSalida: MS_SALIDA,
 
+    comoSeJuega: function () {
+      return comoSeJuega(J.tablero('canastas', SEMILLA_EJEMPLO, 0, 'propone'));
+    },
+
     pintar: function (caja, estado, ctx) {
       var t = estado.tablero;
-      /* Debajo de las torres va solo el enlace «¿Cómo se juega?», como en Choque. */
-      var RESERVA = 50;
-      var m = medidas(t, ctx.ancho, ctx.alto - RESERVA);
+      /* Todo el hueco es de las torres: el «¿Cómo se juega?» vive en la
+         portada de la ronda. */
+      var m = medidas(t, ctx.ancho, ctx.alto);
       var html = '';
       for (var i = 0; i < estado.torres.length; i++) html += torreHTML(t, estado.torres[i], i, ctx.bloqueado);
       caja.innerHTML =
-        '<div class="jg-cn" style="' + estiloDe(m, t.cabe) + '">' + html + '</div>' +
-        '<p class="jg-comojuega-fila">' +
-          '<button type="button" class="jg-comojuega" data-cn-ayuda>' +
-            (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
-            '<span>¿Cómo se juega?</span>' +
-          '</button>' +
-        '</p>';
-
-      /* ⚠️ EL OYENTE VA EN EL BOTÓN Y NO EN `caja`: `caja` es el mismo elemento
-         en cada pintada (la del 3-2-1 y la de jugar), así que un oyente en ella
-         se sumaría uno por pintada y el segundo cerraría el globo que abrió el
-         primero --el globo trata el mismo disparador como un interruptor--. */
-      var ayuda = caja.querySelector('[data-cn-ayuda]');
-      if (ayuda) {
-        ayuda.addEventListener('click', function () {
-          if (window.ATWI.globo) {
-            window.ATWI.globo.abrir(ayuda, { titulo: '¿Cómo se juega?' },
-              { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: comoSeJuega(t) });
-          }
-        });
-      }
+        '<div class="jg-cn" style="' + estiloDe(m, t.cabe) + '">' + html + '</div>';
 
       if (ctx.bloqueado) return null;
 

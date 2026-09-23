@@ -65,6 +65,30 @@
   }
 
   J.ui.cuenta = {
+    /* «¿CÓMO SE JUEGA?», el globo de la portada (titular, 2026-09-22). El ejemplo
+       es de fichas de verdad --las de la hoja, con el primer set que se juega--:
+       tres en orden, y un salto que es un fallo. Lo que dice sale de la marca
+       (`[completo, hechas, −fallos, −ms]`): llegar más lejos manda, después los
+       fallos y al final el reloj. */
+    comoSeJuega: function () {
+      var set = ACTIVOS[0];
+      function ficha(n, mal) {
+        return '<span class="jg-como-ficha' + (mal ? ' jg-como-ficha--mal' : '') + '" ' +
+          'style="--set:' + set + ';--n:' + (n - 1) + '" role="img" aria-label="' + n + '"></span>';
+      }
+      var flecha = '<span class="jg-como__flecha" aria-hidden="true">→</span>';
+      return '<p class="jg-como__txt">Toca los números <b>en orden</b>, del 1 al último, lo más rápido que puedas.</p>' +
+        /* Uno debajo del otro: lado a lado, «1 → 2 → 3» y «1 → 3» no caben en el
+           ancho del globo y se pisaban (medido). */
+        '<ul class="jg-como__ejs" style="--cols:1">' +
+          '<li class="jg-como__ej"><span class="jg-como__fila">' + ficha(1) + flecha + ficha(2) + flecha + ficha(3) + '</span>' +
+            '<span class="jg-como__dice jg-como__dice--si">✓ En orden</span></li>' +
+          '<li class="jg-como__ej"><span class="jg-como__fila">' + ficha(1) + flecha + ficha(3, true) + '</span>' +
+            '<span class="jg-como__dice jg-como__dice--no">✗ Saltarse uno es un fallo</span></li>' +
+        '</ul>' +
+        '<p class="jg-como__txt">Gana quien llega más lejos; si empatan, quien tuvo menos fallos, y después el más rápido.</p>';
+    },
+
     /* LO QUE ESTE JUEGO DEJA CONFIGURAR EN EL PROBADOR. Es el contrato genérico:
        el probador pinta lo que haya aquí y devuelve los valores en
        `ctx.ajustes`, así que un juego nuevo trae sus opciones sin que el

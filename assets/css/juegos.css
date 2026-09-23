@@ -85,7 +85,6 @@
 .jg-ficha-ronda > :not(.jg-ficha-ronda__base) { position: relative; z-index: 1; }
 .jg-ficha-ronda__nivel { font-size: var(--t-chico); color: var(--tinta-suave); font-weight: 700; }
 .jg-ficha-ronda__t { font-family: var(--display); font-weight: 800; font-size: var(--t-h3); color: var(--jg-color); }
-.jg-ficha-ronda__como { font-size: var(--t-chico); color: var(--tinta); margin-top: 4px; }
 
 /* Los datos van en una fila de chips con su pegatina: tiempo, reintentos,
    aciertos. La pegatina ya trae perfil blanco; no lleva disco detrás. */
@@ -588,8 +587,38 @@
 .jg-comojuega span {
   -webkit-text-stroke: 6px var(--blanco); paint-order: stroke fill;
 }
-/* El texto de los globos de «¿Cómo se juega?». */
+/* EL GLOBO «¿CÓMO SE JUEGA?» (titular, 2026-09-22), el mismo esqueleto en todos
+   los juegos: texto, una fila de casos dibujados --cada uno con su leyenda y su
+   ✓ o ✗-- y, si hace falta, la meta. Cada juego pone sus piezas; esto es lo
+   común. `--cols` lo pone el juego en la fila. */
 .jg-como__txt { margin: 0 0 8px; font-size: var(--t-chico); line-height: 1.4; }
+.jg-como__ejs {
+  list-style: none; margin: 0 0 8px; padding: 0;
+  display: grid; grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr)); gap: 8px; align-items: end;
+}
+.jg-como__ej { display: grid; justify-items: center; align-content: end; gap: 4px; }
+.jg-como__fila { display: inline-flex; align-items: center; gap: 3px; }
+.jg-como__flecha { font-weight: 900; font-size: 1.05rem; line-height: 1; color: var(--competencia-oscuro); }
+.jg-como__dice { font-size: var(--t-mini); font-weight: 800; line-height: 1.2; text-align: center; color: var(--tinta-suave); }
+.jg-como__dice--si { color: #2E8B45; }
+.jg-como__dice--no { color: var(--peligro); }
+.jg-como__meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; text-align: left; }
+.jg-como__meta .jg-como__txt { margin: 0; }
+/* Cuenta: sus fichas de verdad, de la misma hoja y con la misma cuenta que el
+   tablero (8 sets a lo ancho, 16 números a lo alto). */
+.jg-como-ficha {
+  display: inline-block; flex: none; width: 36px; height: 36px;
+  background: url(../img/juegos/cuenta-fichas.webp) no-repeat;
+  background-size: 800% 1600%;
+  background-position: calc(var(--set) / 7 * 100%) calc(var(--n) / 15 * 100%);
+}
+.jg-como-ficha--mal { filter: drop-shadow(0 0 2px var(--peligro)) drop-shadow(0 0 3px var(--peligro)); }
+/* Calco: una rejilla de 2×2 cajas de madera en miniatura. */
+.jg-cal-mini { display: grid; grid-template-columns: repeat(2, 30px); grid-auto-rows: 30px; gap: 3px; }
+.jg-cal-mini__c { display: grid; place-items: center; background: url(../img/juegos/jg-caja-calco.webp) center / contain no-repeat; }
+.jg-cal-mini__st { width: 22px; height: 22px; }
+/* En la portada va debajo de la tarjeta, con su aire. */
+.jg-presenta__como { margin-top: var(--e-3); }
 
 /* La lista del globo: cada elemento con su dibujo y a quién vence. */
 .jg-vence { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -1115,21 +1144,10 @@
   position: relative; display: inline-block; flex: none; width: var(--w);
   height: calc(var(--h) * (1 + (var(--n) - 1) * var(--paso)));
 }
-.jg-cn-como__ejs {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; align-items: end;
-}
-.jg-cn-como__ej { display: grid; justify-items: center; align-content: end; gap: 2px; }
-.jg-cn-como__flecha { font-weight: 900; font-size: 1.1rem; line-height: 1; color: var(--competencia-oscuro); }
 /* El hueco de la torre vacía, encendido como cuando se arrastra: es donde cae. */
 .jg-cn-como .jg-cn__hueco { opacity: .8; filter: grayscale(.3) brightness(1.1); }
-.jg-cn-como__dice { margin-top: 4px; font-size: var(--t-mini); font-weight: 800; line-height: 1.2; text-align: center; }
-.jg-cn-como__dice--si { color: #2E8B45; }
-.jg-cn-como__dice--no { color: var(--peligro); }
 /* La meta: una torre hecha, con el halo verde de las torres completas. */
-.jg-cn-como__meta { display: flex; align-items: center; gap: 12px; margin-top: 6px; text-align: left; }
-.jg-cn-como__meta .jg-como__txt { margin: 0; }
-.jg-cn-como__meta .jg-cn__caja { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px rgba(58, 166, 85, .75)); }
+.jg-cn-como .jg-como__meta .jg-cn__caja { filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 5px rgba(58, 166, 85, .75)); }
 
 @media (prefers-reduced-motion: reduce) {
   .jg-cn__caja--cae, .jg-cn__torre--hecha .jg-cn__caja, .jg-cn__torre--no { animation: none; }

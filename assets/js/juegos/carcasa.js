@@ -388,6 +388,19 @@
   /* ==========================================================================
      1 · LA PRESENTACIÓN DE LA RONDA
      ========================================================================== */
+  /* El contenido del globo «¿Cómo se juega?» del juego de esta ronda, si lo
+     trae. La carcasa pone el enlace y abre el globo; lo que dice es del juego. */
+  function comoDelJuego() {
+    var ui = (J().ui || {})[juegoActual()];
+    return ui && typeof ui.comoSeJuega === 'function' ? ui.comoSeJuega : null;
+  }
+  function abrirComo(boton) {
+    var como = comoDelJuego();
+    if (!como || !window.ATWI.globo) return;
+    window.ATWI.globo.abrir(boton, { titulo: '¿Cómo se juega?' },
+      { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: como() });
+  }
+
   function pintarPresentacion(aviso) {
     if (!C) return;
     C.estado = 'presentacion';
@@ -419,8 +432,23 @@
               (C.gastados ? (m.reintentos - C.gastados) : m.reintentos) + ' reintento' +
               ((m.reintentos - C.gastados) === 1 ? '' : 's') + '</span>' : '') +
           '</div>' +
-          (m.como ? '<p class="jg-ficha-ronda__como">' + esc(m.como) + '</p>' : '') +
         '</div>' +
+        /* ⚠️ LA TARJETA YA NO LLEVA LAS INSTRUCCIONES (titular, 2026-09-22: «en
+           esta card de portada ya no estén las instrucciones, sino solo la otra
+           información sobre tiempo y reintentos»). Pasan al globo de «¿Cómo se
+           juega?», que va debajo y que cada juego llena con texto y un ejemplo
+           dibujado (`ui.<id>.comoSeJuega()`): un párrafo de letra chica en la
+           portada se leía la primera vez y después era ruido.
+           ⚠️ Y EL ENLACE NO LLEVA `data-jg`: `comenzarEnLinea` y
+           `reintentarEnLinea` toman el PRIMER `[data-jg]` del modal para apagar
+           el botón principal, y éste va antes en el DOM --le habrían puesto
+           «Preparando…» al enlace--. */
+        (comoDelJuego() ? '<p class="jg-comojuega-fila jg-presenta__como">' +
+            '<button type="button" class="jg-comojuega" data-jg-como>' +
+              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
+              '<span>¿Cómo se juega?</span>' +
+            '</button>' +
+          '</p>' : '') +
         (aviso ? '<p class="chico centrado jg-aviso">' + esc(aviso) + '</p>' : '') +
         '</div>' +
       '</div>';
@@ -1297,6 +1325,8 @@
       reintentar();
       return;
     }
+    var como = e.target.closest('#m-partida [data-jg-como]');
+    if (como) { abrirComo(como); return; }
     var b = e.target.closest('#m-partida [data-jg]');
     if (!b) return;
     var a = b.dataset.jg;
