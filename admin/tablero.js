@@ -431,6 +431,12 @@
         '</div>' +
         '<div class="f-previa">' + previaHTML(candidato) + '</div>' +
       '</div>';
+    /* ⚠️ LA LISTA NO VUELVE ARRIBA AL ELEGIR (titular, 2026-09-23). Repintar
+       el lienzo entero crea columnas nuevas, con el scroll en cero: elegir una
+       pantalla de abajo --los minijuegos-- devolvía la lista al principio. Se
+       guarda dónde estaba cada columna y se devuelve después. */
+    var scroll = {};
+    ['.f-lista', '.f-centro'].forEach(function (sel) { if ($(sel)) scroll[sel] = $(sel).scrollTop; });
     if (recargarPrevia || !$('.f-armazon')) {
       $('#lienzo').className = 'lleno';
       $('#lienzo').innerHTML = html;
@@ -440,6 +446,10 @@
       tmp.innerHTML = html;
       ['.f-lista', '.f-centro'].forEach(function (sel) { $(sel).innerHTML = tmp.querySelector(sel).innerHTML; });
     }
+    /* La lista siempre conserva su sitio; las láminas solo si se sigue en la
+       misma pantalla (al cambiar de pantalla, arriba es donde se empieza). */
+    if (scroll['.f-lista'] && $('.f-lista')) $('.f-lista').scrollTop = scroll['.f-lista'];
+    if (!recargarPrevia && scroll['.f-centro'] && $('.f-centro')) $('.f-centro').scrollTop = scroll['.f-centro'];
   }
 
   /* LA PUERTA NO SE PUEDE ENSEÑAR EN VIVO: la app con sesión no la pinta. Se
