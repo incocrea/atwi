@@ -26,11 +26,11 @@
      ⚠️ Y `base-uri 'none'`: sin ella, un XSS con un solo `<base>` redirige TODOS
      los `<script src>` relativos a su servidor. -->
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=0ecfc7e">
-<link rel="stylesheet" href="assets/css/tokens.css?v=0ecfc7e">
-<link rel="stylesheet" href="assets/css/base.css?v=0ecfc7e">
-<link rel="stylesheet" href="assets/css/landing.css?v=0ecfc7e">
-<link rel="stylesheet" href="assets/css/modal.css?v=0ecfc7e">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=3bf8f9b">
+<link rel="stylesheet" href="assets/css/tokens.css?v=3bf8f9b">
+<link rel="stylesheet" href="assets/css/base.css?v=3bf8f9b">
+<link rel="stylesheet" href="assets/css/landing.css?v=3bf8f9b">
+<link rel="stylesheet" href="assets/css/modal.css?v=3bf8f9b">
 </head>
 
 <body class="landing">
@@ -292,7 +292,10 @@
         cómo se dice), de juez (Controversia), de mediador (Pacto) y de revisor de los temas que escribes.
         No recibe audio ni tu correo.</li>
       <li><strong>Microsoft Azure</strong> recibe el guion para generar la voz del personaje.</li>
-      <li><strong>Cloudflare Turnstile</strong> comprueba que quien entra no es un robot.</li>
+      <li><strong>Cloudflare Turnstile</strong> comprueba que quien entra no es un robot, casi siempre sin
+        que veas nada. Para eso lee señales técnicas de tu navegador y tu dispositivo, que Cloudflare trata
+        según su <a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank"
+        rel="noopener noreferrer">Anexo de privacidad de Turnstile (Turnstile Privacy Addendum)</a>.</li>
       <li><strong>Resend</strong> manda los correos de acceso.</li>
     </ul>
     <p>Ninguno recibe tu nombre real, porque no lo tenemos. El correo solo lo ve Supabase (para la cuenta)
@@ -354,6 +357,6 @@
      ninguna otra cosa de la configuración del juego. Bajar la configuración
      entera de la app para leer un párrafo es caro en la única página que no
      tiene service worker que la guarde. -->
-<script src="assets/js/landing.js?v=0ecfc7e"></script>
+<script src="assets/js/landing.js?v=3bf8f9b"></script>
 </body>
 </html>
