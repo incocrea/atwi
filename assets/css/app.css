@@ -3116,6 +3116,21 @@ body.app {
   -webkit-text-stroke: 4px var(--blanco); paint-order: stroke fill;
   filter: drop-shadow(0 1px 1px rgba(46, 42, 63, .2));
 }
+/* ⚠️ Y EN NEGRITA (titular, 2026-09-23: «es más el área blanca que la del mismo
+   texto, y se pierden en el mismo blanco que se supone facilita su lectura»). A
+   13 px el trazo regular mide poco más de un píxel y el borde blanco dos por
+   cada lado: la letra quedaba como una raya gris dentro de una mancha blanca.
+   Con el trazo grueso la tinta vuelve a pesar más que su borde.
+   Va en un `:where()` —especificidad cero— para que SUBA a 700 lo que era fino
+   y no BAJE lo que ya era más grueso: «Quién inicia» va a 800 en su propia
+   regla, escrita antes que ésta, y con una clase normal esta la habría pisado. */
+:where(.pie-nota, .sala__nota, .sala__recordatorio, .dicho__titulo, .sorteo__que,
+       .juez__dice, .leyenda,
+       .perfil-duo__como, .perfil-duo__cambiar, .juez-mesa__que, .ronda-op__que,
+       .turnos-linea > p, .revelacion__pie, .vacio > p, .ficha > .chico,
+       .vista > p) {
+  font-weight: 700;
+}
 /* ⚠️ Y ES LA REGLA PARA TODO TEXTO QUE FLOTA (titular, el mismo día: «te faltaron
    algunos textos… todo texto que esté flotando sin card de fondo debe tenerlo»).
    La lista salió de recorrer las pantallas con un auditor en el navegador —cada
