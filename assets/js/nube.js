@@ -489,6 +489,27 @@ window.ATWI = window.ATWI || {};
   /* Los temas propios, ahora en la cuenta y no en el teléfono. La forma es la
      misma que guardaba localStorage --`id`, `titulo`, `enunciado`, `publico`,
      `clase`, `intensidad`-- para que `datos.js` no tenga que traducir. */
+  /* LAS INSTRUCCIONES QUE ESTA CUENTA YA ENTENDIÓ (0088): los minijuegos cuyo
+     globo «¿Cómo se juega?» ya confirmó con «Entiendo el juego», sembrados con
+     lo que ya había jugado. `null` si no se pudo preguntar: quien llama decide
+     qué hacer sin saberlo (la carcasa, enseñarlas). Filtra por MI id y no se fía
+     de RLS: la cuenta de administración ve todos los perfiles. */
+  function juegosEntendidos() {
+    if (!hayNube()) return Promise.resolve(null);
+    return auth.conUsuario().then(function (s) {
+      var yo = s && s.user && s.user.id;
+      if (!yo) return null;
+      return fetch(cfg.supabaseUrl + '/rest/v1/perfiles?select=juegos_entendidos&id=eq.' + yo, {
+        headers: { 'apikey': cfg.supabaseAnon, 'Authorization': 'Bearer ' + conSesion(), 'Accept': 'application/json' }
+      }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (f) { return f && f[0] ? (f[0].juegos_entendidos || []) : null; });
+    }).catch(function (e) { apuntar('juegos entendidos: ' + e.message); return null; });
+  }
+  function entenderJuego(juego) {
+    if (!hayNube()) return Promise.resolve(null);
+    return rpc('entender_juego', { p_juego: juego });
+  }
+
   function temasPropios() {
     if (!hayNube()) return Promise.resolve(null);
     return fetch(cfg.supabaseUrl + '/rest/v1/temas_propios?select=*&order=creado.asc', {
@@ -1187,6 +1208,8 @@ window.ATWI = window.ATWI || {};
     estadoDelJuego: conTokenVivo(estadoDelJuego),
     contraproponerJuego: conTokenVivo(contraproponerJuego),
     aceptarJuego: conTokenVivo(aceptarJuego),
+    juegosEntendidos: conTokenVivo(juegosEntendidos),
+    entenderJuego: conTokenVivo(entenderJuego),
     borrarMiCuenta: conTokenVivo(borrarMiCuenta),
     bloquear: conTokenVivo(bloquear),
     desbloquear: conTokenVivo(desbloquear),

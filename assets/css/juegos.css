@@ -652,8 +652,11 @@
 .jg-cal-mini { display: grid; grid-template-columns: repeat(2, 30px); grid-auto-rows: 30px; gap: 3px; }
 .jg-cal-mini__c { display: grid; place-items: center; background: url(../img/juegos/jg-caja-calco.webp) center / contain no-repeat; }
 .jg-cal-mini__st { width: 22px; height: 22px; }
-/* En la portada va debajo de la tarjeta, con su aire. */
-.jg-presenta__como { margin-top: var(--e-3); }
+/* En la portada va debajo de la tarjeta; dónde exactamente lo decide el reparto
+   de `.jg-presenta__centro`. Y MÁS GRANDE (titular, 2026-09-23): a 13 px, con la
+   bombilla de 30, se leía como una nota al pie de la tarjeta. */
+.jg-presenta__como .jg-comojuega { font-size: 1.125rem; gap: 10px; }
+.jg-presenta__como .jg-comojuega .ico { width: 42px; height: 42px; }
 
 /* La lista del globo: cada elemento con su dibujo y a quién vence. */
 .jg-vence { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
@@ -1045,9 +1048,24 @@
   max-width: min(82%, 290px); object-fit: contain; justify-self: center;
 }
 .jg-presenta__centro {
-  align-self: center; width: 100%;
-  display: grid; justify-items: center; gap: var(--e-3);
+  align-self: stretch; width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: space-evenly; gap: 8px;
 }
+/* «¿CÓMO SE JUEGA?» CENTRADO ENTRE LA TARJETA Y EL PERSONAJE, SIEMPRE (titular,
+   2026-09-23). Estaba pegado a la tarjeta con su margen, y en un teléfono alto
+   quedaba un hueco grande debajo y el enlace a medio camino de nada. Ahora la
+   columna ocupa todo el hueco entre el logo y la cabeza y reparte el aire POR
+   IGUAL —arriba de la tarjeta, entre la tarjeta y el enlace, y debajo del
+   enlace— sin medir nada: sobre o falte alto, el enlace cae en el medio.
+   ⚠️ Las dos cuentas de abajo van juntas. Entre pieza y pieza hay 8 px fijos
+   (`gap`), que es lo que queda cuando no sobra nada —la tarjeta y el enlace no
+   se tocan nunca—. Y el cuerpo acaba 12 px ANTES de la cabeza (`reservarFigura`
+   los deja de aire), así que sin corregir el hueco de abajo mediría 12 más que
+   el de arriba y el de en medio 8 más: con −4 en el último, tarjeta→enlace y
+   enlace→cabeza miden lo mismo (s + 8), y en el caso justo el enlace queda a
+   8 px de la cabeza. En el recibo no hay enlace, y lo mismo centra la tarjeta. */
+.jg-presenta__centro > :last-child { margin-bottom: -4px; }
 /* EL LOGO, UN POCO MÁS GRANDE en la portada y en el recibo (titular): hasta
    290 px de ancho, que es el `max-width` de arriba —su alto lo manda la fila—. */
 

@@ -171,9 +171,12 @@
          se le sale se mete en su relleno de abajo —la reserva de la figura—, que
          `scrollHeight` ya cuenta: medía 501/501 con la ficha 21 px por debajo de
          la cabeza. Se pregunta lo que importa: dónde acaba lo de arriba. */
+      /* Cabe si acaba dentro del hueco, o sea con los 12 px de aire de la
+         reserva intactos (2 de tolerancia por redondeo): dejar que se comiera
+         ese aire era dejar el enlace pegado al pelo. */
       var contenido = cuerpo.firstElementChild;
       var fin = contenido ? abajoEnElModal(contenido) : 0;
-      if ((cuerpo.scrollHeight <= cuerpo.clientHeight + 1 && fin <= cabeza) || ancho <= 38) break;
+      if ((cuerpo.scrollHeight <= cuerpo.clientHeight + 1 && fin <= cabeza - 10) || ancho <= 38) break;
       ancho -= 4;
     }
   }
@@ -432,11 +435,76 @@
     var ui = (J().ui || {})[juegoActual()];
     return ui && typeof ui.comoSeJuega === 'function' ? ui.comoSeJuega : null;
   }
-  function abrirComo(boton) {
+  /* LAS INSTRUCCIONES SE ENTIENDEN UNA VEZ POR JUEGO, Y ANTES DE JUGARLO
+     (titular, 2026-09-23: «cada vez que un usuario nuevo vaya a jugar un juego
+     que según su historial nunca haya jugado, antes de que pueda dar clic en
+     "Comenzar ronda" le abrimos las instrucciones… con un botón de "Entiendo el
+     juego"; en ese globo no se podrá salir hasta dar clic allí, y esto marcará
+     al usuario como que ya vio esas instrucciones»).
+     Lo que cuenta es la CUENTA (`perfiles.juegos_entendidos`, migración 0088,
+     sembrada con lo que cada quien ya jugó), y el teléfono guarda una copia
+     por cuenta para no preguntar cada vez. Se pregunta al servidor UNA vez por
+     página; si no contesta, se da por no entendido: enseñar unas instrucciones
+     de más cuesta un toque, y dejar entrar a ciegas es lo que esto evita.
+     ⚠️ La copia va por id de cuenta: en un teléfono compartido, lo que entendió
+     una no puede saltarle el globo a la otra. */
+  var entendidosDelServidor = null;
+  function claveEntendidos() {
+    var a = window.ATWI.auth;
+    var s = a && a.sesion ? a.sesion() : null;
+    return 'atwi.juegos.entendidos.' + ((s && s.user && s.user.id) || 'local');
+  }
+  function entendidosLocales() {
+    try { return JSON.parse(localStorage.getItem(claveEntendidos()) || '[]') || []; }
+    catch (e) { return []; }
+  }
+  function guardarEntendidos(lista) {
+    try { localStorage.setItem(claveEntendidos(), JSON.stringify(lista)); } catch (e) {}
+  }
+  function yaLoEntiende(juego) { return entendidosLocales().indexOf(juego) !== -1; }
+  function loEntiende(juego) {
+    if (yaLoEntiende(juego)) return Promise.resolve(true);
+    var n = nube();
+    if (!n || !n.juegosEntendidos || !n.hay()) return Promise.resolve(false);
+    if (!entendidosDelServidor) {
+      entendidosDelServidor = n.juegosEntendidos().then(function (lista) {
+        if (!lista) { entendidosDelServidor = null; return; }   // se vuelve a preguntar la próxima
+        var l = entendidosLocales();
+        lista.forEach(function (j) { if (l.indexOf(j) === -1) l.push(j); });
+        guardarEntendidos(l);
+      });
+    }
+    return entendidosDelServidor.then(function () { return yaLoEntiende(juego); });
+  }
+  function marcarEntendido(juego) {
+    var l = entendidosLocales();
+    if (l.indexOf(juego) === -1) { l.push(juego); guardarEntendidos(l); }
+    var n = nube();
+    if (n && n.entenderJuego && n.hay()) n.entenderJuego(juego).catch(function () {});
+  }
+  /* El globo. La PRIMERA vez es un gate: `fijo` —no lo cierran el toque fuera,
+     Escape ni el atrás— y su única salida es «Entiendo el juego». Abierto desde
+     el enlace por quien todavía no lo entendió, sale igual: si no, leerlo por su
+     cuenta y cerrarlo tocando fuera no lo marcaría, y el gate le saltaría
+     encima al pulsar «Comenzar ronda». */
+  function abrirComo(boton, forzado) {
     var como = comoDelJuego();
     if (!como || !window.ATWI.globo) return;
+    var juego = juegoActual();
+    var primera = forzado || !yaLoEntiende(juego);
     window.ATWI.globo.abrir(boton, { titulo: '¿Cómo se juega?' },
-      { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: como() });
+      { tinte: 'competencia', etiqueta: 'Cómo se juega', cuerpo: como(), fijo: primera,
+        acciones: primera
+          ? '<button type="button" class="boton boton--bloque boton--competencia" data-jg-entiendo="' +
+              esc(juego) + '">Entiendo el juego</button>'
+          : '' });
+  }
+  /* Si hace falta y no hay ya un globo abierto, lo abre colgado del enlace. */
+  function exigirInstrucciones() {
+    var b = $('#m-partida [data-jg-como]');
+    if (!b || document.querySelector('.globo')) return false;
+    abrirComo(b, true);
+    return true;
   }
 
   function pintarPresentacion(aviso) {
@@ -483,7 +551,7 @@
            «Preparando…» al enlace--. */
         (comoDelJuego() ? '<p class="jg-comojuega-fila jg-presenta__como">' +
             '<button type="button" class="jg-comojuega" data-jg-como>' +
-              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 30) : '') +
+              (window.ATWI.icono ? window.ATWI.icono('ayuda-azul', 42) : '') +
               '<span>¿Cómo se juega?</span>' +
             '</button>' +
           '</p>' : '') +
@@ -513,6 +581,19 @@
         if (b) b.disabled = false;
       });
     }
+    /* LA PRIMERA VEZ CON ESTE JUEGO, LAS INSTRUCCIONES SALEN SOLAS, antes de
+       poder pulsar nada. Con un respiro para que la pantalla se vea primero: un
+       globo que aparece a la vez que ella no se lee como respuesta a nada. */
+    if (comoDelJuego()) {
+      var juego = juegoActual(), ronda = C.ronda;
+      loEntiende(juego).then(function (ok) {
+        if (ok) return;
+        setTimeout(function () {
+          if (!C || C.estado !== 'presentacion' || juegoActual() !== juego || C.ronda !== ronda) return;
+          exigirInstrucciones();
+        }, 450);
+      });
+    }
   }
 
   /* ⚠️ EL RENGLÓN DE NIVEL SE FUE CON LA RAMPA (pivote del titular,
@@ -526,6 +607,10 @@
      ========================================================================== */
   function comenzar() {
     if (!C || C.estado !== 'presentacion') return;
+    /* Y POR SI SE LLEGA AQUÍ ANTES QUE EL GLOBO (un toque rápido, o el servidor
+       tardando en contestar): sin haberlas entendido, «Comenzar» las abre en
+       vez de empezar. */
+    if (comoDelJuego() && !yaLoEntiende(juegoActual()) && exigirInstrucciones()) return;
     var s = sonido();
     if (s && s.hay()) s.despertar();
     if (C.P.enLinea) return comenzarEnLinea();
@@ -1367,6 +1452,13 @@
     if (e.target.closest('.globo [data-jg-globo="reintentar"]')) {
       if (window.ATWI.globo) window.ATWI.globo.cerrar();
       reintentar();
+      return;
+    }
+    /* «Entiendo el juego»: la única salida del globo de la primera vez. */
+    var entiendo = e.target.closest('.globo [data-jg-entiendo]');
+    if (entiendo) {
+      marcarEntendido(entiendo.getAttribute('data-jg-entiendo'));
+      if (window.ATWI.globo) window.ATWI.globo.cerrarFijo();
       return;
     }
     var como = e.target.closest('#m-partida [data-jg-como]');
