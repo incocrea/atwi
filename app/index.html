@@ -45,13 +45,13 @@
        frío tarda 12 s hasta que responde el secundario. -->
   <link rel="dns-prefetch" href="https://vauarfofsfgwnuyjfpni.supabase.co">
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=ba0c061">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=ba0c061">
-<link rel="stylesheet" href="../assets/css/base.css?v=ba0c061">
-<link rel="stylesheet" href="../assets/css/app.css?v=ba0c061">
-<link rel="stylesheet" href="../assets/css/modal.css?v=ba0c061">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=4817e36">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=4817e36">
+<link rel="stylesheet" href="../assets/css/base.css?v=4817e36">
+<link rel="stylesheet" href="../assets/css/app.css?v=4817e36">
+<link rel="stylesheet" href="../assets/css/modal.css?v=4817e36">
 <!-- Los minijuegos de QuiénGane: la carcasa y los tableros (prefijo `jg-`). -->
-<link rel="stylesheet" href="../assets/css/juegos.css?v=ba0c061">
+<link rel="stylesheet" href="../assets/css/juegos.css?v=4817e36">
 </head>
 
 <body class="app">
@@ -295,21 +295,25 @@
            principal: son cinco atajos del mismo rango. La palabra debajo se
            queda --es lo que los distingue de un vistazo, como en la barra de
            abajo del juego-- y el nombre largo vive en `aria-label`. -->
+      <!-- ⚠️ `loading="lazy"` (auditoría gráfica, 2026-09-23): este HTML va en la
+           página de TODOS, y sin él los cinco iconos se bajaban en cada carga
+           --`vs-azul.png` solo son 212 KB-- aunque el simulador no se abra
+           nunca. Diferidos, dentro de un modal oculto no se piden hasta verse. -->
       <div class="pb-atajos">
         <button class="pb-atajo" data-accion="pb-entrada" aria-label="Reproducir la entrada">
-          <img src="../assets/img/iconos/vs-azul.png" alt="" width="44" height="44" decoding="async">
+          <img src="../assets/img/iconos/vs-azul.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span>Entrada</span></button>
         <button class="pb-atajo" data-accion="pb-juego" aria-label="Reproducir un minijuego">
-          <img src="../assets/img/juegos/jg-pasos.webp" alt="" width="44" height="44" decoding="async">
+          <img src="../assets/img/juegos/jg-pasos.webp" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span>Minijuego</span></button>
         <button class="pb-atajo" data-accion="pb-votar" id="pb-votar" aria-label="Reproducir el fin de ronda">
-          <img src="../assets/img/iconos/micro.png" alt="" width="44" height="44" decoding="async">
+          <img src="../assets/img/iconos/micro.png" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span>Fin de ronda</span></button>
         <button class="pb-atajo" data-accion="pb-duelo" aria-label="Reproducir la comparación de las rondas">
-          <img src="../assets/img/juegos/jg-empate.webp" alt="" width="44" height="44" decoding="async">
+          <img src="../assets/img/juegos/jg-empate.webp" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span>Comparar</span></button>
         <button class="pb-atajo" data-accion="pb-jugar" aria-label="Reproducir la victoria">
-          <img src="../assets/img/juegos/jg-copa.webp" alt="" width="44" height="44" decoding="async">
+          <img src="../assets/img/juegos/jg-copa.webp" alt="" width="44" height="44" loading="lazy" decoding="async">
           <span>Victoria</span></button>
       </div>
     </div>
@@ -473,42 +477,42 @@
 
 <p class="aviso-escritorio">ATWI está diseñado solo para móvil. Esto es una vista previa dentro de un marco de teléfono.</p>
 
-<script src="../assets/js/config.js?v=ba0c061"></script>
-<script src="../assets/js/fondos.js?v=ba0c061"></script>
-<script src="../assets/js/precarga.js?v=ba0c061"></script>
-<script src="../assets/js/iconos.js?v=ba0c061"></script>
-<script src="../assets/js/personajes.js?v=ba0c061"></script>
-<script src="../assets/js/datos.js?v=ba0c061"></script>
-<script src="../assets/js/sonido.js?v=ba0c061"></script>
-<script src="../assets/js/veredicto.js?v=ba0c061"></script>
-<script src="../assets/js/grabadora.js?v=ba0c061"></script>
+<script src="../assets/js/config.js?v=4817e36"></script>
+<script src="../assets/js/fondos.js?v=4817e36"></script>
+<script src="../assets/js/precarga.js?v=4817e36"></script>
+<script src="../assets/js/iconos.js?v=4817e36"></script>
+<script src="../assets/js/personajes.js?v=4817e36"></script>
+<script src="../assets/js/datos.js?v=4817e36"></script>
+<script src="../assets/js/sonido.js?v=4817e36"></script>
+<script src="../assets/js/veredicto.js?v=4817e36"></script>
+<script src="../assets/js/grabadora.js?v=4817e36"></script>
 <!-- LOS MINIJUEGOS DE QUIÉNGANE (docs/10). La lógica sin DOM va primero —es la
      MISMA que corre en el servidor, copiada letra por letra a `logica.ts`—,
      después la carcasa y los tableros. Cada juego construido suma dos scripts:
      `logica/<id>.js` y `ui/<id>.js`. `prueba` es el juego de mentira. -->
-<script src="../assets/js/juegos/azar.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/logica/comun.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/logica/cuenta.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/logica/choque.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/logica/calco.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/logica/canastas.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/carcasa.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/duelo.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/piezas/stickers.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/piezas/arrastre.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/ui/cuenta.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/ui/choque.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/ui/calco.js?v=ba0c061"></script>
-<script src="../assets/js/juegos/ui/canastas.js?v=ba0c061"></script>
-<script src="../assets/js/partida.js?v=ba0c061"></script>
-<script src="../assets/js/auth.js?v=ba0c061"></script>
-<script src="../assets/js/entrada.js?v=ba0c061"></script>
-<script src="../assets/js/nube.js?v=ba0c061"></script>
+<script src="../assets/js/juegos/azar.js?v=4817e36"></script>
+<script src="../assets/js/juegos/logica/comun.js?v=4817e36"></script>
+<script src="../assets/js/juegos/logica/cuenta.js?v=4817e36"></script>
+<script src="../assets/js/juegos/logica/choque.js?v=4817e36"></script>
+<script src="../assets/js/juegos/logica/calco.js?v=4817e36"></script>
+<script src="../assets/js/juegos/logica/canastas.js?v=4817e36"></script>
+<script src="../assets/js/juegos/carcasa.js?v=4817e36"></script>
+<script src="../assets/js/juegos/duelo.js?v=4817e36"></script>
+<script src="../assets/js/juegos/piezas/stickers.js?v=4817e36"></script>
+<script src="../assets/js/juegos/piezas/arrastre.js?v=4817e36"></script>
+<script src="../assets/js/juegos/ui/cuenta.js?v=4817e36"></script>
+<script src="../assets/js/juegos/ui/choque.js?v=4817e36"></script>
+<script src="../assets/js/juegos/ui/calco.js?v=4817e36"></script>
+<script src="../assets/js/juegos/ui/canastas.js?v=4817e36"></script>
+<script src="../assets/js/partida.js?v=4817e36"></script>
+<script src="../assets/js/auth.js?v=4817e36"></script>
+<script src="../assets/js/entrada.js?v=4817e36"></script>
+<script src="../assets/js/nube.js?v=4817e36"></script>
 <!-- LA PARTIDA DE EJEMPLO, solo para el visor de la landing (`?demo=1`).
      Son 6 KB y no se piden nunca en una partida real: el navegador los baja
      una vez y la app no los mira si no esta el parametro. Lo escribe
      `tools/demo_landing.py`; no se edita a mano. -->
-<script src="../assets/js/demo.js?v=ba0c061"></script>
-<script src="../assets/js/app.js?v=ba0c061"></script>
+<script src="../assets/js/demo.js?v=4817e36"></script>
+<script src="../assets/js/app.js?v=4817e36"></script>
 </body>
 </html>

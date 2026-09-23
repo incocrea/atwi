@@ -427,7 +427,14 @@ window.ATWI = window.ATWI || {};
         if (!GENTE[q] || !POSES[p]) return;
         /* El color va en paralelo a `quienes`: en la sala cada lado tiene el
            suyo, y bajar la pieza del color equivocado no adelanta nada. */
-        rutas.push(window.ATWI.pieza(q, (colores || [])[i], p));
+        var color = (colores || [])[i];
+        /* ⚠️ LA POSE CON MARCOS SE PRECARGA POR SUS MARCOS (auditoría gráfica,
+           2026-09-23). `hablando` se pinta como `hablando-1` y `hablando-2` en
+           todos los que llevan boca (`marcos()`), y aquí se pedía `hablando` a
+           secas: se bajaba una pieza que no se pinta nunca y NO las dos que sí. */
+        var n = CON_BOCA.indexOf(q + '-' + elColor(color)) < 0 ? 1 : (MARCOS[p] || 1);
+        if (n === 1) rutas.push(window.ATWI.pieza(q, color, p));
+        else for (var k = 1; k <= n; k++) rutas.push(window.ATWI.pieza(q, color, p + '-' + k));
       });
     });
     return window.ATWI.precarga.listas(rutas);
