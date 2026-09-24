@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=097c456">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=097c456">
-<link rel="stylesheet" href="../assets/css/base.css?v=097c456">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=67a6120">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=67a6120">
+<link rel="stylesheet" href="../assets/css/base.css?v=67a6120">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -175,6 +175,39 @@
      herramientas de laboratorio, dentro del tablero. El simulador va en un
      marco de teléfono porque es el juego, que es solo móvil; lo demás ocupa el
      lienzo entero. */
+  /* --- TEMAS: el catálogo publicado, en tarjetas editables (2026-09-24) --- */
+  .t-barra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .t-grupo { display: flex; gap: 6px; flex-wrap: wrap; }
+  .t-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
+    border: 2px solid var(--linea, #e8e0d4); background: var(--papel); font-weight: 800; cursor: pointer; color: var(--tinta); }
+  .t-chip[aria-pressed="true"] { background: var(--lavanda-tinte); border-color: var(--lavanda); color: var(--lavanda-oscuro); }
+  .t-chip__n { font-size: 12px; opacity: .7; }
+  .t-buscar { flex: 1 1 180px; max-width: 280px; }
+  .t-nota { margin: 0 0 14px; }
+  .t-lista { display: grid; gap: 12px; }
+  .t-carta { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 14px 16px;
+    background: var(--papel); border-radius: 18px; box-shadow: var(--sombra-1); border: 2px solid transparent; }
+  .t-carta--cambiada, .t-carta--nueva { border-color: var(--sol-oscuro, #d9a300); }
+  .t-carta--guardando { opacity: .6; }
+  .t-carta--borrando { border-color: var(--peligro, #d9534f); }
+  .t-campos { display: grid; gap: 8px; min-width: 0; }
+  .t-fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 8px; }
+  .t-fila:has(.t-campo--titulo) { grid-template-columns: minmax(0, 2.4fr) minmax(0, 1fr) minmax(0, 1fr); }
+  .t-campo { display: grid; gap: 3px; font-size: 12px; font-weight: 800; color: var(--suave); }
+  .t-campo .campo { font-size: 14px; font-weight: 600; color: var(--tinta); padding: 8px 10px; }
+  .t-campo textarea.campo { resize: vertical; line-height: 1.35; }
+  .t-pie { margin: 0; }
+  .t-acciones { display: flex; flex-direction: column; gap: 8px; align-items: center; justify-content: flex-start; width: 56px; }
+  .t-carta--borrando .t-acciones { width: 150px; }
+  .t-icono { width: 48px; height: 48px; border-radius: 14px; border: 0; background: var(--crema-hondo, #f3ede3);
+    display: grid; place-items: center; cursor: pointer; transition: transform .12s, filter .12s, opacity .12s; }
+  .t-icono:hover:not(:disabled) { transform: scale(1.08); }
+  .t-icono:disabled { opacity: .35; filter: grayscale(1); cursor: default; }
+  .t-carta--cambiada [data-t-guardar]:not(:disabled), .t-carta--nueva [data-t-guardar]:not(:disabled) {
+    background: var(--lavanda-tinte); box-shadow: 0 0 0 2px var(--sol-oscuro, #d9a300); }
+  .t-pregunta { font-size: 13px; font-weight: 700; margin: 0; text-align: center; }
+  .t-si { --cara: var(--peligro, #d9534f); }
+  @media (max-width: 760px) { .t-fila:has(.t-campo--titulo) { grid-template-columns: 1fr 1fr; } .t-campo--titulo { grid-column: 1 / -1; } }
   .incrustado { display: block; width: 100%; height: calc(100vh - var(--alto-cab)); border: 0; background: var(--crema); }
   /* El interruptor del emulador, encima de su panel (2026-09-24). */
   .emu-barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 16px; border-bottom: 1px solid var(--linea, #e8e0d4); }
@@ -280,6 +313,7 @@
       <div class="grupo" data-grupo="configuracion">
         <button type="button" class="grupo__t" data-plegar="configuracion" aria-expanded="true">Configuración</button>
         <button data-pest="modelos">Modelos</button>
+        <button data-pest="temas">Temas</button>
         <button data-pest="fondos">Fondos</button>
         <button data-pest="voces">Voces <span class="solo-local">local</span></button>
         <button data-pest="bocas">Bocas <span class="solo-local">local</span></button>
@@ -327,6 +361,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=097c456"></script>
+<script src="../assets/js/paquete-admin.js?v=67a6120"></script>
 </body>
 </html>
