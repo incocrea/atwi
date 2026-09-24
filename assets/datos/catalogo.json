@@ -2,2228 +2,961 @@
  "version": "v1-preguntas",
  "fecha": "2026-09-24",
  "total": 300,
- "categorias": [
-  {
-   "nombre": "En mitad de la discusión",
-   "corto": "En mitad de la discusión",
-   "emoji": "💬",
-   "descripcion": "El tono, las interrupciones, las disculpas: cuando ya están discutiendo",
-   "total": 4,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "En la cocina y la mesa",
-   "corto": "En la cocina y la mesa",
-   "emoji": "🍽️",
-   "descripcion": "Los platos, la nevera, las sobras, la cena",
-   "total": 3,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "En la alcoba",
-   "corto": "En la alcoba",
-   "emoji": "🛏️",
-   "descripcion": "La cama, el sueño, la alarma, la luz de la noche",
-   "total": 9,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "En el sofá",
-   "corto": "En el sofá",
-   "emoji": "🛋️",
-   "descripcion": "La tele, las series, el mando, los dos teléfonos",
-   "total": 4,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Las tareas y los arreglos",
-   "corto": "Las tareas y los arreglos",
-   "emoji": "🧺",
-   "descripcion": "Quién hace qué, cuándo, y la bombilla que lleva meses",
-   "total": 6,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Manías y orden",
-   "corto": "Manías y orden",
-   "emoji": "🧽",
-   "descripcion": "Dónde va cada cosa y cómo se deja: el sitio de las cosas",
-   "total": 5,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Al salir y al volver",
-   "corto": "Al salir y al volver",
-   "emoji": "🚪",
-   "descripcion": "La puerta, la puntualidad, los zapatos, llegar a casa",
-   "total": 3,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Cuando salen las cuentas",
-   "corto": "Cuando salen las cuentas",
-   "emoji": "🧾",
-   "descripcion": "La cuenta, la propina, el súper, lo que cuesta cada cosa",
-   "total": 3,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Las decisiones de dinero",
-   "corto": "Las decisiones de dinero",
-   "emoji": "💸",
-   "descripcion": "Ahorrar, regalos, suscripciones, en qué se gasta",
-   "total": 4,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Con gente delante",
-   "corto": "Con gente delante",
-   "emoji": "🥂",
-   "descripcion": "Amigos, familia, visitas y lo que se cuenta por ahí",
-   "total": 2,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "En el calendario",
-   "corto": "En el calendario",
-   "emoji": "📅",
-   "descripcion": "Los planes, las vacaciones, el tiempo que es de los dos",
-   "total": 5,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Por el móvil",
-   "corto": "Por el móvil",
-   "emoji": "📱",
-   "descripcion": "Mensajes, audios y la discusión que sigue por ahí",
-   "total": 2,
-   "publico": "pareja"
-  },
-  {
-   "nombre": "Cuando llega la cuenta",
-   "corto": "Cuando llega la cuenta",
-   "emoji": "🧾",
-   "descripcion": "Dividir, invitar, la propina y quien pidio mas",
-   "publico": "amigos",
-   "total": 7
-  },
-  {
-   "nombre": "El grupo de chat",
-   "corto": "El grupo de chat",
-   "emoji": "📱",
-   "descripcion": "Audios, silencio, planes y los mensajes que nadie contesta",
-   "publico": "amigos",
-   "total": 7
-  },
-  {
-   "nombre": "Los planes y la hora",
-   "corto": "Los planes y la hora",
-   "emoji": "🕐",
-   "descripcion": "Quedar, llegar tarde, cancelar y el que nunca decide",
-   "publico": "amigos",
-   "total": 8
-  },
-  {
-   "nombre": "El viaje de amigos",
-   "corto": "El viaje de amigos",
-   "emoji": "🧳",
-   "descripcion": "Presupuesto, horarios, habitaciones y el bote comun",
-   "publico": "amigos",
-   "total": 5
-  },
-  {
-   "nombre": "Los regalos y las fechas",
-   "corto": "Los regalos y las fechas",
-   "emoji": "🎁",
-   "descripcion": "Cumpleanos, bodas, amigo invisible y cuanto se gasta",
-   "publico": "amigos",
-   "total": 5
-  },
-  {
-   "nombre": "Lo que se presta",
-   "corto": "Lo que se presta",
-   "emoji": "🔁",
-   "descripcion": "Libros, coches, dinero y lo que vuelve tarde o no vuelve",
-   "publico": "amigos",
-   "total": 3
-  },
-  {
-   "nombre": "Quien entra al grupo",
-   "corto": "Quien entra al grupo",
-   "emoji": "👋",
-   "descripcion": "Parejas, gente nueva y los que ya no vienen",
-   "publico": "amigos",
-   "total": 3
-  },
-  {
-   "nombre": "En la mesa y en el bar",
-   "corto": "En la mesa y en el bar",
-   "emoji": "🍻",
-   "descripcion": "Las rondas, el sitio, la musica y quien habla mas",
-   "publico": "amigos",
-   "total": 3
-  },
-  {
-   "nombre": "Lo que se cuenta",
-   "corto": "Lo que se cuenta",
-   "emoji": "🤐",
-   "descripcion": "Secretos, bromas, opiniones y lo que se dice por detras",
-   "publico": "amigos",
-   "total": 6
-  },
-  {
-   "nombre": "Series, deporte y pantallas",
-   "corto": "Series, deporte y pantallas",
-   "emoji": "🎬",
-   "descripcion": "Spoilers, equipos, maratones y lo que hay que ver",
-   "publico": "amigos",
-   "total": 3
-  },
-  {
-   "nombre": "Las comidas de los domingos",
-   "corto": "Las comidas de los domingos",
-   "emoji": "🍲",
-   "descripcion": "Quien cocina, quien recoge y a que hora se come",
-   "publico": "familia",
-   "total": 7
-  },
-  {
-   "nombre": "Las fiestas y dónde se pasan",
-   "corto": "Las fiestas y dónde se pasan",
-   "emoji": "🎄",
-   "descripcion": "Nochebuena, cumpleanos y la rotacion de casas",
-   "publico": "familia",
-   "total": 3
-  },
-  {
-   "nombre": "Los regalos en familia",
-   "corto": "Los regalos en familia",
-   "emoji": "🎁",
-   "descripcion": "Amigo invisible, topes y lo que se regala a los ninos",
-   "publico": "familia",
-   "total": 4
-  },
-  {
-   "nombre": "El grupo de la familia",
-   "corto": "El grupo de la familia",
-   "emoji": "📲",
-   "descripcion": "Cadenas, audios, fotos y los que nunca contestan",
-   "publico": "familia",
-   "total": 6
-  },
-  {
-   "nombre": "Las visitas",
-   "corto": "Las visitas",
-   "emoji": "🚪",
-   "descripcion": "Avisar antes, quedarse a dormir y cuanto dura una visita",
-   "publico": "familia",
-   "total": 5
-  },
-  {
-   "nombre": "Lo que opinan de tu vida",
-   "corto": "Lo que opinan de tu vida",
-   "emoji": "🗣️",
-   "descripcion": "El trabajo, los planes y las preguntas de siempre",
-   "publico": "familia",
-   "total": 7
-  },
-  {
-   "nombre": "Primos, sobrinos y los peques",
-   "corto": "Primos, sobrinos y los peques",
-   "emoji": "🧒",
-   "descripcion": "Los ninos de la familia y lo que se les deja hacer",
-   "publico": "familia",
-   "total": 6
-  },
-  {
-   "nombre": "Lo que se presta en familia",
-   "corto": "Lo que se presta en familia",
-   "emoji": "🔧",
-   "descripcion": "El coche, las herramientas y lo que no vuelve",
-   "publico": "familia",
-   "total": 5
-  },
-  {
-   "nombre": "Las costumbres de siempre",
-   "corto": "Las costumbres de siempre",
-   "emoji": "🕰️",
-   "descripcion": "Lo que se hace porque siempre se hizo asi",
-   "publico": "familia",
-   "total": 3
-  },
-  {
-   "nombre": "Los viajes y el verano",
-   "corto": "Los viajes y el verano",
-   "emoji": "⛱️",
-   "descripcion": "Vacaciones juntos, el reparto de la casa y los horarios",
-   "publico": "familia",
-   "total": 4
-  }
- ],
  "temas": [
   {
    "id": "T002",
-   "categoria": "Por el móvil",
    "titulo": "El «vale.» con punto",
    "enunciado": "¿El tono existe también en un mensaje escrito, o lo pone quien lo lee?",
-   "ejemplo": "A: «Si leo un mensaje seco en el chat, entonces pregunto antes de responder». B: «Si contesto con una palabra desde el trabajo, entonces añado cuándo puedo hablar».",
-   "insignia": "Perito Forense del Punto Final",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito poder fiarme de lo que leo; si cada mensaje admite dos lecturas, me paso el día reconstruyendo qué quiso decir y no me entero de nada.",
-    "Necesito escribir rápido sin que cada palabra se mida con lupa; si todo mensaje corto es sospechoso, acabo no escribiendo por miedo a sonar mal."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T010",
-   "categoria": "En la alcoba",
    "titulo": "Antes de apagar la luz",
    "enunciado": "Si la discusión llega a la hora de dormir, ¿se sigue hasta el final o se deja para mañana?",
-   "ejemplo": "A: «Si dejamos el tema para mañana, entonces apago la luz sin añadir nada». B: «Si aplazo el tema en la cama, entonces propongo yo la hora de mañana».",
-   "insignia": "Turno de Noche",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito acabar el día sin un tema suelto; si me acuesto con esto lo repaso en bucle y no descanso.",
-    "Necesito llegar a la conversación con la cabeza despejada; cansado digo cosas que no siento y después hay que arreglar también eso."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T012",
-   "categoria": "Con gente delante",
    "titulo": "Con gente delante",
    "enunciado": "Si el tema sale estando con amigos o familia, ¿se habla ahí o se guarda para cuando estemos solos?",
-   "ejemplo": "A: «Si el tema sale con gente delante, entonces lo saco luego en el coche». B: «Si pido dejarlo para luego, entonces lo saco yo esa misma noche».",
-   "insignia": "Testigo Presencial",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito no fingir; aguantar con la sonrisa puesta toda la noche me deja peor que hablarlo, y además se me nota en la cara.",
-    "Necesito que nadie más tenga una opinión sobre lo nuestro; en cuanto hay público, los dos discutimos para el público y no entre nosotros."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T013",
-   "categoria": "En mitad de la discusión",
    "titulo": "Lo del año pasado",
    "enunciado": "Cuando se discute algo de hoy, ¿vale traer lo que pasó hace meses o hay que quedarse en lo de ahora?",
-   "ejemplo": "A: «Si traigo algo antiguo, entonces digo primero qué pido para hoy». B: «Si aparece algo antiguo, entonces pregunto qué se repite en concreto».",
-   "insignia": "Archivero Emérito",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que se entienda por qué esto me afecta tanto; contado suelto, cualquiera diría que estoy exagerando por una tontería.",
-    "Necesito poder arreglar algo concreto y que se note; si se juzga todo junto, nada acaba nunca y no hay forma visible de mejorar."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T014",
-   "categoria": "En mitad de la discusión",
    "titulo": "«Siempre» y «nunca»",
    "enunciado": "Decir «siempre haces esto» o «nunca me escuchas», ¿expresa un hartazgo acumulado o descarrila la conversación?",
-   "ejemplo": "A: «Si me sale un «siempre», entonces lo cambio por el último ejemplo concreto». B: «Si oigo un «siempre», entonces pregunto por el ejemplo antes de negarlo».",
-   "insignia": "Oficina de Estadística del «Siempre»",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que no se me conteste con la excepción; si nos ponemos a buscar el día que no pasó, no hablamos de todos los demás días.",
-    "Necesito discutir sobre algo concreto que pueda reconocer o desmentir; contra una afirmación total no hay ninguna respuesta posible que no suene a excusa."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T016",
-   "categoria": "En mitad de la discusión",
    "titulo": "Qué cuenta como disculpa",
    "enunciado": "¿Un «perdón» a secas basta, o una disculpa tiene que decir por qué se pide?",
-   "ejemplo": "A: «Si pido perdón, entonces digo en la misma frase por qué lo pido». B: «Si me piden perdón, entonces lo acepto antes de pedir ningún detalle».",
-   "insignia": "Notario del Perdón",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito que se acepte el gesto sin examen; si cada disculpa se corrige, dejo de pedir perdón para no volver a equivocarme al pedirlo.",
-    "Necesito saber que hemos entendido lo mismo; sin eso vuelve a pasar igual y la disculpa no habrá significado nada para ninguno de los dos."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T019",
-   "categoria": "En mitad de la discusión",
    "titulo": "Lo que dijiste y cómo",
    "enunciado": "Cuando algo se dice en mal tono, ¿se responde primero al tono o primero a lo que se dijo?",
-   "ejemplo": "A: «Si el tono me molesta, entonces contesto primero al fondo». B: «Si me señalan el tono, entonces repito la misma frase mejor dicha».",
-   "insignia": "Doble Lectura",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito sentir que se me habla con respeto para poder escuchar; en cuanto el tono me duele, lo demás ya no me entra aunque quiera.",
-    "Necesito que lo que planteo no quede anulado por la forma; si la forma descalifica el fondo, hay temas que no podré sacar nunca."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T020",
-   "categoria": "En la cocina y la mesa",
    "titulo": "Los platos, ¿ya o luego?",
    "enunciado": "Al terminar de comer, ¿los platos se lavan en ese momento o pueden esperar a más tarde?",
-   "ejemplo": "A: «Si me levanto de la mesa después de comer, entonces llevo mi plato al fregadero». B: «Si veo un plato en la cocina por la mañana, entonces lo lavo yo».",
-   "insignia": "Orden Suprema de la Esponja",
-   "intensidad": "ligera",
-   "inicial": 2,
-   "intereses": [
-    "Necesito no tener cosas a medias a la vista, porque si no me siguen ocupando la cabeza.",
-    "Necesito un rato en el que no haya nada obligatorio encadenado a lo anterior."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T021",
-   "categoria": "En la cocina y la mesa",
    "titulo": "La basura, ¿llena o a su hora?",
    "enunciado": "¿La basura se saca cuando la bolsa ya está llena o cuando toca según el horario de la casa?",
-   "ejemplo": "A: «Si al tirar algo en la cocina la bolsa no cierra, entonces la ato». B: «Si salgo de casa por la mañana y hay bolsa atada, entonces la bajo».",
-   "insignia": "Gremio de la Bolsa y el Nudo",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que no se acumulen cosas encima, porque lo acumulado me pesa más de lo que parece.",
-    "Necesito que lo de casa tenga un momento previsible y no me interrumpa a cualquier hora."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T022",
-   "categoria": "Las tareas y los arreglos",
    "titulo": "¿Separar la ropa o todo junto?",
    "enunciado": "¿La ropa se separa por colores y programas antes de lavar o puede ir casi todo en el mismo lavado?",
-   "ejemplo": "A: «Si cargo la lavadora entre semana, entonces aparto en el cesto lo que destiñe». B: «Si veo una prenda nueva en el cesto, entonces la aparto para lavarla sola».",
-   "insignia": "Cátedra de Colores y Grados",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito cuidar cosas que me importan y no perderlas por ir deprisa.",
-    "Necesito que lo de casa funcione con pasos simples, porque si se complica acabo no haciéndolo."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T024",
-   "categoria": "Manías y orden",
    "titulo": "El baño después de usarlo",
    "enunciado": "Después de usar el baño, ¿se deja listo para el siguiente o se repasa cuando toque limpiarlo?",
-   "ejemplo": "A: «Si salgo de la ducha, entonces recojo mi pelo del desagüe antes de vestirme». B: «Si me lavo los dientes por la noche, entonces enjuago el lavabo después».",
-   "insignia": "Hermandad del Lavabo",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito no encontrarme por sorpresa con lo que dejó la vez anterior.",
-    "Necesito que las tareas ocupen un rato acotado y no se cuelen en todos los momentos del día."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T025",
-   "categoria": "Las tareas y los arreglos",
    "titulo": "Repaso diario o a fondo",
    "enunciado": "¿Funciona mejor un repaso corto cada día o dejar la limpieza a fondo para un día fijo de la semana?",
-   "ejemplo": "A: «Si termino de cenar entre semana, entonces paso un paño por la encimera». B: «Si el sábado a las once estoy en casa, entonces limpio yo el baño».",
-   "insignia": "Doble Escuela del Trapo",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que la casa esté siempre en un estado aceptable, sin sobresaltos ni acumulaciones.",
-    "Necesito tener días libres de verdad, sin tareas pequeñas sembradas por todos los días."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T026",
-   "categoria": "Manías y orden",
    "titulo": "Mis cosas en la mesa común",
    "enunciado": "Las cosas de cada uno que se quedan en las zonas comunes, ¿se retiran al final del día o pueden quedarse donde están?",
-   "ejemplo": "A: «Si apago la luz del salón por la noche, entonces retiro mis cosas antes». B: «Si el domingo por la noche ceno en casa, entonces guardo mis cosas del salón».",
-   "insignia": "Aduana de la Encimera",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito espacios comunes despejados para sentir que la casa también es mía.",
-    "Necesito tener a mano lo que uso y no vivir como de visita en mi propia casa."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T027",
-   "categoria": "Las tareas y los arreglos",
    "titulo": "La bombilla que lleva meses",
    "enunciado": "Los arreglos pequeños pendientes, ¿se hacen en el primer rato libre o cuando de verdad molesten?",
-   "ejemplo": "A: «Si el sábado desayuno en casa, entonces cambio la bombilla del pasillo después». B: «Si paso por la ferretería del barrio, entonces compro la pieza que falta».",
-   "insignia": "Gremio del Grifo que Gotea",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito sentir que la casa está terminada y que vivimos en ella, no de paso.",
-    "Necesito proteger el poco tiempo de descanso que me queda."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T028",
-   "categoria": "Al salir y al volver",
    "titulo": "El paseo de la noche",
    "enunciado": "Los cuidados diarios de la mascota, ¿se organizan con turnos fijos o los hace quien esté más libre ese día?",
-   "ejemplo": "A: «Si a las once sigo en el sofá, entonces saco yo al perro». B: «Si por la mañana salgo de casa sabiendo que llegaré tarde, entonces aviso».",
-   "insignia": "Colegio de Paseos Nocturnos",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito previsibilidad para poder organizar mi día sin sorpresas de última hora.",
-    "Necesito margen para adaptarme los días en que todo se me complica."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T031",
-   "categoria": "Las tareas y los arreglos",
    "titulo": "¿Limpiar juntos o por libre?",
    "enunciado": "Las tareas del fin de semana, ¿se hacen a la vez los dos o cada uno las suyas cuando le venga bien?",
-   "ejemplo": "A: «Si el sábado empiezo a limpiar la casa, entonces lo digo en voz alta». B: «Si el sábado por la mañana suena música en casa, entonces me sumo a limpiar».",
-   "insignia": "Liga del Sábado por la Mañana",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que esto lo llevemos entre los dos, no solo que acabe hecho.",
-    "Necesito manejar mis tiempos y no depender de la agenda del otro para algo pequeño."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T032",
-   "categoria": "Las tareas y los arreglos",
    "titulo": "El último rollo de papel",
    "enunciado": "Cuando se acaba algo de uso común, ¿lo repone en el momento quien lo termina o se anota para resolverlo todo junto?",
-   "ejemplo": "A: «Si gasto el último rollo en el baño, entonces pongo otro antes de salir». B: «Si abro el armario de la cocina y falta algo, entonces lo anoto ahí».",
-   "insignia": "Custodia del Último Rollo",
-   "intensidad": "media",
-   "inicial": 11,
-   "intereses": [
-    "Necesito no llevarme sorpresas y poder fiarme de que las cosas están donde deben.",
-    "Necesito que la casa funcione con un sistema y no a base de urgencias sueltas."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T035",
-   "categoria": "Al salir y al volver",
    "titulo": "Los diez minutos de cortesía",
    "enunciado": "Cuando hay una cita a una hora concreta, ¿diez minutos de más son un retraso o son el margen normal de cualquier día?",
-   "ejemplo": "A — Si llego el primero al sitio, entonces yo me siento y pido algo. B — Si salgo de casa, entonces yo te mando mi hora de llegada.",
-   "insignia": "Los Diez Minutos Eternos",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito poder fiarme de lo que acordamos para organizar mi día sin dejar huecos por si acaso.",
-    "Necesito que un día normal no se lea como falta de respeto, porque casi nunca depende solo de mí."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T036",
-   "categoria": "En el sofá",
    "titulo": "El capítulo adelantado",
    "enunciado": "Una serie empezada en pareja, ¿se ve solo cuando están los dos o cada uno puede seguir por su cuenta?",
-   "ejemplo": "A — Si empezamos una serie en el sofá, entonces yo digo que es de los dos. B — Si veo un capítulo sin ti, entonces yo te lo cuento en la cena.",
-   "insignia": "Cofradía del Capítulo Suelto",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que existan cosas que sean solo nuestras y que no dependan de a qué hora llego a casa.",
-    "Necesito disfrutar de mi rato libre sin tener que pedir turno para todo lo que me gusta."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T039",
-   "categoria": "En el sofá",
    "titulo": "Quién elige la película",
    "enunciado": "Elegir qué se ve juntos, ¿se decide entre los dos aunque se tarde, o elige uno y se empieza ya?",
-   "ejemplo": "A — Si nos sentamos en el sofá, entonces yo llevo una opción ya pensada. B — Si no me convence lo que sale, entonces yo lo digo antes del play.",
-   "insignia": "Custodios del Catálogo",
-   "intensidad": "ligera",
-   "inicial": 4,
-   "intereses": [
-    "Necesito que lo que hacemos juntos me interese a mí también, y no limitarme a estar presente.",
-    "Necesito que el rato de descanso sea descanso y no una decisión más que tomar al final del día."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T042",
-   "categoria": "En el calendario",
    "titulo": "El domingo",
    "enunciado": "El domingo, ¿es un día para no hacer nada o un día para hacer algo?",
-   "ejemplo": "A — Si me proponen plan para el domingo, entonces yo contesto ese mismo día. B — Si quiero plan de domingo, entonces yo lo propongo el viernes en la cena.",
-   "insignia": "Orden del Domingo",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito un día sin nada pendiente para llegar al lunes con algo de batería.",
-    "Necesito que el fin de semana deje algún recuerdo y no se me pase mirando el techo."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T043",
-   "categoria": "En el calendario",
    "titulo": "El plan se cierra el miércoles",
    "enunciado": "Los planes del fin de semana, ¿se cierran con días de antelación o se deciden sobre la marcha?",
-   "ejemplo": "A — Si propongo plan de fin de semana, entonces yo digo día, hora y sitio. B — Si llega el miércoles por la noche, entonces yo digo qué día tengo libre.",
-   "insignia": "Agenda contra Brújula",
-   "intensidad": "media",
-   "inicial": 9,
-   "intereses": [
-    "Necesito tener algo a lo que agarrarme durante la semana y no llegar al viernes con la sensación de que no hay nada.",
-    "Necesito margen para no llegar obligado a un plan que acepté cuando estaba de otro humor."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T045",
-   "categoria": "Con gente delante",
    "titulo": "Ir por acompañar",
    "enunciado": "A los cumpleaños, cenas y bodas de la gente de uno, ¿se va acompañado siempre o cada uno va a los planes de los suyos?",
-   "ejemplo": "A — Si un plan mío me importa, entonces yo te lo digo al invitarte. B — Si digo que voy a un plan tuyo, entonces yo llego a la hora.",
-   "insignia": "Insignia de Acompañante Oficial",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito sentir que somos un equipo también delante de mi gente y no tener que explicar una ausencia cada vez.",
-    "Necesito que mi tiempo libre no se llene de planes que no elegí y poder decir que no sin ser el malo."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T046",
-   "categoria": "En el calendario",
    "titulo": "Parar o recorrer",
    "enunciado": "Las vacaciones, ¿son para parar en un sitio y descansar o para moverse y ver cosas?",
-   "ejemplo": "A — Si preparamos el viaje en casa, entonces yo propongo una excursión concreta. B — Si llegamos al destino, entonces yo dejo un día entero sin nada apuntado.",
-   "insignia": "Reposo contra Ruta",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito recuperarme de verdad, porque es el único tramo del año en el que puedo parar del todo.",
-    "Necesito volver con algo que contar y sentir que el año no ha sido rutina de principio a fin."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T049",
-   "categoria": "En el calendario",
    "titulo": "Reservado o que salga solo",
    "enunciado": "El tiempo de los dos, ¿se reserva en el calendario como cualquier otra cosa o se deja que salga solo?",
-   "ejemplo": "A — Si llega el domingo por la noche, entonces yo digo qué rato quiero. B — Si surge otro plan encima del rato acordado, entonces yo lo propongo para otro día.",
-   "insignia": "Reserva de los Dos",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito saber que hay un rato que es nuestro y que no depende de que sobre tiempo al final de la semana.",
-    "Necesito que estar contigo no se sienta como una tarea que se cumple o se incumple."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T051",
-   "categoria": "En el calendario",
    "titulo": "La afición que ocupa el sábado",
    "enunciado": "Cuando una afición propia ocupa buena parte del fin de semana, ¿esas horas se reparten entre los dos o cada uno dispone de las suyas?",
-   "ejemplo": "A — Si empieza la semana, entonces yo digo en la cena qué sábado ocupo entero. B — Si el sábado me quedo sin plan común, entonces yo hago un plan mío.",
-   "insignia": "Insignia de Sábado Ocupado",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito conservar algo que es mío y que no depende de nadie, porque es de donde saco la energía.",
-    "Necesito que lo nuestro no sea siempre lo que se encaja en los huecos que sobran."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T053",
-   "categoria": "Manías y orden",
    "titulo": "El tubo de pasta de dientes",
    "enunciado": "¿El tubo de pasta se aprieta desde el final y se tapa, o se usa por donde salga y se deja como quede?",
-   "ejemplo": "A — «Si entro al baño y veo el tubo arrugado, entonces lo estiro yo». B — «Si termino de lavarme los dientes en el baño, entonces tapo el tubo».",
-   "insignia": "Expediente Tubo, Tomo I",
-   "intensidad": "ligera",
-   "inicial": 1,
-   "intereses": [
-    "Necesito sentir que las cosas de casa se tratan con cuidado; cuando encuentro algo maltratado, se me va la cabeza a todo lo demás.",
-    "Necesito conservar gestos que pueda hacer sin pensar. Si cada acción mínima tiene una forma correcta, acabo revisándome a mí mismo dentro de mi propia casa."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T055",
-   "categoria": "En la alcoba",
    "titulo": "Hacer la cama al levantarse",
    "enunciado": "¿La cama se hace nada más levantarse o puede quedarse deshecha hasta la noche?",
-   "ejemplo": "A — «Si entro en el dormitorio a media mañana, entonces estiro la cama yo». B — «Si me levanto el último de la cama, entonces la estiro antes de salir».",
-   "insignia": "Perito Colchonero",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito empezar el día con algo terminado; ver la cama hecha me quita ruido de la cabeza durante el resto de la jornada.",
-    "Necesito que las mañanas no arranquen con un trámite obligatorio; voy justo de tiempo y quiero elegir yo en qué lo gasto."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T058",
-   "categoria": "Manías y orden",
    "titulo": "La luz de los cuartos vacíos",
    "enunciado": "Las luces, ¿se apagan al salir de una habitación o pueden quedarse encendidas si vas a volver enseguida?",
-   "ejemplo": "A — «Si me acuesto, entonces apago yo las luces del pasillo sin comentarlo». B — «Si salgo de una habitación por la noche, entonces apago su luz».",
-   "insignia": "Guardia Nocturna del Interruptor",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito sentir que la casa no se me va de las manos; cuando todo está en marcha y no hay nadie dentro, me queda una sensación de descontrol que no sé explicar.",
-    "Necesito moverme por mi propia casa sin hacer un control de salida en cada puerta por la que paso."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T059",
-   "categoria": "Al salir y al volver",
    "titulo": "Los zapatos en la entrada",
    "enunciado": "¿Los zapatos se quitan al entrar en casa o se puede entrar con ellos puestos?",
-   "ejemplo": "A — «Si tenemos visita en casa, entonces me dejo los zapatos puestos». B — «Si entro por la puerta de casa, entonces dejo los zapatos en la entrada».",
-   "insignia": "Aduana de la Entrada",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que la casa esté limpia de verdad y no solo en apariencia; es el único sitio donde puedo bajar la guardia del todo.",
-    "Necesito que entrar en casa sea fácil y no un protocolo, y me incomoda poner condiciones a quien viene a vernos."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T060",
-   "categoria": "En el sofá",
    "titulo": "El volumen de la tele",
    "enunciado": "El volumen de la tele, ¿lo decide quien la está viendo o se ajusta a lo que se oye en el resto de la casa?",
-   "ejemplo": "A — «Si veo la tele de noche en el salón, entonces pongo los subtítulos». B — «Si empieza su serie en el salón, entonces no pido bajar el volumen».",
-   "insignia": "Perito en Decibelios de Salón",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito enterarme sin esfuerzo; forzar el oído me cansa y me saca de lo que estoy viendo, que era justo mi rato del día.",
-    "Necesito que en casa haya un nivel de ruido en el que quepa algo más que la tele, incluido no hacer nada."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T061",
-   "categoria": "En la alcoba",
    "titulo": "La silla de la ropa",
    "enunciado": "La ropa que se ha usado una vez, ¿va al armario o al cesto, o puede quedarse en la silla?",
-   "ejemplo": "A — «Si la silla del dormitorio tiene una prenda, entonces la dejo ahí». B — «Si me acuesto, entonces guardo o llevo al cesto una prenda de la silla».",
-   "insignia": "Custodio de la Silla",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que el dormitorio esté despejado para poder descansar en él; el montón me recuerda algo pendiente cada vez que entro.",
-    "Necesito una zona intermedia donde las cosas puedan estar sin decidir; si todo tiene que estar guardado o lavado, acabo tomando decisiones absurdas por no tener dónde dejarlo."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T064",
-   "categoria": "En el sofá",
    "titulo": "Comer en el sofá",
    "enunciado": "¿Se come y se bebe solo en la mesa o la cocina, o también se puede comer en el sofá y delante de la tele?",
-   "ejemplo": "A — «Si veo migas en el sofá por la mañana, entonces las limpio yo». B — «Si ceno en el sofá, entonces llevo mi plato a la cocina».",
-   "insignia": "Expediente Migas",
-   "intensidad": "media",
-   "inicial": 8,
-   "intereses": [
-    "Necesito que los sitios donde me tumbo estén limpios; encontrarme restos ahí me quita directamente las ganas de usar ese espacio.",
-    "Necesito que la casa sea cómoda de verdad y no tenga zonas prohibidas; comer relajado delante de algo es mi forma de desconectar del día."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T066",
-   "categoria": "Manías y orden",
    "titulo": "Tus cosas, mi orden",
    "enunciado": "Al ordenar, ¿se pueden mover de sitio cosas del otro o no se toca nada de nadie sin avisar?",
-   "ejemplo": "A — «Si ordeno y encuentro algo no mío, entonces lo dejo en su silla». B — «Si veo cosas mías apartadas en la silla, entonces las coloco antes del domingo».",
-   "insignia": "Archivo de Objetos en Tránsito",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito poder avanzar cuando me pongo a ordenar; si cada objeto abre una conversación, ordenar deja de ser algo que se pueda terminar.",
-    "Necesito saber dónde está lo mío y que se cuente conmigo antes de moverlo; si no, tengo la sensación de ir siempre por detrás en mi propia casa."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T069",
-   "categoria": "Cuando salen las cuentas",
    "titulo": "A medias o por turnos",
    "enunciado": "Cuando salimos a comer los dos, ¿la cuenta se parte a medias cada vez o invita uno y la siguiente vez el otro?",
-   "ejemplo": "A: «Si nos traen la cuenta al final de la cena, entonces digo cómo la pago». B: «Si invito yo en un restaurante, entonces no lo menciono el resto de la noche».",
-   "insignia": "Pistoleros de la cuenta",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que entre nosotros no se acumule una contabilidad invisible en la que alguien acabe sintiéndose en deuda.",
-    "Necesito poder regalarle el rato de vez en cuando y que salir siga pareciendo un plan y no un reparto."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T070",
-   "categoria": "Cuando salen las cuentas",
    "titulo": "Pagar por ahorrarse el rato",
    "enunciado": "¿Pagar un poco más para no tener que ir, esperar o comparar —un envío, un servicio a domicilio—, o dedicarle el rato y quedarse ese dinero?",
-   "ejemplo": "A: «Si veo el coste de envío en la pantalla al pagar, entonces miro la recogida en tienda». B: «Si llega un paquete a casa por la tarde, entonces no comento el envío».",
-   "insignia": "Cronómetro y calculadora",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que mis pocas horas libres no se llenen de recados; cuando pago por eso siento que compro descanso, no lujo.",
-    "Necesito notar que las cosas pequeñas cuentan y que no pagamos de más por inercia; el goteo que no se ve me inquieta."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T071",
-   "categoria": "Cuando salen las cuentas",
    "titulo": "El café de fuera de cada día",
    "enunciado": "El café o el capricho diario que se compra fuera, ¿es un gasto pequeño sin importancia o un goteo que suma a final de mes?",
-   "ejemplo": "A: «Si compro café fuera un día de diario, entonces lo digo al llegar a casa». B: «Si por la mañana veo un vaso de café en la cocina, entonces no comento».",
-   "insignia": "Vaso de cartón, taza de casa",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito conservar un placer diario que es solo mío y no tener que justificarlo cada mañana.",
-    "Necesito sentir que sabemos por dónde se nos va el dinero; lo que se escapa sin decidirlo me deja intranquilo."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T074",
-   "categoria": "Las tareas y los arreglos",
    "titulo": "La luz y la calefacción",
    "enunciado": "En casa, ¿apagar y ajustar para que no suba la factura o tenerla a gusto aunque cueste algo más?",
-   "ejemplo": "A: «Si al acostarme veo una luz encendida en el salón, entonces la apago sin comentarlo». B: «Si por la noche subo la calefacción en casa, entonces lo digo en voz alta».",
-   "insignia": "Guardianes del termostato",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que el dinero no se vaya en algo que nadie aprovecha; el derroche automático me pone nervioso.",
-    "Necesito estar cómodo en el único sitio donde puedo estarlo; si en casa lo paso mal, el día entero se resiente."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T077",
-   "categoria": "Las decisiones de dinero",
    "titulo": "Suscripciones que no usamos",
    "enunciado": "Las suscripciones que apenas se usan, ¿se cancelan ya o se dejan y se revisan más adelante?",
-   "ejemplo": "A: «Si el primer domingo de mes estoy en el sofá, entonces reviso los cobros». B: «Si veo la lista de cobros en la mesa, entonces digo cuál quiero conservar».",
-   "insignia": "Auditores de sofá",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que no haya cobros en piloto automático que nadie ha decidido este mes; lo que se cobra solo me genera desconfianza.",
-    "Necesito no perder de golpe cosas que sí disfruto por una limpieza hecha de un tirón; deshacer y arrepentirse me da rabia."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T080",
-   "categoria": "Las decisiones de dinero",
    "titulo": "Los regalos entre nosotros",
    "enunciado": "Los regalos que nos hacemos el uno al otro, ¿gastar de verdad o algo pequeño y pensado porque el dinero sale del mismo sitio?",
-   "ejemplo": "A: «Si es el cumpleaños en casa, entonces escribo a mano por qué elegí el regalo». B: «Si abro un regalo en casa, entonces digo qué me gustó y no el precio».",
-   "insignia": "Escuela de envolver",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito sentir que soy una prioridad y que alguien ha hecho un esfuerzo por mí, no solo cumplido un trámite.",
-    "Necesito que el cariño no se mida en dinero; recibir algo caro me deja la sensación de que ahora debo algo."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T083",
-   "categoria": "Las decisiones de dinero",
    "titulo": "Guardarlo o disfrutarlo ahora",
    "enunciado": "Cuando a final de mes sobra algo, ¿guardarlo entero para tener un colchón o usar una parte en algo que se disfrute ahora?",
-   "ejemplo": "A: «Si oigo una propuesta de gasto no previsto, entonces digo una vez qué me preocupa». B: «Si quiero que nos demos un gusto, entonces lo digo en casa el día antes».",
-   "insignia": "Dos relojes, un bolsillo",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito sentir que si viene un imprevisto no nos hundimos; la incertidumbre me quita el sueño de verdad.",
-    "Necesito que nuestra vida tenga cosas buenas mientras las podemos disfrutar; vivir siempre en modo espera me apaga."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T086",
-   "categoria": "Las decisiones de dinero",
    "titulo": "Cada cuánto se habla de dinero",
    "enunciado": "¿Sentarnos a mirar los números con una rutina fija o hablar de dinero solo cuando hay algo concreto que decidir?",
-   "ejemplo": "A: «Si quiero mirar los números, entonces lo propongo en casa el día antes». B: «Si me proponen mirar los números en casa, entonces digo cuándo me viene bien».",
-   "insignia": "Consejo de administración doméstico",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito anticiparme para estar tranquilo; enterarme de las cosas cuando ya no hay margen me pone en alerta.",
-    "Necesito que lo nuestro no gire alrededor del dinero; hablar de números sin motivo me deja con una preocupación que no tenía."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T087",
-   "categoria": "En la cocina y la mesa",
    "titulo": "El teléfono encima de la mesa",
    "enunciado": "Durante la cena, ¿el teléfono se queda encima de la mesa o se deja fuera de la mesa?",
-   "ejemplo": "A: «Si me siento a cenar, entonces dejo el teléfono boca abajo en la cocina». B: «Si cenamos y suena un teléfono, entonces sigo contando lo que estaba contando».",
-   "insignia": "Perito del Mantel",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que en mi propia casa no se conviertan en norma cosas que hago sin pensar, porque si todo se regula dejo de estar cómodo en ella.",
-    "Necesito que quede en el día un rato con atención completa, porque la cena es de los pocos momentos en que estamos los dos parados a la vez."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T090",
-   "categoria": "En la alcoba",
    "titulo": "Una manta o una para cada uno",
    "enunciado": "Para dormir, ¿se comparte una sola manta o cada uno tiene la suya?",
-   "ejemplo": "A: «Si me acuesto, entonces dejo estirada a mi lado la manta pequeña». B: «Si me destapo de madrugada, entonces uso mi manta pequeña».",
-   "insignia": "Perito en Metros de Manta",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito conservar los gestos pequeños que hacen que la cama sea de los dos y no dos camas pegadas.",
-    "Necesito dormir de un tirón, porque cada vez que me despierto de madrugada tardo muchísimo en volver a dormirme y al día siguiente lo noto entero."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T091",
-   "categoria": "En la alcoba",
    "titulo": "La ventana del dormitorio",
    "enunciado": "Por la noche, ¿la ventana del dormitorio se queda abierta o cerrada?",
-   "ejemplo": "A: «Si apagamos la luz para dormir, entonces cierro yo la ventana del dormitorio». B: «Si termino de cenar, entonces abro la ventana del dormitorio de par en par».",
-   "insignia": "Inspector de Corrientes de Aire",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito notar que la habitación no está cargada, porque si me agobio no me duermo por mucho que lo intente.",
-    "Necesito que nada de fuera me despierte, porque cuando me despierto de madrugada ya no vuelvo a dormirme y el día siguiente lo pago entero."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T093",
-   "categoria": "En la alcoba",
    "titulo": "El botón de posponer la alarma",
    "enunciado": "Por la mañana, ¿la alarma se puede posponer varias veces o suena una sola vez?",
-   "ejemplo": "A: «Si me acuesto, entonces dejo la alarma en la silla, lejos de la cama». B: «Si suena una alarma que no es la mía, entonces me pongo el antifaz».",
-   "insignia": "Cátedra de las Alarmas Sucesivas",
-   "intensidad": "ligera",
-   "inicial": 6,
-   "intereses": [
-    "Necesito un rato de transición para arrancar, porque pasar de dormido a de pie de golpe me deja el día entero raro.",
-    "Necesito que la hora a la que me despierto la marque mi alarma y no la de otra persona, porque esos minutos son justo los que me faltan."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T096",
-   "categoria": "En la alcoba",
    "titulo": "El teléfono en el dormitorio",
    "enunciado": "Por la noche, ¿el teléfono entra en el dormitorio o se queda fuera?",
-   "ejemplo": "A: «Si apagamos la luz del dormitorio, entonces dejo el teléfono en la mesita». B: «Si me meto en la cama, entonces cuento yo algo del día antes de dormirme».",
-   "insignia": "Vigía de la Mesita",
-   "intensidad": "media",
-   "inicial": 10,
-   "intereses": [
-    "Necesito un rato al final del día en el que nadie me pida nada, porque es el único momento en que no estoy pendiente de nadie.",
-    "Necesito que quede un momento en que nos contamos lo del día, porque acostarse es el único rato en que estamos los dos quietos y sin prisa."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T099",
-   "categoria": "En la alcoba",
    "titulo": "Cuando el ruido no deja dormir",
    "enunciado": "Cuando el ruido de uno no deja dormir al otro, ¿se le despierta para que cambie de postura o se busca otra salida?",
-   "ejemplo": "A: «Si me despierta el ruido de madrugada, entonces me pongo los tapones de la mesita». B: «Si me acuesto por la noche, entonces me pongo de lado desde el principio».",
-   "insignia": "Sociedad Acústica Nocturna",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder dormir sin tener que irme de mi propia cama ni montar un operativo cada noche antes de acostarme.",
-    "Necesito que el sueño que ya tengo no se rompa, porque cuando me despiertan del todo tardo horas en volver y el día siguiente lo pago entero."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T102",
-   "categoria": "Por el móvil",
    "titulo": "Escuchar y mirar la pantalla",
    "enunciado": "Mientras uno cuenta algo, ¿se puede mirar el teléfono a la vez o eso ya es dejar de escuchar?",
-   "ejemplo": "A: «Si mi pareja empieza a contarme algo, entonces dejo el teléfono boca abajo». B: «Si quiero contar algo largo, entonces aviso antes de empezar y espero un momento».",
-   "insignia": "Cátedra del «Sigue, que te escucho»",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito que no se lea cada gesto mío como una señal de lo que siento, porque si todo significa algo ya no puedo estar tranquilo en mi casa.",
-    "Necesito alguna señal de que lo que cuento le llega a alguien, porque si no la hay dejo de contarlo, y eso sí que separa de verdad."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "T104",
-   "categoria": "En la alcoba",
    "titulo": "Acostarse a la vez o no",
    "enunciado": "¿Conviene acostarse los dos a la misma hora o cada uno cuando le entra el sueño?",
-   "ejemplo": "A: «Si mi pareja se va a la cama entre semana, entonces la acompaño al dormitorio». B: «Si son las once y mi pareja sigue despierta, entonces me acuesto yo solo».",
-   "insignia": "Cátedra del Búho y la Alondra",
-   "intensidad": "profunda",
-   "intereses": [
-    "Necesito respetar el horario con el que funciona mi cuerpo, porque forzarlo me pasa factura al día siguiente y además no engaño a nadie fingiendo sueño.",
-    "Necesito que haya un momento fijo del día en el que sé que vamos a coincidir, porque si depende de que surja, no surge."
-   ],
    "publico": "pareja",
    "clase": "tema"
   },
   {
    "id": "A001",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "A escote o cada uno lo suyo",
-   "enunciado": "Cuando la cuenta llega a la mesa, ¿se divide entre todos por igual o cada quien paga lo que pidió?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que sentarme a comer con amigos no se convierta en una hoja de cálculo: sacar la calculadora en la mesa me corta la noche.",
-    "Necesito no pagar de más cuando pedí una ensalada y en la mesa hubo tres botellas de vino que no probé."
-   ]
+   "enunciado": "Cuando la cuenta llega a la mesa, ¿se divide entre todos por igual o cada quien paga lo que pidió?"
   },
   {
    "id": "A002",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "El que no bebe",
-   "enunciado": "Si alguien no bebe alcohol, ¿paga lo mismo que el resto o se le descuenta?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que el reparto sea simple: contar quién tomó qué acaba señalando a alguien toda la noche.",
-    "Necesito no financiar una cuenta que no consumí, y que no me cueste dinero la decisión de no beber."
-   ]
+   "enunciado": "Si alguien no bebe alcohol, ¿paga lo mismo que el resto o se le descuenta?"
   },
   {
    "id": "A006",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "El que se va antes de pagar",
-   "enunciado": "Si alguien se va a mitad de la cena, ¿deja su parte calculada o ya se arregla después?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder irme cuando tengo que irme sin montar una escena de cuentas en la puerta.",
-    "Necesito no quedarme haciendo de cajero de la mesa cada vez que alguien madruga."
-   ]
+   "enunciado": "Si alguien se va a mitad de la cena, ¿deja su parte calculada o ya se arregla después?"
   },
   {
    "id": "A007",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "Cobrar los dos euros",
-   "enunciado": "Cuando falta poco dinero para cuadrar la cuenta, ¿se reclama o se deja pasar?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que lo pequeño no se convierta en tema: reclamar dos euros cuesta más de lo que vale.",
-    "Necesito que «es poco» no sea siempre a mi costa; poco muchas veces acaba siendo bastante."
-   ]
+   "enunciado": "Cuando falta poco dinero para cuadrar la cuenta, ¿se reclama o se deja pasar?"
   },
   {
    "id": "A008",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "Avisar del precio al proponer",
-   "enunciado": "Al proponer un plan caro, ¿hay que decir el precio de entrada o ya se pregunta quien quiera?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder proponer algo bonito sin convertirlo en un presupuesto antes de que nadie diga sí.",
-    "Necesito saber cuánto cuesta antes de apuntarme, para no tener que retirarme delante de todos."
-   ]
+   "enunciado": "Al proponer un plan caro, ¿hay que decir el precio de entrada o ya se pregunta quien quiera?"
   },
   {
    "id": "A009",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "Pagar uno y cobrar después",
-   "enunciado": "Si uno paga todo y luego cobra, ¿se pasa la cuenta ese mismo día o se deja para cuando salga?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito cerrar el tema el mismo día: una deuda abierta entre amigos se pone rara sola.",
-    "Necesito que no me llegue una petición de dinero a los diez minutos de despedirnos."
-   ]
+   "enunciado": "Si uno paga todo y luego cobra, ¿se pasa la cuenta ese mismo día o se deja para cuando salga?"
   },
   {
    "id": "A010",
    "publico": "amigos",
-   "categoria": "Cuando llega la cuenta",
    "titulo": "El cumpleaños del que invita",
-   "enunciado": "Cuando es el cumpleaños de alguien, ¿esa persona no paga nada o paga como todos?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que el día de alguien se note: no pagar es la manera más fácil de decir «hoy eres tú».",
-    "Necesito que cumplir años no obligue a los demás a un gasto que quizá ese mes no tienen."
-   ]
+   "enunciado": "Cuando es el cumpleaños de alguien, ¿esa persona no paga nada o paga como todos?"
   },
   {
    "id": "A011",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "El audio de cinco minutos",
-   "enunciado": "En un grupo de amigos, ¿vale mandar audios largos o eso se escribe?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito contar las cosas como se cuentan hablando; escribirlo todo me lleva el triple y sale frío.",
-    "Necesito poder enterarme sin tener que buscar auriculares: un audio largo obliga a parar lo que estoy haciendo."
-   ]
+   "enunciado": "En un grupo de amigos, ¿vale mandar audios largos o eso se escribe?"
   },
   {
    "id": "A012",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "Silenciar el grupo",
-   "enunciado": "Tener el grupo silenciado, ¿es algo normal o es desconectarse un poco del resto?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que mi teléfono no vibre cada diez minutos; silenciar es lo único que me deja seguir ahí.",
-    "Necesito que lo que se dice llegue: si todos silencian, el grupo se convierte en un tablón que nadie lee."
-   ]
+   "enunciado": "Tener el grupo silenciado, ¿es algo normal o es desconectarse un poco del resto?"
   },
   {
    "id": "A013",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "Contestar a los tres días",
-   "enunciado": "Cuando alguien tarda días en contestar en el grupo, ¿es normal o merece un comentario?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito contestar cuando tengo la cabeza para hacerlo, no cuando llega el mensaje.",
-    "Necesito saber si esto sigue vivo: hablarle a un grupo que no responde se siente raro."
-   ]
+   "enunciado": "Cuando alguien tarda días en contestar en el grupo, ¿es normal o merece un comentario?"
   },
   {
    "id": "A014",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "Un tema serio por el grupo",
-   "enunciado": "Lo importante de verdad, ¿se cuenta en el grupo o se dice en persona?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito contarlo una sola vez y que se entere todo el mundo a la vez, sin repetirlo cinco veces.",
-    "Necesito que lo que importa no se lea entre memes: hay cosas que en un chat pierden el cuerpo."
-   ]
+   "enunciado": "Lo importante de verdad, ¿se cuenta en el grupo o se dice en persona?"
   },
   {
    "id": "A015",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "El grupo paralelo",
-   "enunciado": "Tener un grupo aparte con parte de la gente del grupo grande, ¿es normal o está feo?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder hablar de lo mío con quien tengo más confianza sin que sea una traición.",
-    "Necesito que no haya conversaciones a las que unos entran y otros no, porque eso se acaba notando."
-   ]
+   "enunciado": "Tener un grupo aparte con parte de la gente del grupo grande, ¿es normal o está feo?"
   },
   {
    "id": "A017",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "Leer y no contestar",
-   "enunciado": "Dejar en visto un mensaje del grupo, ¿es normal o pide al menos un emoji?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito no tener que reaccionar a todo: leer algo y seguir con mi día no es ignorar a nadie.",
-    "Necesito alguna señal de que lo que escribí llegó a alguien; el silencio total se lee como desinterés."
-   ]
+   "enunciado": "Dejar en visto un mensaje del grupo, ¿es normal o pide al menos un emoji?"
   },
   {
    "id": "A019",
    "publico": "amigos",
-   "categoria": "El grupo de chat",
    "titulo": "Capturas de otra conversación",
-   "enunciado": "Reenviar al grupo una captura de un chat privado, ¿se puede o hay que preguntar antes?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder compartir lo que me pasó, y a veces la gracia está justo en cómo lo dijo.",
-    "Necesito saber que lo que hablo contigo se queda contigo, o dejo de hablar en confianza."
-   ]
+   "enunciado": "Reenviar al grupo una captura de un chat privado, ¿se puede o hay que preguntar antes?"
   },
   {
    "id": "A021",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "El que siempre llega tarde",
-   "enunciado": "Con quien llega tarde siempre, ¿se le empieza a citar antes o se le dice de frente?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que no me traten como un problema a gestionar: si hay algo que decirme, que me lo digan.",
-    "Necesito que el plan empiece a la hora, y esperar media hora cada vez cansa más que la tardanza."
-   ]
+   "enunciado": "Con quien llega tarde siempre, ¿se le empieza a citar antes o se le dice de frente?"
   },
   {
    "id": "A022",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "Cancelar el mismo día",
-   "enunciado": "Cancelar un plan unas horas antes, ¿es algo que pasa o hay que sostenerlo igual?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder decir que no cuando el día me superó, en vez de aparecer de mal humor.",
-    "Necesito poder contar con lo que quedamos: si se cae a última hora ya no monto otra cosa."
-   ]
+   "enunciado": "Cancelar un plan unas horas antes, ¿es algo que pasa o hay que sostenerlo igual?"
   },
   {
    "id": "A023",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "Confirmar el día antes",
-   "enunciado": "Un plan cerrado hace semanas, ¿hay que confirmarlo el día antes o se da por hecho?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito saber que sigue en pie antes de cruzar la ciudad; los planes viejos se caen solos.",
-    "Necesito que lo dicho valga: si hay que confirmar todo, nada queda cerrado nunca."
-   ]
+   "enunciado": "Un plan cerrado hace semanas, ¿hay que confirmarlo el día antes o se da por hecho?"
   },
   {
    "id": "A024",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "El que nunca elige",
-   "enunciado": "Quien siempre dice «me da igual», ¿está siendo flexible o está dejando el trabajo a otros?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que no me obliguen a tener una opinión sobre dónde cenar: de verdad me da igual.",
-    "Necesito que alguien más decida alguna vez; elegir siempre yo acaba siendo cargar con la culpa si sale mal."
-   ]
+   "enunciado": "Quien siempre dice «me da igual», ¿está siendo flexible o está dejando el trabajo a otros?"
   },
   {
    "id": "A026",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "Quedar sin hora cerrada",
-   "enunciado": "«Por la tarde nos vemos», ¿es un plan o hay que poner una hora?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito margen: poner una hora exacta convierte una tarde tranquila en una cita con reloj.",
-    "Necesito saber cuándo salir de casa; sin hora acabo esperando en la calle o llegando el último."
-   ]
+   "enunciado": "«Por la tarde nos vemos», ¿es un plan o hay que poner una hora?"
   },
   {
    "id": "A027",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "Irse pronto de la cena",
-   "enunciado": "Irse a las once de una cena de amigos, ¿es perfectamente normal o rompe la noche?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito poder irme cuando estoy cansado sin que se lea como que no lo estaba pasando bien.",
-    "Necesito que la noche aguante: cuando el primero se levanta, detrás se van tres y se acaba."
-   ]
+   "enunciado": "Irse a las once de una cena de amigos, ¿es perfectamente normal o rompe la noche?"
   },
   {
    "id": "A028",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "El plan de siempre",
-   "enunciado": "Repetir siempre el mismo sitio, ¿es lo cómodo o hay que ir cambiando?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito no gastar energía decidiendo: el sitio de siempre funciona y por eso es el de siempre.",
-    "Necesito que salir siga siendo salir; cuando todo es igual cada vez, deja de apetecer."
-   ]
+   "enunciado": "Repetir siempre el mismo sitio, ¿es lo cómodo o hay que ir cambiando?"
   },
   {
    "id": "A029",
    "publico": "amigos",
-   "categoria": "Los planes y la hora",
    "titulo": "Quedar con antelación",
-   "enunciado": "Los planes, ¿se cierran con semanas o se montan sobre la marcha?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito verlo en el calendario para poder organizar el resto de mi vida alrededor.",
-    "Necesito que salir no sea un trámite: cuando todo se agenda a un mes, se pierde lo de improvisar."
-   ]
+   "enunciado": "Los planes, ¿se cierran con semanas o se montan sobre la marcha?"
   },
   {
    "id": "A031",
    "publico": "amigos",
-   "categoria": "El viaje de amigos",
    "titulo": "El presupuesto del viaje",
-   "enunciado": "Al organizar un viaje, ¿se ajusta al presupuesto más bajo del grupo o cada quien decide su nivel?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que el viaje sea para todos: si el precio deja a alguien fuera, deja de ser un viaje de amigos.",
-    "Necesito poder gastar en lo que ahorré todo el año sin que se lea como que estoy marcando diferencias."
-   ]
+   "enunciado": "Al organizar un viaje, ¿se ajusta al presupuesto más bajo del grupo o cada quien decide su nivel?"
   },
   {
    "id": "A032",
    "publico": "amigos",
-   "categoria": "El viaje de amigos",
    "titulo": "El bote común",
-   "enunciado": "En un viaje, ¿se hace un bote común desde el principio o se va pagando y cuadrando al final?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito no estar pensando en dinero cada vez que entramos a un bar: el bote lo resuelve de una vez.",
-    "Necesito saber en qué se va mi dinero; un bote acaba pagando cosas que yo no habría pedido."
-   ]
+   "enunciado": "En un viaje, ¿se hace un bote común desde el principio o se va pagando y cuadrando al final?"
   },
   {
    "id": "A033",
    "publico": "amigos",
-   "categoria": "El viaje de amigos",
    "titulo": "Horarios en el viaje",
-   "enunciado": "En un viaje, ¿se va todos juntos a todo o cada uno hace lo suyo y se reúnen a comer?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que el viaje sea juntos: separarse es acabar contándonos lo que hicimos en vez de vivirlo.",
-    "Necesito mi rato: obligarme a un horario común me deja agotado y de peor humor para el resto."
-   ]
+   "enunciado": "En un viaje, ¿se va todos juntos a todo o cada uno hace lo suyo y se reúnen a comer?"
   },
   {
    "id": "A036",
    "publico": "amigos",
-   "categoria": "El viaje de amigos",
    "titulo": "Lo que se reserva antes",
-   "enunciado": "Antes del viaje, ¿se cierra todo o se dejan días libres sin plan?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito llegar con las cosas resueltas: improvisar acaba en dos horas decidiendo dónde comer.",
-    "Necesito espacio para lo que aparezca; un viaje con todo reservado es una lista de tareas."
-   ]
+   "enunciado": "Antes del viaje, ¿se cierra todo o se dejan días libres sin plan?"
   },
   {
    "id": "A038",
    "publico": "amigos",
-   "categoria": "El viaje de amigos",
    "titulo": "Las fotos del viaje",
-   "enunciado": "Las fotos del viaje, ¿se suben cuando cada uno quiera o se pregunta antes de publicar a otros?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder contar mi viaje: pedir permiso por cada foto convierte el álbum en un trámite.",
-    "Necesito decidir dónde aparece mi cara; una foto mía en la playa no es mía si la sube otro."
-   ]
+   "enunciado": "Las fotos del viaje, ¿se suben cuando cada uno quiera o se pregunta antes de publicar a otros?"
   },
   {
    "id": "A041",
    "publico": "amigos",
-   "categoria": "Los regalos y las fechas",
    "titulo": "Regalo conjunto o por separado",
-   "enunciado": "Para un cumpleaños del grupo, ¿se hace un regalo entre todos o cada quien regala lo suyo?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que el regalo se note: entre todos se puede regalar algo que de verdad quería.",
-    "Necesito que mi regalo diga algo mío; poner dinero en un bote común no es regalar, es cotizar."
-   ]
+   "enunciado": "Para un cumpleaños del grupo, ¿se hace un regalo entre todos o cada quien regala lo suyo?"
   },
   {
    "id": "A042",
    "publico": "amigos",
-   "categoria": "Los regalos y las fechas",
    "titulo": "Poner un tope al regalo",
-   "enunciado": "¿Se fija cuánto se gasta cada uno en los regalos o eso lo decide cada quien?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito un tope: sin él, quien pueda menos acaba quedando mal sin haber hecho nada.",
-    "Necesito poder gastar lo que quiera en alguien que me importa, sin que un acuerdo me lo limite."
-   ]
+   "enunciado": "¿Se fija cuánto se gasta cada uno en los regalos o eso lo decide cada quien?"
   },
   {
    "id": "A044",
    "publico": "amigos",
-   "categoria": "Los regalos y las fechas",
    "titulo": "El amigo invisible",
-   "enunciado": "En un grupo grande, ¿amigo invisible o cada uno a cada uno?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que no se convierta en una ruina: comprar diez regalos es un mes de sueldo.",
-    "Necesito poder regalar a quien quiero; el sorteo me toca justo con quien menos hablo."
-   ]
+   "enunciado": "En un grupo grande, ¿amigo invisible o cada uno a cada uno?"
   },
   {
    "id": "A047",
    "publico": "amigos",
-   "categoria": "Los regalos y las fechas",
    "titulo": "Felicitar por el grupo",
-   "enunciado": "Felicitar el cumpleaños por el grupo de chat, ¿cuenta o hay que escribir aparte?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que se vea: felicitar en el grupo es también decirle al resto que hoy es su día.",
-    "Necesito un mensaje que sea para mí; en el grupo mi cumpleaños es un renglón más del día."
-   ]
+   "enunciado": "Felicitar el cumpleaños por el grupo de chat, ¿cuenta o hay que escribir aparte?"
   },
   {
    "id": "A048",
    "publico": "amigos",
-   "categoria": "Los regalos y las fechas",
    "titulo": "La boda y el sobre",
-   "enunciado": "En una boda, ¿el sobre debería cubrir lo que cuesta tu cubierto o se pone lo que cada uno pueda?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que invitar no arruine a nadie: si el sobre tiene que cubrir el plato, es una factura.",
-    "Necesito que la fiesta salga; cuando muchos ponen menos de lo que cuestan, la paga quien invita."
-   ]
+   "enunciado": "En una boda, ¿el sobre debería cubrir lo que cuesta tu cubierto o se pone lo que cada uno pueda?"
   },
   {
    "id": "A051",
    "publico": "amigos",
-   "categoria": "Lo que se presta",
    "titulo": "Recordar lo prestado",
-   "enunciado": "Cuando algo prestado no vuelve, ¿se reclama o se espera a que se acuerden?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que me lo recuerden: se me pasa de verdad, y el silencio me deja quedando mal sin saberlo.",
-    "Necesito no ser el que persigue sus propias cosas; reclamar convierte un favor en una deuda."
-   ]
+   "enunciado": "Cuando algo prestado no vuelve, ¿se reclama o se espera a que se acuerden?"
   },
   {
    "id": "A057",
    "publico": "amigos",
-   "categoria": "Lo que se presta",
    "titulo": "Prestar dinero con fecha",
-   "enunciado": "Al prestar dinero a un amigo, ¿se pone fecha de devolución o eso ya es desconfiar?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que quede claro cuándo vuelve: sin fecha, lo que era un favor se queda flotando meses.",
-    "Necesito que ayudarme no venga con un contrato; poner plazo es tratarme como a un banco."
-   ]
+   "enunciado": "Al prestar dinero a un amigo, ¿se pone fecha de devolución o eso ya es desconfiar?"
   },
   {
    "id": "A060",
    "publico": "amigos",
-   "categoria": "Lo que se presta",
    "titulo": "Cobrarse un favor",
-   "enunciado": "Los favores entre amigos, ¿se llevan más o menos a la par o no se cuentan?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que no se lleve la cuenta: en cuanto se cuentan, dejan de ser favores.",
-    "Necesito que no vaya siempre en la misma dirección; ayudar sin que nunca vuelva acaba pesando."
-   ]
+   "enunciado": "Los favores entre amigos, ¿se llevan más o menos a la par o no se cuentan?"
   },
   {
    "id": "A061",
    "publico": "amigos",
-   "categoria": "Quien entra al grupo",
    "titulo": "Llevar pareja al plan",
-   "enunciado": "A una quedada del grupo de siempre, ¿se puede llevar pareja o eso es solo del grupo?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito no tener que elegir entre mis amigos y la persona con la que vivo.",
-    "Necesito que el grupo siga siendo el grupo; con gente de fuera la conversación cambia entera."
-   ]
+   "enunciado": "A una quedada del grupo de siempre, ¿se puede llevar pareja o eso es solo del grupo?"
   },
   {
    "id": "A064",
    "publico": "amigos",
-   "categoria": "Quien entra al grupo",
    "titulo": "El que ya no viene",
-   "enunciado": "Con quien lleva un año sin aparecer, ¿se le sigue invitando igual o ya se entiende?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que me sigan invitando aunque no pueda ir: dejar de recibir el mensaje es quedar fuera.",
-    "Necesito no invitar al vacío; escribir cada vez para no recibir respuesta también cansa."
-   ]
+   "enunciado": "Con quien lleva un año sin aparecer, ¿se le sigue invitando igual o ya se entiende?"
   },
   {
    "id": "A065",
    "publico": "amigos",
-   "categoria": "Quien entra al grupo",
    "titulo": "Quedar sin avisar a uno",
-   "enunciado": "Montar un plan sin avisar a alguien del grupo, ¿se puede o hay que invitar a todos siempre?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder tomar algo con dos personas sin convocar a quince: no todo es del grupo entero.",
-    "Necesito no enterarme por una foto; que un plan exista y yo no lo supiera es lo que duele."
-   ]
+   "enunciado": "Montar un plan sin avisar a alguien del grupo, ¿se puede o hay que invitar a todos siempre?"
   },
   {
    "id": "A071",
    "publico": "amigos",
-   "categoria": "En la mesa y en el bar",
    "titulo": "Las rondas",
-   "enunciado": "En el bar, ¿se paga por rondas o cada quien lo suyo?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que sea fluido: parar a pagar en cada consumición corta la conversación siempre.",
-    "Necesito no acabar pagando tres rondas de gente que se fue antes de que llegara la mía."
-   ]
+   "enunciado": "En el bar, ¿se paga por rondas o cada quien lo suyo?"
   },
   {
    "id": "A072",
    "publico": "amigos",
-   "categoria": "En la mesa y en el bar",
    "titulo": "El sitio con música alta",
-   "enunciado": "Para tomar algo, ¿mejor sitio con música y ambiente o uno donde se pueda hablar?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito el ambiente: un bar en silencio es una sala de espera con cerveza.",
-    "Necesito poder oír lo que me cuentan; gritar dos horas me deja sin voz y sin conversación."
-   ]
+   "enunciado": "Para tomar algo, ¿mejor sitio con música y ambiente o uno donde se pueda hablar?"
   },
   {
    "id": "A075",
    "publico": "amigos",
-   "categoria": "En la mesa y en el bar",
    "titulo": "Los móviles en la mesa",
-   "enunciado": "Durante la cena, ¿los móviles en la mesa o guardados?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito mi teléfono a mano; hay cosas que no puedo dejar de mirar en tres horas.",
-    "Necesito que quien está enfrente esté enfrente; una pantalla en la mesa se lleva la mitad de la atención."
-   ]
+   "enunciado": "Durante la cena, ¿los móviles en la mesa o guardados?"
   },
   {
    "id": "A081",
    "publico": "amigos",
-   "categoria": "Lo que se cuenta",
    "titulo": "Contar lo que te contaron",
-   "enunciado": "Algo que te contó un amigo sin pedir secreto, ¿se puede contar o se guarda igual?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder hablar de mi vida, y en mi vida están las cosas que me cuentan.",
-    "Necesito saber que lo que digo se queda donde lo dije, aunque no haya puesto la etiqueta de secreto."
-   ]
+   "enunciado": "Algo que te contó un amigo sin pedir secreto, ¿se puede contar o se guarda igual?"
   },
   {
    "id": "A082",
    "publico": "amigos",
-   "categoria": "Lo que se cuenta",
    "titulo": "Opinar sobre su pareja",
-   "enunciado": "Si la pareja de un amigo no te convence, ¿se dice o te lo callas?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder avisar: callarme y verlo de lejos no es ser amigo, es ser público.",
-    "Necesito elegir yo con quién estoy; una opinión no pedida se queda ahí aunque todo vaya bien."
-   ]
+   "enunciado": "Si la pareja de un amigo no te convence, ¿se dice o te lo callas?"
   },
   {
    "id": "A083",
    "publico": "amigos",
-   "categoria": "Lo que se cuenta",
    "titulo": "La broma que ya no hace gracia",
-   "enunciado": "Una broma repetida que a alguien le molesta, ¿se retira o se le dice que no es para tanto?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder decir basta sin que me traten de exagerado por algo que llevo años aguantando.",
-    "Necesito que el grupo no se vuelva un sitio donde hay que medir cada frase antes de decirla."
-   ]
+   "enunciado": "Una broma repetida que a alguien le molesta, ¿se retira o se le dice que no es para tanto?"
   },
   {
    "id": "A084",
    "publico": "amigos",
-   "categoria": "Lo que se cuenta",
    "titulo": "Opinar sin que te pregunten",
-   "enunciado": "Cuando alguien cuenta un problema, ¿se opina o solo se escucha?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito ayudar de verdad: escuchar sin decir nada cuando veo la salida se parece a no hacer nada.",
-    "Necesito contar algo sin recibir un plan de acción; a veces solo quiero decirlo en voz alta."
-   ]
+   "enunciado": "Cuando alguien cuenta un problema, ¿se opina o solo se escucha?"
   },
   {
    "id": "A085",
    "publico": "amigos",
-   "categoria": "Lo que se cuenta",
    "titulo": "Hablar de alguien que no está",
-   "enunciado": "Comentar cosas de alguien del grupo que no está, ¿es normal o ya es hablar por detrás?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder comentar lo que me preocupa de alguien sin que sea una traición.",
-    "Necesito que lo que se diga de mí se diga delante; enterarme después es peor que la crítica."
-   ]
+   "enunciado": "Comentar cosas de alguien del grupo que no está, ¿es normal o ya es hablar por detrás?"
   },
   {
    "id": "A086",
    "publico": "amigos",
-   "categoria": "Lo que se cuenta",
    "titulo": "La mentira piadosa",
-   "enunciado": "Para no ir a un plan, ¿vale una excusa o hay que decir que no te apetece?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito una salida sin herir: «no me apetece» suena a que la compañía no vale la pena.",
-    "Necesito que me digan la verdad; una excusa que no se sostiene se nota y sienta peor."
-   ]
+   "enunciado": "Para no ir a un plan, ¿vale una excusa o hay que decir que no te apetece?"
   },
   {
    "id": "A091",
    "publico": "amigos",
-   "categoria": "Series, deporte y pantallas",
    "titulo": "El spoiler",
-   "enunciado": "Contar el final de algo, ¿deja de ser spoiler a los pocos días o siempre hay que avisar?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito poder hablar de lo que vi: esperar para siempre significa no comentarlo nunca.",
-    "Necesito llegar a eso yo; que me lo cuenten borra la única vez que se ve por primera vez."
-   ]
+   "enunciado": "Contar el final de algo, ¿deja de ser spoiler a los pocos días o siempre hay que avisar?"
   },
   {
    "id": "A092",
    "publico": "amigos",
-   "categoria": "Series, deporte y pantallas",
    "titulo": "Ver el capítulo sin el otro",
-   "enunciado": "Si quedaron en ver una serie juntos, ¿se puede adelantar capítulos o se espera?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito verlo cuando tengo el rato; guardarlo una semana me deja fuera de toda conversación.",
-    "Necesito que lo que acordamos valga: verlo solo convierte nuestro plan en un resumen."
-   ]
+   "enunciado": "Si quedaron en ver una serie juntos, ¿se puede adelantar capítulos o se espera?"
   },
   {
    "id": "A095",
    "publico": "amigos",
-   "categoria": "Series, deporte y pantallas",
    "titulo": "Hablar de fútbol todo el rato",
-   "enunciado": "En una mesa donde no todos siguen el deporte, ¿se habla igual o se cambia de tema?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito poder hablar de lo que me gusta; cambiar de tema por si alguien se aburre deja mudo a medio grupo.",
-    "Necesito poder participar: media cena de alineaciones es media cena mirando el móvil."
-   ]
+   "enunciado": "En una mesa donde no todos siguen el deporte, ¿se habla igual o se cambia de tema?"
   },
   {
    "id": "F001",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "Quien cocina no recoge",
-   "enunciado": "En una comida familiar, ¿quien cocinó se libra de recoger o eso no tiene nada que ver?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que cocinar para diez se reconozca: son tres horas antes de que nadie se siente.",
-    "Necesito que recoger no caiga siempre en los mismos; el trabajo de después también es trabajo."
-   ]
+   "enunciado": "En una comida familiar, ¿quien cocinó se libra de recoger o eso no tiene nada que ver?"
   },
   {
    "id": "F002",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "Llegar con las manos vacías",
-   "enunciado": "A una comida en casa de un familiar, ¿hay que llevar algo o se va y ya está?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que venir no cueste: obligar a traer algo convierte una comida en una cuota.",
-    "Necesito que no todo salga de mi cocina y mi bolsillo cada vez que toca en mi casa."
-   ]
+   "enunciado": "A una comida en casa de un familiar, ¿hay que llevar algo o se va y ya está?"
   },
   {
    "id": "F003",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "La hora de comer",
-   "enunciado": "En una comida familiar, ¿se come a la hora dicha o se espera a que lleguen todos?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que la comida salga en su punto; esperar cuarenta minutos me arruina lo que cociné.",
-    "Necesito no encontrarme el primer plato acabado por haber pillado tráfico."
-   ]
+   "enunciado": "En una comida familiar, ¿se come a la hora dicha o se espera a que lleguen todos?"
   },
   {
    "id": "F005",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "Comer lo que no te gusta",
-   "enunciado": "Si hay un plato que no te gusta, ¿se come igual o se dice y se pasa?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder no comerlo sin que se lea como un desprecio a quien lo hizo.",
-    "Necesito que lo que cocino se coma; que alguien lo aparte delante de todos duele más de lo que parece."
-   ]
+   "enunciado": "Si hay un plato que no te gusta, ¿se come igual o se dice y se pasa?"
   },
   {
    "id": "F006",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "La tele en la comida",
-   "enunciado": "Durante la comida familiar, ¿la tele encendida o apagada?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que haya algo de fondo: el silencio en una mesa de familia se hace muy largo.",
-    "Necesito poder hablar sin competir con el volumen; si venimos a vernos, vengamos a vernos."
-   ]
+   "enunciado": "Durante la comida familiar, ¿la tele encendida o apagada?"
   },
   {
    "id": "F007",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "La sobremesa que no acaba",
-   "enunciado": "La sobremesa, ¿se estira hasta que alguien se levanta o hay una hora razonable para cerrar?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que no haya reloj: lo bueno de estas comidas pasa justo en la sobremesa.",
-    "Necesito recuperar mi domingo; a las siete de la tarde ya no queda nada del día."
-   ]
+   "enunciado": "La sobremesa, ¿se estira hasta que alguien se levanta o hay una hora razonable para cerrar?"
   },
   {
    "id": "F010",
    "publico": "familia",
-   "categoria": "Las comidas de los domingos",
    "titulo": "Cuántas veces al mes",
-   "enunciado": "La comida familiar, ¿cada domingo o una vez al mes basta?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito verlos seguido: si se espacia, al final nos vemos tres veces al año.",
-    "Necesito mis fines de semana; comprometer todos los domingos deja el resto de mi vida sin sitio."
-   ]
+   "enunciado": "La comida familiar, ¿cada domingo o una vez al mes basta?"
   },
   {
    "id": "F011",
    "publico": "familia",
-   "categoria": "Las fiestas y dónde se pasan",
    "titulo": "Dónde se pasa Nochebuena",
-   "enunciado": "La Nochebuena, ¿siempre en la misma casa o va rotando?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que haya un sitio fijo: la casa de siempre es media fiesta, y cambiarla la deshace.",
-    "Necesito que no recaiga siempre en los mismos; recibir a veinte personas es una semana de trabajo."
-   ]
+   "enunciado": "La Nochebuena, ¿siempre en la misma casa o va rotando?"
   },
   {
    "id": "F012",
    "publico": "familia",
-   "categoria": "Las fiestas y dónde se pasan",
    "titulo": "Repartir las fiestas",
-   "enunciado": "Cuando hay dos familias, ¿se parte el día o se alterna un año cada una?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito estar en las dos: elegir una es decirle a la otra que ese año no cuenta.",
-    "Necesito una cena entera en un sitio; partir el día es pasarlo en el coche y llegar tarde a todo."
-   ]
+   "enunciado": "Cuando hay dos familias, ¿se parte el día o se alterna un año cada una?"
   },
   {
    "id": "F013",
    "publico": "familia",
-   "categoria": "Las fiestas y dónde se pasan",
    "titulo": "Los que no vienen",
-   "enunciado": "Si alguien no viene a la comida de Navidad, ¿se le pregunta por qué o se respeta y ya?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito preguntar: no hacerlo es dejar que alguien se vaya alejando sin que nadie lo note.",
-    "Necesito poder faltar un año sin dar un parte; no venir no siempre significa algo."
-   ]
+   "enunciado": "Si alguien no viene a la comida de Navidad, ¿se le pregunta por qué o se respeta y ya?"
   },
   {
    "id": "F021",
    "publico": "familia",
-   "categoria": "Los regalos en familia",
    "titulo": "Amigo invisible en familia",
-   "enunciado": "En una familia grande, ¿amigo invisible o cada uno regala a cada uno?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que no sea una ruina: con quince personas, regalar a todos no lo sostiene nadie.",
-    "Necesito poder regalarle a quien quiero; el sorteo me deja regalando a quien apenas veo."
-   ]
+   "enunciado": "En una familia grande, ¿amigo invisible o cada uno regala a cada uno?"
   },
   {
    "id": "F022",
    "publico": "familia",
-   "categoria": "Los regalos en familia",
    "titulo": "Cuánto se gasta",
-   "enunciado": "¿Se pone un tope al regalo familiar o cada quien gasta lo suyo?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito un tope para que nadie quede mal por no poder gastar lo mismo.",
-    "Necesito poder regalar lo que quiero a mi gente sin que un acuerdo me lo limite."
-   ]
+   "enunciado": "¿Se pone un tope al regalo familiar o cada quien gasta lo suyo?"
   },
   {
    "id": "F025",
    "publico": "familia",
-   "categoria": "Los regalos en familia",
    "titulo": "Pedir lo que quieres",
-   "enunciado": "Los regalos, ¿se piden y se acierta o se dejan a sorpresa?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito acertar: regalar a ciegas acaba en un cajón y en dinero tirado.",
-    "Necesito que me sorprendan; pedir una lista convierte el regalo en un encargo."
-   ]
+   "enunciado": "Los regalos, ¿se piden y se acierta o se dejan a sorpresa?"
   },
   {
    "id": "F029",
    "publico": "familia",
-   "categoria": "Los regalos en familia",
    "titulo": "Dinero a los sobrinos",
-   "enunciado": "A los sobrinos mayores, ¿dinero o un regalo elegido?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que se compren lo que quieren; a esa edad nada de lo que yo elija va a acertar.",
-    "Necesito que haya un gesto detrás: dar dinero es cumplir sin haber pensado en la persona."
-   ]
+   "enunciado": "A los sobrinos mayores, ¿dinero o un regalo elegido?"
   },
   {
    "id": "F031",
    "publico": "familia",
-   "categoria": "El grupo de la familia",
    "titulo": "Las cadenas y los reenvíos",
-   "enunciado": "En el grupo familiar, ¿vale reenviar cualquier cosa o hay que filtrar?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder compartir lo que me llega; un grupo donde hay que curar todo se queda vacío.",
-    "Necesito abrir el grupo y encontrar a mi familia, no veinte reenvíos que nadie escribió."
-   ]
+   "enunciado": "En el grupo familiar, ¿vale reenviar cualquier cosa o hay que filtrar?"
   },
   {
    "id": "F032",
    "publico": "familia",
-   "categoria": "El grupo de la familia",
    "titulo": "Los audios largos",
-   "enunciado": "Los audios de varios minutos en el grupo familiar, ¿son normales o se escriben?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito hablar en vez de escribir; teclear me lleva media hora y encima con erratas.",
-    "Necesito poder leerlo cuando pueda; un audio me obliga a escuchar en ese momento y con sonido."
-   ]
+   "enunciado": "Los audios de varios minutos en el grupo familiar, ¿son normales o se escriben?"
   },
   {
    "id": "F034",
    "publico": "familia",
-   "categoria": "El grupo de la familia",
    "titulo": "Fotos de los niños",
-   "enunciado": "Fotos de los sobrinos en el grupo familiar, ¿se mandan libremente o se pregunta a los padres?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito compartir con la familia lo que hacen los peques: para eso está el grupo.",
-    "Necesito decidir yo qué fotos de mis hijos circulan, aunque sea en un grupo de confianza."
-   ]
+   "enunciado": "Fotos de los sobrinos en el grupo familiar, ¿se mandan libremente o se pregunta a los padres?"
   },
   {
    "id": "F035",
    "publico": "familia",
-   "categoria": "El grupo de la familia",
    "titulo": "Felicitar en el grupo familiar",
-   "enunciado": "Un cumpleaños, ¿se felicita en el grupo de la familia o por privado?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que se vea: felicitar en el grupo recuerda al resto que hoy es su día.",
-    "Necesito un mensaje que sea para mí; treinta felicitaciones seguidas son una lista, no un saludo."
-   ]
+   "enunciado": "Un cumpleaños, ¿se felicita en el grupo de la familia o por privado?"
   },
   {
    "id": "F037",
    "publico": "familia",
-   "categoria": "El grupo de la familia",
    "titulo": "Un grupo para cada cosa",
-   "enunciado": "¿Un solo grupo familiar o uno para primos, otro para hermanos y otro para todos?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito hablar con los míos sin que lo lean veinte: hay cosas que no son para todo el mundo.",
-    "Necesito enterarme de lo que pasa; cuando hay cuatro grupos siempre me falta uno."
-   ]
+   "enunciado": "¿Un solo grupo familiar o uno para primos, otro para hermanos y otro para todos?"
   },
   {
    "id": "F039",
    "publico": "familia",
-   "categoria": "El grupo de la familia",
    "titulo": "Salirse del grupo",
-   "enunciado": "Salirse del grupo familiar, ¿se puede o es una declaración?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder bajarme de algo que me está costando más de lo que me aporta.",
-    "Necesito que nadie se vaya así: salir de un grupo familiar se lee como un portazo aunque no lo sea."
-   ]
+   "enunciado": "Salirse del grupo familiar, ¿se puede o es una declaración?"
   },
   {
    "id": "F041",
    "publico": "familia",
-   "categoria": "Las visitas",
    "titulo": "Avisar antes de ir",
-   "enunciado": "Para ir a casa de un familiar, ¿hay que avisar antes o se puede aparecer?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que mi casa siga siendo mía: abrir la puerta sin esperar visita me descoloca el día.",
-    "Necesito que entre familia no haga falta protocolo; avisar por todo convierte la casa en una oficina."
-   ]
+   "enunciado": "Para ir a casa de un familiar, ¿hay que avisar antes o se puede aparecer?"
   },
   {
    "id": "F042",
    "publico": "familia",
-   "categoria": "Las visitas",
    "titulo": "Cuánto dura una visita",
-   "enunciado": "Una visita familiar sin plan, ¿tiene una duración razonable o se va cuando se va?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que se acabe a una hora; una visita de cinco horas me come el día entero.",
-    "Necesito que no me midan el tiempo: mirar el reloj mientras hablamos es echarme con educación."
-   ]
+   "enunciado": "Una visita familiar sin plan, ¿tiene una duración razonable o se va cuando se va?"
   },
   {
    "id": "F043",
    "publico": "familia",
-   "categoria": "Las visitas",
    "titulo": "Quedarse a dormir",
-   "enunciado": "Un familiar de paso, ¿se queda en casa o se le busca un hotel cerca?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito ofrecer mi casa: mandar a un familiar a un hotel teniendo un sofá se siente mal.",
-    "Necesito mi espacio; tener a alguien en casa cuatro días es no estar en mi propia casa."
-   ]
+   "enunciado": "Un familiar de paso, ¿se queda en casa o se le busca un hotel cerca?"
   },
   {
    "id": "F044",
    "publico": "familia",
-   "categoria": "Las visitas",
    "titulo": "Entrar con llave",
-   "enunciado": "Que un familiar tenga llave de tu casa, ¿es normal o ya es demasiado?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que alguien pueda entrar si hace falta; para eso está la familia cerca.",
-    "Necesito saber que nadie va a entrar cuando no estoy, aunque sea con la mejor intención."
-   ]
+   "enunciado": "Que un familiar tenga llave de tu casa, ¿es normal o ya es demasiado?"
   },
   {
    "id": "F048",
    "publico": "familia",
-   "categoria": "Las visitas",
    "titulo": "Visitar al que vive lejos",
-   "enunciado": "Cuando alguien se muda lejos, ¿le toca a él venir o hay que ir a verlo?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que vengan alguna vez: el que se fue no tiene por qué pagar todos los viajes.",
-    "Necesito que se entienda mi situación; moverme con la casa a cuestas no es lo mismo que venir solo."
-   ]
+   "enunciado": "Cuando alguien se muda lejos, ¿le toca a él venir o hay que ir a verlo?"
   },
   {
    "id": "F051",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "La pregunta de siempre",
-   "enunciado": "Preguntar en cada comida por el trabajo o los planes de alguien, ¿es interés o es incomodar?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito preguntar por su vida: no hacerlo sería no interesarme por alguien de mi familia.",
-    "Necesito que mi vida no sea el punto del día; contestar lo mismo cada mes cansa mucho."
-   ]
+   "enunciado": "Preguntar en cada comida por el trabajo o los planes de alguien, ¿es interés o es incomodar?"
   },
   {
    "id": "F052",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "Dar consejo sin que lo pidan",
-   "enunciado": "Cuando alguien cuenta algo suyo, ¿se le aconseja o solo se escucha?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder decir lo que he aprendido; callarme viendo un error es no ayudar.",
-    "Necesito contar algo sin recibir instrucciones; a veces solo estoy poniéndolo en palabras."
-   ]
+   "enunciado": "Cuando alguien cuenta algo suyo, ¿se le aconseja o solo se escucha?"
   },
   {
    "id": "F053",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "Comparar entre hermanos",
-   "enunciado": "Comparar lo que hace cada hermano, ¿es inevitable o hay que evitarlo?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder alegrarme en voz alta de lo que le va bien a uno sin medir cómo suena.",
-    "Necesito que mi vida se mire sola; puesta al lado de otra siempre queda como un balance."
-   ]
+   "enunciado": "Comparar lo que hace cada hermano, ¿es inevitable o hay que evitarlo?"
   },
   {
    "id": "F055",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "Opinar sobre cómo crían",
-   "enunciado": "Sobre cómo cría otro a sus hijos, ¿se opina o se muerde uno la lengua?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder decir lo que veo cuando es sobre alguien a quien quiero.",
-    "Necesito criar sin auditoría; una opinión sobre mis hijos se queda dando vueltas días."
-   ]
+   "enunciado": "Sobre cómo cría otro a sus hijos, ¿se opina o se muerde uno la lengua?"
   },
   {
    "id": "F057",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "Las bromas de siempre",
-   "enunciado": "La broma que se repite sobre alguien en cada comida, ¿es cariño o ya toca dejarla?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder decir que ya no me hace gracia sin que me llamen susceptible.",
-    "Necesito que queden cosas nuestras; retirar todas las bromas deja las comidas muy formales."
-   ]
+   "enunciado": "La broma que se repite sobre alguien en cada comida, ¿es cariño o ya toca dejarla?"
   },
   {
    "id": "F058",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "Hablar de política en la mesa",
-   "enunciado": "En una comida familiar, ¿se puede hablar de política o mejor no?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder hablar de lo que pasa con la gente que más me importa; evitarlo es fingir.",
-    "Necesito una comida al mes sin acabar de mal humor con alguien de mi propia familia."
-   ]
+   "enunciado": "En una comida familiar, ¿se puede hablar de política o mejor no?"
   },
   {
    "id": "F060",
    "publico": "familia",
-   "categoria": "Lo que opinan de tu vida",
    "titulo": "Preguntar por el dinero",
-   "enunciado": "Preguntar cuánto costó algo o cuánto gana alguien, ¿es normal en familia o no se pregunta?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder hablar con naturalidad de dinero; el misterio es lo que lo hace incómodo.",
-    "Necesito que mis números sean míos, aunque la pregunta venga sin mala intención."
-   ]
+   "enunciado": "Preguntar cuánto costó algo o cuánto gana alguien, ¿es normal en familia o no se pregunta?"
   },
   {
    "id": "F061",
    "publico": "familia",
-   "categoria": "Primos, sobrinos y los peques",
    "titulo": "Quién cuida a los niños",
-   "enunciado": "En una reunión, ¿los niños los vigilan sus padres o los vigila quien esté cerca?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder sentarme a comer una vez: si nadie más mira, no como caliente en todo el día.",
-    "Necesito que las normas las ponga quien los cría; hacerme cargo sin saber sus reglas acaba mal."
-   ]
+   "enunciado": "En una reunión, ¿los niños los vigilan sus padres o los vigila quien esté cerca?"
   },
   {
    "id": "F062",
    "publico": "familia",
-   "categoria": "Primos, sobrinos y los peques",
    "titulo": "Corregir al hijo de otro",
-   "enunciado": "Si un sobrino hace algo que no debe, ¿se le corrige o se avisa a sus padres?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder decir «eso no» en el momento; esperar a buscar al padre es llegar tarde.",
-    "Necesito ser yo quien corrija a mis hijos; que lo haga otro delante los deja sin saber a quién hacer caso."
-   ]
+   "enunciado": "Si un sobrino hace algo que no debe, ¿se le corrige o se avisa a sus padres?"
   },
   {
    "id": "F063",
    "publico": "familia",
-   "categoria": "Primos, sobrinos y los peques",
    "titulo": "Las pantallas para los peques",
-   "enunciado": "En una comida familiar, ¿se les deja el móvil a los niños para que aguanten o no?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que la comida sea tranquila; dos horas es mucho para un niño de cinco años.",
-    "Necesito que estén con nosotros: si les damos una pantalla, dejan de aprender a estar en la mesa."
-   ]
+   "enunciado": "En una comida familiar, ¿se les deja el móvil a los niños para que aguanten o no?"
   },
   {
    "id": "F064",
    "publico": "familia",
-   "categoria": "Primos, sobrinos y los peques",
    "titulo": "Los dulces y la comida",
-   "enunciado": "Darle chuches a un sobrino sin preguntar a sus padres, ¿es cosa de tíos o hay que consultar?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito poder consentirles: eso es exactamente lo que hacen los tíos y los abuelos.",
-    "Necesito que lo que decidimos en casa se sostenga; si cada domingo se rompe, no sirve de nada."
-   ]
+   "enunciado": "Darle chuches a un sobrino sin preguntar a sus padres, ¿es cosa de tíos o hay que consultar?"
   },
   {
    "id": "F065",
    "publico": "familia",
-   "categoria": "Primos, sobrinos y los peques",
    "titulo": "Fotos de los niños en redes",
-   "enunciado": "Fotos de los sobrinos en redes sociales, ¿se suben o se pregunta antes?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito compartir a mi familia; pedir permiso por cada foto lo convierte en un trámite.",
-    "Necesito decidir yo dónde aparece la cara de mi hijo, porque eso se queda para siempre."
-   ]
+   "enunciado": "Fotos de los sobrinos en redes sociales, ¿se suben o se pregunta antes?"
   },
   {
    "id": "F068",
    "publico": "familia",
-   "categoria": "Primos, sobrinos y los peques",
    "titulo": "Cuidar a los sobrinos",
-   "enunciado": "Pedirle a un hermano que cuide a tus hijos una tarde, ¿es normal o es pedir mucho?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder pedir ayuda a mi familia sin sentir que estoy cobrando un favor.",
-    "Necesito que no se dé por hecho: mi tarde libre también es mía aunque no tenga hijos."
-   ]
+   "enunciado": "Pedirle a un hermano que cuide a tus hijos una tarde, ¿es normal o es pedir mucho?"
   },
   {
    "id": "F071",
    "publico": "familia",
-   "categoria": "Lo que se presta en familia",
    "titulo": "Prestar el coche a un familiar",
-   "enunciado": "A un hermano o un primo, ¿se le presta el coche sin más o se piensa?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder ayudar de verdad; para eso es la familia, y decir que no por si acaso es feo.",
-    "Necesito no meter en una relación de por vida algo que si sale mal cuesta mucho dinero."
-   ]
+   "enunciado": "A un hermano o un primo, ¿se le presta el coche sin más o se piensa?"
   },
   {
    "id": "F072",
    "publico": "familia",
-   "categoria": "Lo que se presta en familia",
    "titulo": "Lo prestado que no vuelve",
-   "enunciado": "Lo prestado que lleva meses fuera, ¿se reclama o se espera?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito que me lo recuerden: no es mala fe, es que se me olvidó de verdad.",
-    "Necesito no tener que perseguir mis cosas; pedirlas me deja a mí en el papel incómodo."
-   ]
+   "enunciado": "Lo prestado que lleva meses fuera, ¿se reclama o se espera?"
   },
   {
    "id": "F073",
    "publico": "familia",
-   "categoria": "Lo que se presta en familia",
    "titulo": "Ayudar en la mudanza",
-   "enunciado": "Para una mudanza familiar, ¿se da por hecho que todos ayudan o se pregunta?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito contar con los míos un sábado; contratar a alguien para todo no siempre se puede.",
-    "Necesito que me pregunten en vez de darlo por supuesto; mis sábados no están en un fondo común."
-   ]
+   "enunciado": "Para una mudanza familiar, ¿se da por hecho que todos ayudan o se pregunta?"
   },
   {
    "id": "F074",
    "publico": "familia",
-   "categoria": "Lo que se presta en familia",
    "titulo": "Pedir dinero en familia",
-   "enunciado": "Un préstamo entre familiares, ¿se trata como cualquier préstamo o es otra cosa?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que quede claro cuándo vuelve; si no, en cada comida va a estar ahí sin decirse.",
-    "Necesito que ayudarme no venga con condiciones; poner plazos en familia se siente como desconfiar."
-   ]
+   "enunciado": "Un préstamo entre familiares, ¿se trata como cualquier préstamo o es otra cosa?"
   },
   {
    "id": "F075",
    "publico": "familia",
-   "categoria": "Lo que se presta en familia",
    "titulo": "El favor profesional",
-   "enunciado": "Si alguien de la familia trabaja de algo, ¿se le pide consejo gratis o se le paga?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito poder preguntar a quien sabe sin que se convierta en una factura.",
-    "Necesito que mi trabajo se respete; lo que hago por oficio no deja de valer por ser familia."
-   ]
+   "enunciado": "Si alguien de la familia trabaja de algo, ¿se le pide consejo gratis o se le paga?"
   },
   {
    "id": "F081",
    "publico": "familia",
-   "categoria": "Las costumbres de siempre",
    "titulo": "Cambiar una tradición",
-   "enunciado": "Una costumbre familiar de treinta años, ¿se puede cambiar o se respeta?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que esto siga funcionando: las costumbres son lo que nos mantiene juntándonos.",
-    "Necesito que se pueda revisar; hacer algo solo porque siempre se hizo no es una razón."
-   ]
+   "enunciado": "Una costumbre familiar de treinta años, ¿se puede cambiar o se respeta?"
   },
   {
    "id": "F087",
    "publico": "familia",
-   "categoria": "Las costumbres de siempre",
    "titulo": "Ir al pueblo",
-   "enunciado": "La casa del pueblo o el sitio de siempre en verano, ¿se sigue yendo o cada uno hace su plan?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que sigamos yendo: es el único sitio donde coincidimos todos sin organizar nada.",
-    "Necesito mis vacaciones; ir siempre al mismo sitio es no haber elegido nunca dónde ir."
-   ]
+   "enunciado": "La casa del pueblo o el sitio de siempre en verano, ¿se sigue yendo o cada uno hace su plan?"
   },
   {
    "id": "F089",
    "publico": "familia",
-   "categoria": "Las costumbres de siempre",
    "titulo": "Los turnos que nadie decidió",
-   "enunciado": "Las tareas familiares que siempre hace el mismo, ¿se replantean o se dejan?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que se revise: nadie eligió esto, se quedó así y ya lleva quince años.",
-    "Necesito que funcione; cada vez que se replantea, nadie lo hace durante dos meses."
-   ]
+   "enunciado": "Las tareas familiares que siempre hace el mismo, ¿se replantean o se dejan?"
   },
   {
    "id": "F091",
    "publico": "familia",
-   "categoria": "Los viajes y el verano",
    "titulo": "Vacaciones todos juntos",
-   "enunciado": "Las vacaciones, ¿una semana todos juntos o cada núcleo por su lado?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito ese rato: es la única semana del año en que estamos de verdad y sin prisa.",
-    "Necesito descansar en vacaciones; una semana con toda la familia es organizar, no descansar."
-   ]
+   "enunciado": "Las vacaciones, ¿una semana todos juntos o cada núcleo por su lado?"
   },
   {
    "id": "F092",
    "publico": "familia",
-   "categoria": "Los viajes y el verano",
    "titulo": "Quién paga qué en la casa",
-   "enunciado": "En una casa alquilada entre varios, ¿se divide todo por igual o por número de personas?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito que sea simple: contar por cabezas acaba en discusiones sobre si un niño cuenta medio.",
-    "Necesito no pagar lo mismo yendo solo que una familia de cinco; eso no es dividir, es subvencionar."
-   ]
+   "enunciado": "En una casa alquilada entre varios, ¿se divide todo por igual o por número de personas?"
   },
   {
    "id": "F095",
    "publico": "familia",
-   "categoria": "Los viajes y el verano",
    "titulo": "Limpiar la casa compartida",
-   "enunciado": "La limpieza de la casa común, ¿por turnos escritos o cada uno lo que vea?",
-   "intensidad": "media",
-   "intereses": [
-    "Necesito turnos: sin ellos siempre limpiamos los mismos y nadie se da cuenta.",
-    "Necesito estar de vacaciones; un cuadrante de tareas convierte la casa en un campamento."
-   ]
+   "enunciado": "La limpieza de la casa común, ¿por turnos escritos o cada uno lo que vea?"
   },
   {
    "id": "F097",
    "publico": "familia",
-   "categoria": "Los viajes y el verano",
    "titulo": "Los planes del día",
-   "enunciado": "En vacaciones en familia, ¿se decide el plan cada mañana o se cierra la semana antes?",
-   "intensidad": "ligera",
-   "intereses": [
-    "Necesito improvisar: eso es justo lo que no puedo hacer el resto del año.",
-    "Necesito saber qué hacemos; decidir cada mañana entre doce personas es perder la mitad del día."
-   ]
+   "enunciado": "En vacaciones en familia, ¿se decide el plan cada mañana o se cierra la semana antes?"
   },
   {
    "id": "QP001",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El mando del fin de semana",
    "enunciado": "Quien gane controla la tele todo el fin de semana y elige qué se ve."
   },
@@ -2231,7 +964,6 @@
    "id": "QP002",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Tres días sin platos",
    "enunciado": "A quien gane le lavan los platos los próximos tres días."
   },
@@ -2239,7 +971,6 @@
    "id": "QP003",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "El desayuno del domingo",
    "enunciado": "Quien gane recibe el desayuno hecho el domingo por la mañana."
   },
@@ -2247,7 +978,6 @@
    "id": "QP004",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Masaje de diez minutos",
    "enunciado": "Quien gane recibe un masaje de diez minutos cuando lo pida."
   },
@@ -2255,7 +985,6 @@
    "id": "QP005",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La cama hecha",
    "enunciado": "A quien gane le hacen la cama toda la semana."
   },
@@ -2263,7 +992,6 @@
    "id": "QP006",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La película de la noche",
    "enunciado": "Quien gane elige la película la próxima noche que vean algo juntos."
   },
@@ -2271,7 +999,6 @@
    "id": "QP007",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La música del viaje",
    "enunciado": "Quien gane elige la música durante el próximo viaje largo de los dos."
   },
@@ -2279,7 +1006,6 @@
    "id": "QP008",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El lado de la cama",
    "enunciado": "Quien gane se queda una semana con el lado de la cama que prefiera."
   },
@@ -2287,7 +1013,6 @@
    "id": "QP009",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Una semana sin basura",
    "enunciado": "Quien gane se olvida de la basura durante toda la semana."
   },
@@ -2295,7 +1020,6 @@
    "id": "QP010",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El último pedazo",
    "enunciado": "Quien gane se queda con el último pedazo de lo que estén comiendo."
   },
@@ -2303,7 +1027,6 @@
    "id": "QP011",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "Dónde se come fuera",
    "enunciado": "Quien gane elige el sitio la próxima vez que salgan a comer."
   },
@@ -2311,7 +1034,6 @@
    "id": "QP012",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La cena que pida",
    "enunciado": "Quien gane pide la cena que quiera y se la cocinan."
   },
@@ -2319,7 +1041,6 @@
    "id": "QP013",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La ropa doblada",
    "enunciado": "A quien gane le doblan la próxima tanda de ropa limpia."
   },
@@ -2327,7 +1048,6 @@
    "id": "QP014",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El baño primero",
    "enunciado": "Quien gane entra primero al baño durante una semana."
   },
@@ -2335,7 +1055,6 @@
    "id": "QP015",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La siesta sin ruido",
    "enunciado": "Quien gane duerme una siesta sin que nadie lo despierte."
   },
@@ -2343,7 +1062,6 @@
    "id": "QP016",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "El café de la mañana",
    "enunciado": "A quien gane le llevan el café a la cama tres mañanas seguidas."
   },
@@ -2351,7 +1069,6 @@
    "id": "QP017",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Una hora de atención",
    "enunciado": "Quien gane pide una hora del otro sin teléfono de por medio."
   },
@@ -2359,7 +1076,6 @@
    "id": "QP018",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El plan del fin de semana",
    "enunciado": "Quien gane arma el plan del fin de semana y el otro se apunta."
   },
@@ -2367,7 +1083,6 @@
    "id": "QP019",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La manta entera",
    "enunciado": "Quien gane se queda con la manta esta noche."
   },
@@ -2375,7 +1090,6 @@
    "id": "QP020",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Sin ir al supermercado",
    "enunciado": "Quien gane se salta el supermercado: va el otro."
   },
@@ -2383,7 +1097,6 @@
    "id": "QP021",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "invita",
    "titulo": "El antojo",
    "enunciado": "Quien gane pide el antojo que quiera y se lo traen."
   },
@@ -2391,7 +1104,6 @@
    "id": "QP022",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La temperatura",
    "enunciado": "Quien gane decide el ventilador o el aire durante una semana."
   },
@@ -2399,7 +1111,6 @@
    "id": "QP023",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Tres días sin mascota",
    "enunciado": "A quien gane le cubren tres días de sacar o alimentar a la mascota."
   },
@@ -2407,7 +1118,6 @@
    "id": "QP024",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La ducha larga",
    "enunciado": "Quien gane se da una ducha larga sin que nadie lo apure."
   },
@@ -2415,7 +1125,6 @@
    "id": "QP025",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "invita",
    "titulo": "El postre servido",
    "enunciado": "Quien gane elige el postre y se lo traen."
   },
@@ -2423,7 +1132,6 @@
    "id": "QP026",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La serie que sigue",
    "enunciado": "Quien gane elige con qué serie siguen cuando terminen la de ahora."
   },
@@ -2431,7 +1139,6 @@
    "id": "QP027",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El sofá entero",
    "enunciado": "Quien gane se estira en el sofá y el otro se acomoda como pueda."
   },
@@ -2439,7 +1146,6 @@
    "id": "QP028",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La cocina limpia",
    "enunciado": "A quien gane le dejan la cocina limpia después de la próxima comida."
   },
@@ -2447,7 +1153,6 @@
    "id": "QP029",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El despertador del sábado",
    "enunciado": "Quien gane decide a qué hora suena el despertador el sábado."
   },
@@ -2455,7 +1160,6 @@
    "id": "QP030",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Tres comidas sin levantarse",
    "enunciado": "Quien gane se queda sentado: la mesa la levanta el otro tres veces."
   },
@@ -2463,7 +1167,6 @@
    "id": "QP031",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La comida en la puerta",
    "enunciado": "Quien gane pide la comida y se la suben."
   },
@@ -2471,7 +1174,6 @@
    "id": "QP032",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La foto que se borra",
    "enunciado": "Quien gane elige una foto suya que no le gusta y la borran."
   },
@@ -2479,7 +1181,6 @@
    "id": "QP033",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La música de la cena",
    "enunciado": "Quien gane pone la música de la próxima cena en casa."
   },
@@ -2487,7 +1188,6 @@
    "id": "QP034",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El asiento de siempre",
    "enunciado": "Quien gane elige asiento en el cine y en la mesa durante una semana."
   },
@@ -2495,7 +1195,6 @@
    "id": "QP035",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "El trámite resuelto",
    "enunciado": "A quien gane le resuelven el próximo trámite de los dos."
   },
@@ -2503,7 +1202,6 @@
    "id": "QP036",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La llamada que da pereza",
    "enunciado": "Quien gane se libra de la próxima llamada y la hace el otro."
   },
@@ -2511,7 +1209,6 @@
    "id": "QP037",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "El regalo envuelto",
    "enunciado": "A quien gane le envuelven el próximo regalo que tenga que dar."
   },
@@ -2519,7 +1216,6 @@
    "id": "QP038",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La receta nueva",
    "enunciado": "Quien gane elige una receta nueva y se la cocinan."
   },
@@ -2527,7 +1223,6 @@
    "id": "QP039",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "El domingo libre",
    "enunciado": "Quien gane se toma un domingo sin tareas: las cubre el otro."
   },
@@ -2535,7 +1230,6 @@
    "id": "QP040",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La almohada buena",
    "enunciado": "Quien gane se queda con la almohada que prefiera hasta la próxima partida."
   },
@@ -2543,7 +1237,6 @@
    "id": "QP041",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El primero en probar",
    "enunciado": "Quien gane prueba primero lo que se esté cocinando."
   },
@@ -2551,7 +1244,6 @@
    "id": "QP042",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Las plantas regadas",
    "enunciado": "A quien gane le riegan las plantas toda la semana."
   },
@@ -2559,7 +1251,6 @@
    "id": "QP043",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Dos horas de casa tranquila",
    "enunciado": "Quien gane se queda dos horas con la casa en silencio."
   },
@@ -2567,7 +1258,6 @@
    "id": "QP044",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La ropa planchada",
    "enunciado": "A quien gane le planchan la próxima tanda de ropa."
   },
@@ -2575,7 +1265,6 @@
    "id": "QP045",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "La salida organizada",
    "enunciado": "Quien gane recibe una salida armada de principio a fin."
   },
@@ -2583,7 +1272,6 @@
    "id": "QP046",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "recibe",
    "titulo": "Las bolsas subidas",
    "enunciado": "A quien gane le suben las bolsas de la próxima compra."
   },
@@ -2591,7 +1279,6 @@
    "id": "QP047",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La decisión aburrida",
    "enunciado": "Quien gane le pasa al otro la próxima decisión aburrida."
   },
@@ -2599,7 +1286,6 @@
    "id": "QP048",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "invita",
    "titulo": "El pedido invitado",
    "enunciado": "Quien gane no pone nada en el próximo pedido a domicilio."
   },
@@ -2607,7 +1293,6 @@
    "id": "QP049",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "La tarea que más odia",
    "enunciado": "Quien gane le pasa al otro la tarea de casa que más odia, una vez."
   },
@@ -2615,7 +1300,6 @@
    "id": "QP050",
    "clase": "premio",
    "publico": "pareja",
-   "categoria": "elige",
    "titulo": "El próximo premio",
    "enunciado": "Quien gane elige el premio de la siguiente partida."
   },
@@ -2623,7 +1307,6 @@
    "id": "QA001",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El café invitado",
    "enunciado": "Quien gane toma el café invitado la próxima vez que se vean."
   },
@@ -2631,7 +1314,6 @@
    "id": "QA002",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "Dónde se come",
    "enunciado": "Quien gane elige el sitio la próxima vez que coman juntos."
   },
@@ -2639,7 +1321,6 @@
    "id": "QA003",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El pedido invitado",
    "enunciado": "Quien gane no pone nada en el próximo pedido a domicilio que compartan."
   },
@@ -2647,7 +1328,6 @@
    "id": "QA004",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "La película del plan",
    "enunciado": "Quien gane elige la película la próxima vez que vean algo juntos."
   },
@@ -2655,7 +1335,6 @@
    "id": "QA005",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "La música del viaje",
    "enunciado": "Quien gane elige la música durante el próximo viaje de los dos."
   },
@@ -2663,7 +1342,6 @@
    "id": "QA006",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El postre invitado",
    "enunciado": "Quien gane se lleva el postre invitado la próxima vez que salgan."
   },
@@ -2671,7 +1349,6 @@
    "id": "QA007",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Sin hacer cuentas",
    "enunciado": "Quien gane se libra de dividir la cuenta: la hace el otro."
   },
@@ -2679,7 +1356,6 @@
    "id": "QA008",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "La mesa reservada",
    "enunciado": "A quien gane le reservan mesa para la próxima salida."
   },
@@ -2687,7 +1363,6 @@
    "id": "QA009",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "El favor de la semana",
    "enunciado": "Quien gane cobra un favor concreto esta semana."
   },
@@ -2695,7 +1370,6 @@
    "id": "QA010",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Una mano con lo pesado",
    "enunciado": "Quien gane recibe ayuda la próxima vez que tenga que mover algo pesado."
   },
@@ -2703,7 +1377,6 @@
    "id": "QA011",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "El primer turno",
    "enunciado": "Quien gane juega primero la próxima vez que se pongan a jugar."
   },
@@ -2711,7 +1384,6 @@
    "id": "QA012",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "El asiento de adelante",
    "enunciado": "Quien gane va adelante en el próximo viaje de los dos."
   },
@@ -2719,7 +1391,6 @@
    "id": "QA013",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "El plan servido",
    "enunciado": "Quien gane recibe el próximo plan armado y solo tiene que aparecer."
   },
@@ -2727,7 +1398,6 @@
    "id": "QA014",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "Las entradas invitadas",
    "enunciado": "A quien gane le compran las entradas del próximo plan."
   },
@@ -2735,7 +1405,6 @@
    "id": "QA015",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "La vuelta pagada",
    "enunciado": "A quien gane le pagan el transporte de vuelta."
   },
@@ -2743,7 +1412,6 @@
    "id": "QA016",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "La primera ronda",
    "enunciado": "Quien gane toma la primera ronda invitada."
   },
@@ -2751,7 +1419,6 @@
    "id": "QA017",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "A qué se juega",
    "enunciado": "Quien gane elige a qué juegan la próxima vez que se vean."
   },
@@ -2759,7 +1426,6 @@
    "id": "QA018",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "Sin poner propina",
    "enunciado": "Quien gane se libra de la propina en la próxima salida."
   },
@@ -2767,7 +1433,6 @@
    "id": "QA019",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El helado invitado",
    "enunciado": "Quien gane se lleva un helado invitado esta semana."
   },
@@ -2775,7 +1440,6 @@
    "id": "QA020",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "Quién elige primero",
    "enunciado": "Quien gane elige primero cuando pidan algo para compartir."
   },
@@ -2783,7 +1447,6 @@
    "id": "QA021",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "El último pedazo",
    "enunciado": "Quien gane se queda con el último pedazo de lo que compartan."
   },
@@ -2791,7 +1454,6 @@
    "id": "QA022",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Sin recoger",
    "enunciado": "Quien gane se libra de recoger cuando terminen en casa de alguno."
   },
@@ -2799,7 +1461,6 @@
    "id": "QA023",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El desayuno del día después",
    "enunciado": "Quien gane recibe el desayuno invitado al día siguiente."
   },
@@ -2807,7 +1468,6 @@
    "id": "QA024",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Una hora de ayuda",
    "enunciado": "Quien gane cobra una hora de ayuda en lo que pida."
   },
@@ -2815,7 +1475,6 @@
    "id": "QA025",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "A dónde se va",
    "enunciado": "Quien gane elige a dónde van la próxima vez que salgan."
   },
@@ -2823,7 +1482,6 @@
    "id": "QA026",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "La comida en la mano",
    "enunciado": "A quien gane se la traen cuando pidan algo: baja el otro."
   },
@@ -2831,7 +1489,6 @@
    "id": "QA027",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "Las bebidas puestas",
    "enunciado": "A quien gane le ponen las bebidas la próxima vez que se junten."
   },
@@ -2839,7 +1496,6 @@
    "id": "QA028",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Servido toda la tarde",
    "enunciado": "A quien gane le sirven durante toda la tarde."
   },
@@ -2847,7 +1503,6 @@
    "id": "QA029",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "El horario",
    "enunciado": "Quien gane decide a qué hora se ven la próxima vez."
   },
@@ -2855,7 +1510,6 @@
    "id": "QA030",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "La revancha",
    "enunciado": "Quien gane elige el próximo juego en el que se midan."
   },
@@ -2863,7 +1517,6 @@
    "id": "QA031",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "El encargo resuelto",
    "enunciado": "A quien gane le hacen un encargo que le tocaba."
   },
@@ -2871,7 +1524,6 @@
    "id": "QA032",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "La comida casera",
    "enunciado": "A quien gane le cocinan una comida en casa."
   },
@@ -2879,7 +1531,6 @@
    "id": "QA033",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El café de la semana",
    "enunciado": "A quien gane le llevan el café un día de esta semana."
   },
@@ -2887,7 +1538,6 @@
    "id": "QA034",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "Llegar tarde una vez",
    "enunciado": "Quien gane puede llegar tarde una vez sin que le digan nada."
   },
@@ -2895,7 +1545,6 @@
    "id": "QA035",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Con compañía",
    "enunciado": "Quien gane va acompañado al próximo trámite aburrido."
   },
@@ -2903,7 +1552,6 @@
    "id": "QA036",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "La película que elija",
    "enunciado": "Quien gane elige una película y el otro la ve entera."
   },
@@ -2911,7 +1559,6 @@
    "id": "QA037",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "El mejor lugar",
    "enunciado": "Quien gane se queda con el mejor lugar la próxima vez que vean algo."
   },
@@ -2919,7 +1566,6 @@
    "id": "QA038",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "Qué se cena",
    "enunciado": "Quien gane elige qué se cena la próxima vez que coman juntos."
   },
@@ -2927,7 +1573,6 @@
    "id": "QA039",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Sin cargar bolsas",
    "enunciado": "Quien gane va con las manos libres la próxima vez que compren algo."
   },
@@ -2935,7 +1580,6 @@
    "id": "QA040",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Sin hacer fila",
    "enunciado": "Quien gane se sienta mientras el otro espera en la fila."
   },
@@ -2943,7 +1587,6 @@
    "id": "QA041",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "El préstamo de una semana",
    "enunciado": "Quien gane se lleva prestado algo del otro por una semana, si los dos están de acuerdo."
   },
@@ -2951,7 +1594,6 @@
    "id": "QA042",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "Cambiar el plan",
    "enunciado": "Quien gane puede cambiar el plan de los dos una vez, sin dar explicaciones."
   },
@@ -2959,7 +1601,6 @@
    "id": "QA043",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "La partida que sigue",
    "enunciado": "Quien gane elige a qué se juega después."
   },
@@ -2967,7 +1608,6 @@
    "id": "QA044",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El café del trabajo",
    "enunciado": "Quien gane toma un café invitado algún día de esta semana."
   },
@@ -2975,7 +1615,6 @@
    "id": "QA045",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "La foto de los dos",
    "enunciado": "Quien gane elige cuál de las fotos de los dos se queda."
   },
@@ -2983,7 +1622,6 @@
    "id": "QA046",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "La visita en casa",
    "enunciado": "Quien gane recibe la visita en su casa la próxima vez, y no al revés."
   },
@@ -2991,7 +1629,6 @@
    "id": "QA047",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Sin coordinar nada",
    "enunciado": "Quien gane se libra de escribir y coordinar el próximo plan."
   },
@@ -2999,7 +1636,6 @@
    "id": "QA048",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "invita",
    "titulo": "El picoteo puesto",
    "enunciado": "A quien gane le llevan algo para comer la próxima vez que se vean."
   },
@@ -3007,7 +1643,6 @@
    "id": "QA049",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "recibe",
    "titulo": "Una mañana de ayuda",
    "enunciado": "Quien gane cobra una mañana de ayuda cuando la necesite."
   },
@@ -3015,7 +1650,6 @@
    "id": "QA050",
    "clase": "premio",
    "publico": "amigos",
-   "categoria": "elige",
    "titulo": "El próximo premio",
    "enunciado": "Quien gane elige el premio de la siguiente partida."
   },
@@ -3023,7 +1657,6 @@
    "id": "QF001",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin lavar los platos",
    "enunciado": "Quien gane se libra de los platos de la próxima comida."
   },
@@ -3031,7 +1664,6 @@
    "id": "QF002",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La limpieza cubierta",
    "enunciado": "A quien gane le cubren su parte de la próxima limpieza."
   },
@@ -3039,7 +1671,6 @@
    "id": "QF003",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El mando de la tarde",
    "enunciado": "Quien gane controla la tele el resto del día y elige qué se ve."
   },
@@ -3047,7 +1678,6 @@
    "id": "QF004",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "invita",
    "titulo": "El postre puesto",
    "enunciado": "A quien gane le llevan el postre a la próxima comida."
   },
@@ -3055,7 +1685,6 @@
    "id": "QF005",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin poner la mesa",
    "enunciado": "Quien gane se libra de poner y levantar la mesa la próxima vez."
   },
@@ -3063,7 +1692,6 @@
    "id": "QF006",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El asiento en la mesa",
    "enunciado": "Quien gane elige dónde se sienta en la próxima comida."
   },
@@ -3071,7 +1699,6 @@
    "id": "QF007",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "Las sobras",
    "enunciado": "Quien gane se lleva las sobras que quiera."
   },
@@ -3079,7 +1706,6 @@
    "id": "QF008",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El encargo resuelto",
    "enunciado": "A quien gane le hacen el próximo encargo que le tocaba."
   },
@@ -3087,7 +1713,6 @@
    "id": "QF009",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El café servido",
    "enunciado": "A quien gane le sirven el café después de comer."
   },
@@ -3095,7 +1720,6 @@
    "id": "QF010",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La cocina limpia",
    "enunciado": "A quien gane le dejan la cocina limpia después de cocinar."
   },
@@ -3103,7 +1727,6 @@
    "id": "QF011",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La comida que pida",
    "enunciado": "Quien gane pide lo que quiera comer y se lo cocinan."
   },
@@ -3111,7 +1734,6 @@
    "id": "QF012",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El primero en servirse",
    "enunciado": "Quien gane se sirve primero en la próxima comida."
   },
@@ -3119,7 +1741,6 @@
    "id": "QF013",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Tres días sin mascota",
    "enunciado": "A quien gane le cubren tres días de sacar o alimentar a la mascota."
   },
@@ -3127,7 +1748,6 @@
    "id": "QF014",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Las plantas regadas",
    "enunciado": "A quien gane le riegan las plantas toda la semana."
   },
@@ -3135,7 +1755,6 @@
    "id": "QF015",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin ir al supermercado",
    "enunciado": "Quien gane se salta el supermercado: va el otro por los dos."
   },
@@ -3143,7 +1762,6 @@
    "id": "QF016",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin cargar bolsas",
    "enunciado": "Quien gane va con las manos libres la próxima vez que compren."
   },
@@ -3151,7 +1769,6 @@
    "id": "QF017",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "Qué se ve después de comer",
    "enunciado": "Quien gane elige qué se ve cuando terminen de comer."
   },
@@ -3159,7 +1776,6 @@
    "id": "QF018",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La siesta tranquila",
    "enunciado": "Quien gane duerme una siesta sin que nadie haga ruido."
   },
@@ -3167,7 +1783,6 @@
    "id": "QF019",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El baño primero",
    "enunciado": "Quien gane entra primero al baño cuando se estén arreglando."
   },
@@ -3175,7 +1790,6 @@
    "id": "QF020",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El favor de la semana",
    "enunciado": "Quien gane cobra un favor concreto esta semana."
   },
@@ -3183,7 +1797,6 @@
    "id": "QF021",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Con compañía",
    "enunciado": "Quien gane va acompañado al próximo trámite."
   },
@@ -3191,7 +1804,6 @@
    "id": "QF022",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El teléfono arreglado",
    "enunciado": "A quien gane le configuran o le arreglan el teléfono."
   },
@@ -3199,7 +1811,6 @@
    "id": "QF023",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin hacer fila",
    "enunciado": "Quien gane se libra de la fila: la hace el otro."
   },
@@ -3207,7 +1818,6 @@
    "id": "QF024",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La ropa planchada",
    "enunciado": "A quien gane le planchan la próxima tanda de ropa."
   },
@@ -3215,7 +1825,6 @@
    "id": "QF025",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El cuarto recogido",
    "enunciado": "A quien gane le recogen una vez lo que deje sin ordenar."
   },
@@ -3223,7 +1832,6 @@
    "id": "QF026",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "La cama buena",
    "enunciado": "Quien gane se queda con la cama buena cuando les toque quedarse a dormir."
   },
@@ -3231,7 +1839,6 @@
    "id": "QF027",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin atender a nadie",
    "enunciado": "Quien gane se libra de atender la puerta y el teléfono toda la tarde."
   },
@@ -3239,7 +1846,6 @@
    "id": "QF028",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El pan puesto",
    "enunciado": "A quien gane le traen el pan tres días seguidos."
   },
@@ -3247,7 +1853,6 @@
    "id": "QF029",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Una semana sin basura",
    "enunciado": "Quien gane se olvida de bajar la basura durante toda la semana."
   },
@@ -3255,7 +1860,6 @@
    "id": "QF030",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "Qué se cocina",
    "enunciado": "Quien gane elige qué se cocina la próxima vez que cocinen los dos."
   },
@@ -3263,7 +1867,6 @@
    "id": "QF031",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Los regalos envueltos",
    "enunciado": "A quien gane le envuelven los regalos que tenga que dar."
   },
@@ -3271,7 +1874,6 @@
    "id": "QF032",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "La foto de los dos",
    "enunciado": "Quien gane elige cuál de las fotos de los dos se queda."
   },
@@ -3279,7 +1881,6 @@
    "id": "QF033",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El café de la mañana",
    "enunciado": "A quien gane le preparan el café tres mañanas seguidas."
   },
@@ -3287,7 +1888,6 @@
    "id": "QF034",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El último pedazo",
    "enunciado": "Quien gane se queda con el último pedazo del postre."
   },
@@ -3295,7 +1895,6 @@
    "id": "QF035",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El asiento del viaje",
    "enunciado": "Quien gane elige asiento en el próximo viaje que hagan juntos."
   },
@@ -3303,7 +1902,6 @@
    "id": "QF036",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "La tarea que más odia",
    "enunciado": "Quien gane le pasa al otro la tarea de casa que más odia, una vez."
   },
@@ -3311,7 +1909,6 @@
    "id": "QF037",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La ropa doblada",
    "enunciado": "A quien gane le doblan la ropa una vez."
   },
@@ -3319,7 +1916,6 @@
    "id": "QF038",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "La hora de comer",
    "enunciado": "Quien gane decide a qué hora comen el próximo domingo."
   },
@@ -3327,7 +1923,6 @@
    "id": "QF039",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La visita acompañada",
    "enunciado": "Quien gane va acompañado a la próxima visita que da pereza."
   },
@@ -3335,7 +1930,6 @@
    "id": "QF040",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El desayuno listo",
    "enunciado": "Quien gane se levanta con el desayuno ya hecho."
   },
@@ -3343,7 +1937,6 @@
    "id": "QF041",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El sitio en el sofá",
    "enunciado": "Quien gane se queda con el sitio del sofá que prefiera."
   },
@@ -3351,7 +1944,6 @@
    "id": "QF042",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "El préstamo de una semana",
    "enunciado": "Quien gane se lleva prestado algo del otro por una semana, si los dos están de acuerdo."
   },
@@ -3359,7 +1951,6 @@
    "id": "QF043",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Una hora de ayuda",
    "enunciado": "Quien gane cobra una hora de ayuda en lo que pida."
   },
@@ -3367,7 +1958,6 @@
    "id": "QF044",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin recoger",
    "enunciado": "Quien gane se libra de recoger después de la próxima comida."
   },
@@ -3375,7 +1965,6 @@
    "id": "QF045",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "La música mientras se cocina",
    "enunciado": "Quien gane elige la música mientras cocinan o limpian los dos."
   },
@@ -3383,7 +1972,6 @@
    "id": "QF046",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "La llamada hecha",
    "enunciado": "A quien gane le hacen la llamada que le tocaba."
   },
@@ -3391,7 +1979,6 @@
    "id": "QF047",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "invita",
    "titulo": "El pedido invitado",
    "enunciado": "Quien gane no pone nada en el próximo pedido a domicilio que compartan."
   },
@@ -3399,7 +1986,6 @@
    "id": "QF048",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "recibe",
    "titulo": "Sin subirse a nada",
    "enunciado": "Quien gane se libra de lo que haya que alcanzar en alto esta semana."
   },
@@ -3407,7 +1993,6 @@
    "id": "QF049",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "La discusión ganada",
    "enunciado": "Quien gane se lleva la próxima discusión tonta de los dos, sin discutirla."
   },
@@ -3415,13 +2000,11 @@
    "id": "QF050",
    "clase": "premio",
    "publico": "familia",
-   "categoria": "elige",
    "titulo": "El próximo premio",
    "enunciado": "Quien gane elige el premio de la siguiente partida."
   }
  ],
- "eje": "situacional",
- "nota": "Cada tema es una PREGUNTA DE OPINION con dos salidas legitimas dentro. No hay posturas repartidas: quien juega fija la suya al hablar. `intereses` son las dos necesidades en tension del tema, sin dueno. RESPALDO: el catálogo vive en la base (catalogo_temas) desde el 2026-09-24 y se edita en el tablero; esto solo se usa sin red.",
+ "nota": "Cada tema es un TITULO corto y una PREGUNTA de opinion (o, en QuienGane, un premio). RESPALDO: el catalogo vive en la base (catalogo_temas) desde el 2026-09-24 y se edita en el tablero; esto solo se usa sin red.",
  "publicos": [
   "pareja",
   "amigos",
