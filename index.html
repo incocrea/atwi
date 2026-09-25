@@ -17,11 +17,11 @@
 
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=5266d35">
-<link rel="stylesheet" href="assets/css/tokens.css?v=5266d35">
-<link rel="stylesheet" href="assets/css/base.css?v=5266d35">
-<link rel="stylesheet" href="assets/css/landing.css?v=5266d35">
-<link rel="stylesheet" href="assets/css/modal.css?v=5266d35">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=da8b4f3">
+<link rel="stylesheet" href="assets/css/tokens.css?v=da8b4f3">
+<link rel="stylesheet" href="assets/css/base.css?v=da8b4f3">
+<link rel="stylesheet" href="assets/css/landing.css?v=da8b4f3">
+<link rel="stylesheet" href="assets/css/modal.css?v=da8b4f3">
 </head>
 
 <body class="landing">
@@ -262,7 +262,9 @@
       <li><strong>Anthropic (Claude)</strong> recibe los textos de la ronda para hacer de abogado (pulir
         cómo se dice), de juez (Controversia), de mediador (Pacto) y de revisor de los temas que escribes.
         No recibe audio ni tu correo.</li>
-      <li><strong>Microsoft Azure</strong> recibe el guion para generar la voz del personaje.</li>
+      <li><strong>Microsoft Azure</strong> y <strong>Google (Gemini)</strong> reciben el guion para generar
+        la voz del personaje: cada personaje habla con uno de los dos. Solo reciben el texto, ni tu audio ni
+        tu correo, y Google marca la voz generada como hecha por IA.</li>
       <li><strong>Cloudflare Turnstile</strong> comprueba que quien entra no es un robot, casi siempre sin
         que veas nada. Para eso lee señales técnicas de tu navegador y tu dispositivo, que Cloudflare trata
         según su <a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank"
@@ -317,6 +319,6 @@
 </dialog>
 
 
-<script src="assets/js/landing.js?v=5266d35"></script>
+<script src="assets/js/landing.js?v=da8b4f3"></script>
 </body>
 </html>
