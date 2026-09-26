@@ -1,0 +1,1 @@
+(function(){try{if(window.top!==window.self||/[?&]marco=no(&|$)/.test(location.search)||!window.matchMedia||!window.matchMedia("(min-width: 900px) and (pointer: fine)").matches)return;location.replace("escritorio.html"+location.search+location.hash),document.write("<plaintext hidden>")}catch{}})();
