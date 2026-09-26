@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=a9e6ff4">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=a9e6ff4">
-<link rel="stylesheet" href="../assets/css/base.css?v=a9e6ff4">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=3c30f24">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=3c30f24">
+<link rel="stylesheet" href="../assets/css/base.css?v=3c30f24">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -268,7 +268,10 @@
   .f-cab h2 { margin: 0; }
   .f-subir { margin-left: auto; display: flex; align-items: center; gap: 14px; }
   .f-subir label.chico { display: flex; align-items: center; gap: 6px; }
-  .f-subir input[type="range"] { accent-color: var(--lavanda); width: 110px; }
+  /* El campo de número de la cabecera de fondos: del alto de un botón chico,
+     no de los 48 de un `.campo` de formulario. */
+  .f-subir .f-num { width: 64px; min-height: 0; height: 34px; padding: 4px 8px; border-radius: 10px;
+                    font-size: 14px; font-weight: 700; text-align: right; }
   .f-subir__boton { margin-bottom: 3px; cursor: pointer; }
   .f-laminas { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 12px;
                align-content: start; overflow-y: auto; padding: 6px 24px 18px; }
@@ -403,6 +406,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=a9e6ff4"></script>
+<script src="../assets/js/paquete-admin.js?v=3c30f24"></script>
 </body>
 </html>
