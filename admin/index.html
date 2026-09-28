@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=9e70b60">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=9e70b60">
-<link rel="stylesheet" href="../assets/css/base.css?v=9e70b60">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=afe65d4">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=afe65d4">
+<link rel="stylesheet" href="../assets/css/base.css?v=afe65d4">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -208,6 +208,36 @@
   .t-pregunta { font-size: 13px; font-weight: 700; margin: 0; text-align: center; }
   .t-si { --cara: var(--peligro, #d9534f); }
   @media (max-width: 760px) { .t-fila:has(.t-campo--titulo) { grid-template-columns: 1fr 1fr; } .t-campo--titulo { grid-column: 1 / -1; } }
+  /* --- JUEGOS: qué minijuegos salen en QuiénGane (2026-09-28) ---
+     Cada tarjeta dice su estado por tres vías, para leerse de un vistazo: el
+     botón puesto, el canto de la tarjeta y la pegatina (en gris si está apagado). */
+  .j-nota { max-width: 760px; }
+  .j-resumen { font-size: 14px; margin: 0 0 14px; }
+  .j-lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 12px; margin-bottom: 16px; }
+  .j-carta { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 14px;
+    padding: 12px 14px; background: var(--papel); border-radius: 18px; box-shadow: var(--sombra-1);
+    border: 2px solid transparent; transition: opacity .15s; }
+  .j-carta--activo { border-color: var(--negociacion); }
+  .j-carta--pruebas { border-color: var(--sol); }
+  .j-carta--apagado { background: var(--crema); }
+  .j-carta--apagado .j-pieza { filter: grayscale(1); opacity: .55; }
+  .j-carta--guardando { opacity: .6; }
+  .j-pieza { width: 64px; height: 64px; object-fit: contain; }
+  .j-dato { display: grid; gap: 2px; min-width: 0; }
+  .j-nombre { font-size: 17px; }
+  .j-estados { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--crema); }
+  .j-estado { display: grid; gap: 1px; justify-items: center; min-width: 78px; padding: 6px 8px; border: 0;
+    border-radius: 11px; background: transparent; color: var(--suave); cursor: pointer; font: inherit; }
+  .j-estado__t { font-weight: 800; font-size: 13px; }
+  .j-estado__d { font-size: 11px; }
+  .j-estado:hover:not(:disabled):not([aria-pressed="true"]) { background: var(--papel); color: var(--tinta); }
+  .j-estado:disabled { cursor: default; }
+  .j-estado[aria-pressed="true"] { color: #fff; box-shadow: var(--sombra-1); }
+  .j-estado--activo[aria-pressed="true"] { background: var(--negociacion-oscuro); }
+  .j-estado--pruebas[aria-pressed="true"] { background: var(--sol-oscuro); }
+  .j-estado--apagado[aria-pressed="true"] { background: var(--tinta-suave); }
+  @media (max-width: 760px) { .j-lista { grid-template-columns: 1fr; } .j-carta { grid-template-columns: 48px minmax(0, 1fr); }
+    .j-pieza { width: 48px; height: 48px; } .j-estados { grid-column: 1 / -1; } .j-estado { flex: 1; min-width: 0; } }
   .incrustado { display: block; width: 100%; height: calc(100vh - var(--alto-cab)); border: 0; background: var(--crema); }
   /* El interruptor del emulador, encima de su panel (2026-09-24). */
   .emu-barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 16px; border-bottom: 1px solid var(--linea, #e8e0d4); }
@@ -355,6 +385,7 @@
         <button type="button" class="grupo__t" data-plegar="configuracion" aria-expanded="true">Configuración</button>
         <button data-pest="modelos">Modelos</button>
         <button data-pest="temas">Temas</button>
+        <button data-pest="juegos">Juegos</button>
         <button data-pest="fondos">Fondos</button>
         <button data-pest="voces">Voces <span class="solo-local">local</span></button>
         <button data-pest="bocas">Bocas <span class="solo-local">local</span></button>
@@ -406,6 +437,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=9e70b60"></script>
+<script src="../assets/js/paquete-admin.js?v=afe65d4"></script>
 </body>
 </html>
