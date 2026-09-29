@@ -98,7 +98,179 @@
    "bloques-linea-1.mp3",
    "bloques-linea-2.mp3",
    "bloques-linea-3.mp3"
+  ],
+  "liston-palabra": [
+   "liston-palabra-1.mp3",
+   "liston-palabra-2.mp3",
+   "liston-palabra-3.mp3",
+   "liston-palabra-4.mp3"
+  ],
+  "aterriza-figura": [
+   "aterriza-figura-1.mp3",
+   "aterriza-figura-2.mp3",
+   "aterriza-figura-3.mp3"
+  ],
+  "confeti": [
+   "confeti-1.mp3",
+   "confeti-2.mp3",
+   "confeti-3.mp3"
+  ],
+  "premio-ganado": [
+   "premio-ganado-1.mp3",
+   "premio-ganado-2.mp3"
+  ],
+  "ultimos-seg": [
+   "ultimos-seg-1.mp3"
+  ],
+  "tiempo-fin": [
+   "tiempo-fin-1.mp3",
+   "tiempo-fin-2.mp3"
+  ],
+  "le-toca-otro": [
+   "le-toca-otro-1.mp3",
+   "le-toca-otro-2.mp3"
+  ],
+  "voz-lista": [
+   "voz-lista-1.mp3",
+   "voz-lista-2.mp3",
+   "voz-lista-3.mp3"
+  ],
+  "sorteo-diente": [
+   "sorteo-diente-1.mp3",
+   "sorteo-diente-2.mp3",
+   "sorteo-diente-3.mp3"
+  ],
+  "sorteo-cae": [
+   "sorteo-cae-1.mp3",
+   "sorteo-cae-2.mp3"
+  ],
+  "encuentro-vs": [
+   "encuentro-vs-1.mp3",
+   "encuentro-vs-2.mp3",
+   "encuentro-vs-3.mp3"
+  ],
+  "encuentro-puno": [
+   "encuentro-puno-1.mp3",
+   "encuentro-puno-2.mp3",
+   "encuentro-puno-3.mp3"
+  ],
+  "cuenta-num": [
+   "cuenta-num-1.mp3"
+  ],
+  "cuenta-ya": [
+   "cuenta-ya-1.mp3",
+   "cuenta-ya-2.mp3"
+  ],
+  "coger": [
+   "coger-1.mp3",
+   "coger-2.mp3",
+   "coger-3.mp3"
+  ],
+  "soltar-fuera": [
+   "soltar-fuera-1.mp3",
+   "soltar-fuera-2.mp3"
+  ],
+  "ronda-perdida": [
+   "ronda-perdida-1.mp3",
+   "ronda-perdida-2.mp3"
+  ],
+  "relevo": [
+   "relevo-1.mp3",
+   "relevo-2.mp3"
+  ],
+  "calco-quitar": [
+   "calco-quitar-1.mp3",
+   "calco-quitar-2.mp3"
+  ],
+  "calco-esconde": [
+   "calco-esconde-1.mp3",
+   "calco-esconde-2.mp3"
+  ],
+  "torre-completa": [
+   "torre-completa-1.mp3",
+   "torre-completa-2.mp3",
+   "torre-completa-3.mp3"
+  ],
+  "duos-tornado": [
+   "duos-tornado-1.mp3",
+   "duos-tornado-2.mp3",
+   "duos-tornado-3.mp3"
+  ],
+  "duos-mezcla": [
+   "duos-mezcla-1.mp3"
+  ],
+  "revoltijo-cesta": [
+   "revoltijo-cesta-1.mp3",
+   "revoltijo-cesta-2.mp3",
+   "revoltijo-cesta-3.mp3"
+  ],
+  "multitud-suma": [
+   "multitud-suma-1.mp3",
+   "multitud-suma-2.mp3",
+   "multitud-suma-3.mp3"
+  ],
+  "multitud-resta": [
+   "multitud-resta-1.mp3",
+   "multitud-resta-2.mp3",
+   "multitud-resta-3.mp3"
+  ],
+  "trazos-casilla": [
+   "trazos-casilla-1.mp3",
+   "trazos-casilla-2.mp3",
+   "trazos-casilla-3.mp3"
+  ],
+  "bloques-doble": [
+   "bloques-doble-1.mp3",
+   "bloques-doble-2.mp3",
+   "bloques-doble-3.mp3"
+  ],
+  "globo-abre": [
+   "globo-abre-1.mp3",
+   "globo-abre-2.mp3"
+  ],
+  "globo-cierra": [
+   "globo-cierra-1.mp3",
+   "globo-cierra-2.mp3"
+  ],
+  "aviso-bien": [
+   "aviso-bien-1.mp3",
+   "aviso-bien-2.mp3"
+  ],
+  "aviso-mal": [
+   "aviso-mal-1.mp3",
+   "aviso-mal-2.mp3"
+  ],
+  "invitacion-aceptada": [
+   "invitacion-aceptada-1.mp3",
+   "invitacion-aceptada-2.mp3"
+  ],
+  "vidas": [
+   "vidas-1.mp3",
+   "vidas-2.mp3"
+  ],
+  "premio-recibido": [
+   "premio-recibido-1.mp3",
+   "premio-recibido-2.mp3"
+  ],
+  "firmar": [
+   "firmar-1.mp3",
+   "firmar-2.mp3"
+  ],
+  "espera-estrella": [
+   "espera-estrella-1.mp3",
+   "espera-estrella-2.mp3",
+   "espera-estrella-3.mp3"
   ]
+ },
+ "musica": {
+  "menu": {
+   "archivo": "musica-menu-1.mp3",
+   "volumen": 0.16
+  },
+  "juego": {
+   "archivo": "musica-juego-1.mp3",
+   "volumen": 0.14
+  }
  },
  "todas": {
   "redoble": [
@@ -199,558 +371,1663 @@
    "bloques-linea-1.mp3",
    "bloques-linea-2.mp3",
    "bloques-linea-3.mp3"
+  ],
+  "liston-palabra": [
+   "liston-palabra-1.mp3",
+   "liston-palabra-2.mp3",
+   "liston-palabra-3.mp3",
+   "liston-palabra-4.mp3"
+  ],
+  "aterriza-figura": [
+   "aterriza-figura-1.mp3",
+   "aterriza-figura-2.mp3",
+   "aterriza-figura-3.mp3"
+  ],
+  "confeti": [
+   "confeti-1.mp3",
+   "confeti-2.mp3",
+   "confeti-3.mp3"
+  ],
+  "premio-ganado": [
+   "premio-ganado-1.mp3",
+   "premio-ganado-2.mp3"
+  ],
+  "ultimos-seg": [
+   "ultimos-seg-1.mp3"
+  ],
+  "tiempo-fin": [
+   "tiempo-fin-1.mp3",
+   "tiempo-fin-2.mp3"
+  ],
+  "le-toca-otro": [
+   "le-toca-otro-1.mp3",
+   "le-toca-otro-2.mp3"
+  ],
+  "voz-lista": [
+   "voz-lista-1.mp3",
+   "voz-lista-2.mp3",
+   "voz-lista-3.mp3"
+  ],
+  "sorteo-diente": [
+   "sorteo-diente-1.mp3",
+   "sorteo-diente-2.mp3",
+   "sorteo-diente-3.mp3"
+  ],
+  "sorteo-cae": [
+   "sorteo-cae-1.mp3",
+   "sorteo-cae-2.mp3"
+  ],
+  "encuentro-vs": [
+   "encuentro-vs-1.mp3",
+   "encuentro-vs-2.mp3",
+   "encuentro-vs-3.mp3"
+  ],
+  "encuentro-puno": [
+   "encuentro-puno-1.mp3",
+   "encuentro-puno-2.mp3",
+   "encuentro-puno-3.mp3"
+  ],
+  "cuenta-num": [
+   "cuenta-num-1.mp3"
+  ],
+  "cuenta-ya": [
+   "cuenta-ya-1.mp3",
+   "cuenta-ya-2.mp3"
+  ],
+  "coger": [
+   "coger-1.mp3",
+   "coger-2.mp3",
+   "coger-3.mp3"
+  ],
+  "soltar-fuera": [
+   "soltar-fuera-1.mp3",
+   "soltar-fuera-2.mp3"
+  ],
+  "ronda-perdida": [
+   "ronda-perdida-1.mp3",
+   "ronda-perdida-2.mp3"
+  ],
+  "relevo": [
+   "relevo-1.mp3",
+   "relevo-2.mp3"
+  ],
+  "calco-quitar": [
+   "calco-quitar-1.mp3",
+   "calco-quitar-2.mp3"
+  ],
+  "calco-esconde": [
+   "calco-esconde-1.mp3",
+   "calco-esconde-2.mp3"
+  ],
+  "torre-completa": [
+   "torre-completa-1.mp3",
+   "torre-completa-2.mp3",
+   "torre-completa-3.mp3"
+  ],
+  "duos-tornado": [
+   "duos-tornado-1.mp3",
+   "duos-tornado-2.mp3",
+   "duos-tornado-3.mp3"
+  ],
+  "duos-mezcla": [
+   "duos-mezcla-1.mp3"
+  ],
+  "revoltijo-cesta": [
+   "revoltijo-cesta-1.mp3",
+   "revoltijo-cesta-2.mp3",
+   "revoltijo-cesta-3.mp3"
+  ],
+  "multitud-suma": [
+   "multitud-suma-1.mp3",
+   "multitud-suma-2.mp3",
+   "multitud-suma-3.mp3"
+  ],
+  "multitud-resta": [
+   "multitud-resta-1.mp3",
+   "multitud-resta-2.mp3",
+   "multitud-resta-3.mp3"
+  ],
+  "trazos-casilla": [
+   "trazos-casilla-1.mp3",
+   "trazos-casilla-2.mp3",
+   "trazos-casilla-3.mp3"
+  ],
+  "bloques-doble": [
+   "bloques-doble-1.mp3",
+   "bloques-doble-2.mp3",
+   "bloques-doble-3.mp3"
+  ],
+  "globo-abre": [
+   "globo-abre-1.mp3",
+   "globo-abre-2.mp3"
+  ],
+  "globo-cierra": [
+   "globo-cierra-1.mp3",
+   "globo-cierra-2.mp3"
+  ],
+  "aviso-bien": [
+   "aviso-bien-1.mp3",
+   "aviso-bien-2.mp3"
+  ],
+  "aviso-mal": [
+   "aviso-mal-1.mp3",
+   "aviso-mal-2.mp3"
+  ],
+  "invitacion-aceptada": [
+   "invitacion-aceptada-1.mp3",
+   "invitacion-aceptada-2.mp3"
+  ],
+  "vidas": [
+   "vidas-1.mp3",
+   "vidas-2.mp3"
+  ],
+  "premio-recibido": [
+   "premio-recibido-1.mp3",
+   "premio-recibido-2.mp3"
+  ],
+  "firmar": [
+   "firmar-1.mp3",
+   "firmar-2.mp3"
+  ],
+  "espera-estrella": [
+   "espera-estrella-1.mp3",
+   "espera-estrella-2.mp3",
+   "espera-estrella-3.mp3"
+  ],
+  "musica-menu": [
+   "musica-menu-1.mp3",
+   "musica-menu-2.mp3"
+  ],
+  "musica-juego": [
+   "musica-juego-1.mp3",
+   "musica-juego-2.mp3"
   ]
  },
  "hecho": {
   "acierto-1.mp3": {
    "como": {
-    "texto": "short bright cartoon pop with a single glassy chime in C major, cheerful, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "single soft round kalimba note in C, warm gentle pluck, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.5,
     "inf": 0.7,
-    "pico": -6
+    "pico": -9
+   },
+   "bytes": 4225,
+   "segundos": 0.344
+  },
+  "acierto-2.mp3": {
+   "como": {
+    "texto": "single soft round kalimba note in C, warm gentle pluck, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -9
    },
    "bytes": 5531,
    "segundos": 0.48
   },
-  "acierto-2.mp3": {
-   "como": {
-    "texto": "short bright cartoon pop with a single glassy chime in C major, cheerful, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.5,
-    "inf": 0.7,
-    "pico": -6
-   },
-   "bytes": 2135,
-   "segundos": 0.134
-  },
   "redoble-1.mp3": {
    "como": {
-    "texto": "snare drum roll building in intensity, game show suspense, crescendo, ends abruptly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft roll with brushes on a muted wooden drum, building gently, warm, ends cleanly, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 1.3,
-    "inf": 0.5,
-    "pico": -4
+    "inf": 0.55,
+    "pico": -7
    },
-   "bytes": 13629,
-   "segundos": 1.281
+   "bytes": 8927,
+   "segundos": 0.814
   },
   "redoble-2.mp3": {
    "como": {
-    "texto": "snare drum roll building in intensity, game show suspense, crescendo, ends abruptly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft roll with brushes on a muted wooden drum, building gently, warm, ends cleanly, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 1.3,
-    "inf": 0.5,
-    "pico": -4
+    "inf": 0.55,
+    "pico": -7
    },
-   "bytes": 13629,
-   "segundos": 1.281
+   "bytes": 7359,
+   "segundos": 0.654
   },
   "victoria-1.mp3": {
    "como": {
-    "texto": "short triumphant cartoon fanfare, bright brass arpeggio rising to a major chord, victory stinger, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "short joyful celebratory phrase on warm pizzicato strings and low wooden marimba, rising to a resolved major chord, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 2.5,
-    "inf": 0.35,
-    "pico": -1
+    "inf": 0.55,
+    "pico": -4
    },
-   "bytes": 25384,
-   "segundos": 2.48
+   "bytes": 19114,
+   "segundos": 1.831
   },
   "victoria-2.mp3": {
    "como": {
-    "texto": "short triumphant cartoon fanfare, bright brass arpeggio rising to a major chord, victory stinger, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "short joyful celebratory phrase on warm pizzicato strings and low wooden marimba, rising to a resolved major chord, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 2.5,
-    "inf": 0.35,
-    "pico": -1
+    "inf": 0.55,
+    "pico": -4
    },
-   "bytes": 25384,
-   "segundos": 2.48
+   "bytes": 16763,
+   "segundos": 1.606
   },
   "vitores-1.mp3": {
    "como": {
-    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "small group of children cheering happily a little far away, gentle, not shouting, soft clapping, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 1.8,
-    "inf": 0.35,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
    "bytes": 18331,
    "segundos": 1.76
   },
   "vitores-2.mp3": {
    "como": {
-    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "small group of children cheering happily a little far away, gentle, not shouting, soft clapping, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 1.8,
-    "inf": 0.35,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
-   "bytes": 18331,
-   "segundos": 1.76
+   "bytes": 16763,
+   "segundos": 1.61
   },
   "vitores-3.mp3": {
    "como": {
-    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "small group of children cheering happily a little far away, gentle, not shouting, soft clapping, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 1.8,
-    "inf": 0.35,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
    "bytes": 18331,
    "segundos": 1.76
   },
   "vitores-4.mp3": {
    "como": {
-    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "small group of children cheering happily a little far away, gentle, not shouting, soft clapping, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 1.8,
-    "inf": 0.35,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
-   "bytes": 18331,
-   "segundos": 1.76
+   "bytes": 15719,
+   "segundos": 1.499
   },
   "empate-1.mp3": {
    "como": {
-    "texto": "two playful cartoon melodic phrases answering each other, ending together on a warm major chord, friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "two gentle kalimba phrases answering each other, ending together on a warm major chord, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.8,
-    "inf": 0.4,
-    "pico": -2
+    "inf": 0.55,
+    "pico": -5
    },
    "bytes": 18331,
    "segundos": 1.76
   },
   "empate-2.mp3": {
    "como": {
-    "texto": "two playful cartoon melodic phrases answering each other, ending together on a warm major chord, friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "two gentle kalimba phrases answering each other, ending together on a warm major chord, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.8,
-    "inf": 0.4,
-    "pico": -2
+    "inf": 0.55,
+    "pico": -5
    },
-   "bytes": 18331,
-   "segundos": 1.76
+   "bytes": 12061,
+   "segundos": 1.127
   },
   "empate-3.mp3": {
    "como": {
-    "texto": "two playful cartoon melodic phrases answering each other, ending together on a warm major chord, friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "two gentle kalimba phrases answering each other, ending together on a warm major chord, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.8,
-    "inf": 0.4,
-    "pico": -2
+    "inf": 0.55,
+    "pico": -5
    },
-   "bytes": 18331,
-   "segundos": 1.76
+   "bytes": 10233,
+   "segundos": 0.955
   },
   "acuerdo-1.mp3": {
    "como": {
-    "texto": "warm choir aaah swelling with gentle sparkling chimes, two voices joining in harmony, heartwarming celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "warm soft choir hum swelling with a gentle harp phrase, two voices joining in harmony, tender, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 2.2,
-    "inf": 0.35,
-    "pico": -2
+    "inf": 0.55,
+    "pico": -5
    },
    "bytes": 22772,
    "segundos": 2.2
   },
   "acuerdo-2.mp3": {
    "como": {
-    "texto": "warm choir aaah swelling with gentle sparkling chimes, two voices joining in harmony, heartwarming celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "warm soft choir hum swelling with a gentle harp phrase, two voices joining in harmony, tender, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 2.2,
-    "inf": 0.35,
-    "pico": -2
+    "inf": 0.55,
+    "pico": -5
    },
-   "bytes": 22772,
-   "segundos": 2.2
+   "bytes": 18070,
+   "segundos": 1.737
   },
   "acuerdo-3.mp3": {
    "como": {
-    "texto": "warm choir aaah swelling with gentle sparkling chimes, two voices joining in harmony, heartwarming celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "warm soft choir hum swelling with a gentle harp phrase, two voices joining in harmony, tender, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 2.2,
-    "inf": 0.35,
-    "pico": -2
+    "inf": 0.55,
+    "pico": -5
    },
    "bytes": 22772,
-   "segundos": 2.2
+   "segundos": 2.199
   },
   "sin-acuerdo-1.mp3": {
    "como": {
-    "texto": "gentle soft marimba two-note phrase, neutral and calm, unresolved but friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "two soft low marimba notes, neutral and calm, gentle, unresolved, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.2,
-    "inf": 0.5,
-    "pico": -5
+    "inf": 0.55,
+    "pico": -8
    },
    "bytes": 12584,
    "segundos": 1.2
   },
   "sin-acuerdo-2.mp3": {
    "como": {
-    "texto": "gentle soft marimba two-note phrase, neutral and calm, unresolved but friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "two soft low marimba notes, neutral and calm, gentle, unresolved, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.2,
-    "inf": 0.5,
-    "pico": -5
+    "inf": 0.55,
+    "pico": -8
    },
    "bytes": 12584,
    "segundos": 1.2
   },
   "parada-1.mp3": {
    "como": {
-    "texto": "single soft low bell tone, calm, serious, short decay, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 1.0,
+    "texto": "single soft low felt piano note, calm, serious, quiet, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 1,
     "inf": 0.6,
-    "pico": -8
+    "pico": -11
    },
    "bytes": 10755,
    "segundos": 1.0
   },
   "veredicto-listo-1.mp3": {
    "como": {
-    "texto": "short magical reveal chime, anticipation, bright, game show, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "three soft harp notes rising gently, warm anticipation, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.8,
-    "inf": 0.5,
-    "pico": -5
+    "inf": 0.55,
+    "pico": -8
    },
-   "bytes": 3963,
-   "segundos": 0.337
+   "bytes": 8665,
+   "segundos": 0.8
   },
   "veredicto-listo-2.mp3": {
    "como": {
-    "texto": "short magical reveal chime, anticipation, bright, game show, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "three soft harp notes rising gently, warm anticipation, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.8,
-    "inf": 0.5,
-    "pico": -5
+    "inf": 0.55,
+    "pico": -8
    },
-   "bytes": 6053,
-   "segundos": 0.548
+   "bytes": 8665,
+   "segundos": 0.8
   },
   "grabar-inicio-1.mp3": {
    "como": {
-    "texto": "short cheerful two-note rising blip, microphone on, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "two soft kalimba notes rising, gentle, short, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.5,
     "inf": 0.7,
-    "pico": -8
+    "pico": -11
    },
    "bytes": 5531,
    "segundos": 0.48
   },
   "grabar-inicio-2.mp3": {
    "como": {
-    "texto": "short cheerful two-note rising blip, microphone on, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "two soft kalimba notes rising, gentle, short, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.5,
     "inf": 0.7,
-    "pico": -8
+    "pico": -11
    },
    "bytes": 5531,
    "segundos": 0.48
   },
   "grabar-parar-1.mp3": {
    "como": {
-    "texto": "short two-note falling blip, microphone off, soft, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "two soft kalimba notes falling, gentle, short, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.5,
     "inf": 0.7,
-    "pico": -8
+    "pico": -11
    },
    "bytes": 5531,
    "segundos": 0.48
   },
   "grabar-parar-2.mp3": {
    "como": {
-    "texto": "short two-note falling blip, microphone off, soft, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "two soft kalimba notes falling, gentle, short, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.5,
     "inf": 0.7,
-    "pico": -8
+    "pico": -11
    },
    "bytes": 5531,
    "segundos": 0.48
   },
   "turno-enviado-1.mp3": {
    "como": {
-    "texto": "paper plane swoosh followed by a small bright ding, sent, satisfying, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft paper swish followed by one gentle low kalimba note, sent, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 6576,
-   "segundos": 0.598
+   "bytes": 3702,
+   "segundos": 0.32,
+   "corte": 3000
   },
   "turno-enviado-2.mp3": {
    "como": {
-    "texto": "paper plane swoosh followed by a small bright ding, sent, satisfying, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft paper swish followed by one gentle low kalimba note, sent, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 6576,
-   "segundos": 0.6
+   "bytes": 4747,
+   "segundos": 0.431,
+   "corte": 3000
   },
   "turno-enviado-3.mp3": {
    "como": {
-    "texto": "paper plane swoosh followed by a small bright ding, sent, satisfying, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft paper swish followed by one gentle low kalimba note, sent, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 6576,
-   "segundos": 0.6
+   "bytes": 2657,
+   "segundos": 0.221,
+   "corte": 3000
   },
   "fallo-1.mp3": {
    "como": {
-    "texto": "soft rubbery cartoon boink, gently falling pitch, playful not sad, quiet, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft low knock of a knuckle on a wooden table, muffled, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
-    "pico": -11
+    "pico": -14
    },
-   "bytes": 5531,
-   "segundos": 0.48
+   "bytes": 2919,
+   "segundos": 0.219
   },
   "fallo-2.mp3": {
    "como": {
-    "texto": "soft rubbery cartoon boink, gently falling pitch, playful not sad, quiet, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft low knock of a knuckle on a wooden table, muffled, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
-    "pico": -11
+    "pico": -14
    },
-   "bytes": 5531,
-   "segundos": 0.48
+   "bytes": 1612,
+   "segundos": 0.095
   },
   "fallo-3.mp3": {
    "como": {
-    "texto": "soft rubbery cartoon boink, gently falling pitch, playful not sad, quiet, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft low knock of a knuckle on a wooden table, muffled, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
+    "pico": -14
+   },
+   "bytes": 3180,
+   "segundos": 0.239
+  },
+  "soltar-1.mp3": {
+   "como": {
+    "texto": "soft wooden game piece placed on a felt table, gentle dry tock, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -11
+   },
+   "bytes": 1874,
+   "segundos": 0.109
+  },
+  "soltar-2.mp3": {
+   "como": {
+    "texto": "soft wooden game piece placed on a felt table, gentle dry tock, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -11
+   },
+   "bytes": 2396,
+   "segundos": 0.171
+  },
+  "soltar-3.mp3": {
+   "como": {
+    "texto": "soft wooden game piece placed on a felt table, gentle dry tock, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -11
+   },
+   "bytes": 4486,
+   "segundos": 0.371
+  },
+  "soltar-4.mp3": {
+   "como": {
+    "texto": "soft wooden game piece placed on a felt table, gentle dry tock, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
     "pico": -11
    },
    "bytes": 5531,
    "segundos": 0.48
   },
-  "soltar-1.mp3": {
-   "como": {
-    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.5,
-    "inf": 0.7,
-    "pico": -8
-   },
-   "bytes": 5531,
-   "segundos": 0.48
-  },
-  "soltar-2.mp3": {
-   "como": {
-    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.5,
-    "inf": 0.7,
-    "pico": -8
-   },
-   "bytes": 2919,
-   "segundos": 0.231
-  },
-  "soltar-3.mp3": {
-   "como": {
-    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.5,
-    "inf": 0.7,
-    "pico": -8
-   },
-   "bytes": 2396,
-   "segundos": 0.179
-  },
-  "soltar-4.mp3": {
-   "como": {
-    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.5,
-    "inf": 0.7,
-    "pico": -8
-   },
-   "bytes": 4225,
-   "segundos": 0.353
-  },
   "ronda-completa-1.mp3": {
    "como": {
-    "texto": "short cheerful level complete jingle, bright marimba and bells, major cadence, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "short warm phrase on pizzicato strings and low marimba, gentle major cadence, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.2,
-    "inf": 0.4,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
-   "bytes": 12584,
-   "segundos": 1.2
+   "bytes": 10494,
+   "segundos": 0.986
   },
   "ronda-completa-2.mp3": {
    "como": {
-    "texto": "short cheerful level complete jingle, bright marimba and bells, major cadence, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "short warm phrase on pizzicato strings and low marimba, gentle major cadence, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.2,
-    "inf": 0.4,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
-   "bytes": 12584,
-   "segundos": 1.2
+   "bytes": 10755,
+   "segundos": 1.002
   },
   "ronda-completa-3.mp3": {
    "como": {
-    "texto": "short cheerful level complete jingle, bright marimba and bells, major cadence, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "texto": "short warm phrase on pizzicato strings and low marimba, gentle major cadence, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 1.2,
-    "inf": 0.4,
-    "pico": -3
+    "inf": 0.55,
+    "pico": -6
    },
    "bytes": 12584,
    "segundos": 1.2
   },
   "cuenta-romper-1.mp3": {
    "como": {
-    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft muffled wooden snap of a thin twig, gentle, dry, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 4747,
-   "segundos": 0.394
+   "bytes": 1090,
+   "segundos": 0.1,
+   "corte": 3000
   },
   "cuenta-romper-2.mp3": {
    "como": {
-    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft muffled wooden snap of a thin twig, gentle, dry, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 4486,
-   "segundos": 0.378
+   "bytes": 1090,
+   "segundos": 0.128,
+   "corte": 3000
   },
   "cuenta-romper-3.mp3": {
    "como": {
-    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft muffled wooden snap of a thin twig, gentle, dry, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 3963,
-   "segundos": 0.319
+   "bytes": 2135,
+   "segundos": 0.201,
+   "corte": 3000
   },
   "cuenta-romper-4.mp3": {
    "como": {
-    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft muffled wooden snap of a thin twig, gentle, dry, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.5,
     "inf": 0.6,
-    "pico": -6
+    "pico": -9
    },
-   "bytes": 5531,
-   "segundos": 0.479
+   "bytes": 1090,
+   "segundos": 0.153,
+   "corte": 3000
   },
   "choque-fuego-1.mp3": {
    "como": {
-    "texto": "cartoon fire whoosh burst, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft warm whoosh of a small campfire, gentle low crackle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -5
+    "pico": -8
+   },
+   "bytes": 5270,
+   "segundos": 0.452
+  },
+  "choque-fuego-2.mp3": {
+   "como": {
+    "texto": "soft warm whoosh of a small campfire, gentle low crackle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -8
    },
    "bytes": 6576,
    "segundos": 0.6
   },
-  "choque-fuego-2.mp3": {
-   "como": {
-    "texto": "cartoon fire whoosh burst, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.6,
-    "inf": 0.6,
-    "pico": -5
-   },
-   "bytes": 4747,
-   "segundos": 0.416
-  },
   "choque-metal-1.mp3": {
    "como": {
-    "texto": "cartoon metal clang, bright, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft muted knock on a heavy wooden chest, deep and dull, not ringing, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -5
+    "pico": -8
    },
-   "bytes": 2396,
-   "segundos": 0.158
+   "bytes": 5270,
+   "segundos": 0.459
   },
   "choque-metal-2.mp3": {
    "como": {
-    "texto": "cartoon metal clang, bright, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft muted knock on a heavy wooden chest, deep and dull, not ringing, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -5
+    "pico": -8
    },
    "bytes": 6576,
    "segundos": 0.6
   },
   "choque-planta-1.mp3": {
    "como": {
-    "texto": "cartoon leaves rustle and sprout pop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft rustle of leaves with a gentle wooden pop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -5
+    "pico": -8
    },
-   "bytes": 6576,
-   "segundos": 0.599
+   "bytes": 5792,
+   "segundos": 0.6,
+   "corte": 3000
   },
   "choque-planta-2.mp3": {
    "como": {
-    "texto": "cartoon leaves rustle and sprout pop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "soft rustle of leaves with a gentle wooden pop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.6,
     "inf": 0.6,
-    "pico": -5
+    "pico": -8
+   },
+   "bytes": 5270,
+   "segundos": 0.492,
+   "corte": 3000
+  },
+  "choque-rayo-1.mp3": {
+   "como": {
+    "texto": "soft low muffled rumble of distant thunder, short, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.491
+  },
+  "choque-rayo-2.mp3": {
+   "como": {
+    "texto": "soft low muffled rumble of distant thunder, short, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 6053,
+   "segundos": 0.541
+  },
+  "choque-agua-1.mp3": {
+   "como": {
+    "texto": "gentle low water drop plop into a wooden bowl, soft and round, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 4747,
+   "segundos": 0.402
+  },
+  "choque-agua-2.mp3": {
+   "como": {
+    "texto": "gentle low water drop plop into a wooden bowl, soft and round, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -8
    },
    "bytes": 3441,
    "segundos": 0.285
   },
-  "choque-rayo-1.mp3": {
-   "como": {
-    "texto": "cartoon electric zap crackle, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.6,
-    "inf": 0.6,
-    "pico": -5
-   },
-   "bytes": 6576,
-   "segundos": 0.6
-  },
-  "choque-rayo-2.mp3": {
-   "como": {
-    "texto": "cartoon electric zap crackle, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.6,
-    "inf": 0.6,
-    "pico": -5
-   },
-   "bytes": 6576,
-   "segundos": 0.6
-  },
-  "choque-agua-1.mp3": {
-   "como": {
-    "texto": "cartoon water droplet splash plop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.6,
-    "inf": 0.6,
-    "pico": -5
-   },
-   "bytes": 6576,
-   "segundos": 0.6
-  },
-  "choque-agua-2.mp3": {
-   "como": {
-    "texto": "cartoon water droplet splash plop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
-    "dur": 0.6,
-    "inf": 0.6,
-    "pico": -5
-   },
-   "bytes": 6576,
-   "segundos": 0.6
-  },
   "bloques-linea-1.mp3": {
    "como": {
-    "texto": "bright sweep with chime cascade, line clear, satisfying, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "gentle descending run of soft low marimba notes, warm, satisfying, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.8,
-    "inf": 0.5,
-    "pico": -4
+    "inf": 0.55,
+    "pico": -7
    },
    "bytes": 8665,
    "segundos": 0.8
   },
   "bloques-linea-2.mp3": {
    "como": {
-    "texto": "bright sweep with chime cascade, line clear, satisfying, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "gentle descending run of soft low marimba notes, warm, satisfying, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
     "dur": 0.8,
-    "inf": 0.5,
-    "pico": -4
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 7359,
+   "segundos": 0.658
+  },
+  "bloques-linea-3.mp3": {
+   "como": {
+    "texto": "gentle descending run of soft low marimba notes, warm, satisfying, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -7
    },
    "bytes": 8665,
    "segundos": 0.8
   },
-  "bloques-linea-3.mp3": {
+  "liston-palabra-1.mp3": {
    "como": {
-    "texto": "bright sweep with chime cascade, line clear, satisfying, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "texto": "very soft low airy cloth swish, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -12
+   },
+   "bytes": 3963,
+   "segundos": 0.334
+  },
+  "liston-palabra-2.mp3": {
+   "como": {
+    "texto": "very soft low airy cloth swish, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -12
+   },
+   "bytes": 4486,
+   "segundos": 0.386
+  },
+  "liston-palabra-3.mp3": {
+   "como": {
+    "texto": "very soft low airy cloth swish, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -12
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "liston-palabra-4.mp3": {
+   "como": {
+    "texto": "very soft low airy cloth swish, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -12
+   },
+   "bytes": 3963,
+   "segundos": 0.323
+  },
+  "aterriza-figura-1.mp3": {
+   "como": {
+    "texto": "soft cushioned thump landing on a pillow, gentle bounce, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 2919,
+   "segundos": 0.225
+  },
+  "aterriza-figura-2.mp3": {
+   "como": {
+    "texto": "soft cushioned thump landing on a pillow, gentle bounce, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 4225,
+   "segundos": 0.356
+  },
+  "aterriza-figura-3.mp3": {
+   "como": {
+    "texto": "soft cushioned thump landing on a pillow, gentle bounce, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 3441,
+   "segundos": 0.283
+  },
+  "confeti-1.mp3": {
+   "como": {
+    "texto": "soft paper confetti rustle with a gentle muffled pop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
     "dur": 0.8,
-    "inf": 0.5,
-    "pico": -4
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 6837,
+   "segundos": 0.617,
+   "corte": 3000
+  },
+  "confeti-2.mp3": {
+   "como": {
+    "texto": "soft paper confetti rustle with a gentle muffled pop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 7621,
+   "segundos": 0.8,
+   "corte": 3000
+  },
+  "confeti-3.mp3": {
+   "como": {
+    "texto": "soft paper confetti rustle with a gentle muffled pop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 6576,
+   "segundos": 0.613,
+   "corte": 3000
+  },
+  "premio-ganado-1.mp3": {
+   "como": {
+    "texto": "small wooden box opening with a gentle warm harp phrase, reward, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 1.5,
+    "inf": 0.55,
+    "pico": -6
+   },
+   "bytes": 12584,
+   "segundos": 1.201
+  },
+  "premio-ganado-2.mp3": {
+   "como": {
+    "texto": "small wooden box opening with a gentle warm harp phrase, reward, elegant, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 1.5,
+    "inf": 0.55,
+    "pico": -6
+   },
+   "bytes": 10494,
+   "segundos": 0.986
+  },
+  "ultimos-seg-1.mp3": {
+   "como": {
+    "texto": "soft low wooden clock tick, dry, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -11
+   },
+   "bytes": 2396,
+   "segundos": 0.181
+  },
+  "tiempo-fin-1.mp3": {
+   "como": {
+    "texto": "two gentle low marimba notes descending, calm time is up, soft, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.6,
+    "pico": -9
+   },
+   "bytes": 7621,
+   "segundos": 0.68
+  },
+  "tiempo-fin-2.mp3": {
+   "como": {
+    "texto": "two gentle low marimba notes descending, calm time is up, soft, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.6,
+    "pico": -9
+   },
+   "bytes": 7621,
+   "segundos": 0.68
+  },
+  "le-toca-otro-1.mp3": {
+   "como": {
+    "texto": "two soft kalimba notes a major third apart, gentle notification, warm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -9
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "le-toca-otro-2.mp3": {
+   "como": {
+    "texto": "two soft kalimba notes a major third apart, gentle notification, warm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -9
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "voz-lista-1.mp3": {
+   "como": {
+    "texto": "very soft low wooden bubble pop, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "voz-lista-2.mp3": {
+   "como": {
+    "texto": "very soft low wooden bubble pop, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "voz-lista-3.mp3": {
+   "como": {
+    "texto": "very soft low wooden bubble pop, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "sorteo-diente-1.mp3": {
+   "como": {
+    "texto": "single soft wooden peg click of a prize wheel, dry, low, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -11
+   },
+   "bytes": 1874,
+   "segundos": 0.156,
+   "corte": 3000
+  },
+  "sorteo-diente-2.mp3": {
+   "como": {
+    "texto": "single soft wooden peg click of a prize wheel, dry, low, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -11
+   },
+   "bytes": 1612,
+   "segundos": 0.108,
+   "corte": 3000
+  },
+  "sorteo-diente-3.mp3": {
+   "como": {
+    "texto": "single soft wooden peg click of a prize wheel, dry, low, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -11
+   },
+   "bytes": 2657,
+   "segundos": 0.48,
+   "corte": 3000
+  },
+  "sorteo-cae-1.mp3": {
+   "como": {
+    "texto": "wooden wheel stopping with a soft click then a gentle kalimba flourish, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 4747,
+   "segundos": 0.393
+  },
+  "sorteo-cae-2.mp3": {
+   "como": {
+    "texto": "wooden wheel stopping with a soft click then a gentle kalimba flourish, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 3963,
+   "segundos": 0.333
+  },
+  "encuentro-vs-1.mp3": {
+   "como": {
+    "texto": "soft deep whoosh ending in a warm muffled drum hit, playful, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -6
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "encuentro-vs-2.mp3": {
+   "como": {
+    "texto": "soft deep whoosh ending in a warm muffled drum hit, playful, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -6
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "encuentro-vs-3.mp3": {
+   "como": {
+    "texto": "soft deep whoosh ending in a warm muffled drum hit, playful, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -6
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "encuentro-puno-1.mp3": {
+   "como": {
+    "texto": "two soft cushioned fists bumping, warm gentle thump, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 2135,
+   "segundos": 0.148
+  },
+  "encuentro-puno-2.mp3": {
+   "como": {
+    "texto": "two soft cushioned fists bumping, warm gentle thump, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 5008,
+   "segundos": 0.422
+  },
+  "encuentro-puno-3.mp3": {
+   "como": {
+    "texto": "two soft cushioned fists bumping, warm gentle thump, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "cuenta-num-1.mp3": {
+   "como": {
+    "texto": "soft low wooden block tick, dry, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -10
+   },
+   "bytes": 2657,
+   "segundos": 0.184
+  },
+  "cuenta-ya-1.mp3": {
+   "como": {
+    "texto": "warm low kalimba note with a soft airy swish, start, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "cuenta-ya-2.mp3": {
+   "como": {
+    "texto": "warm low kalimba note with a soft airy swish, start, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 1351,
+   "segundos": 0.059
+  },
+  "coger-1.mp3": {
+   "como": {
+    "texto": "tiny soft wooden tap, dry, very quiet, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -15
+   },
+   "bytes": 1612,
+   "segundos": 0.095
+  },
+  "coger-2.mp3": {
+   "como": {
+    "texto": "tiny soft wooden tap, dry, very quiet, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -15
+   },
+   "bytes": 4225,
+   "segundos": 0.349
+  },
+  "coger-3.mp3": {
+   "como": {
+    "texto": "tiny soft wooden tap, dry, very quiet, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -15
+   },
+   "bytes": 3441,
+   "segundos": 0.263
+  },
+  "soltar-fuera-1.mp3": {
+   "como": {
+    "texto": "soft muffled cloth plop, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -14
+   },
+   "bytes": 2135,
+   "segundos": 0.134
+  },
+  "soltar-fuera-2.mp3": {
+   "como": {
+    "texto": "soft muffled cloth plop, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -14
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "ronda-perdida-1.mp3": {
+   "como": {
+    "texto": "three soft marimba notes descending gently and resolving to major, sympathetic, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.9,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 9449,
+   "segundos": 0.88
+  },
+  "ronda-perdida-2.mp3": {
+   "como": {
+    "texto": "three soft marimba notes descending gently and resolving to major, sympathetic, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.9,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 9449,
+   "segundos": 0.88
+  },
+  "relevo-1.mp3": {
+   "como": {
+    "texto": "soft airy swish with one gentle low kalimba note, handoff, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 6576,
+   "segundos": 0.599
+  },
+  "relevo-2.mp3": {
+   "como": {
+    "texto": "soft airy swish with one gentle low kalimba note, handoff, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 4747,
+   "segundos": 0.416
+  },
+  "calco-quitar-1.mp3": {
+   "como": {
+    "texto": "soft lower wooden tap, quieter, removing, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -14
+   },
+   "bytes": 3963,
+   "segundos": 0.315
+  },
+  "calco-quitar-2.mp3": {
+   "como": {
+    "texto": "soft lower wooden tap, quieter, removing, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -14
+   },
+   "bytes": 1874,
+   "segundos": 0.106
+  },
+  "calco-esconde-1.mp3": {
+   "como": {
+    "texto": "soft low airy puff, disappearing, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -10
+   },
+   "bytes": 4486,
+   "segundos": 0.383
+  },
+  "calco-esconde-2.mp3": {
+   "como": {
+    "texto": "soft low airy puff, disappearing, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -10
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "torre-completa-1.mp3": {
+   "como": {
+    "texto": "gentle two-note phrase on low marimba, small achievement, warm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "torre-completa-2.mp3": {
+   "como": {
+    "texto": "gentle two-note phrase on low marimba, small achievement, warm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 4486,
+   "segundos": 0.38
+  },
+  "torre-completa-3.mp3": {
+   "como": {
+    "texto": "gentle two-note phrase on low marimba, small achievement, warm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 3963,
+   "segundos": 0.338
+  },
+  "duos-tornado-1.mp3": {
+   "como": {
+    "texto": "soft low swirling wind whoosh, gentle, playful, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -9
    },
    "bytes": 8665,
    "segundos": 0.8
+  },
+  "duos-tornado-2.mp3": {
+   "como": {
+    "texto": "soft low swirling wind whoosh, gentle, playful, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 6837,
+   "segundos": 0.617
+  },
+  "duos-tornado-3.mp3": {
+   "como": {
+    "texto": "soft low swirling wind whoosh, gentle, playful, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  },
+  "duos-mezcla-1.mp3": {
+   "como": {
+    "texto": "soft muffled card shuffle, gentle, quiet, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -10
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "revoltijo-cesta-1.mp3": {
+   "como": {
+    "texto": "small soft object dropping into a wicker basket, muffled plop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -11
+   },
+   "bytes": 4225,
+   "segundos": 0.48,
+   "corte": 3000
+  },
+  "revoltijo-cesta-2.mp3": {
+   "como": {
+    "texto": "small soft object dropping into a wicker basket, muffled plop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -11
+   },
+   "bytes": 3441,
+   "segundos": 0.48,
+   "corte": 3000
+  },
+  "revoltijo-cesta-3.mp3": {
+   "como": {
+    "texto": "small soft object dropping into a wicker basket, muffled plop, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -11
+   },
+   "bytes": 3702,
+   "segundos": 0.358,
+   "corte": 3000
+  },
+  "multitud-suma-1.mp3": {
+   "como": {
+    "texto": "small group of people softly cheering hey, warm, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 7621,
+   "segundos": 0.684
+  },
+  "multitud-suma-2.mp3": {
+   "como": {
+    "texto": "small group of people softly cheering hey, warm, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  },
+  "multitud-suma-3.mp3": {
+   "como": {
+    "texto": "small group of people softly cheering hey, warm, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -9
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  },
+  "multitud-resta-1.mp3": {
+   "como": {
+    "texto": "small group of people softly saying aww, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -11
+   },
+   "bytes": 7882,
+   "segundos": 0.727
+  },
+  "multitud-resta-2.mp3": {
+   "como": {
+    "texto": "small group of people softly saying aww, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -11
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  },
+  "multitud-resta-3.mp3": {
+   "como": {
+    "texto": "small group of people softly saying aww, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.55,
+    "pico": -11
+   },
+   "bytes": 7359,
+   "segundos": 0.672
+  },
+  "trazos-casilla-1.mp3": {
+   "como": {
+    "texto": "tiny soft pencil stroke on paper, very quiet, low, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -17
+   },
+   "bytes": 4747,
+   "segundos": 0.42,
+   "corte": 3000
+  },
+  "trazos-casilla-2.mp3": {
+   "como": {
+    "texto": "tiny soft pencil stroke on paper, very quiet, low, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -17
+   },
+   "bytes": 4747,
+   "segundos": 0.406,
+   "corte": 3000
+  },
+  "trazos-casilla-3.mp3": {
+   "como": {
+    "texto": "tiny soft pencil stroke on paper, very quiet, low, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.8,
+    "pico": -17
+   },
+   "bytes": 4486,
+   "segundos": 0.398,
+   "corte": 3000
+  },
+  "bloques-doble-1.mp3": {
+   "como": {
+    "texto": "short warm flourish on low marimba and pizzicato strings, celebratory, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 4225,
+   "segundos": 0.351
+  },
+  "bloques-doble-2.mp3": {
+   "como": {
+    "texto": "short warm flourish on low marimba and pizzicato strings, celebratory, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "bloques-doble-3.mp3": {
+   "como": {
+    "texto": "short warm flourish on low marimba and pizzicato strings, celebratory, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.6,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "globo-abre-1.mp3": {
+   "como": {
+    "texto": "very soft low wooden bloop, rising gently, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -16
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "globo-abre-2.mp3": {
+   "como": {
+    "texto": "very soft low wooden bloop, rising gently, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -16
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "globo-cierra-1.mp3": {
+   "como": {
+    "texto": "very soft low wooden bloop, falling gently, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -18
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "globo-cierra-2.mp3": {
+   "como": {
+    "texto": "very soft low wooden bloop, falling gently, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -18
+   },
+   "bytes": 5531,
+   "segundos": 0.478
+  },
+  "aviso-bien-1.mp3": {
+   "como": {
+    "texto": "single soft kalimba note, warm, gentle confirmation, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -12
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "aviso-bien-2.mp3": {
+   "como": {
+    "texto": "single soft kalimba note, warm, gentle confirmation, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -12
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "aviso-mal-1.mp3": {
+   "como": {
+    "texto": "soft low muted wooden knock, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "aviso-mal-2.mp3": {
+   "como": {
+    "texto": "soft low muted wooden knock, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 2396,
+   "segundos": 0.166
+  },
+  "invitacion-aceptada-1.mp3": {
+   "como": {
+    "texto": "short warm pizzicato string phrase, happy, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 6837,
+   "segundos": 0.624
+  },
+  "invitacion-aceptada-2.mp3": {
+   "como": {
+    "texto": "short warm pizzicato string phrase, happy, gentle, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.55,
+    "pico": -7
+   },
+   "bytes": 6837,
+   "segundos": 0.616
+  },
+  "vidas-1.mp3": {
+   "como": {
+    "texto": "gentle warm harp phrase rising softly, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.9,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 9449,
+   "segundos": 0.88
+  },
+  "vidas-2.mp3": {
+   "como": {
+    "texto": "gentle warm harp phrase rising softly, calm, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.9,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 9449,
+   "segundos": 0.88
+  },
+  "premio-recibido-1.mp3": {
+   "como": {
+    "texto": "soft wooden drawer closing with one gentle kalimba note, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 6576,
+   "segundos": 0.587
+  },
+  "premio-recibido-2.mp3": {
+   "como": {
+    "texto": "soft wooden drawer closing with one gentle kalimba note, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.7,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 6314,
+   "segundos": 0.565
+  },
+  "firmar-1.mp3": {
+   "como": {
+    "texto": "soft pencil signature on paper followed by a gentle wooden stamp thump, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.9,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 5792,
+   "segundos": 0.53,
+   "corte": 3000
+  },
+  "firmar-2.mp3": {
+   "como": {
+    "texto": "soft pencil signature on paper followed by a gentle wooden stamp thump, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality, no music",
+    "dur": 0.9,
+    "inf": 0.55,
+    "pico": -8
+   },
+   "bytes": 5008,
+   "segundos": 0.88,
+   "corte": 3000
+  },
+  "espera-estrella-1.mp3": {
+   "como": {
+    "texto": "soft round kalimba pluck, gentle, collectible, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 3963,
+   "segundos": 0.316
+  },
+  "espera-estrella-2.mp3": {
+   "como": {
+    "texto": "soft round kalimba pluck, gentle, collectible, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "espera-estrella-3.mp3": {
+   "como": {
+    "texto": "soft round kalimba pluck, gentle, collectible, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -13
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "musica-menu-1.mp3": {
+   "como": {
+    "prompt": "cheerful cozy instrumental background loop for a casual mobile party game main menu, soft ukulele and marimba, gentle glockenspiel, light hand percussion and finger snaps, playful and warm, 96 bpm, bright major key, steady consistent energy from start to end, no intro, no ending, no fade, seamless loop, no vocals",
+    "segundos": 60
+   },
+   "bytes": 815953,
+   "segundos": 58.21
+  },
+  "musica-menu-2.mp3": {
+   "como": {
+    "prompt": "cheerful cozy instrumental background loop for a casual mobile party game main menu, soft ukulele and marimba, gentle glockenspiel, light hand percussion and finger snaps, playful and warm, 96 bpm, bright major key, steady consistent energy from start to end, no intro, no ending, no fade, seamless loop, no vocals",
+    "segundos": 60
+   },
+   "bytes": 815953,
+   "segundos": 58.22
+  },
+  "musica-juego-1.mp3": {
+   "como": {
+    "prompt": "upbeat playful instrumental background loop for a casual mobile minigame, bouncy pizzicato strings, marimba, light drums and claps, energetic but not stressful, 122 bpm, major key, steady consistent energy from start to end, no intro, no ending, no fade, seamless loop, no vocals",
+    "segundos": 45
+   },
+   "bytes": 605667,
+   "segundos": 43.2
+  },
+  "musica-juego-2.mp3": {
+   "como": {
+    "prompt": "upbeat playful instrumental background loop for a casual mobile minigame, bouncy pizzicato strings, marimba, light drums and claps, energetic but not stressful, 122 bpm, major key, steady consistent energy from start to end, no intro, no ending, no fade, seamless loop, no vocals",
+    "segundos": 45
+   },
+   "bytes": 605667,
+   "segundos": 43.2
   }
  }
 }
