@@ -31,6 +31,38 @@
    "Es como un café a tiempo: llego justo cuando hace falta."
   ]
  },
+ "victoria": {
+  "kai": [
+   "¡Ganamos! Corto, claro y con trofeo.",
+   "¿Viste? Al grano y directo al podio.",
+   "¡Toma! Te dije que lo dijéramos sin rodeos."
+  ],
+  "luna": [
+   "¡Ganamos! Y encima quedó precioso.",
+   "Tu idea brillaba sola: yo solo le puse el moñito.",
+   "Victoria con moñito incluido. ¡Qué bonito!"
+  ],
+  "nico": [
+   "Paso uno: argumentar. Paso dos: ganar. Listo.",
+   "Te dije que sin prisa se llega. Y llegamos primero.",
+   "Respira… y ahora sí: ¡ganamos!"
+  ],
+  "dante": [
+   "Ganamos. No me sorprende, pero igual aplaudo.",
+   "Tranquilo, sonríe como si lo hubieras planeado.",
+   "Qué casualidad: justo lo que yo venía diciendo."
+  ],
+  "nina": [
+   "¡Ganamos! ¡Esto hay que celebrarlo ya!",
+   "¡Te lo dije! ¡Se puso buenísimo!",
+   "¡Sí, sí, sí! ¡Qué partidazo!"
+  ],
+  "maya": [
+   "Ganamos como paraguas en día de lluvia: justo a tiempo.",
+   "¡Victoria! Esta va al cajón de las buenas.",
+   "Esto sabe a pastel recién salido del horno."
+  ]
+ },
  "grabado": {
   "kai-1.mp3": {
    "texto": "Tú lo piensas, yo lo digo. Corto y claro. Y ya.",
@@ -247,6 +279,222 @@
     "temperatura": "0.70"
    },
    "bytes": 29181
+  },
+  "kai-v1.mp3": {
+   "texto": "¡Ganamos! Corto, claro y con trofeo.",
+   "como": {
+    "voz": "gemini:es-419-commercial-11",
+    "direccion": "Energico y frontal. Va al grano y le molesta dar vueltas. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+6%",
+    "estilo": "happy",
+    "temperatura": "0.75"
+   },
+   "bytes": 23565
+  },
+  "kai-v2.mp3": {
+   "texto": "¿Viste? Al grano y directo al podio.",
+   "como": {
+    "voz": "gemini:es-419-commercial-11",
+    "direccion": "Energico y frontal. Va al grano y le molesta dar vueltas. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+6%",
+    "estilo": "happy",
+    "temperatura": "0.75"
+   },
+   "bytes": 15645
+  },
+  "kai-v3.mp3": {
+   "texto": "¡Toma! Te dije que lo dijéramos sin rodeos.",
+   "como": {
+    "voz": "gemini:es-419-commercial-11",
+    "direccion": "Energico y frontal. Va al grano y le molesta dar vueltas. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+6%",
+    "estilo": "happy",
+    "temperatura": "0.75"
+   },
+   "bytes": 19533
+  },
+  "luna-v1.mp3": {
+   "texto": "¡Ganamos! Y encima quedó precioso.",
+   "como": {
+    "voz": "gemini:es-419-commercial-6",
+    "direccion": "Calida y clara. Ordena las cosas para que se entiendan. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": "adventurous",
+    "temperatura": "0.70"
+   },
+   "bytes": 24573
+  },
+  "luna-v2.mp3": {
+   "texto": "Tu idea brillaba sola: yo solo le puse el moñito.",
+   "como": {
+    "voz": "gemini:es-419-commercial-6",
+    "direccion": "Calida y clara. Ordena las cosas para que se entiendan. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": "adventurous",
+    "temperatura": "0.70"
+   },
+   "bytes": 24141
+  },
+  "luna-v3.mp3": {
+   "texto": "Victoria con moñito incluido. ¡Qué bonito!",
+   "como": {
+    "voz": "gemini:es-419-commercial-6",
+    "direccion": "Calida y clara. Ordena las cosas para que se entiendan. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": "adventurous",
+    "temperatura": "0.70"
+   },
+   "bytes": 27453
+  },
+  "nico-v1.mp3": {
+   "texto": "Paso uno: argumentar. Paso dos: ganar. Listo.",
+   "como": {
+    "voz": "gemini:es-419-commercial-4",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+0%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 32493
+  },
+  "nico-v2.mp3": {
+   "texto": "Te dije que sin prisa se llega. Y llegamos primero.",
+   "como": {
+    "voz": "gemini:es-419-commercial-4",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+0%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 23133
+  },
+  "nico-v3.mp3": {
+   "texto": "Respira… y ahora sí: ¡ganamos!",
+   "como": {
+    "voz": "gemini:es-419-commercial-4",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+0%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 26301
+  },
+  "dante-v1.mp3": {
+   "texto": "Ganamos. No me sorprende, pero igual aplaudo.",
+   "como": {
+    "voz": "gemini:es-es-concierge-12",
+    "direccion": "Hombre joven socarrón y observador, con humor seco y divertido: habla tranquilo, como con media sonrisa, y remata con ironía. Relajado y natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 25293
+  },
+  "dante-v2.mp3": {
+   "texto": "Tranquilo, sonríe como si lo hubieras planeado.",
+   "como": {
+    "voz": "gemini:es-es-concierge-12",
+    "direccion": "Hombre joven socarrón y observador, con humor seco y divertido: habla tranquilo, como con media sonrisa, y remata con ironía. Relajado y natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 19533
+  },
+  "dante-v3.mp3": {
+   "texto": "Qué casualidad: justo lo que yo venía diciendo.",
+   "como": {
+    "voz": "gemini:es-es-concierge-12",
+    "direccion": "Hombre joven socarrón y observador, con humor seco y divertido: habla tranquilo, como con media sonrisa, y remata con ironía. Relajado y natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 23421
+  },
+  "nina-v1.mp3": {
+   "texto": "¡Ganamos! ¡Esto hay que celebrarlo ya!",
+   "como": {
+    "voz": "gemini:es-419-advisor-7",
+    "direccion": "Mujer joven con chispa y entusiasmo contagioso: habla animada, alegre y cercana, con energía y en español natural.",
+    "tono": "+0%",
+    "ritmo": "-5%",
+    "estilo": "friendlycheerful",
+    "temperatura": "0.70"
+   },
+   "bytes": 19821
+  },
+  "nina-v2.mp3": {
+   "texto": "¡Te lo dije! ¡Se puso buenísimo!",
+   "como": {
+    "voz": "gemini:es-419-advisor-7",
+    "direccion": "Mujer joven con chispa y entusiasmo contagioso: habla animada, alegre y cercana, con energía y en español natural.",
+    "tono": "+0%",
+    "ritmo": "-5%",
+    "estilo": "friendlycheerful",
+    "temperatura": "0.70"
+   },
+   "bytes": 21261
+  },
+  "nina-v3.mp3": {
+   "texto": "¡Sí, sí, sí! ¡Qué partidazo!",
+   "como": {
+    "voz": "gemini:es-419-advisor-7",
+    "direccion": "Mujer joven con chispa y entusiasmo contagioso: habla animada, alegre y cercana, con energía y en español natural.",
+    "tono": "+0%",
+    "ritmo": "-5%",
+    "estilo": "friendlycheerful",
+    "temperatura": "0.70"
+   },
+   "bytes": 16941
+  },
+  "maya-v1.mp3": {
+   "texto": "Ganamos como paraguas en día de lluvia: justo a tiempo.",
+   "como": {
+    "voz": "gemini:es-es-tutor-12",
+    "direccion": "Tranquila e imaginativa. Aterriza las ideas para que se vean. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 27165
+  },
+  "maya-v2.mp3": {
+   "texto": "¡Victoria! Esta va al cajón de las buenas.",
+   "como": {
+    "voz": "gemini:es-es-tutor-12",
+    "direccion": "Tranquila e imaginativa. Aterriza las ideas para que se vean. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 27021
+  },
+  "maya-v3.mp3": {
+   "texto": "Esto sabe a pastel recién salido del horno.",
+   "como": {
+    "voz": "gemini:es-es-tutor-12",
+    "direccion": "Tranquila e imaginativa. Aterriza las ideas para que se vean. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "tono": "+0%",
+    "ritmo": "+5%",
+    "estilo": null,
+    "temperatura": "0.70"
+   },
+   "bytes": 19245
   }
  }
 }

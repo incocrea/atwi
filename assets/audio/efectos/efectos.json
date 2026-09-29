@@ -1,0 +1,756 @@
+{
+ "publicados": {
+  "redoble": [
+   "redoble-1.mp3",
+   "redoble-2.mp3"
+  ],
+  "victoria": [
+   "victoria-1.mp3",
+   "victoria-2.mp3"
+  ],
+  "vitores": [
+   "vitores-1.mp3",
+   "vitores-2.mp3",
+   "vitores-3.mp3",
+   "vitores-4.mp3"
+  ],
+  "empate": [
+   "empate-1.mp3",
+   "empate-2.mp3",
+   "empate-3.mp3"
+  ],
+  "acuerdo": [
+   "acuerdo-1.mp3",
+   "acuerdo-2.mp3",
+   "acuerdo-3.mp3"
+  ],
+  "sin-acuerdo": [
+   "sin-acuerdo-1.mp3",
+   "sin-acuerdo-2.mp3"
+  ],
+  "parada": [
+   "parada-1.mp3"
+  ],
+  "veredicto-listo": [
+   "veredicto-listo-1.mp3",
+   "veredicto-listo-2.mp3"
+  ],
+  "grabar-inicio": [
+   "grabar-inicio-1.mp3",
+   "grabar-inicio-2.mp3"
+  ],
+  "grabar-parar": [
+   "grabar-parar-1.mp3",
+   "grabar-parar-2.mp3"
+  ],
+  "turno-enviado": [
+   "turno-enviado-1.mp3",
+   "turno-enviado-2.mp3",
+   "turno-enviado-3.mp3"
+  ],
+  "acierto": [
+   "acierto-1.mp3",
+   "acierto-2.mp3"
+  ],
+  "fallo": [
+   "fallo-1.mp3",
+   "fallo-2.mp3",
+   "fallo-3.mp3"
+  ],
+  "soltar": [
+   "soltar-1.mp3",
+   "soltar-2.mp3",
+   "soltar-3.mp3",
+   "soltar-4.mp3"
+  ],
+  "ronda-completa": [
+   "ronda-completa-1.mp3",
+   "ronda-completa-2.mp3",
+   "ronda-completa-3.mp3"
+  ],
+  "cuenta-romper": [
+   "cuenta-romper-1.mp3",
+   "cuenta-romper-2.mp3",
+   "cuenta-romper-3.mp3",
+   "cuenta-romper-4.mp3"
+  ],
+  "choque-fuego": [
+   "choque-fuego-1.mp3",
+   "choque-fuego-2.mp3"
+  ],
+  "choque-metal": [
+   "choque-metal-1.mp3",
+   "choque-metal-2.mp3"
+  ],
+  "choque-planta": [
+   "choque-planta-1.mp3",
+   "choque-planta-2.mp3"
+  ],
+  "choque-rayo": [
+   "choque-rayo-1.mp3",
+   "choque-rayo-2.mp3"
+  ],
+  "choque-agua": [
+   "choque-agua-1.mp3",
+   "choque-agua-2.mp3"
+  ],
+  "bloques-linea": [
+   "bloques-linea-1.mp3",
+   "bloques-linea-2.mp3",
+   "bloques-linea-3.mp3"
+  ]
+ },
+ "todas": {
+  "redoble": [
+   "redoble-1.mp3",
+   "redoble-2.mp3"
+  ],
+  "victoria": [
+   "victoria-1.mp3",
+   "victoria-2.mp3"
+  ],
+  "vitores": [
+   "vitores-1.mp3",
+   "vitores-2.mp3",
+   "vitores-3.mp3",
+   "vitores-4.mp3"
+  ],
+  "empate": [
+   "empate-1.mp3",
+   "empate-2.mp3",
+   "empate-3.mp3"
+  ],
+  "acuerdo": [
+   "acuerdo-1.mp3",
+   "acuerdo-2.mp3",
+   "acuerdo-3.mp3"
+  ],
+  "sin-acuerdo": [
+   "sin-acuerdo-1.mp3",
+   "sin-acuerdo-2.mp3"
+  ],
+  "parada": [
+   "parada-1.mp3"
+  ],
+  "veredicto-listo": [
+   "veredicto-listo-1.mp3",
+   "veredicto-listo-2.mp3"
+  ],
+  "grabar-inicio": [
+   "grabar-inicio-1.mp3",
+   "grabar-inicio-2.mp3"
+  ],
+  "grabar-parar": [
+   "grabar-parar-1.mp3",
+   "grabar-parar-2.mp3"
+  ],
+  "turno-enviado": [
+   "turno-enviado-1.mp3",
+   "turno-enviado-2.mp3",
+   "turno-enviado-3.mp3"
+  ],
+  "acierto": [
+   "acierto-1.mp3",
+   "acierto-2.mp3"
+  ],
+  "fallo": [
+   "fallo-1.mp3",
+   "fallo-2.mp3",
+   "fallo-3.mp3"
+  ],
+  "soltar": [
+   "soltar-1.mp3",
+   "soltar-2.mp3",
+   "soltar-3.mp3",
+   "soltar-4.mp3"
+  ],
+  "ronda-completa": [
+   "ronda-completa-1.mp3",
+   "ronda-completa-2.mp3",
+   "ronda-completa-3.mp3"
+  ],
+  "cuenta-romper": [
+   "cuenta-romper-1.mp3",
+   "cuenta-romper-2.mp3",
+   "cuenta-romper-3.mp3",
+   "cuenta-romper-4.mp3"
+  ],
+  "choque-fuego": [
+   "choque-fuego-1.mp3",
+   "choque-fuego-2.mp3"
+  ],
+  "choque-metal": [
+   "choque-metal-1.mp3",
+   "choque-metal-2.mp3"
+  ],
+  "choque-planta": [
+   "choque-planta-1.mp3",
+   "choque-planta-2.mp3"
+  ],
+  "choque-rayo": [
+   "choque-rayo-1.mp3",
+   "choque-rayo-2.mp3"
+  ],
+  "choque-agua": [
+   "choque-agua-1.mp3",
+   "choque-agua-2.mp3"
+  ],
+  "bloques-linea": [
+   "bloques-linea-1.mp3",
+   "bloques-linea-2.mp3",
+   "bloques-linea-3.mp3"
+  ]
+ },
+ "hecho": {
+  "acierto-1.mp3": {
+   "como": {
+    "texto": "short bright cartoon pop with a single glassy chime in C major, cheerful, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -6
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "acierto-2.mp3": {
+   "como": {
+    "texto": "short bright cartoon pop with a single glassy chime in C major, cheerful, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -6
+   },
+   "bytes": 2135,
+   "segundos": 0.134
+  },
+  "redoble-1.mp3": {
+   "como": {
+    "texto": "snare drum roll building in intensity, game show suspense, crescendo, ends abruptly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.3,
+    "inf": 0.5,
+    "pico": -4
+   },
+   "bytes": 13629,
+   "segundos": 1.281
+  },
+  "redoble-2.mp3": {
+   "como": {
+    "texto": "snare drum roll building in intensity, game show suspense, crescendo, ends abruptly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.3,
+    "inf": 0.5,
+    "pico": -4
+   },
+   "bytes": 13629,
+   "segundos": 1.281
+  },
+  "victoria-1.mp3": {
+   "como": {
+    "texto": "short triumphant cartoon fanfare, bright brass arpeggio rising to a major chord, victory stinger, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 2.5,
+    "inf": 0.35,
+    "pico": -1
+   },
+   "bytes": 25384,
+   "segundos": 2.48
+  },
+  "victoria-2.mp3": {
+   "como": {
+    "texto": "short triumphant cartoon fanfare, bright brass arpeggio rising to a major chord, victory stinger, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 2.5,
+    "inf": 0.35,
+    "pico": -1
+   },
+   "bytes": 25384,
+   "segundos": 2.48
+  },
+  "vitores-1.mp3": {
+   "como": {
+    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.8,
+    "inf": 0.35,
+    "pico": -3
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "vitores-2.mp3": {
+   "como": {
+    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.8,
+    "inf": 0.35,
+    "pico": -3
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "vitores-3.mp3": {
+   "como": {
+    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.8,
+    "inf": 0.35,
+    "pico": -3
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "vitores-4.mp3": {
+   "como": {
+    "texto": "small group of young kids cheering yaaay and clapping, joyful, excited, celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.8,
+    "inf": 0.35,
+    "pico": -3
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "empate-1.mp3": {
+   "como": {
+    "texto": "two playful cartoon melodic phrases answering each other, ending together on a warm major chord, friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.8,
+    "inf": 0.4,
+    "pico": -2
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "empate-2.mp3": {
+   "como": {
+    "texto": "two playful cartoon melodic phrases answering each other, ending together on a warm major chord, friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.8,
+    "inf": 0.4,
+    "pico": -2
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "empate-3.mp3": {
+   "como": {
+    "texto": "two playful cartoon melodic phrases answering each other, ending together on a warm major chord, friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.8,
+    "inf": 0.4,
+    "pico": -2
+   },
+   "bytes": 18331,
+   "segundos": 1.76
+  },
+  "acuerdo-1.mp3": {
+   "como": {
+    "texto": "warm choir aaah swelling with gentle sparkling chimes, two voices joining in harmony, heartwarming celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 2.2,
+    "inf": 0.35,
+    "pico": -2
+   },
+   "bytes": 22772,
+   "segundos": 2.2
+  },
+  "acuerdo-2.mp3": {
+   "como": {
+    "texto": "warm choir aaah swelling with gentle sparkling chimes, two voices joining in harmony, heartwarming celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 2.2,
+    "inf": 0.35,
+    "pico": -2
+   },
+   "bytes": 22772,
+   "segundos": 2.2
+  },
+  "acuerdo-3.mp3": {
+   "como": {
+    "texto": "warm choir aaah swelling with gentle sparkling chimes, two voices joining in harmony, heartwarming celebration, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 2.2,
+    "inf": 0.35,
+    "pico": -2
+   },
+   "bytes": 22772,
+   "segundos": 2.2
+  },
+  "sin-acuerdo-1.mp3": {
+   "como": {
+    "texto": "gentle soft marimba two-note phrase, neutral and calm, unresolved but friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.2,
+    "inf": 0.5,
+    "pico": -5
+   },
+   "bytes": 12584,
+   "segundos": 1.2
+  },
+  "sin-acuerdo-2.mp3": {
+   "como": {
+    "texto": "gentle soft marimba two-note phrase, neutral and calm, unresolved but friendly, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.2,
+    "inf": 0.5,
+    "pico": -5
+   },
+   "bytes": 12584,
+   "segundos": 1.2
+  },
+  "parada-1.mp3": {
+   "como": {
+    "texto": "single soft low bell tone, calm, serious, short decay, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 1.0,
+    "inf": 0.6,
+    "pico": -8
+   },
+   "bytes": 10755,
+   "segundos": 1.0
+  },
+  "veredicto-listo-1.mp3": {
+   "como": {
+    "texto": "short magical reveal chime, anticipation, bright, game show, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.5,
+    "pico": -5
+   },
+   "bytes": 3963,
+   "segundos": 0.337
+  },
+  "veredicto-listo-2.mp3": {
+   "como": {
+    "texto": "short magical reveal chime, anticipation, bright, game show, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.5,
+    "pico": -5
+   },
+   "bytes": 6053,
+   "segundos": 0.548
+  },
+  "grabar-inicio-1.mp3": {
+   "como": {
+    "texto": "short cheerful two-note rising blip, microphone on, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "grabar-inicio-2.mp3": {
+   "como": {
+    "texto": "short cheerful two-note rising blip, microphone on, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "grabar-parar-1.mp3": {
+   "como": {
+    "texto": "short two-note falling blip, microphone off, soft, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "grabar-parar-2.mp3": {
+   "como": {
+    "texto": "short two-note falling blip, microphone off, soft, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "turno-enviado-1.mp3": {
+   "como": {
+    "texto": "paper plane swoosh followed by a small bright ding, sent, satisfying, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 6576,
+   "segundos": 0.598
+  },
+  "turno-enviado-2.mp3": {
+   "como": {
+    "texto": "paper plane swoosh followed by a small bright ding, sent, satisfying, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "turno-enviado-3.mp3": {
+   "como": {
+    "texto": "paper plane swoosh followed by a small bright ding, sent, satisfying, cartoon UI, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "fallo-1.mp3": {
+   "como": {
+    "texto": "soft rubbery cartoon boink, gently falling pitch, playful not sad, quiet, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -11
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "fallo-2.mp3": {
+   "como": {
+    "texto": "soft rubbery cartoon boink, gently falling pitch, playful not sad, quiet, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -11
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "fallo-3.mp3": {
+   "como": {
+    "texto": "soft rubbery cartoon boink, gently falling pitch, playful not sad, quiet, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -11
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "soltar-1.mp3": {
+   "como": {
+    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 5531,
+   "segundos": 0.48
+  },
+  "soltar-2.mp3": {
+   "como": {
+    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 2919,
+   "segundos": 0.231
+  },
+  "soltar-3.mp3": {
+   "como": {
+    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 2396,
+   "segundos": 0.179
+  },
+  "soltar-4.mp3": {
+   "como": {
+    "texto": "satisfying soft plastic snap into place, cartoon, clean, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.7,
+    "pico": -8
+   },
+   "bytes": 4225,
+   "segundos": 0.353
+  },
+  "ronda-completa-1.mp3": {
+   "como": {
+    "texto": "short cheerful level complete jingle, bright marimba and bells, major cadence, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.2,
+    "inf": 0.4,
+    "pico": -3
+   },
+   "bytes": 12584,
+   "segundos": 1.2
+  },
+  "ronda-completa-2.mp3": {
+   "como": {
+    "texto": "short cheerful level complete jingle, bright marimba and bells, major cadence, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.2,
+    "inf": 0.4,
+    "pico": -3
+   },
+   "bytes": 12584,
+   "segundos": 1.2
+  },
+  "ronda-completa-3.mp3": {
+   "como": {
+    "texto": "short cheerful level complete jingle, bright marimba and bells, major cadence, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality",
+    "dur": 1.2,
+    "inf": 0.4,
+    "pico": -3
+   },
+   "bytes": 12584,
+   "segundos": 1.2
+  },
+  "cuenta-romper-1.mp3": {
+   "como": {
+    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 4747,
+   "segundos": 0.394
+  },
+  "cuenta-romper-2.mp3": {
+   "como": {
+    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 4486,
+   "segundos": 0.378
+  },
+  "cuenta-romper-3.mp3": {
+   "como": {
+    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 3963,
+   "segundos": 0.319
+  },
+  "cuenta-romper-4.mp3": {
+   "como": {
+    "texto": "candy shell cracking with sparkle, satisfying, cartoon, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.5,
+    "inf": 0.6,
+    "pico": -6
+   },
+   "bytes": 5531,
+   "segundos": 0.479
+  },
+  "choque-fuego-1.mp3": {
+   "como": {
+    "texto": "cartoon fire whoosh burst, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "choque-fuego-2.mp3": {
+   "como": {
+    "texto": "cartoon fire whoosh burst, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 4747,
+   "segundos": 0.416
+  },
+  "choque-metal-1.mp3": {
+   "como": {
+    "texto": "cartoon metal clang, bright, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 2396,
+   "segundos": 0.158
+  },
+  "choque-metal-2.mp3": {
+   "como": {
+    "texto": "cartoon metal clang, bright, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "choque-planta-1.mp3": {
+   "como": {
+    "texto": "cartoon leaves rustle and sprout pop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.599
+  },
+  "choque-planta-2.mp3": {
+   "como": {
+    "texto": "cartoon leaves rustle and sprout pop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 3441,
+   "segundos": 0.285
+  },
+  "choque-rayo-1.mp3": {
+   "como": {
+    "texto": "cartoon electric zap crackle, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "choque-rayo-2.mp3": {
+   "como": {
+    "texto": "cartoon electric zap crackle, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "choque-agua-1.mp3": {
+   "como": {
+    "texto": "cartoon water droplet splash plop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "choque-agua-2.mp3": {
+   "como": {
+    "texto": "cartoon water droplet splash plop, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.6,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 6576,
+   "segundos": 0.6
+  },
+  "bloques-linea-1.mp3": {
+   "como": {
+    "texto": "bright sweep with chime cascade, line clear, satisfying, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.5,
+    "pico": -4
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  },
+  "bloques-linea-2.mp3": {
+   "como": {
+    "texto": "bright sweep with chime cascade, line clear, satisfying, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.5,
+    "pico": -4
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  },
+  "bloques-linea-3.mp3": {
+   "como": {
+    "texto": "bright sweep with chime cascade, line clear, satisfying, cartoon mobile game sound effect, one-shot, dry, clean start, no reverb tail, bright but soft, high quality, no music",
+    "dur": 0.8,
+    "inf": 0.5,
+    "pico": -4
+   },
+   "bytes": 8665,
+   "segundos": 0.8
+  }
+ }
+}
