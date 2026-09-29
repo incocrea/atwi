@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=7ddeb36">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=7ddeb36">
-<link rel="stylesheet" href="../assets/css/base.css?v=7ddeb36">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=bb61052">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=bb61052">
+<link rel="stylesheet" href="../assets/css/base.css?v=bb61052">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -104,6 +104,25 @@
     background: var(--papel); border: 2px solid var(--mal); border-radius: 999px; padding: 1px 10px;
     cursor: pointer; }
   button.peligro:disabled { opacity: .5; cursor: default; }
+  /* --- Las vidas de una cuenta (0121) --- */
+  .vidas-btn { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-weight: 800;
+    background: var(--papel); border: 2px solid var(--linea, #e6dccd); border-radius: 999px;
+    padding: 1px 10px 1px 4px; cursor: pointer; color: var(--tinta); }
+  .vidas-btn:hover { border-color: var(--lavanda); }
+  .dlg { border: 0; border-radius: var(--radio-tarjeta, 22px); padding: 20px 22px; width: min(520px, 92vw);
+    max-height: 86vh; box-shadow: var(--sombra-2, 0 10px 40px rgba(0,0,0,.2)); background: var(--papel); }
+  .dlg::backdrop { background: rgba(40, 30, 70, .35); backdrop-filter: blur(3px); }
+  .dlg__cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .dlg__cab h2 { margin: 0; }
+  .dlg__x { font: inherit; background: none; border: 0; font-size: 18px; cursor: pointer; color: var(--suave); }
+  .dlg__saldo { display: flex; align-items: center; gap: 10px; margin: 14px 0; }
+  .dlg__saldo b { font-size: 2rem; color: var(--tinta); }
+  .dlg__form { display: grid; grid-template-columns: 80px 1fr auto auto; gap: 8px; align-items: center; }
+  .dlg__form input { font: inherit; padding: 6px 10px; border: 2px solid var(--linea, #e6dccd); border-radius: 10px; min-width: 0; }
+  .dlg__quitar { --cara: var(--mal); }
+  .dlg h3 { font-size: 1rem; margin: 18px 0 6px; }
+  .dlg__lista { max-height: 40vh; overflow-y: auto; }
+  .dlg__lista table { width: 100%; }
   .pastilla { display: inline-block; padding: 1px 8px; border-radius: 99px;
               background: var(--lavanda-tinte); color: var(--lavanda-oscuro); font-size: 11px; font-weight: 800; }
   .aviso { background: var(--sol-tinte); color: #6b5316; box-shadow: var(--sombra-1);
@@ -438,6 +457,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=7ddeb36"></script>
+<script src="../assets/js/paquete-admin.js?v=bb61052"></script>
 </body>
 </html>
