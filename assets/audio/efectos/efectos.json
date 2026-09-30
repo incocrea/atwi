@@ -154,6 +154,9 @@
    "encuentro-puno-2.mp3",
    "encuentro-puno-3.mp3"
   ],
+  "versus-entrada": [
+   "versus-entrada-1.mp3"
+  ],
   "cuenta-num": [
    "cuenta-num-1.mp3"
   ],
@@ -272,7 +275,7 @@
   "juego": {
    "archivo": "musica-juego-1.mp3",
    "volumen": 0.14,
-   "nombre": "Con ritmo (la de antes)",
+   "nombre": "Con ritmo",
    "fondo": false
   },
   "tarde": {
@@ -442,6 +445,9 @@
    "encuentro-puno-1.mp3",
    "encuentro-puno-2.mp3",
    "encuentro-puno-3.mp3"
+  ],
+  "versus-entrada": [
+   "versus-entrada-1.mp3"
   ],
   "cuenta-num": [
    "cuenta-num-1.mp3"
@@ -2066,6 +2072,16 @@
    },
    "bytes": 815953,
    "segundos": 58.2
+  },
+  "versus-entrada-1.mp3": {
+   "como": {
+    "texto": "Playful exciting build-up sting for a cozy mobile game versus screen: soft pizzicato strings and wooden marimba climbing up quickly over a gentle rolling soft tom drum, landing on a warm cheerful ukulele and string chord with a soft airy whoosh, anticipation and joy, warm and rounded, no harsh or bright sounds, no distortion, no bells, no vocals, soft and elegant cozy mobile game sound, organic acoustic instrument, warm mellow tone, rounded soft attack, dry and close, no reverb tail, no metal, no bells, no high-pitched chimes, no sparkle, no hiss, not bright, not harsh, subtle, quiet, high quality",
+    "dur": 3.4,
+    "inf": 0.6,
+    "pico": -5
+   },
+   "bytes": 20421,
+   "segundos": 1.977
   }
  }
 }
