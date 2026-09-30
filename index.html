@@ -26,11 +26,11 @@
 
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=b23717e">
-<link rel="stylesheet" href="assets/css/tokens.css?v=b23717e">
-<link rel="stylesheet" href="assets/css/base.css?v=b23717e">
-<link rel="stylesheet" href="assets/css/landing.css?v=b23717e">
-<link rel="stylesheet" href="assets/css/modal.css?v=b23717e">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=ca06246">
+<link rel="stylesheet" href="assets/css/tokens.css?v=ca06246">
+<link rel="stylesheet" href="assets/css/base.css?v=ca06246">
+<link rel="stylesheet" href="assets/css/landing.css?v=ca06246">
+<link rel="stylesheet" href="assets/css/modal.css?v=ca06246">
 </head>
 
 <body class="landing">
@@ -91,41 +91,47 @@
   
   <section class="seccion" id="como">
     <h2 class="seccion__titulo">Cómo se juega</h2>
+    
     <ol class="como">
       <li class="como__paso">
-        <span class="como__dibujo como__dibujo--mesas" aria-hidden="true">
-          <img src="assets/img/iconos/amigos.webp" alt="" width="52" height="52" loading="lazy">
-          <img src="assets/img/iconos/familia.webp" alt="" width="52" height="52" loading="lazy">
-          <img src="assets/img/iconos/pareja.webp" alt="" width="52" height="52" loading="lazy">
+        <span class="como__dibujo como__dibujo--figuras" aria-hidden="true">
+          <img class="como__fig" src="assets/img/landing/como-kai-plante.webp" alt="" width="253" height="390" loading="lazy">
+          <img class="como__fig como__fig--volteada" src="assets/img/landing/como-maya-plante.webp" alt="" width="258" height="390" loading="lazy">
         </span>
         <h3>¿No se ponen de acuerdo?</h3>
-        <p>Elijan el tema: hay 150, escritos para amigos, para la familia y para la pareja, o escriban
-          el suyo. Juegan en el mismo celular o cada quien en el suyo, con una invitación por WhatsApp.</p>
+        <p>Elijan uno de los temas que hay o escriban el suyo. Creen la partida ¡y a darle! Pueden
+          jugar en el mismo celular o cada uno en el suyo.</p>
       </li>
       <li class="como__paso">
-        <span class="como__dibujo" aria-hidden="true">
-          <img src="assets/img/iconos/micro.webp" alt="" width="64" height="64" loading="lazy">
+        <span class="como__dibujo como__dibujo--micros" aria-hidden="true">
+          <img class="como__micro como__fig--volteada" src="assets/img/iconos/micro.webp" alt="" width="64" height="64" loading="lazy">
+          <svg class="como__flecha" viewBox="0 0 64 28" focusable="false">
+            <path class="como__flecha-borde" d="M8 14 H56 M16 5 L7 14 L16 23 M48 5 L57 14 L48 23"/>
+            <path class="como__flecha-trazo" d="M8 14 H56 M16 5 L7 14 L16 23 M48 5 L57 14 L48 23"/>
+          </svg>
+          <img class="como__micro" src="assets/img/iconos/micro.webp" alt="" width="64" height="64" loading="lazy">
         </span>
         <h3>Cada quien dice lo suyo</h3>
-        <p>Por turnos y con la voz: 45 segundos en Controversia. Nadie contesta sin haber oído
-          antes al otro, como en una discusión de verdad.</p>
+        <p>Hablan por turnos: nadie contesta sin haber oído antes al otro, y eso da tranquilidad para
+          expresarte. Tu argumento se procesa para que tu personaje lo presente por ti con su propio
+          estilo.</p>
       </li>
       <li class="como__paso">
-        <span class="como__dibujo como__dibujo--caras" aria-hidden="true">
-          <img src="assets/img/personajes/kai-azul-ficha.webp" alt="" width="48" height="74" loading="lazy">
-          <img src="assets/img/personajes/maya-amarillo-ficha.webp" alt="" width="48" height="74" loading="lazy">
+        <span class="como__dibujo como__dibujo--figuras" aria-hidden="true">
+          <img class="como__fig" src="assets/img/landing/como-kai-habla.webp" alt="" width="180" height="390" loading="lazy">
+          <img class="como__fig como__fig--volteada" src="assets/img/landing/como-maya-habla.webp" alt="" width="197" height="390" loading="lazy">
         </span>
         <h3>Sus personajes discuten por ustedes</h3>
-        <p>Tu personaje dice tu argumento con su propia voz y su estilo, con humor. Pule cómo se dice,
-          nunca añade una razón que no diste. Y tu voz no la guarda ATWI: lo que se oye es tu personaje.</p>
+        <p>Tu personaje expresa tu argumento con su propia voz y su estilo, y le agrega algo de amor y
+          humor cuando se puede. No modifica tu argumento: solo lo expresa a su modo.</p>
       </li>
       <li class="como__paso">
-        <span class="como__dibujo como__dibujo--caras" aria-hidden="true">
-          <img src="assets/img/personajes/bruno-ficha.webp" alt="" width="48" height="74" loading="lazy">
+        <span class="como__dibujo como__dibujo--figuras" aria-hidden="true">
+          <img class="como__fig" src="assets/img/landing/como-juez.webp" alt="" width="206" height="390" loading="lazy">
         </span>
         <h3>Y el juez decide</h3>
-        <p>Redoble, veredicto y el desglose de por qué: el juez lee la versión limpia de lo que dijo
-          cada quien y gana quien lo defendió mejor, no quien tiene la razón. ¡Siguiente caso!</p>
+        <p>Al final, un juez IA lee la versión limpia de lo que dijo cada quien, dicta un veredicto y
+          lo explica. Ojo: no evalúa quién tiene la razón, sino quién presentó mejor sus argumentos.</p>
       </li>
     </ol>
   </section>
@@ -463,6 +469,6 @@
 </dialog>
 
 
-<script src="assets/js/landing.js?v=b23717e"></script>
+<script src="assets/js/landing.js?v=ca06246"></script>
 </body>
 </html>
