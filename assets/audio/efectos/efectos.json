@@ -265,11 +265,27 @@
  "musica": {
   "menu": {
    "archivo": "musica-menu-1.mp3",
-   "volumen": 0.16
+   "volumen": 0.16,
+   "nombre": "Ukelele y marimba",
+   "fondo": true
   },
   "juego": {
    "archivo": "musica-juego-1.mp3",
-   "volumen": 0.14
+   "volumen": 0.14,
+   "nombre": "Con ritmo (la de antes)",
+   "fondo": false
+  },
+  "tarde": {
+   "archivo": "musica-tarde-1.mp3",
+   "volumen": 0.11,
+   "nombre": "Guitarra y piano",
+   "fondo": true
+  },
+  "nubes": {
+   "archivo": "musica-nubes-1.mp3",
+   "volumen": 0.11,
+   "nombre": "Kalimba y nubes",
+   "fondo": true
   }
  },
  "todas": {
@@ -541,6 +557,12 @@
   "musica-juego": [
    "musica-juego-1.mp3",
    "musica-juego-2.mp3"
+  ],
+  "musica-tarde": [
+   "musica-tarde-1.mp3"
+  ],
+  "musica-nubes": [
+   "musica-nubes-1.mp3"
   ]
  },
  "hecho": {
@@ -2028,6 +2050,22 @@
    },
    "bytes": 605667,
    "segundos": 43.2
+  },
+  "musica-tarde-1.mp3": {
+   "como": {
+    "prompt": "calm gentle instrumental background loop for a cozy casual mobile game, soft acoustic guitar fingerpicking and warm felt piano, light brushed percussion, relaxed and warm, 84 bpm, major key, steady consistent energy from start to end, low dynamic range, soft and unobtrusive so it never gets tiring on repeat, no intro, no ending, no fade, seamless loop, no vocals",
+    "segundos": 60
+   },
+   "bytes": 815953,
+   "segundos": 58.22
+  },
+  "musica-nubes-1.mp3": {
+   "como": {
+    "prompt": "soft dreamy instrumental background loop for a cozy casual mobile game, mellow kalimba and warm electric piano over soft pads, subtle light percussion, calm and airy, 80 bpm, major key, steady consistent energy from start to end, low dynamic range, soft and unobtrusive so it never gets tiring on repeat, no intro, no ending, no fade, seamless loop, no vocals",
+    "segundos": 60
+   },
+   "bytes": 815953,
+   "segundos": 58.2
   }
  }
 }

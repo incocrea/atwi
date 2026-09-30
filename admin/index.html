@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=44e9f95">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=44e9f95">
-<link rel="stylesheet" href="../assets/css/base.css?v=44e9f95">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=4a58e8a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=4a58e8a">
+<link rel="stylesheet" href="../assets/css/base.css?v=4a58e8a">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -257,6 +257,16 @@
   .j-estado--apagado[aria-pressed="true"] { background: var(--tinta-suave); }
   @media (max-width: 760px) { .j-lista { grid-template-columns: 1fr; } .j-carta { grid-template-columns: 48px minmax(0, 1fr); }
     .j-pieza { width: 48px; height: 48px; } .j-estados { grid-column: 1 / -1; } .j-estado { flex: 1; min-width: 0; } }
+  /* La música de fondo (0124): las pistas para oír y el selector de cada juego. */
+  .m-pista { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px;
+    padding: 12px 14px; background: var(--papel); border-radius: 18px; box-shadow: var(--sombra-1); border: 2px solid var(--lavanda); }
+  .m-pista--fuera { border-color: transparent; background: var(--crema); }
+  .m-oir { display: flex; gap: 4px; padding: 4px; border-radius: 14px; background: var(--crema); }
+  .m-oir .j-estado { font-weight: 800; font-size: 13px; min-width: 96px; }
+  .m-oir .j-estado[aria-pressed="true"] { background: var(--lavanda); }
+  .m-juego { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .m-juego select { font: inherit; font-size: 12px; padding: 2px 6px; border-radius: 8px; border: 1px solid var(--linea-fuerte, #d6ccbe);
+    background: var(--papel); max-width: 100%; }
   .incrustado { display: block; width: 100%; height: calc(100vh - var(--alto-cab)); border: 0; background: var(--crema); }
   /* El interruptor del emulador, encima de su panel (2026-09-24). */
   .emu-barra { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 52px; padding: 0 16px; border-bottom: 1px solid var(--linea, #e8e0d4); }
@@ -458,6 +468,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=44e9f95"></script>
+<script src="../assets/js/paquete-admin.js?v=4a58e8a"></script>
 </body>
 </html>
