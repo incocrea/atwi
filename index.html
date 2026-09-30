@@ -17,11 +17,11 @@
 
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=4a58e8a">
-<link rel="stylesheet" href="assets/css/tokens.css?v=4a58e8a">
-<link rel="stylesheet" href="assets/css/base.css?v=4a58e8a">
-<link rel="stylesheet" href="assets/css/landing.css?v=4a58e8a">
-<link rel="stylesheet" href="assets/css/modal.css?v=4a58e8a">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=698c76a">
+<link rel="stylesheet" href="assets/css/tokens.css?v=698c76a">
+<link rel="stylesheet" href="assets/css/base.css?v=698c76a">
+<link rel="stylesheet" href="assets/css/landing.css?v=698c76a">
+<link rel="stylesheet" href="assets/css/modal.css?v=698c76a">
 </head>
 
 <body class="landing">
@@ -59,6 +59,30 @@
     </div>
 
     
+    <figure class="clip">
+      <div class="clip__marco">
+        <video class="clip__video" id="clip" src="assets/video/atwi-promo.mp4" poster="assets/video/atwi-promo.webp"
+               muted playsinline loop preload="none" width="720" height="1280"
+               aria-label="Vídeo de ATWI: Kai y Maya discuten, sus personajes debaten, un juez de IA decide y gana Maya"></video>
+        <button class="clip__sonido" id="clip-sonido" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="clip__onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+          <span>Verlo con sonido</span>
+        </button>
+      </div>
+      <figcaption class="visor__pie">ATWI en 34 segundos. Voces generadas con IA.</figcaption>
+    </figure>
+  </header>
+
+  
+  <section class="seccion demo" id="partida">
+    <div class="demo__texto">
+      <h2 class="seccion__titulo">Mira una partida por dentro</h2>
+      <p class="seccion__entrada">
+        No es una maqueta: es el juego corriendo aquí mismo. El sorteo de quién abre, lo que dijo
+        cada quien con la voz de su personaje y el veredicto con su ceremonia.
+      </p>
+    </div>
+    
     <figure class="visor">
       <div class="telefono" id="visor-caja">
         <div class="visor__portada" id="visor-portada">
@@ -74,7 +98,7 @@
         personaje de cada uno, y el veredicto es el que dio el juez.
       </figcaption>
     </figure>
-  </header>
+  </section>
 
   <section class="seccion" id="modos">
     <h2 class="seccion__titulo">Tres maneras de jugar el mismo rato</h2>
@@ -344,6 +368,6 @@
 </dialog>
 
 
-<script src="assets/js/landing.js?v=4a58e8a"></script>
+<script src="assets/js/landing.js?v=698c76a"></script>
 </body>
 </html>
