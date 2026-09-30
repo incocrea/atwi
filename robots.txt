@@ -1,3 +1,7 @@
-# ATWI — todavía en construcción: nada indexable.
+# ATWI — la landing se indexa (docs/14 P0.1, 2026-09-29). El juego (/app/) lleva su
+# propio `noindex` en la página, y los buscadores tienen que poder leerla para verlo.
+# El tablero, fuera.
 User-agent: *
-Disallow: /
+Disallow: /admin/
+
+Sitemap: https://atwi.app/sitemap.xml

@@ -3,25 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="robots" content="noindex">
+
 <meta name="theme-color" content="#FBF7F2">
 <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
 <link rel="manifest" href="site.webmanifest">
-<meta property="og:title" content="ATWI · El juego de debate">
-<meta property="og:description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
-<meta property="og:image" content="assets/img/og.png">
+<link rel="canonical" href="https://atwi.app/">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ATWI">
+<meta property="og:locale" content="es_LA">
+<meta property="og:url" content="https://atwi.app/">
+<meta property="og:title" content="ATWI · ¡A juicio!">
+<meta property="og:description" content="La nueva forma divertida para debatir, negociar y competir. Tu personaje defiende tu argumento con gracia y el juez decide quién lo argumentó mejor.">
+<meta property="og:image" content="https://atwi.app/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ATWI, ¡a juicio!: la nueva forma divertida para debatir, negociar y competir, con Kai y Maya">
 <meta name="twitter:card" content="summary_large_image">
-<title>ATWI · El juego de debate para parejas, amigos y familia</title>
-<meta name="description" content="Tres modos, turnos de voz y una IA que devuelve el resultado. Lo que discuten siempre, jugado de otra manera.">
+<title>ATWI · ¡A juicio! Juego de debate con personajes</title>
+<meta name="description" content="Un juego de reunión en tu celular, pero aquí la discusión tiene juez. Cada quien dice lo suyo, su personaje lo defiende con gracia y el juez decide quién lo argumentó mejor.">
 
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=1db65b3">
-<link rel="stylesheet" href="assets/css/tokens.css?v=1db65b3">
-<link rel="stylesheet" href="assets/css/base.css?v=1db65b3">
-<link rel="stylesheet" href="assets/css/landing.css?v=1db65b3">
-<link rel="stylesheet" href="assets/css/modal.css?v=1db65b3">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=da59297">
+<link rel="stylesheet" href="assets/css/tokens.css?v=da59297">
+<link rel="stylesheet" href="assets/css/base.css?v=da59297">
+<link rel="stylesheet" href="assets/css/landing.css?v=da59297">
+<link rel="stylesheet" href="assets/css/modal.css?v=da59297">
 </head>
 
 <body class="landing">
@@ -41,20 +50,21 @@
     <a class="boton" href="app/">Jugar</a>
   </nav>
 
+  
   <header class="heroe">
     <div>
-      <h1 class="heroe__titular">Lo que discuten siempre,<br><em>jugado</em> de otra manera.</h1>
+      <p class="heroe__marca"><span>¡A juicio!</span></p>
+      <h1 class="heroe__titular">La nueva forma <em>divertida</em> para debatir, negociar y competir.</h1>
       <p class="heroe__entrada">
-        Graban por turnos lo que cada quien tiene para decir, y una inteligencia
-        artificial devuelve el resultado. Hay tres maneras de jugarlo: compitiendo por
-        quién argumenta mejor, buscando un acuerdo, o apostando algo y ganándoselo.
+        Un juego de reunión en tu celular, pero aquí la discusión tiene juez. Cada quien dice
+        lo suyo, su personaje lo defiende con gracia y el juez decide quién lo argumentó mejor.
       </p>
       <div class="heroe__acciones">
-        <a class="boton boton--grande" href="app/">Empezar a jugar</a>
-        <a class="boton boton--suave boton--grande boton--punteado" href="#modos">Ver los tres modos</a>
+        <a class="boton boton--grande" href="app/">Jugar ahora</a>
+        <a class="boton boton--suave boton--grande boton--punteado" href="#como">Ver cómo se juega</a>
       </div>
-      <p class="chico tenue" style="margin-top:var(--e-4)">
-        Se juega en el navegador · Sin descargar nada · Pensado para el teléfono
+      <p class="heroe__nota">
+        En el navegador del celular · Sin descargar nada · Con amigos, en familia o en pareja
       </p>
     </div>
 
@@ -63,7 +73,7 @@
       <div class="clip__marco">
         <video class="clip__video" id="clip" src="assets/video/atwi-promo.mp4" poster="assets/video/atwi-promo.webp"
                muted playsinline loop preload="none" width="720" height="1280"
-               aria-label="Vídeo de ATWI: Kai y Maya discuten, sus personajes debaten, un juez de IA decide y gana Maya"></video>
+               aria-label="Vídeo de ATWI: Kai y Maya no se ponen de acuerdo, sus personajes discuten por ellos, el juez decide y gana Maya"></video>
         <button class="clip__sonido" id="clip-sonido" type="button" aria-pressed="false">
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path class="clip__onda" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
           <span>Verlo con sonido</span>
@@ -74,6 +84,197 @@
   </header>
 
   
+  <section class="regla">
+    <p class="regla__frase">Aquí no gana el que grita más: <em>gana el que lo argumenta mejor.</em></p>
+    <p class="regla__sub">Y cada partida vale sola: sin ranking ni marcador entre ustedes.</p>
+  </section>
+
+  
+  <section class="seccion" id="como">
+    <h2 class="seccion__titulo">Cómo se juega</h2>
+    <ol class="como">
+      <li class="como__paso">
+        <span class="como__dibujo como__dibujo--mesas" aria-hidden="true">
+          <img src="assets/img/iconos/amigos.webp" alt="" width="52" height="52" loading="lazy">
+          <img src="assets/img/iconos/familia.webp" alt="" width="52" height="52" loading="lazy">
+          <img src="assets/img/iconos/pareja.webp" alt="" width="52" height="52" loading="lazy">
+        </span>
+        <h3>¿No se ponen de acuerdo?</h3>
+        <p>Elijan el tema: hay 150, escritos para amigos, para la familia y para la pareja, o escriban
+          el suyo. Juegan en el mismo celular o cada quien en el suyo, con una invitación por WhatsApp.</p>
+      </li>
+      <li class="como__paso">
+        <span class="como__dibujo" aria-hidden="true">
+          <img src="assets/img/iconos/micro.webp" alt="" width="64" height="64" loading="lazy">
+        </span>
+        <h3>Cada quien dice lo suyo</h3>
+        <p>Por turnos y con la voz: 45 segundos en Controversia. Nadie contesta sin haber oído
+          antes al otro, como en una discusión de verdad.</p>
+      </li>
+      <li class="como__paso">
+        <span class="como__dibujo como__dibujo--caras" aria-hidden="true">
+          <img src="assets/img/personajes/kai-azul-ficha.webp" alt="" width="48" height="74" loading="lazy">
+          <img src="assets/img/personajes/maya-amarillo-ficha.webp" alt="" width="48" height="74" loading="lazy">
+        </span>
+        <h3>Sus personajes discuten por ustedes</h3>
+        <p>Tu personaje dice tu argumento con su propia voz y su estilo, con humor. Pule cómo se dice,
+          nunca añade una razón que no diste. Y tu voz no la guarda ATWI: lo que se oye es tu personaje.</p>
+      </li>
+      <li class="como__paso">
+        <span class="como__dibujo como__dibujo--caras" aria-hidden="true">
+          <img src="assets/img/personajes/bruno-ficha.webp" alt="" width="48" height="74" loading="lazy">
+        </span>
+        <h3>Y el juez decide</h3>
+        <p>Redoble, veredicto y el desglose de por qué: el juez lee la versión limpia de lo que dijo
+          cada quien y gana quien lo defendió mejor, no quien tiene la razón. ¡Siguiente caso!</p>
+      </li>
+    </ol>
+  </section>
+
+  
+  <section class="seccion" id="personajes">
+    <h2 class="seccion__titulo">Tu argumento, en boca de tu personaje</h2>
+    <p class="seccion__entrada">
+      Kai, Luna, Nico, Dante, Nina o Maya: cada quien elige el suyo, y habla por ti con su voz y su
+      estilo. Toca uno para oírlo.
+    </p>
+    <div class="elenco">
+      <button class="actor actor--azul" type="button" data-oir="kai-1">
+        <img src="assets/img/personajes/kai-azul-ficha.webp" alt="" width="92" height="142" loading="lazy">
+        <span class="actor__nombre">Kai</span>
+        <span class="actor__frase">«Tú lo piensas, yo lo digo. Corto y claro. Y ya.»</span>
+        <span class="actor__oir">Oír a Kai</span>
+      </button>
+      <button class="actor actor--morado" type="button" data-oir="luna-3">
+        <img src="assets/img/personajes/luna-morado-ficha.webp" alt="" width="92" height="142" loading="lazy">
+        <span class="actor__nombre">Luna</span>
+        <span class="actor__frase">«Conmigo hasta lo de los platos va a sonar bonito.»</span>
+        <span class="actor__oir">Oír a Luna</span>
+      </button>
+      <button class="actor actor--verde" type="button" data-oir="nico-1">
+        <img src="assets/img/personajes/nico-verde-ficha.webp" alt="" width="92" height="142" loading="lazy">
+        <span class="actor__nombre">Nico</span>
+        <span class="actor__frase">«A ver. Paso uno: me eliges. Paso dos: no hay paso dos.»</span>
+        <span class="actor__oir">Oír a Nico</span>
+      </button>
+      <button class="actor actor--amarillo" type="button" data-oir="dante-3">
+        <img src="assets/img/personajes/dante-amarillo-ficha.webp" alt="" width="92" height="142" loading="lazy">
+        <span class="actor__nombre">Dante</span>
+        <span class="actor__frase">«Hablo poco, pero cuando hablo, hasta el juez toma nota.»</span>
+        <span class="actor__oir">Oír a Dante</span>
+      </button>
+      <button class="actor actor--verde" type="button" data-oir="nina-3">
+        <img src="assets/img/personajes/nina-verde-ficha.webp" alt="" width="92" height="142" loading="lazy">
+        <span class="actor__nombre">Nina</span>
+        <span class="actor__frase">«Tú solo dilo con ganas… ¡que yo lo digo con más!»</span>
+        <span class="actor__oir">Oír a Nina</span>
+      </button>
+      <button class="actor actor--amarillo" type="button" data-oir="maya-2">
+        <img src="assets/img/personajes/maya-amarillo-ficha.webp" alt="" width="92" height="142" loading="lazy">
+        <span class="actor__nombre">Maya</span>
+        <span class="actor__frase">«Tú me das la idea y yo la pongo donde se vea.»</span>
+        <span class="actor__oir">Oír a Maya</span>
+      </button>
+    </div>
+
+    <div class="jueces">
+      <div class="jueces__caras" aria-hidden="true">
+        <img src="assets/img/personajes/bruno-ficha.webp" alt="" width="54" height="84" loading="lazy">
+        <img src="assets/img/personajes/remo-ficha.webp" alt="" width="54" height="84" loading="lazy">
+        <img src="assets/img/personajes/teo-ficha.webp" alt="" width="54" height="84" loading="lazy">
+        <img src="assets/img/personajes/vera-ficha.webp" alt="" width="54" height="84" loading="lazy">
+        <img src="assets/img/personajes/iris-ficha.webp" alt="" width="54" height="84" loading="lazy">
+        <img src="assets/img/personajes/ada-ficha.webp" alt="" width="54" height="84" loading="lazy">
+      </div>
+      <p><b>Y los juzgan Bruno, Remo, Teo, Vera, Iris y Ada.</b> Se turnan: en cada partida sale uno,
+        y ninguno repite hasta que pasaron los seis.</p>
+    </div>
+    <p class="nota-ia">Voces generadas con IA.</p>
+  </section>
+
+  <section class="seccion" id="modos">
+    <h2 class="seccion__titulo">Tres maneras de jugar</h2>
+    <p class="seccion__entrada">
+      Quien invita elige el modo y el tema; la otra persona acepta o no. Si no acepta, no se juega.
+    </p>
+
+    <div class="rejilla-modos">
+      <article class="ficha-modo ficha-modo--debate">
+        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Modo Controversia" width="170" height="88" loading="lazy">
+        <p class="ficha-modo__lema">¡A juicio!</p>
+        <p class="suave chico">
+          Un tema con dos respuestas defendibles. Cada quien sostiene la suya y el juez dice quién
+          la defendió mejor.
+        </p>
+        <ul class="ficha-modo__lista">
+          <li><span>·</span> Gana quien lo argumenta mejor, no quien tiene la razón</li>
+          <li><span>·</span> Cinco criterios, y el desglose se ve entero al final</li>
+          <li><span>·</span> Pueden acabar de acuerdo, y eso no es un fallo: también se puntúa</li>
+        </ul>
+      </article>
+
+      <article class="ficha-modo ficha-modo--negociacion">
+        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Modo Negociación" width="170" height="80" loading="lazy">
+        <p class="ficha-modo__lema">Lo que acordaron, para recordarlo.</p>
+        <p class="suave chico">
+          Aquí no hay ganador. Cada quien dice lo que quiere y un mediador propone maneras de quedar,
+          enseñando qué recoge de cada quien.
+        </p>
+        <ul class="ficha-modo__lista">
+          <li><span>·</span> Eligen la que les sirve y la firman</li>
+          <li><span>·</span> Queda un acta, que es un recordatorio y nada más</li>
+          <li><span>·</span> Si ninguna los convence, también queda dicho</li>
+        </ul>
+      </article>
+
+      <article class="ficha-modo ficha-modo--competencia">
+        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="Modo QuiénGane" width="170" height="82" loading="lazy">
+        <p class="ficha-modo__lema">¿Quién elige la película? Que lo decida el juego.</p>
+        <p class="suave chico">
+          Aquí no se argumenta: se retan por un premio —una comida, un favor, la próxima elección— y
+          lo decide un minijuego.
+        </p>
+        <ul class="ficha-modo__lista">
+          <li><span>·</span> Nueve minijuegos, uno por ronda</li>
+          <li><span>·</span> El premio se cumple esta semana y se puede señalar</li>
+          <li><span>·</span> 150 premios escritos, o el que se inventen ustedes</li>
+        </ul>
+      </article>
+    </div>
+
+    
+    <h3 class="minijuegos__titulo">Los minijuegos de QuiénGane</h3>
+    <ul class="minijuegos">
+      <li><img src="assets/img/juegos/juego-choque.webp" alt="" width="56" height="56" loading="lazy"><b>Choque</b><span>Piedra, papel o tijera, pero con cinco elementos.</span></li>
+      <li><img src="assets/img/juegos/juego-calco.webp" alt="" width="56" height="56" loading="lazy"><b>Calco</b><span>Mira el patrón unos segundos y cálcalo de memoria.</span></li>
+      <li><img src="assets/img/juegos/juego-canastas.webp" alt="" width="56" height="56" loading="lazy"><b>Canastas</b><span>Mueve los stickers hasta que cada canasta tenga los suyos.</span></li>
+      <li><img src="assets/img/juegos/juego-despensa.webp" alt="" width="56" height="56" loading="lazy"><b>Despensa</b><span>Deja cada estante con sus tres productos iguales.</span></li>
+      <li><img src="assets/img/juegos/juego-duos.webp" alt="" width="56" height="56" loading="lazy"><b>Dúos</b><span>Une dos iguales con una línea que no atraviese nada.</span></li>
+      <li><img src="assets/img/juegos/juego-revoltijo.webp" alt="" width="56" height="56" loading="lazy"><b>Revoltijo</b><span>De una pila revuelta, saca las parejas que se ven.</span></li>
+      <li><img src="assets/img/juegos/juego-multitud.webp" alt="" width="56" height="56" loading="lazy"><b>Multitud</b><span>Elige las cartas que hacen crecer a tu gente.</span></li>
+      <li><img src="assets/img/juegos/juego-trazos.webp" alt="" width="56" height="56" loading="lazy"><b>Trazos</b><span>Une cada par de puntos sin cruzar los trazos.</span></li>
+      <li><img src="assets/img/juegos/juego-bloques.webp" alt="" width="56" height="56" loading="lazy"><b>Bloques</b><span>Coloca piezas y completa líneas contra el reloj.</span></li>
+    </ul>
+  </section>
+
+  
+  <section class="seccion">
+    <h2 class="seccion__titulo">Juntos o cada quien en su casa</h2>
+    <div class="rejilla-dos">
+      <article class="tarjeta-extra">
+        <h3>En el mismo celular</h3>
+        <p class="chico suave">Se pasan el teléfono: cada quien graba su turno y el juez habla para los
+          dos. Ideal para la reunión, la sobremesa o el parche.</p>
+      </article>
+      <article class="tarjeta-extra">
+        <h3>Cada quien en el suyo</h3>
+        <p class="chico suave">Invita por WhatsApp o por su apodo. Cada turno tiene 24 horas para
+          contestarse, y la app te avisa cuando te toca y cuando hay veredicto.</p>
+      </article>
+    </div>
+  </section>
+
+  
   <section class="seccion demo" id="partida">
     <div class="demo__texto">
       <h2 class="seccion__titulo">Mira una partida por dentro</h2>
@@ -82,7 +283,6 @@
         cada quien con la voz de su personaje y el veredicto con su ceremonia.
       </p>
     </div>
-    
     <figure class="visor">
       <div class="telefono" id="visor-caja">
         <div class="visor__portada" id="visor-portada">
@@ -94,151 +294,50 @@
         </div>
       </div>
       <figcaption class="visor__pie">
-        Harold y Julia discutieron esto en serio. Lo que se oye es la voz del
-        personaje de cada uno, y el veredicto es el que dio el juez.
+        Una partida de prueba, entera: lo que se oye es la voz del personaje de cada lado y el
+        veredicto es el que dio el juez.
       </figcaption>
     </figure>
-  </section>
-
-  <section class="seccion" id="modos">
-    <h2 class="seccion__titulo">Tres maneras de jugar el mismo rato</h2>
-    <p class="seccion__entrada">
-      El modo no lo impone nadie: quien propone elige uno y la otra persona lo acepta o
-      pide otro. Si no se ponen de acuerdo, no se juega.
-    </p>
-
-    <div class="rejilla-modos">
-      <article class="ficha-modo ficha-modo--debate">
-        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Modo Controversia" width="170" height="88" loading="lazy">
-        <p class="suave chico">
-          Un tema con dos respuestas defendibles. Cada quien sostiene la suya y un juez
-          dice quién la defendió mejor, con la rúbrica a la vista.
-        </p>
-        <ul class="ficha-modo__lista">
-          <li><span>·</span> Gana quien argumenta mejor, no quien tiene la razón</li>
-          <li><span>·</span> Cinco criterios, y el desglose se ve entero al final</li>
-          <li><span>·</span> Pueden acabar de acuerdo, y eso no es un fallo: también se puntúa</li>
-        </ul>
-      </article>
-
-      <article class="ficha-modo ficha-modo--negociacion">
-        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Modo Negociación" width="170" height="80" loading="lazy">
-        <p class="suave chico">
-          Aquí no hay ganador. Exponen por turnos y un mediador propone <b>dos</b> maneras
-          de quedar, enseñando qué recoge de cada quien.
-        </p>
-        <ul class="ficha-modo__lista">
-          <li><span>·</span> Eligen una, la ajustan con sus palabras y la firman</li>
-          <li><span>·</span> Queda un acta, que es un recordatorio y nada más</li>
-          <li><span>·</span> Y pueden acordar seguir en desacuerdo: eso también se guarda</li>
-        </ul>
-      </article>
-
-      <article class="ficha-modo ficha-modo--competencia">
-        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="Modo QuiénGane" width="170" height="82" loading="lazy">
-        <p class="suave chico">
-          Aquí no se argumenta: se apuesta. Definen qué se lleva quien gane —una comida,
-          un favor, la próxima elección— y lo deciden jugando.
-        </p>
-        <ul class="ficha-modo__lista">
-          <li><span>·</span> El premio se cumple esta semana y se puede señalar</li>
-          <li><span>·</span> Si duele perderlo, es un castigo con otro nombre, y no entra</li>
-          <li><span>·</span> 150 premios escritos, o el que se inventen ustedes</li>
-        </ul>
-      </article>
-    </div>
-  </section>
-
-  <section class="seccion">
-    <h2 class="seccion__titulo">Cómo se juega</h2>
-    <div class="pasos-juego">
-      <article class="paso-juego">
-        <h3>Eligen con quién y sobre qué</h3>
-        <p class="chico suave">
-          Pareja, amigos o familia: cada mesa trae sus propios temas, porque no se discute
-          lo mismo con tu pareja que con tu hermano. Hay <b>305 temas y 150 premios</b>
-          escritos, y también pueden traer el suyo.
-        </p>
-      </article>
-      <article class="paso-juego">
-        <h3>Graban por turnos</h3>
-        <p class="chico suave">
-          De uno a tres turnos cada quien, con el tiempo contado y siempre alternos: nadie
-          graba sin haber escuchado antes al otro. Eso solo, ya cambia la discusión.
-        </p>
-      </article>
-      <article class="paso-juego">
-        <h3>Y llega el resultado</h3>
-        <p class="chico suave">
-          Un redoble, y el veredicto o el acta. Con el desglose delante: siempre van a
-          saber por qué salió lo que salió.
-        </p>
-      </article>
-    </div>
-  </section>
-
-  <section class="seccion seccion--extra">
-    <h2 class="seccion__titulo">Dos cosas que hacen que funcione</h2>
-    <div class="rejilla-extra">
-      <article class="tarjeta-extra">
-        <h3>Cada quien elige su personaje</h3>
-        <p class="chico suave">
-          Lo que se vuelve a escuchar no es la grabación: es el personaje diciendo lo que
-          dijiste, con su voz. Oír el propio argumento en otra boca lo separa de quien lo
-          dijo, y esa distancia es la que baja la guardia.
-        </p>
-        <div class="caras">
-          <img src="assets/img/personajes/kai-azul-ficha.webp" alt="" width="54" height="54" loading="lazy">
-          <img src="assets/img/personajes/nina-morado-ficha.webp" alt="" width="54" height="54" loading="lazy">
-          <img src="assets/img/personajes/dante-verde-ficha.webp" alt="" width="54" height="54" loading="lazy">
-          <img src="assets/img/personajes/luna-amarillo-ficha.webp" alt="" width="54" height="54" loading="lazy">
-          <img src="assets/img/personajes/maya-azul-ficha.webp" alt="" width="54" height="54" loading="lazy">
-          <img src="assets/img/personajes/nico-verde-ficha.webp" alt="" width="54" height="54" loading="lazy">
-        </div>
-      </article>
-      <article class="tarjeta-extra">
-        <h3>Un personaje habla por ti</h3>
-        <p class="chico suave">
-          Si lo prendes, tu intervención sale ordenada: le quita las muletillas y coloca
-          mejor lo que ya dijiste. Nunca añade una razón que no dijeras — y el texto
-          original no se borra nunca.
-        </p>
-        <p class="chico tenue">Tu voz no se guarda: lo que se oye y se juzga es tu argumento, limpio, en boca del personaje que elegiste.</p>
-      </article>
-    </div>
   </section>
 
   <section class="honesto">
     <h2>Lo que ATWI no hace</h2>
     <p>
-      <strong>No promete que el tema quede resuelto.</strong> Cuando llegan a un acuerdo,
-      lo que queda guardado es un recordatorio de lo que acordaron, nada más.
-      Cumplirlo es cosa de ustedes, no nuestra.
+      <strong>No promete que el tema quede resuelto.</strong> Cuando llegan a un acuerdo, lo que
+      queda guardado es un recordatorio de lo que acordaron, nada más. Cumplirlo es cosa de ustedes.
     </p>
     <p>
-      <strong>No es terapia ni asesoramiento profesional.</strong> Es un juego.
-      Si lo que tienen encima es serio, hay gente preparada para eso y la app les
-      dirá dónde encontrarla.
+      <strong>No es terapia ni asesoramiento profesional.</strong> Es un juego. Si un tema toca algo
+      que el juego no puede tocar, la partida se detiene: eso se habla fuera del juego.
     </p>
     <p>
-      <strong>No lleva marcador entre ustedes dos.</strong> Cada quien ve sus propios
-      contadores y nunca se ponen lado a lado. Llevar la cuenta de quién va ganando
-      es exactamente lo que estropea una pareja.
+      <strong>No lleva marcador entre ustedes.</strong> Cada quien ve sus propios contadores y nunca
+      se ponen lado a lado. Llevar la cuenta de quién va ganando es justo lo que estropea el rato.
     </p>
+    <p>
+      <strong>No guarda tu voz.</strong> Tu grabación se pasa a texto y se descarta en el momento: lo
+      que se oye siempre es tu personaje.
+    </p>
+  </section>
+
+  <section class="llamado">
+    <p class="llamado__frase">¿Quién lo argumenta mejor?</p>
+    <a class="boton boton--grande" href="app/">Reta a alguien</a>
   </section>
 
   <footer class="pie">
     <div class="pie__enlaces">
+      <a href="#como">Cómo se juega</a>
       <a href="#modos">Los tres modos</a>
       <a href="app/">Jugar</a>
       <a href="#privacidad" data-pliego="pliego-privacidad">Privacidad y datos</a>
+      <a href="https://www.instagram.com/atwi.app/" target="_blank" rel="noopener noreferrer">Instagram</a>
     </div>
     
-    <p>ATWI usa IA para facilitar la resolución de conflictos y promover el ejercicio
-      del debate. Aunque ayuda a mediar diferencias y lograr acuerdos de forma divertida,
-      <strong>no reemplaza la terapia ni asesoramiento profesional.</strong></p>
-    <p class="pie__gancho">«Es como el UNO, pero en vez de provocar discusiones busca solucionarlas.»</p>
-    <p>ATWI · Proyecto en construcción.</p>
+    <p>ATWI usa IA para jugar a debatir y a ponerse de acuerdo. Es un juego:
+      <strong>no reemplaza la terapia ni el asesoramiento profesional.</strong></p>
+    
+    <p class="pie__origen">ATWI™ · Hecho en Colombia desde septiembre de 2026.</p>
   </footer>
 
 </div>
@@ -249,7 +348,7 @@
     <button class="pliego__cerrar" type="button" data-cerrar-pliego aria-label="Cerrar">✕</button>
       <div class="pliego__cuerpo legal">
     <h2 class="pliego__titulo" id="t-privacidad">Privacidad y datos</h2>
-    <p class="fecha">Última revisión: 18 de septiembre de 2026 · ATWI está en construcción y esto cambia con el juego.</p>
+    <p class="fecha">Última revisión: 30 de septiembre de 2026 · Esto cambia con el juego, y aquí se dice cuando cambia.</p>
 
     <div class="clave" style="margin-top:var(--e-4)">
       <p><strong>Lo corto:</strong> tu voz no se guarda nunca. Lo que se guarda es lo que dijiste en texto,
@@ -302,11 +401,11 @@
       <li><strong>Deepgram</strong> recibe la grabación para convertirla en texto: se manda, devuelve el
         texto y ATWI la descarta. Cada proveedor la procesa según su propia política de privacidad.</li>
       <li><strong>Anthropic (Claude)</strong> recibe los textos de la ronda para hacer de abogado (pulir
-        cómo se dice), de juez (Controversia), de mediador (Pacto) y de revisor de los temas que escribes.
+        cómo se dice), de juez (Controversia), de mediador (Negociación) y de revisor de los temas que escribes.
         No recibe audio ni tu correo.</li>
-      <li><strong>Microsoft Azure</strong> y <strong>Google (Gemini)</strong> reciben el guion para generar
-        la voz del personaje: cada personaje habla con uno de los dos. Solo reciben el texto, ni tu audio ni
-        tu correo, y Google marca la voz generada como hecha por IA.</li>
+      <li><strong>Google (Gemini)</strong> y <strong>Microsoft Azure</strong> reciben el guion para generar
+        la voz del personaje: uno la dice y el otro queda de respaldo por si el primero falla. Solo reciben
+        el texto, ni tu audio ni tu correo, y Google marca la voz generada como hecha por IA.</li>
       <li><strong>Cloudflare Turnstile</strong> comprueba que quien entra no es un robot, casi siempre sin
         que veas nada. Para eso lee señales técnicas de tu navegador y tu dispositivo, que Cloudflare trata
         según su <a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank"
@@ -323,9 +422,9 @@
 
     <h3>La inteligencia artificial</h3>
     <p>El juez, el mediador, el abogado que habla por ti y el revisor de temas son modelos de IA. Lo que
-      dicen se comprueba con reglas antes de enseñarse, pero pueden equivocarse. ATWI usa IA para facilitar
-      la resolución de conflictos y promover el ejercicio del debate; <strong>no reemplaza la terapia ni
-      asesoramiento profesional</strong>. Si un tema toca algo que el juego no puede tocar, la partida se
+      dicen se comprueba con reglas antes de enseñarse, pero pueden equivocarse. ATWI usa IA para jugar a
+      debatir y a ponerse de acuerdo. Es un juego: <strong>no reemplaza la terapia ni el asesoramiento
+      profesional</strong>. Si un tema toca algo que el juego no puede tocar, la partida se
       detiene y no se juzga ni se negocia.</p>
 
     <h3>Cuánto tiempo</h3>
@@ -368,6 +467,6 @@
 </dialog>
 
 
-<script src="assets/js/landing.js?v=1db65b3"></script>
+<script src="assets/js/landing.js?v=da59297"></script>
 </body>
 </html>
