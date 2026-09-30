@@ -26,11 +26,11 @@
 
 
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: 'self'; connect-src 'self' 'self'; frame-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<link rel="stylesheet" href="assets/css/fuentes.css?v=da59297">
-<link rel="stylesheet" href="assets/css/tokens.css?v=da59297">
-<link rel="stylesheet" href="assets/css/base.css?v=da59297">
-<link rel="stylesheet" href="assets/css/landing.css?v=da59297">
-<link rel="stylesheet" href="assets/css/modal.css?v=da59297">
+<link rel="stylesheet" href="assets/css/fuentes.css?v=c1349a7">
+<link rel="stylesheet" href="assets/css/tokens.css?v=c1349a7">
+<link rel="stylesheet" href="assets/css/base.css?v=c1349a7">
+<link rel="stylesheet" href="assets/css/landing.css?v=c1349a7">
+<link rel="stylesheet" href="assets/css/modal.css?v=c1349a7">
 </head>
 
 <body class="landing">
@@ -86,7 +86,6 @@
   
   <section class="regla">
     <p class="regla__frase">Aquí no gana el que grita más: <em>gana el que lo argumenta mejor.</em></p>
-    <p class="regla__sub">Y cada partida vale sola: sin ranking ni marcador entre ustedes.</p>
   </section>
 
   
@@ -192,69 +191,77 @@
     <p class="nota-ia">Voces generadas con IA.</p>
   </section>
 
+  
   <section class="seccion" id="modos">
     <h2 class="seccion__titulo">Tres maneras de jugar</h2>
     <p class="seccion__entrada">
       Quien invita elige el modo y el tema; la otra persona acepta o no. Si no acepta, no se juega.
+      Toca a cada personaje y te lo explica.
     </p>
 
-    <div class="rejilla-modos">
-      <article class="ficha-modo ficha-modo--debate">
-        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-debate.webp" alt="Modo Controversia" width="170" height="88" loading="lazy">
-        <p class="ficha-modo__lema">¡A juicio!</p>
-        <p class="suave chico">
-          Un tema con dos respuestas defendibles. Cada quien sostiene la suya y el juez dice quién
-          la defendió mejor.
-        </p>
-        <ul class="ficha-modo__lista">
-          <li><span>·</span> Gana quien lo argumenta mejor, no quien tiene la razón</li>
-          <li><span>·</span> Cinco criterios, y el desglose se ve entero al final</li>
-          <li><span>·</span> Pueden acabar de acuerdo, y eso no es un fallo: también se puntúa</li>
-        </ul>
-      </article>
-
-      <article class="ficha-modo ficha-modo--negociacion">
-        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-negociacion.webp" alt="Modo Negociación" width="170" height="80" loading="lazy">
-        <p class="ficha-modo__lema">Lo que acordaron, para recordarlo.</p>
-        <p class="suave chico">
-          Aquí no hay ganador. Cada quien dice lo que quiere y un mediador propone maneras de quedar,
-          enseñando qué recoge de cada quien.
-        </p>
-        <ul class="ficha-modo__lista">
-          <li><span>·</span> Eligen la que les sirve y la firman</li>
-          <li><span>·</span> Queda un acta, que es un recordatorio y nada más</li>
-          <li><span>·</span> Si ninguna los convence, también queda dicho</li>
-        </ul>
-      </article>
-
-      <article class="ficha-modo ficha-modo--competencia">
-        <img class="ficha-modo__rotulo" src="assets/img/landing/rotulo-competencia.webp" alt="Modo QuiénGane" width="170" height="82" loading="lazy">
-        <p class="ficha-modo__lema">¿Quién elige la película? Que lo decida el juego.</p>
-        <p class="suave chico">
-          Aquí no se argumenta: se retan por un premio —una comida, un favor, la próxima elección— y
-          lo decide un minijuego.
-        </p>
-        <ul class="ficha-modo__lista">
-          <li><span>·</span> Nueve minijuegos, uno por ronda</li>
-          <li><span>·</span> El premio se cumple esta semana y se puede señalar</li>
-          <li><span>·</span> 150 premios escritos, o el que se inventen ustedes</li>
-        </ul>
-      </article>
+    <div class="guias">
+      <button class="guia" type="button" data-explica="debate" data-cabeza="0.046" aria-haspopup="dialog"
+              aria-label="Kai te explica el modo Controversia">
+        <span class="guia__bocadillo">
+          <span class="guia__dice">Te explico</span>
+          <img src="assets/img/landing/rotulo-debate.webp" alt="" width="136" height="70">
+        </span>
+        <img class="guia__fig" src="assets/img/personajes/kai-azul-frente.webp" alt="" width="620" height="960" loading="lazy">
+      </button>
+      <button class="guia" type="button" data-explica="negociacion" data-cabeza="0.035" aria-haspopup="dialog"
+              aria-label="Luna te explica el modo Negociación">
+        <span class="guia__bocadillo">
+          <span class="guia__dice">Te explico</span>
+          <img src="assets/img/landing/rotulo-negociacion.webp" alt="" width="136" height="64">
+        </span>
+        <img class="guia__fig" src="assets/img/personajes/luna-verde-frente.webp" alt="" width="620" height="960" loading="lazy">
+      </button>
+      <button class="guia" type="button" data-explica="competencia" data-cabeza="0.094" aria-haspopup="dialog"
+              aria-label="Maya te explica el modo QuiénGane">
+        <span class="guia__bocadillo">
+          <span class="guia__dice">Te explico</span>
+          <img src="assets/img/landing/rotulo-competencia.webp" alt="" width="136" height="66">
+        </span>
+        <img class="guia__fig" src="assets/img/personajes/maya-amarillo-frente.webp" alt="" width="620" height="960" loading="lazy">
+      </button>
     </div>
 
-    
-    <h3 class="minijuegos__titulo">Los minijuegos de QuiénGane</h3>
-    <ul class="minijuegos">
-      <li><img src="assets/img/juegos/juego-choque.webp" alt="" width="56" height="56" loading="lazy"><b>Choque</b><span>Piedra, papel o tijera, pero con cinco elementos.</span></li>
-      <li><img src="assets/img/juegos/juego-calco.webp" alt="" width="56" height="56" loading="lazy"><b>Calco</b><span>Mira el patrón unos segundos y cálcalo de memoria.</span></li>
-      <li><img src="assets/img/juegos/juego-canastas.webp" alt="" width="56" height="56" loading="lazy"><b>Canastas</b><span>Mueve los stickers hasta que cada canasta tenga los suyos.</span></li>
-      <li><img src="assets/img/juegos/juego-despensa.webp" alt="" width="56" height="56" loading="lazy"><b>Despensa</b><span>Deja cada estante con sus tres productos iguales.</span></li>
-      <li><img src="assets/img/juegos/juego-duos.webp" alt="" width="56" height="56" loading="lazy"><b>Dúos</b><span>Une dos iguales con una línea que no atraviese nada.</span></li>
-      <li><img src="assets/img/juegos/juego-revoltijo.webp" alt="" width="56" height="56" loading="lazy"><b>Revoltijo</b><span>De una pila revuelta, saca las parejas que se ven.</span></li>
-      <li><img src="assets/img/juegos/juego-multitud.webp" alt="" width="56" height="56" loading="lazy"><b>Multitud</b><span>Elige las cartas que hacen crecer a tu gente.</span></li>
-      <li><img src="assets/img/juegos/juego-trazos.webp" alt="" width="56" height="56" loading="lazy"><b>Trazos</b><span>Une cada par de puntos sin cruzar los trazos.</span></li>
-      <li><img src="assets/img/juegos/juego-bloques.webp" alt="" width="56" height="56" loading="lazy"><b>Bloques</b><span>Coloca piezas y completa líneas contra el reloj.</span></li>
-    </ul>
+    <template id="explica-debate">
+      <img class="globo__logo" src="assets/img/landing/rotulo-debate.webp" alt="Controversia" width="170" height="88">
+      <p class="globo__lema">¡A juicio!</p>
+      <p class="globo__texto">Un tema con dos respuestas defendibles. Cada quien sostiene la suya, su
+        personaje la dice con gracia y el juez decide quién la defendió mejor.</p>
+      <ul class="globo__lista">
+        <li>Gana quien lo argumenta mejor, no quien tiene la razón</li>
+        <li>Cinco criterios, y el desglose se ve entero al final</li>
+        <li>Pueden acabar de acuerdo, y eso no es un fallo: también se puntúa</li>
+      </ul>
+      <a class="boton boton--bloque globo__jugar" href="app/">Jugar ahora</a>
+    </template>
+    <template id="explica-negociacion">
+      <img class="globo__logo" src="assets/img/landing/rotulo-negociacion.webp" alt="Negociación" width="170" height="80">
+      <p class="globo__lema">Lo que acordaron, para recordarlo.</p>
+      <p class="globo__texto">Aquí no hay ganador. Cada quien dice lo que quiere y un mediador propone
+        maneras de quedar, enseñando qué recoge de cada quien.</p>
+      <ul class="globo__lista">
+        <li>Eligen la que les sirve y la firman</li>
+        <li>Queda un acta, que es un recordatorio y nada más</li>
+        <li>Si ninguna los convence, también queda dicho</li>
+      </ul>
+      <a class="boton boton--bloque globo__jugar" href="app/">Jugar ahora</a>
+    </template>
+    <template id="explica-competencia">
+      <img class="globo__logo" src="assets/img/landing/rotulo-competencia.webp" alt="QuiénGane" width="170" height="82">
+      <p class="globo__lema">¿Quién elige la película? Que lo decida el juego.</p>
+      <p class="globo__texto">Aquí no se argumenta: se retan por un premio —una comida, un favor, la
+        próxima elección— y lo decide un minijuego.</p>
+      <ul class="globo__lista">
+        <li>Un minijuego en cada ronda, y el juez compara quién lo hizo mejor</li>
+        <li>El premio se cumple esta semana y se puede señalar</li>
+        <li>150 premios escritos, o el que se inventen ustedes</li>
+      </ul>
+      <a class="boton boton--bloque globo__jugar" href="app/">Jugar ahora</a>
+    </template>
   </section>
 
   
@@ -285,6 +292,7 @@
     </div>
     <figure class="visor">
       <div class="telefono" id="visor-caja">
+        
         <div class="visor__portada" id="visor-portada">
           <img class="visor__rotulo" src="assets/img/landing/rotulo-debate.webp"
                alt="Modo Controversia" width="170" height="88" loading="lazy">
@@ -467,6 +475,6 @@
 </dialog>
 
 
-<script src="assets/js/landing.js?v=da59297"></script>
+<script src="assets/js/landing.js?v=c1349a7"></script>
 </body>
 </html>
