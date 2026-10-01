@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=6bffeb1">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=6bffeb1">
-<link rel="stylesheet" href="../assets/css/base.css?v=6bffeb1">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=c2b6c2c">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=c2b6c2c">
+<link rel="stylesheet" href="../assets/css/base.css?v=c2b6c2c">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -112,6 +112,10 @@
   .dlg { border: 0; border-radius: var(--radio-tarjeta, 22px); padding: 20px 22px; width: min(520px, 92vw);
     max-height: 86vh; box-shadow: var(--sombra-2, 0 10px 40px rgba(0,0,0,.2)); background: var(--papel); }
   .dlg::backdrop { background: rgba(40, 30, 70, .35); backdrop-filter: blur(3px); }
+  /* El simulador de cuenta: el teléfono a su tamaño, y si la ventana es baja, más chico. */
+  .dlg--espejo { width: auto; max-height: 96vh; }
+  .espejo-marco { display: block; width: 390px; height: min(844px, calc(96vh - 130px)); border: 0;
+                  border-radius: 28px; box-shadow: 0 0 0 8px #1d1d1f; margin: 8px auto 6px; background: #fff; }
   .dlg__cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
   .dlg__cab h2 { margin: 0; }
   .dlg__x { font: inherit; background: none; border: 0; font-size: 18px; cursor: pointer; color: var(--suave); }
@@ -472,6 +476,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=6bffeb1"></script>
+<script src="../assets/js/paquete-admin.js?v=c2b6c2c"></script>
 </body>
 </html>
