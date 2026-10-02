@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=686d7f3">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=686d7f3">
-<link rel="stylesheet" href="../assets/css/base.css?v=686d7f3">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=1ec07f6">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=1ec07f6">
+<link rel="stylesheet" href="../assets/css/base.css?v=1ec07f6">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -93,6 +93,11 @@
   .comparar__ciegas { display: grid; gap: 8px; padding: 8px; border: 1px dashed currentColor; border-radius: 10px; }
   .comparar__revela { font-weight: 700; color: #3AA655; }
   .comparar-votos { margin-top: 6px; }
+  .comparar__abogado { flex-basis: 100%; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .comparar__abogado select { width: auto; padding: 4px 8px; font-size: .85rem; }
+  .comparar__sim { display: grid; gap: 4px; padding: 8px; border: 1px solid #C9B8F5; border-radius: 10px; background: #F7F3FF; }
+  .comparar__sim pre { margin: 0; }
+  .comparar__acciones { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
   .tarjeta { background: var(--papel); border-radius: var(--radio-tarjeta); box-shadow: var(--sombra-1); padding: 14px 18px; }
   .tarjeta .eti { color: var(--tenue); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em; }
@@ -485,6 +490,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=686d7f3"></script>
+<script src="../assets/js/paquete-admin.js?v=1ec07f6"></script>
 </body>
 </html>
