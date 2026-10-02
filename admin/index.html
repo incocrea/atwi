@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=7345ff2">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=7345ff2">
-<link rel="stylesheet" href="../assets/css/base.css?v=7345ff2">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=a8b660a">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=a8b660a">
+<link rel="stylesheet" href="../assets/css/base.css?v=a8b660a">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -97,6 +97,8 @@
   .comparar__abogado select { width: auto; padding: 4px 8px; font-size: .85rem; }
   .comparar__sim { display: grid; gap: 4px; padding: 8px; border: 1px solid #C9B8F5; border-radius: 10px; background: #F7F3FF; }
   .comparar__sim pre { margin: 0; }
+  .comparar__sim--mira { animation: sim-mira 1.2s ease-out; }
+  @keyframes sim-mira { from { box-shadow: 0 0 0 4px #7A6AD8; } to { box-shadow: 0 0 0 4px transparent; } }
   .comparar__acciones { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
   .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 22px; }
   .tarjeta { background: var(--papel); border-radius: var(--radio-tarjeta); box-shadow: var(--sombra-1); padding: 14px 18px; }
@@ -490,6 +492,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=7345ff2"></script>
+<script src="../assets/js/paquete-admin.js?v=a8b660a"></script>
 </body>
 </html>
