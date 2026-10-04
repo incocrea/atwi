@@ -140,37 +140,37 @@
    "texto": "A ver. Paso uno: me eliges. Paso dos: no hay paso dos.",
    "como": {
     "voz": "gemini:es-419-commercial-4",
-    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el volumen a lo que dijo su cliente. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
     "tono": "+0%",
     "ritmo": "+0%",
     "estilo": null,
     "temperatura": "0.70"
    },
-   "bytes": 34365
+   "bytes": 35661
   },
   "nico-2.mp3": {
    "texto": "Sin prisa. Las buenas ideas no corren, llegan.",
    "como": {
     "voz": "gemini:es-419-commercial-4",
-    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el volumen a lo que dijo su cliente. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
     "tono": "+0%",
     "ritmo": "+0%",
     "estilo": null,
     "temperatura": "0.70"
    },
-   "bytes": 27453
+   "bytes": 25725
   },
   "nico-3.mp3": {
    "texto": "A ver, respira. Yo me encargo de que se entienda.",
    "como": {
     "voz": "gemini:es-419-commercial-4",
-    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el volumen a lo que dijo su cliente. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
     "tono": "+0%",
     "ritmo": "+0%",
     "estilo": null,
     "temperatura": "0.70"
    },
-   "bytes": 21405
+   "bytes": 23133
   },
   "dante-1.mp3": {
    "texto": "Tranquilo, yo hablo. Tú pon cara de que se te ocurrió a ti.",
@@ -356,37 +356,37 @@
    "texto": "Paso uno: argumentar. Paso dos: ganar. Listo.",
    "como": {
     "voz": "gemini:es-419-commercial-4",
-    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el volumen a lo que dijo su cliente. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
     "tono": "+0%",
     "ritmo": "+0%",
     "estilo": null,
     "temperatura": "0.70"
    },
-   "bytes": 32493
+   "bytes": 34365
   },
   "nico-v2.mp3": {
    "texto": "Te dije que sin prisa se llega. Y llegamos primero.",
    "como": {
     "voz": "gemini:es-419-commercial-4",
-    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el volumen a lo que dijo su cliente. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
     "tono": "+0%",
     "ritmo": "+0%",
     "estilo": null,
     "temperatura": "0.70"
    },
-   "bytes": 23133
+   "bytes": 22845
   },
   "nico-v3.mp3": {
    "texto": "Respira… y ahora sí: ¡ganamos!",
    "como": {
     "voz": "gemini:es-419-commercial-4",
-    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el Habla como una persona joven de verdad, relajada y con humor, en español natural.",
+    "direccion": "Tranquilo y ordenado. Baja las revoluciones sin bajarle el volumen a lo que dijo su cliente. Habla como una persona joven de verdad, relajada y con humor, en español natural.",
     "tono": "+0%",
     "ritmo": "+0%",
     "estilo": null,
     "temperatura": "0.70"
    },
-   "bytes": 26301
+   "bytes": 27021
   },
   "dante-v1.mp3": {
    "texto": "Ganamos. No me sorprende, pero igual aplaudo.",
