@@ -1,15 +1,13 @@
 FUENTES DE ATWI
 ===============
 
-La dirección gráfica pide tipografía redondeada, como Finch. Todavía no están
-autoalojadas: tokens.css declara las familias y cae en la redondeada del
-sistema (en iOS, SF Pro Rounded; en Android y Windows, la del sistema).
+Una sola familia: Nunito, autoalojada y variable (decisión del titular,
+2026-09-14), en 800 para lo que titula y 400 para lo que se lee.
 
-Cuando se decidan, van aquí en woff2 con subconjunto latino y se declaran en
-fuentes.css, igual que en el proyecto nmllm:
+  nunito-latin.woff2       latín básico
+  nunito-latin-ext.woff2   latín extendido
 
-  - Display (titulares, botones, cifras):  Baloo 2 (700, 800)
-  - Texto (todo lo demás):                 Nunito (400, 600, 700)
-
-Ambas tienen licencia SIL Open Font License y están en Google Fonts.
-Subconjunto mínimo: latín + tildes + ñ + ¿¡ + comillas angulares.
+Las declara assets/css/fuentes.css, que genera tools/fuentes.py. Licencia SIL
+Open Font License. Va con `font-display: swap`: la primera pintada puede salir
+con la letra de respaldo, y por eso la ruleta se reajusta con
+`document.fonts.ready`.

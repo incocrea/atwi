@@ -11,6 +11,11 @@
    "Ya tengo todos los argumentos. Voy a deliberar.",
    "Con esto me basta. Denme un momento para pensarlo.",
    "Terminamos la ronda. Ahora me toca a mí."
+  ],
+  "juego": [
+   "Anotado. Lo que jugaste ya está guardado.",
+   "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "Registrado tal cual. Que juegue el otro lado."
   ]
  },
  "grabado": {
@@ -445,6 +450,168 @@
    "estilo": null,
    "temperatura": 0.7,
    "bytes": 15552
+  },
+  "bruno-juego-1.mp3": {
+   "texto": "Anotado. Lo que jugaste ya está guardado.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 17424
+  },
+  "remo-juego-1.mp3": {
+   "texto": "Anotado. Lo que jugaste ya está guardado.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18288
+  },
+  "teo-juego-1.mp3": {
+   "texto": "Anotado. Lo que jugaste ya está guardado.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20448
+  },
+  "vera-juego-1.mp3": {
+   "texto": "Anotado. Lo que jugaste ya está guardado.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 17712
+  },
+  "iris-juego-1.mp3": {
+   "texto": "Anotado. Lo que jugaste ya está guardado.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21600
+  },
+  "ada-juego-1.mp3": {
+   "texto": "Anotado. Lo que jugaste ya está guardado.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16416
+  },
+  "bruno-juego-2.mp3": {
+   "texto": "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16704
+  },
+  "remo-juego-2.mp3": {
+   "texto": "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19584
+  },
+  "teo-juego-2.mp3": {
+   "texto": "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 26928
+  },
+  "vera-juego-2.mp3": {
+   "texto": "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19296
+  },
+  "iris-juego-2.mp3": {
+   "texto": "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20016
+  },
+  "ada-juego-2.mp3": {
+   "texto": "Lo tengo. Ahora le toca jugar a la otra persona.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 14688
+  },
+  "bruno-juego-3.mp3": {
+   "texto": "Registrado tal cual. Que juegue el otro lado.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16704
+  },
+  "remo-juego-3.mp3": {
+   "texto": "Registrado tal cual. Que juegue el otro lado.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18720
+  },
+  "teo-juego-3.mp3": {
+   "texto": "Registrado tal cual. Que juegue el otro lado.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22320
+  },
+  "vera-juego-3.mp3": {
+   "texto": "Registrado tal cual. Que juegue el otro lado.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20448
+  },
+  "iris-juego-3.mp3": {
+   "texto": "Registrado tal cual. Que juegue el otro lado.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20736
+  },
+  "ada-juego-3.mp3": {
+   "texto": "Registrado tal cual. Que juegue el otro lado.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
   }
  }
 }
