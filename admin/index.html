@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=3493334">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=3493334">
-<link rel="stylesheet" href="../assets/css/base.css?v=3493334">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=ddcc862">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=ddcc862">
+<link rel="stylesheet" href="../assets/css/base.css?v=ddcc862">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -80,8 +80,13 @@
   nav.menu button[aria-current] { background: var(--lavanda-tinte); color: var(--lavanda-oscuro); }
   nav.menu .solo-local { font-family: var(--texto); font-size: 10px; font-weight: 800;
     color: var(--tenue); margin-left: 4px; text-transform: uppercase; letter-spacing: .05em; }
-  main { padding: 22px 26px 40px; max-width: 1240px; width: 100%; }
-  main.lleno { max-width: none; padding: 0; }
+  /* EL TABLERO ES DE ESCRITORIO Y USA TODO EL ANCHO (titular, 2026-10-07: «debe
+     aprovechar el ancho disponible siempre que pueda… priorizar desktop»). Tenía
+     tope de 1240 px y las tablas se apretaban con medio monitor libre a la
+     derecha: botones apilados y fechas partidas en tres renglones. Lo que
+     necesite un ancho de lectura lleva su propio tope (`.j-nota`, `.solo-aqui`). */
+  main { padding: 22px 26px 40px; width: 100%; min-width: 0; }
+  main.lleno { padding: 0; }
 
   /* --- Las piezas de siempre, con la mano del juego --- */
   /* El comparador de voces del Material (2026-10-02). */
@@ -125,6 +130,16 @@
     background: var(--papel); border: 2px solid var(--lavanda); border-radius: 999px; padding: 1px 10px;
     cursor: pointer; white-space: nowrap; }
   button.ver-como:hover { background: var(--lavanda-tinte); }
+  /* Lo que va en un renglón aunque la columna se apriete: los botones de una
+     fila, una fecha (sus guiones la partían), un teléfono, una pastilla. */
+  .acciones { display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; }
+  .nw, .pastilla, button.peligro { white-space: nowrap; }
+  /* UNA CUENTA, UN RENGLÓN (Gente): nada de lo que lleva es largo, y apilado
+     cada fila medía el doble. Si la ventana no da, la tabla se desliza de lado
+     dentro de su caja en vez de apretarse; el relleno de la caja deja ver la sombra. */
+  .tabla-renglon { overflow-x: auto; padding: 2px 6px 10px; margin: -2px -6px -10px; }
+  .tabla-renglon th, .tabla-renglon td { white-space: nowrap; padding-left: 10px; padding-right: 10px;
+                                         vertical-align: middle; }
   /* --- Las vidas de una cuenta (0121) --- */
   .vidas-btn { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-weight: 800;
     background: var(--papel); border: 2px solid var(--linea, #e6dccd); border-radius: 999px;
@@ -228,7 +243,8 @@
   .t-chip__n { font-size: 12px; opacity: .7; }
   .t-buscar { flex: 1 1 180px; max-width: 280px; }
   .t-nota { margin: 0 0 14px; }
-  .t-lista { display: grid; gap: 12px; }
+  /* En un monitor ancho van dos tarjetas por fila; en uno estrecho, una. */
+  .t-lista { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 620px), 1fr)); }
   .t-carta { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 14px 16px;
     background: var(--papel); border-radius: 18px; box-shadow: var(--sombra-1); border: 2px solid transparent; }
   .t-carta--cambiada, .t-carta--nueva { border-color: var(--sol-oscuro, #d9a300); }
@@ -498,6 +514,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=3493334"></script>
+<script src="../assets/js/paquete-admin.js?v=ddcc862"></script>
 </body>
 </html>
