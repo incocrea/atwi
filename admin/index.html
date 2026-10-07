@@ -8,9 +8,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://vauarfofsfgwnuyjfpni.supabase.co https://atwi.app; font-src 'self'; media-src 'self' blob: https://vauarfofsfgwnuyjfpni.supabase.co; connect-src 'self' https://vauarfofsfgwnuyjfpni.supabase.co https://challenges.cloudflare.com http://127.0.0.1:8129; frame-src 'self' https://challenges.cloudflare.com http://127.0.0.1:8129; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>ATWI · tablero</title>
 
-<link rel="stylesheet" href="../assets/css/fuentes.css?v=70ef9f3">
-<link rel="stylesheet" href="../assets/css/tokens.css?v=70ef9f3">
-<link rel="stylesheet" href="../assets/css/base.css?v=70ef9f3">
+<link rel="stylesheet" href="../assets/css/fuentes.css?v=799b121">
+<link rel="stylesheet" href="../assets/css/tokens.css?v=799b121">
+<link rel="stylesheet" href="../assets/css/base.css?v=799b121">
 
 <style>
   /* Los nombres de siempre del tablero, pero ahora SALEN DE LOS TOKENS DEL
@@ -120,6 +120,11 @@
     background: var(--papel); border: 2px solid var(--mal); border-radius: 999px; padding: 1px 10px;
     cursor: pointer; }
   button.peligro:disabled { opacity: .5; cursor: default; }
+  /* «Ver como» (Gente): la misma pastilla que «Borrar», en lavanda. */
+  button.ver-como { font: inherit; font-size: 12px; font-weight: 800; color: var(--lavanda-oscuro);
+    background: var(--papel); border: 2px solid var(--lavanda); border-radius: 999px; padding: 1px 10px;
+    cursor: pointer; white-space: nowrap; }
+  button.ver-como:hover { background: var(--lavanda-tinte); }
   /* --- Las vidas de una cuenta (0121) --- */
   .vidas-btn { display: inline-flex; align-items: center; gap: 4px; font: inherit; font-weight: 800;
     background: var(--papel); border: 2px solid var(--linea, #e6dccd); border-radius: 999px;
@@ -493,6 +498,6 @@
   </div>
 </div>
 
-<script src="../assets/js/paquete-admin.js?v=70ef9f3"></script>
+<script src="../assets/js/paquete-admin.js?v=799b121"></script>
 </body>
 </html>
