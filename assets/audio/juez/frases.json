@@ -16,6 +16,16 @@
    "Anotado. Lo que jugaste ya está guardado.",
    "Lo tengo. Ahora le toca jugar a la otra persona.",
    "Registrado tal cual. Que juegue el otro lado."
+  ],
+  "final": [
+   "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "Listo, ya jugaron los dos. Veamos quién se lleva el premio."
+  ],
+  "negocia": [
+   "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "Terminaron de proponer. Ahora me toca a mí."
   ]
  },
  "grabado": {
@@ -612,6 +622,330 @@
    "estilo": null,
    "temperatura": 0.7,
    "bytes": 20304
+  },
+  "bruno-final-1.mp3": {
+   "texto": "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18144
+  },
+  "remo-final-1.mp3": {
+   "texto": "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19152
+  },
+  "teo-final-1.mp3": {
+   "texto": "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22032
+  },
+  "vera-final-1.mp3": {
+   "texto": "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19008
+  },
+  "iris-final-1.mp3": {
+   "texto": "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19152
+  },
+  "ada-final-1.mp3": {
+   "texto": "Ya tengo los resultados de los dos. Voy a compararlos.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21168
+  },
+  "bruno-final-2.mp3": {
+   "texto": "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21888
+  },
+  "remo-final-2.mp3": {
+   "texto": "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
+  },
+  "teo-final-2.mp3": {
+   "texto": "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 25920
+  },
+  "vera-final-2.mp3": {
+   "texto": "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 23040
+  },
+  "iris-final-2.mp3": {
+   "texto": "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19440
+  },
+  "ada-final-2.mp3": {
+   "texto": "Terminaron de jugar. Ahora comparo lo que hizo cada quien.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 25920
+  },
+  "bruno-final-3.mp3": {
+   "texto": "Listo, ya jugaron los dos. Veamos quién se lleva el premio.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19728
+  },
+  "remo-final-3.mp3": {
+   "texto": "Listo, ya jugaron los dos. Veamos quién se lleva el premio.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 24048
+  },
+  "teo-final-3.mp3": {
+   "texto": "Listo, ya jugaron los dos. Veamos quién se lleva el premio.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 24480
+  },
+  "vera-final-3.mp3": {
+   "texto": "Listo, ya jugaron los dos. Veamos quién se lleva el premio.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22032
+  },
+  "iris-final-3.mp3": {
+   "texto": "Listo, ya jugaron los dos. Veamos quién se lleva el premio.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 23328
+  },
+  "ada-final-3.mp3": {
+   "texto": "Listo, ya jugaron los dos. Veamos quién se lleva el premio.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19584
+  },
+  "bruno-negocia-1.mp3": {
+   "texto": "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18144
+  },
+  "remo-negocia-1.mp3": {
+   "texto": "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 23904
+  },
+  "teo-negocia-1.mp3": {
+   "texto": "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 36144
+  },
+  "vera-negocia-1.mp3": {
+   "texto": "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21456
+  },
+  "iris-negocia-1.mp3": {
+   "texto": "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22608
+  },
+  "ada-negocia-1.mp3": {
+   "texto": "Ya escuché a los dos. Voy a buscar cómo pueden quedar.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20304
+  },
+  "bruno-negocia-2.mp3": {
+   "texto": "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19008
+  },
+  "remo-negocia-2.mp3": {
+   "texto": "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 23760
+  },
+  "teo-negocia-2.mp3": {
+   "texto": "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 29808
+  },
+  "vera-negocia-2.mp3": {
+   "texto": "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 20160
+  },
+  "iris-negocia-2.mp3": {
+   "texto": "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 22896
+  },
+  "ada-negocia-2.mp3": {
+   "texto": "Con esto ya sé lo que pide cada uno. Denme un momento.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 21168
+  },
+  "bruno-negocia-3.mp3": {
+   "texto": "Terminaron de proponer. Ahora me toca a mí.",
+   "voz": "es-MX-Jorge:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 7,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 16704
+  },
+  "remo-negocia-3.mp3": {
+   "texto": "Terminaron de proponer. Ahora me toca a mí.",
+   "voz": "es-ES-Tristan:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19008
+  },
+  "teo-negocia-3.mp3": {
+   "texto": "Terminaron de proponer. Ahora me toca a mí.",
+   "voz": "es-MX-Alejo:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 6,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 17280
+  },
+  "vera-negocia-3.mp3": {
+   "texto": "Terminaron de proponer. Ahora me toca a mí.",
+   "voz": "es-ES-Ximena:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 4,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 18432
+  },
+  "iris-negocia-3.mp3": {
+   "texto": "Terminaron de proponer. Ahora me toca a mí.",
+   "voz": "es-MX-Valeria:MAI-Voice-2",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 17136
+  },
+  "ada-negocia-3.mp3": {
+   "texto": "Terminaron de proponer. Ahora me toca a mí.",
+   "voz": "es-MX-Dalia:DragonHDLatestNeural",
+   "tono": 0,
+   "ritmo": 0,
+   "estilo": null,
+   "temperatura": 0.7,
+   "bytes": 19584
   }
  }
 }
